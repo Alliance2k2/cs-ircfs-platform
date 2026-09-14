@@ -8,6 +8,7 @@ from app.db.session import get_db
 from app.main import app
 from app.core.config import Settings
 from app.db.models import SpatialGeometry
+import app.main as main_module
 import app.core.security as security
 from geoalchemy2 import Geometry
 from geoalchemy2.admin.dialects.common import _check_spatial_type
@@ -73,8 +74,12 @@ def test_user_creation_and_reference_validation(monkeypatch):
 
 
 def test_production_requires_authentication_even_if_flag_is_false(monkeypatch):
-    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=False))
+    production_settings = Settings(_env_file=None, environment="production", database_url="postgresql+psycopg://example:example@localhost/example", require_api_key=False, api_key_roles="")
+    monkeypatch.setattr(main_module, "settings", production_settings)
+    monkeypatch.setattr(security, "get_settings", lambda: production_settings)
     with TestClient(app) as client:
+        assert client.get("/").status_code == 200
+        assert client.get("/health").status_code == 200
         assert client.get("/api/v1/analytics/act-now").status_code == 401
 
 

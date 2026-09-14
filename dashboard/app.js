@@ -145,7 +145,7 @@ async function loadLiveData() {
     document.querySelector("#scheme-filter-help").hidden = schemes.length > 0;
     display({ summary, queue }, "live");
     await loadMapData();
-    button.textContent = "Local API connected ✓";
+    button.textContent = "PostgreSQL API connected ✓";
   } catch (error) {
     display(demo, "demo");
     button.textContent = error.message === "API key required" ? "Enter API key to connect ↗" : error.message === "API key rejected" ? "Key rejected — try again ↗" : "API unavailable — retry ↗";

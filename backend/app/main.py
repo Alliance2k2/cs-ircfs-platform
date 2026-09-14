@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """Create tables only for local development; deployed databases use Alembic migrations."""
-    if settings.environment != "development" and (
-        settings.database_url.startswith("sqlite") or not settings.require_api_key or not settings.configured_api_keys
-    ):
-        raise RuntimeError("Deployment requires PostgreSQL and configured API-key authentication")
+    if settings.environment != "development" and settings.database_url.startswith("sqlite"):
+        raise RuntimeError("Deployment requires PostgreSQL")
+    if settings.environment != "development" and not settings.configured_api_keys:
+        logger.warning("No API keys configured; protected API endpoints will return 401")
     if settings.environment == "development":
         Base.metadata.create_all(bind=engine)
     yield
