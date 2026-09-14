@@ -35,13 +35,22 @@ class Settings(BaseSettings):
 
     @property
     def configured_api_keys(self) -> dict[str, str]:
-        """Parse `key:role,key:role` without ever exposing keys in API responses."""
+        """Parse role pairs or a single administrator key without exposing secrets."""
         pairs: dict[str, str] = {}
-        for item in self.api_key_roles.split(","):
+        raw = self.api_key_roles.strip()
+        if raw.startswith("API_KEY_ROLES="):
+            raw = raw.removeprefix("API_KEY_ROLES=").strip()
+        raw = raw.strip("\"'")
+        for item in raw.split(","):
+            item = item.strip().strip("\"'")
             if ":" in item:
-                key, role = item.strip().split(":", 1)
-                if key and role:
-                    pairs[key] = role
+                key, role = item.rsplit(":", 1)
+            elif "," not in raw:
+                key, role = item, "administrator"
+            else:
+                continue
+            if key.strip() and role.strip():
+                pairs[key.strip()] = role.strip()
         return pairs
 
 

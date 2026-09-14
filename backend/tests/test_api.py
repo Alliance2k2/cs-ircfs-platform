@@ -99,3 +99,9 @@ def test_spatial_type_can_be_inspected_before_dialect_is_available():
     assert not _check_spatial_type(geometry, Geometry, None)
     assert _check_spatial_type(geometry, Geometry, postgresql_dialect())
     assert geometry.spatial_index is False
+
+
+def test_api_key_roles_accepts_a_single_secret_or_role_pair():
+    for value in ("test-secret", "test-secret:administrator", "API_KEY_ROLES=test-secret:administrator", '"test-secret:administrator"'):
+        settings = Settings(_env_file=None, api_key_roles=value)
+        assert settings.configured_api_keys == {"test-secret": "administrator"}
