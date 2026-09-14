@@ -2,6 +2,7 @@ services:
   - type: web
     name: cs-ircfs-platform
     runtime: docker
+    plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     envVars:
@@ -18,5 +19,6 @@ services:
 
 databases:
   - name: cs-ircfs-postgres
+    plan: free
     databaseName: cs_ircfs
     user: cs_ircfs

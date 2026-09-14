@@ -12,4 +12,4 @@ This repository can run as one web service: FastAPI serves both `/api/v1/*` and 
 
 This is a **hosted demonstration**, not a production service for real citizen records. API keys identify a role rather than a person, and district ownership, privacy controls, a telecom provider, backups, and monitoring still need implementation. Do not migrate personal data from the local database into the hosted preview.
 
-The Blueprint has no fixed paid plan. Render may ask you to choose a plan and billing method when creating the database or service. Review the current pricing in Render before confirming resource creation.
+The Blueprint explicitly selects Render's Free compute plan for both resources. Render's Free Postgres expires after 30 days and has no backups; use it only for a disposable demonstration. Review Render's displayed resource plans before confirming creation. If the Blueprint still shows a payment prompt, stop and check that it has loaded the latest `main` commit and that both resources show **Free**.
