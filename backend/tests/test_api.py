@@ -7,7 +7,11 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.core.config import Settings
+from app.db.models import SpatialGeometry
 import app.core.security as security
+from geoalchemy2 import Geometry
+from geoalchemy2.admin.dialects.common import _check_spatial_type
+from sqlalchemy.dialects.postgresql import dialect as postgresql_dialect
 
 
 def test_user_creation_and_reference_validation(monkeypatch):
@@ -80,3 +84,9 @@ def test_dashboard_is_served_from_api_origin_and_render_url_uses_psycopg():
         assert client.get("/").status_code == 200
         assert client.get("/app.js").status_code == 200
         assert client.get("/health").status_code == 200
+
+
+def test_spatial_type_can_be_inspected_before_dialect_is_available():
+    geometry = SpatialGeometry("POINT")
+    assert not _check_spatial_type(geometry, Geometry, None)
+    assert _check_spatial_type(geometry, Geometry, postgresql_dialect())

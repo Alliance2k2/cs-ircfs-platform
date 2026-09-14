@@ -16,6 +16,9 @@ class SpatialGeometry(TypeDecorator):
         super().__init__()
 
     def load_dialect_impl(self, dialect):
+        # GeoAlchemy also inspects mapped columns before a dialect is available.
+        if dialect is None:
+            return Text()
         if dialect.name == "postgresql":
             return dialect.type_descriptor(Geometry(self.geometry_type, srid=self.srid))
         return dialect.type_descriptor(Text())
