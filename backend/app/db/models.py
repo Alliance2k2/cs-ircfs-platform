@@ -9,6 +9,9 @@ from geoalchemy2 import Geometry
 class SpatialGeometry(TypeDecorator):
     impl = Text
     cache_ok = True
+    # GeoAlchemy's DDL hooks inspect this on the mapped column type itself.
+    # Indexes can be added explicitly after verified spatial data is loaded.
+    spatial_index = False
 
     def __init__(self, geometry_type: str, srid: int = 4326):
         self.geometry_type = geometry_type
@@ -20,7 +23,7 @@ class SpatialGeometry(TypeDecorator):
         if dialect is None:
             return Text()
         if dialect.name == "postgresql":
-            return dialect.type_descriptor(Geometry(self.geometry_type, srid=self.srid))
+            return dialect.type_descriptor(Geometry(self.geometry_type, srid=self.srid, spatial_index=False))
         return dialect.type_descriptor(Text())
 
 from app.db.base import Base

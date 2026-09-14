@@ -90,3 +90,4 @@ def test_spatial_type_can_be_inspected_before_dialect_is_available():
     geometry = SpatialGeometry("POINT")
     assert not _check_spatial_type(geometry, Geometry, None)
     assert _check_spatial_type(geometry, Geometry, postgresql_dialect())
+    assert geometry.spatial_index is False
