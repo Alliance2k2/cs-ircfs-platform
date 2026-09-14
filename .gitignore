@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+
+# Local database and coverage
+*.db
+.coverage
+htmlcov/
+
+# Node/dashboard dependencies
+node_modules/
+dist/
+backend/test-temp-local/
+backend/pytest-cache-files-*/
+.pytest_cache/
+backend/.pytest-tmp/
+.openai/

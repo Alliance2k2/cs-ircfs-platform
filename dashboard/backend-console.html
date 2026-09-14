@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>location.replace(`management.html${location.search}`);</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CS-IRCFS | Technical Operations Console</title>
+    <link rel="stylesheet" href="backend-console.css" />
+    <link rel="stylesheet" href="backend-console-overrides.css" />
+  </head>
+  <body>
+    <header class="console-header">
+      <a href="index.html" class="console-brand"><span>C</span><strong>CS-IRCFS</strong><small>Technical Operations Console</small></a>
+      <div class="api-status"><i id="status-light"></i><span id="api-status-text">Checking local API…</span><button id="refresh">↻ Refresh</button></div>
+    </header>
+    <main class="console-main">
+      <section class="hero">
+        <div><p class="eyebrow">FOR DEVELOPERS AND PROJECT TEAM</p><h1>How the backend supports the platform.</h1><p>This technical screen is not for District Planners. It explains the engine behind the dashboard: it validates reports, stores them safely, ranks urgent cases, and supplies planner views.</p></div>
+        <a class="docs-link" href="/docs" target="_blank">Developer API docs ↗</a>
+      </section>
+
+      <section class="flow" aria-label="Report processing flow">
+        <article><b class="step">01</b><span class="flow-icon">⌕</span><h2>Receive</h2><p>USSD, SMS, or dashboard report arrives through an API endpoint.</p></article>
+        <span class="arrow">→</span>
+        <article><b class="step">02</b><span class="flow-icon">✓</span><h2>Validate</h2><p>Checks phone, date, report values, status, and priority fields.</p></article>
+        <span class="arrow">→</span>
+        <article><b class="step">03</b><span class="flow-icon">▣</span><h2>Store</h2><p>Links the report to people, locations, and irrigation schemes.</p></article>
+        <span class="arrow">→</span>
+        <article><b class="step">04</b><span class="flow-icon">!</span><h2>Prioritise</h2><p>Ranks offline assets, serious crop risks, and open cases.</p></article>
+        <span class="arrow">→</span>
+        <article><b class="step">05</b><span class="flow-icon">↗</span><h2>Respond</h2><p>Feeds the planner dashboard and preserves action history.</p></article>
+      </section>
+
+      <section class="live-section">
+        <div class="section-title"><div><p class="eyebrow">LIVE SERVICE STATUS</p><h2>Backend at a glance</h2></div><span id="source-badge">LOCAL API</span></div>
+        <div class="live-grid">
+          <article class="service-card primary"><span class="service-icon">⚙</span><p>API service</p><strong id="service-health">Checking…</strong><small>FastAPI reporting and decision engine</small></article>
+          <article class="service-card"><span class="service-icon">▤</span><p>Stored reports</p><strong id="live-reports">—</strong><small>Crop + irrigation/rainfall reports</small></article>
+          <article class="service-card"><span class="service-icon">!</span><p>Urgent items</p><strong id="live-alerts">—</strong><small>Current Act Now queue</small></article>
+          <article class="service-card"><span class="service-icon">◌</span><p>Open complaints</p><strong id="live-feedback">—</strong><small>Community cases awaiting closure</small></article>
+        </div>
+      </section>
+
+      <section class="endpoint-section">
+        <div class="section-title"><div><p class="eyebrow">COMPLETE PLATFORM DATA MODULES</p><h2>Everything managed by the backend</h2></div><p class="hint">Click a card to view the current live records.</p></div>
+        <div class="endpoint-grid">
+          <a href="/health" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Service health</h3><code>/health</code><p>Confirms the backend is online.</p></a>
+          <a href="/api/v1/users" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Registered users</h3><code>/api/v1/users</code><p>Lists farmers, monitors, and planners.</p></a>
+          <a href="/api/v1/irrigation-schemes" target="_blank" class="endpoint-card scheme-card"><span class="method get">GET</span><h3>Irrigation schemes</h3><code>/api/v1/irrigation-schemes</code><p>PADAB, APEFA, areas, targets, assets, and status.</p></a>
+          <a href="/api/v1/citizen-reports" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Crop reports</h3><code>/api/v1/citizen-reports</code><p>Returns production and crop-risk evidence.</p></a>
+          <a href="/api/v1/irrigation-reports" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Rainfall &amp; irrigation</h3><code>/api/v1/irrigation-reports</code><p>Rain gauges, asset status, faults, and bottlenecks.</p></a>
+          <a href="/api/v1/feedback" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Feedback cases</h3><code>/api/v1/feedback</code><p>Returns community issues and their status.</p></a>
+          <a href="/api/v1/analytics/act-now" target="_blank" class="endpoint-card standout"><span class="method get">GET</span><h3>Act Now queue</h3><code>/api/v1/analytics/act-now</code><p>Returns prioritised issues for action.</p></a>
+          <a href="/api/v1/locations/sectors" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Sectors &amp; cells</h3><code>/api/v1/locations/sectors</code><p>Administrative locations used to map every report.</p></a>
+        </div>
+      </section>
+
+      <section class="integrity"><span>⊙</span><div><h2>Data integrity is part of the backend.</h2><p>Input rules prevent invalid dates, unrealistic rainfall, unsupported user roles, and incomplete resolved cases. The local database is temporary for development; PostgreSQL/PostGIS will be used in deployment.</p></div></section>
+    </main>
+    <script src="backend-console.js?v=20260914-deploy1"></script>
+  </body>
+</html>

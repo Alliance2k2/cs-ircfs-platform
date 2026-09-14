@@ -1,0 +1,15 @@
+import logging
+import logging.config
+
+
+def configure_logging(level: str = "INFO") -> None:
+    """Configure concise structured logs suitable for local and deployed services."""
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {"standard": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
+            "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "standard"}},
+            "root": {"handlers": ["console"], "level": level.upper()},
+        }
+    )

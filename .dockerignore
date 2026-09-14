@@ -1,0 +1,10 @@
+.env
+.git
+.venv
+**/__pycache__
+**/*.pyc
+**/*.db
+**/.pytest_cache
+backend/test-temp-local
+backend/pytest-cache-files-*
+dashboard/*preview.png

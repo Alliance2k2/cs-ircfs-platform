@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: cs-ircfs-platform
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: REQUIRE_API_KEY
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cs-ircfs-postgres
+          property: connectionString
+      - key: API_KEY_ROLES
+        sync: false
+
+databases:
+  - name: cs-ircfs-postgres
+    databaseName: cs_ircfs
+    user: cs_ircfs

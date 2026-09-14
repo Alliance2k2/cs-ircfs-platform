@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CS-IRCFS | Platform Management</title>
+    <link rel="stylesheet" href="management.css" />
+    <link rel="stylesheet" href="management-overrides.css" />
+  </head>
+  <body>
+    <div class="management-shell">
+      <aside class="management-sidebar">
+        <a href="index.html" class="management-brand"><span class="logo-box">C</span><span><strong>CS-IRCFS</strong><small>Platform Management</small></span></a>
+        <p class="nav-caption">MANAGE PLATFORM DATA</p>
+        <nav id="module-nav">
+          <button class="module-link active" data-module="users"><span>♙</span> Users <b data-count="users">—</b></button>
+          <button class="module-link" data-module="schemes"><span>⌁</span> Irrigation schemes <b data-count="schemes">—</b></button>
+          <button class="module-link" data-module="citizen"><span>▤</span> Citizen reports <b data-count="citizen">—</b></button>
+          <button class="module-link" data-module="irrigation"><span>≋</span> Rainfall &amp; irrigation <b data-count="irrigation">—</b></button>
+          <button class="module-link" data-module="feedback"><span>◌</span> Community feedback <b data-count="feedback">—</b></button>
+          <button class="module-link" data-module="analytics"><span>◔</span> Analytics</button>
+          <a class="module-link" href="index.html"><span>▦</span> Planner dashboard</a>
+        </nav>
+        <div class="sidebar-bottom"><p>Current view</p><span id="data-label" class="data-label">SAMPLE DATA</span><button id="connect-api" class="connect-button">Connect local API ↗</button></div>
+      </aside>
+
+      <main class="management-main">
+        <header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button class="outline-button" id="export-button">⇩ Export</button><button class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
+
+        <section class="summary-row" id="summary-row"></section>
+        <section class="content-card">
+          <div class="table-toolbar"><div class="search-box">⌕ <input id="table-search" type="search" placeholder="Search users..." /></div><button class="filter-button">☷ Filters</button></div>
+          <div class="table-wrap"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+          <footer class="table-footer"><span id="table-count"></span><div><button class="page-button" disabled>‹</button><button class="page-number">1</button><button class="page-button" disabled>›</button></div></footer>
+        </section>
+
+      </main>
+    </div>
+    <dialog id="user-dialog">
+      <form id="user-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM USER</p><h2>Add user</h2><p>Register a user for local development. A phone number is required.</p></div><button class="close-dialog" type="button" id="close-dialog">×</button></div>
+        <label>Full name<input name="full_name" maxlength="120" placeholder="e.g. Aline Umutoni" /></label>
+        <label>Phone number<input name="phone_number" required minlength="8" maxlength="20" placeholder="e.g. +250788123456" /></label>
+        <label>Role<select name="role"><option value="farmer">Farmer</option><option value="citizen_science_monitor">Citizen Science Monitor</option><option value="cooperative_leader">Cooperative Leader</option><option value="district_planner">District Planner</option><option value="administrator">Administrator</option></select></label>
+        <label>Cooperative (optional)<input name="cooperative_name" maxlength="120" placeholder="e.g. Koperative Mwesa" /></label>
+        <label>Cell ID (optional)<input name="cell_id" type="number" min="1" placeholder="Choose after sectors and cells are registered" /></label>
+        <div class="form-row"><label>Latitude (optional)<input name="latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. -2.05" /></label><label>Longitude (optional)<input name="longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. 30.1" /></label></div>
+        <p id="form-message" class="form-message"></p>
+        <div class="dialog-actions"><button type="button" class="outline-button" id="cancel-dialog">Cancel</button><button type="submit" class="primary-button">Save user</button></div>
+      </form>
+    </dialog>
+    <dialog id="entry-dialog">
+      <form id="entry-form">
+        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM DATA</p><h2 id="entry-title">Add record</h2><p>Fields marked required must be completed.</p></div><button class="close-dialog" type="button" id="entry-close" aria-label="Close">×</button></div>
+        <div id="entry-fields"></div>
+        <p id="entry-message" class="form-message" role="alert"></p>
+        <div class="dialog-actions"><button type="button" class="outline-button" id="entry-cancel">Cancel</button><button type="submit" class="primary-button">Save record</button></div>
+      </form>
+    </dialog>
+    <script src="management.js?v=20260914-deploy1"></script>
+  </body>
+</html>
