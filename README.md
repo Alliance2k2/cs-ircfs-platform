@@ -1,5 +1,7 @@
 # CS-IRCFS Platform
 
+[Deploy to Render](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FAlliance2k2%2Fcs-ircfs-platform)
+
 > A low-bandwidth platform for agricultural, irrigation, climate, and community-issue monitoring in Bugesera, Rwanda.
 
 ## What works today
