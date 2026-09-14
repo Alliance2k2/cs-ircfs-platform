@@ -82,7 +82,7 @@ def test_production_requires_authentication_even_if_flag_is_false(monkeypatch):
     with TestClient(app) as client:
         assert client.get("/").status_code == 200
         assert client.get("/health").status_code == 200
-        assert client.get("/api/v1/auth-status").json() == {"api_keys_configured": False}
+        assert client.get("/api/v1/auth-status").json() == {"api_key_roles_present": False, "api_keys_configured": False}
         assert client.get("/api/v1/analytics/act-now").status_code == 401
 
 
