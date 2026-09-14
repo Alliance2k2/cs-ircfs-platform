@@ -131,7 +131,8 @@ async function loadLiveData() {
     }
     if (summaryResponse.status === 401) {
       sessionStorage.removeItem("cs_ircfs_api_key");
-      throw new Error("API key rejected");
+      const status = await apiFetch("auth-status").then((response) => response.ok ? response.json() : null).catch(() => null);
+      throw new Error(status?.api_keys_configured === false ? "No API keys configured on Render" : "API key rejected");
     }
     if (!summaryResponse.ok) throw new Error(`API returned ${summaryResponse.status}`);
     const summary = await summaryResponse.json();
@@ -155,7 +156,7 @@ async function loadLiveData() {
     button.textContent = "PostgreSQL API connected ✓";
   } catch (error) {
     display(demo, "demo");
-    button.textContent = error.message === "API key required" ? "Enter API key to connect ↗" : error.message === "API key rejected" ? "Key rejected — try again ↗" : "API unavailable — retry ↗";
+    button.textContent = error.message === "API key required" ? "Enter API key to connect ↗" : error.message === "API key rejected" ? "Key rejected — try again ↗" : error.message === "No API keys configured on Render" ? "Set API_KEY_ROLES on Render ↗" : "API unavailable — retry ↗";
     document.querySelector("#data-mode").title = error.message;
   }
 }
