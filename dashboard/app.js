@@ -2,6 +2,13 @@
 const API_URL = new URLSearchParams(window.location.search).get("api") || (window.location.port === "8080" ? "http://127.0.0.1:8002/api/v1" : `${window.location.origin}/api/v1`);
 sessionStorage.setItem("cs_ircfs_api_url", API_URL);
 const apiFetch = (path, options = {}) => fetch(`${API_URL}/${path}`, { ...options, headers: { ...(options.headers || {}), ...(sessionStorage.getItem("cs_ircfs_api_key") ? { "X-API-Key": sessionStorage.getItem("cs_ircfs_api_key") } : {}) } });
+function apiKeyFromInput(value) {
+  let input = String(value || "").trim();
+  if (input.startsWith("API_KEY_ROLES=")) input = input.slice("API_KEY_ROLES=".length).trim();
+  input = input.replace(/^['"]|['"]$/g, "");
+  if (input.endsWith(":administrator")) input = input.slice(0, -":administrator".length);
+  return input.trim();
+}
 document.querySelectorAll('a[href="management.html"]').forEach((link) => { link.href = `management.html${window.location.search}`; });
 let liveMap;
 let selectedCaseId = null;
@@ -117,9 +124,9 @@ async function loadLiveData() {
     let summaryResponse = await apiFetch("analytics/dashboard-summary");
     if (summaryResponse.status === 401) {
       sessionStorage.removeItem("cs_ircfs_api_key");
-      const key = window.prompt("Enter the administrator API key for this API (the secret before :administrator in API_KEY_ROLES):");
-      if (!key?.trim()) throw new Error("API key required");
-      sessionStorage.setItem("cs_ircfs_api_key", key.trim());
+      const key = apiKeyFromInput(window.prompt("Enter your Render API_KEY_ROLES value (secret:administrator), or just the secret:"));
+      if (!key) throw new Error("API key required");
+      sessionStorage.setItem("cs_ircfs_api_key", key);
       summaryResponse = await apiFetch("analytics/dashboard-summary");
     }
     if (summaryResponse.status === 401) {
