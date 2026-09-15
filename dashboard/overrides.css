@@ -8,6 +8,7 @@
 .map-canvas:before{display:none}
 .map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-2px 0 12px;color:#33554d;font-size:12px;font-weight:700}.map-toolbar .secondary-button{padding:6px 10px;font-size:11px}.map-status{margin:12px 0 0;color:#526b60;font-size:12px}.map-status.empty{padding:10px 12px;border:1px solid #dce7df;border-radius:8px;background:#f7faf7}
 .scheme-area{z-index:3;box-shadow:0 4px 14px rgba(24,79,52,.12)}
+.district-label{border:0!important;border-radius:5px!important;background:rgba(13,78,59,.9)!important;color:#fff!important;box-shadow:0 2px 8px rgba(13,78,59,.25)!important;font-weight:800!important;padding:5px 8px!important}.district-label:before{display:none!important}
 .north{z-index:4;top:16px;right:16px;padding:5px 7px;border-radius:3px;background:rgba(255,255,255,.76);color:#245440;font-weight:800}
 
 @media (max-width:600px){.map-canvas{height:300px}.north{top:10px;right:10px}.scheme-area{font-size:12px}.scheme-area small{font-size:9px}}

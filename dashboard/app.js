@@ -11,6 +11,7 @@ function apiKeyFromInput(value) {
 }
 document.querySelectorAll('a[href="management.html"]').forEach((link) => { link.href = `management.html${window.location.search}`; });
 let liveMap;
+let bugeseraBoundaryLayer;
 let selectedCaseId = null;
 let currentMapData = null;
 const BUGESERA_VIEW = { center: [-2.28, 30.15], zoom: 10, features: [] };
@@ -73,6 +74,27 @@ function markerStyle(feature) {
   return { color: "#ffffff", fillColor: feature.status === "offline" ? "#c75248" : "#2878a9" };
 }
 
+async function loadBugeseraBoundary() {
+  if (!liveMap || bugeseraBoundaryLayer) return;
+  try {
+    const boundary = await fetch("bugesera-boundary.geojson").then((response) => {
+      if (!response.ok) throw new Error("Boundary unavailable");
+      return response.json();
+    });
+    bugeseraBoundaryLayer = L.geoJSON(boundary, {
+      style: { color: "#0d6b4f", weight: 3, opacity: 1, fillColor: "#3a9b72", fillOpacity: 0.12 }
+    }).bindTooltip("Bugesera District", { permanent: true, direction: "center", className: "district-label" }).addTo(liveMap);
+    resetBugeseraView();
+  } catch (_) {
+    liveMap.setView([-2.20, 30.10], 10);
+  }
+}
+
+function resetBugeseraView() {
+  if (bugeseraBoundaryLayer) liveMap.fitBounds(bugeseraBoundaryLayer.getBounds(), { padding: [18, 18] });
+  else liveMap?.setView([-2.20, 30.10], 10);
+}
+
 function renderMap(data) {
   currentMapData = data;
   const selectedScheme = document.querySelector("#scheme-filter").value;
@@ -93,8 +115,8 @@ function renderMap(data) {
       attribution: "&copy; OpenStreetMap contributors",
       maxZoom: 19
     }).addTo(liveMap);
+    loadBugeseraBoundary();
   } else {
-    liveMap.setView(data.center, data.zoom);
     liveMap.eachLayer((layer) => { if (layer instanceof L.CircleMarker) liveMap.removeLayer(layer); });
   }
   visibleFeatures.forEach((feature) => {
@@ -162,7 +184,7 @@ async function loadLiveData() {
 }
 
 document.querySelector("#load-live-data").addEventListener("click", loadLiveData);
-document.querySelector("#map-reset-view").addEventListener("click", () => liveMap?.setView(BUGESERA_VIEW.center, BUGESERA_VIEW.zoom));
+document.querySelector("#map-reset-view").addEventListener("click", resetBugeseraView);
 document.querySelector("#refresh-queue").addEventListener("click", loadLiveData);
 document.querySelector("#scheme-filter").addEventListener("change", (event) => {
   const selected = event.target.value;
