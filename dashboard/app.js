@@ -12,6 +12,7 @@ function apiKeyFromInput(value) {
 document.querySelectorAll('a[href="management.html"]').forEach((link) => { link.href = `management.html${window.location.search}`; });
 let liveMap;
 let bugeseraBoundaryLayer;
+let bugeseraContextMask;
 let selectedCaseId = null;
 let currentMapData = null;
 const BUGESERA_VIEW = { center: [-2.28, 30.15], zoom: 10, features: [] };
@@ -81,9 +82,15 @@ async function loadBugeseraBoundary() {
       if (!response.ok) throw new Error("Boundary unavailable");
       return response.json();
     });
+    const districtRing = boundary.features[0].geometry.coordinates[0].map(([longitude, latitude]) => [latitude, longitude]);
+    const worldRing = [[-90, -180], [-90, 180], [90, 180], [90, -180]];
+    bugeseraContextMask = L.polygon([worldRing, districtRing], {
+      stroke: false, fillColor: "#edf1ee", fillOpacity: 0.62, fillRule: "evenodd", interactive: false
+    }).addTo(liveMap);
     bugeseraBoundaryLayer = L.geoJSON(boundary, {
       style: { color: "#0d6b4f", weight: 3, opacity: 1, fillColor: "#3a9b72", fillOpacity: 0.12 }
     }).bindTooltip("Bugesera District", { permanent: true, direction: "center", className: "district-label" }).addTo(liveMap);
+    liveMap.setMaxBounds(bugeseraBoundaryLayer.getBounds().pad(0.35));
     resetBugeseraView();
   } catch (_) {
     liveMap.setView([-2.20, 30.10], 10);
