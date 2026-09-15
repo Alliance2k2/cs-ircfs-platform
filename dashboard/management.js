@@ -6,6 +6,8 @@ let activeModule = "users";
 let liveMode = false;
 let renderedRows = [];
 let renderedLive = false;
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 const modules = {
   users: {
@@ -64,6 +66,7 @@ function normalCell(value) {
 function draw(data, rows, isLive = false) {
   renderedRows = rows;
   renderedLive = isLive;
+  currentPage = 1;
   document.querySelector("#page-title").textContent = data.title;
   document.querySelector("#page-subtitle").textContent = data.subtitle;
   document.querySelector("#add-button").textContent = data.add;
@@ -75,22 +78,42 @@ function draw(data, rows, isLive = false) {
   document.querySelector("#table-head").innerHTML = `<tr>${data.columns.map((column) => `<th>${column}</th>`).join("")}${activeModule === "users" ? "<th>Actions</th>" : ""}</tr>`;
   const body = document.querySelector("#table-body");
   if (!rows.length) {
-    body.innerHTML = `<tr><td class="empty-row" colspan="${data.columns.length}">No ${data.title.toLowerCase()} have been entered in the local database yet.</td></tr>`;
+    body.innerHTML = `<tr><td class="empty-row" colspan="${data.columns.length + (activeModule === "users" ? 1 : 0)}">No ${data.title.toLowerCase()} have been entered in PostgreSQL yet. Use the Add button to create the first record.</td></tr>`;
   } else if (activeModule === "users") {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><span><strong>${escapeHtml(row[0])}</strong><small>${escapeHtml(row[2].replaceAll("_", " "))}</small></span></div></td><td>${badge(row[2])}</td><td>${escapeHtml(row[3] || "—")}</td><td>${escapeHtml(row[4] || "—")}</td><td><button class="row-action" data-action="edit" data-id="${Number(row[6])}">Edit</button><button class="row-action danger" data-action="delete" data-id="${Number(row[6])}">Delete</button></td></tr>`).join("");
   } else {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td>${row.slice(2).map(normalCell).map((value) => `<td>${value}</td>`).join("")}</tr>`).join("");
   }
+  populateFilter();
   updateVisibleRows();
 }
 
 function updateVisibleRows() {
   const term = document.querySelector("#table-search").value.trim().toLowerCase();
-  document.querySelectorAll("#table-body tr").forEach((row, index) => {
-    row.hidden = Boolean(renderedRows[index] && term && !row.textContent.toLowerCase().includes(term));
+  const filter = document.querySelector("#table-filter").value;
+  const matching = renderedRows.map((row, index) => ({ row, index })).filter(({ row }) => {
+    const text = row.join(" ").toLowerCase();
+    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) ?? "").toLowerCase();
+    return (!term || text.includes(term)) && (filter === "all" || filterValue === filter);
   });
-  const count = [...document.querySelectorAll("#table-body tr")].filter((row, index) => renderedRows[index] && !row.hidden).length;
-  document.querySelector("#table-count").textContent = `Showing ${count} ${renderedLive ? "PostgreSQL" : "demonstration"} record${count === 1 ? "" : "s"}`;
+  const pages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, pages);
+  const visibleIndexes = new Set(matching.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(({ index }) => index));
+  document.querySelectorAll("#table-body tr").forEach((row, index) => { row.hidden = Boolean(renderedRows[index] && !visibleIndexes.has(index)); });
+  document.querySelector("#current-page").textContent = String(currentPage);
+  document.querySelector("#previous-page").disabled = currentPage <= 1;
+  document.querySelector("#next-page").disabled = currentPage >= pages;
+  document.querySelector("#table-count").textContent = matching.length
+    ? `Showing ${(currentPage - 1) * PAGE_SIZE + 1}–${Math.min(currentPage * PAGE_SIZE, matching.length)} of ${matching.length} ${renderedLive ? "PostgreSQL" : "demonstration"} records`
+    : `No matching ${renderedLive ? "PostgreSQL" : "demonstration"} records`;
+}
+
+function populateFilter() {
+  const select = document.querySelector("#table-filter");
+  const previous = select.value;
+  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) ?? "").trim()).filter(Boolean))].sort();
+  select.replaceChildren(new Option("All records", "all"), ...values.map((value) => new Option(value.replaceAll("_", " "), value.toLowerCase())));
+  select.value = values.some((value) => value.toLowerCase() === previous) ? previous : "all";
 }
 
 function sampleRows(module) { return modules[module].rows; }
@@ -126,7 +149,21 @@ async function refreshNavigationCounts() {
 }
 
 document.querySelectorAll(".module-link").forEach((button) => button.addEventListener("click", () => render(button.dataset.module)));
-document.querySelector("#table-search").addEventListener("input", updateVisibleRows);
+document.querySelector("#table-search").addEventListener("input", () => { currentPage = 1; updateVisibleRows(); });
+document.querySelector("#table-filter").addEventListener("change", () => { currentPage = 1; updateVisibleRows(); });
+document.querySelector("#filter-button").addEventListener("click", () => {
+  const panel = document.querySelector("#filter-panel");
+  panel.hidden = !panel.hidden;
+  document.querySelector("#filter-button").setAttribute("aria-expanded", String(!panel.hidden));
+});
+document.querySelector("#clear-filters").addEventListener("click", () => {
+  document.querySelector("#table-search").value = "";
+  document.querySelector("#table-filter").value = "all";
+  currentPage = 1;
+  updateVisibleRows();
+});
+document.querySelector("#previous-page").addEventListener("click", () => { if (currentPage > 1) { currentPage -= 1; updateVisibleRows(); } });
+document.querySelector("#next-page").addEventListener("click", () => { currentPage += 1; updateVisibleRows(); });
 document.querySelector("#table-body").addEventListener("click", async (event) => {
   const action = event.target.dataset.action;
   const userId = event.target.dataset.id;
@@ -207,8 +244,6 @@ document.querySelector("#export-button").addEventListener("click", () => {
   link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
-document.querySelector(".filter-button").disabled = true;
-document.querySelector(".filter-button").title = "Filters are planned; use search for now";
 const entryDefinitions = {
   schemes: { title: "Add irrigation scheme", endpoint: "irrigation-schemes", fields: [
     ["name", "Scheme name", "text", true], ["implementing_partner", "Implementing partner", "text"],
