@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CS-IRCFS: Start local platform",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/start-local.ps1"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "cs-ircfs",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "CS-IRCFS is starting locally",
+          "endsPattern": "Uvicorn running on"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "CS-IRCFS: Run tests",
+      "type": "shell",
+      "command": "python",
+      "args": ["-m", "pytest", "-q", "-p", "no:cacheprovider", "-p", "no:tmpdir", "tests"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

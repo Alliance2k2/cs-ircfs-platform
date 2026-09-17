@@ -52,9 +52,12 @@ For the competition story, feature priorities, and live-demonstration flow, see 
 
 ## Start the local API
 
-1. Copy `.env.example` to `.env`.
-2. From `backend`, install dependencies: `python -m pip install -r requirements.txt`.
-3. Start it: `python -m uvicorn app.main:app --reload`.
-4. Open `http://127.0.0.1:8000/docs` to use the interactive API documentation.
+1. Install dependencies once: `python -m pip install -r backend/requirements.txt`.
+2. In VS Code, open **Terminal → Run Task → CS-IRCFS: Start local platform**. Alternatively, run `powershell -ExecutionPolicy Bypass -File .\start-local.ps1` from the project root.
+3. Open `http://127.0.0.1:8000` for the platform and `http://127.0.0.1:8000/docs` for interactive API documentation.
+4. Keep the terminal running. Refresh the browser after changing HTML, CSS, or JavaScript. After a Python change, press `Ctrl+C` and start the task again.
+
+The launcher creates `.env` from `.env.example` only when `.env` does not already exist. It never overwrites your current database or API-key settings. In VS Code, **Run and Debug → CS-IRCFS: Debug local platform** starts the same application with Python debugging enabled.
+If you want Python auto-reload and your Windows setup supports it, run `powershell -ExecutionPolicy Bypass -File .\start-local.ps1 -Reload`.
 
 The API has health, user registration, crop and irrigation/rainfall reports, feedback history, actionable report cases, a dashboard summary, and the prioritised **Act Now** planner queue at `/api/v1/analytics/act-now`. It runs with local SQLite until PostgreSQL/PostGIS is configured. Spatial boundary and farm endpoints return 501 on SQLite.
