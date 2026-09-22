@@ -248,32 +248,32 @@ const entryDefinitions = {
   schemes: { title: "Add irrigation scheme", endpoint: "irrigation-schemes", fields: [
     ["name", "Scheme name", "text", true], ["implementing_partner", "Implementing partner", "text"],
     ["hectares_developed", "Developed hectares", "number"], ["baseline_yield_target_tons", "Verified yield target (tons)", "number"],
-    ["baseline_source", "Yield target source", "text"], ["sector_id", "Sector ID", "integer"],
+    ["baseline_source", "Yield target source", "text"], ["sector_id", "Sector", "location-sector"],
     ["latitude", "Latitude", "number"], ["longitude", "Longitude", "number"]
   ] },
   citizen: { title: "Add citizen report", endpoint: "citizen-reports", fields: [
     ["crop_type", "Crop type", "text", true], ["reporter_id", "Reporter user ID", "integer"],
-    ["scheme_id", "Scheme ID", "integer"], ["cell_id", "Cell ID", "integer"],
+    ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
     ["planting_date", "Planting date", "date"], ["expected_harvest_tons", "Expected harvest (tons)", "number"],
     ["reported_harvest_tons", "Reported harvest (tons)", "number"], ["pest_or_disease", "Pest or disease", "text"],
-    ["severity", "Severity (1–5)", "severity"], ["notes", "Notes", "textarea"]
+    ["severity", "Severity", "severity"], ["notes", "Notes", "textarea"], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] },
   irrigation: { title: "Add rainfall or irrigation report", endpoint: "irrigation-reports", fields: [
-    ["reporter_id", "Reporter user ID", "integer"], ["scheme_id", "Scheme ID", "integer"], ["cell_id", "Cell ID", "integer"],
+    ["reporter_id", "Reporter user ID", "integer"], ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
     ["infrastructure_name", "Asset or rain gauge name", "text"],
     ["operational_status", "Operational status", "select", false, ["", "operational", "faulty", "offline"]],
     ["bottleneck_category", "Bottleneck category", "select", false, ["", "technical", "social", "institutional", "environmental"]],
-    ["rainfall_mm", "Rainfall (mm)", "number"], ["fault_description", "Fault description", "textarea"]
+    ["rainfall_mm", "Rainfall (mm)", "number"], ["fault_description", "Fault description", "textarea"], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] },
   feedback: { title: "Add community feedback", endpoint: "feedback", fields: [
     ["category", "Category", "text", true], ["message", "Message", "textarea", true],
     ["reporter_id", "Reporter user ID (optional for anonymous feedback)", "integer"],
-    ["scheme_id", "Scheme ID", "integer"], ["cell_id", "Cell ID", "integer"]
+    ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] }
 };
 const entryDialog = document.querySelector("#entry-dialog");
 const entryForm = document.querySelector("#entry-form");
-document.querySelector("#add-button").addEventListener("click", () => {
+document.querySelector("#add-button").addEventListener("click", async () => {
   if (activeModule === "analytics") { window.location.href = `index.html${window.location.search}#act-now`; return; }
   if (activeModule === "users") { document.querySelector("#form-message").textContent = ""; dialog.showModal(); return; }
   const definition = entryDefinitions[activeModule];
@@ -288,7 +288,26 @@ document.querySelector("#add-button").addEventListener("click", () => {
     const field = document.createElement(type === "textarea" ? "textarea" : type === "select" ? "select" : "input");
     field.name = name;
     field.required = Boolean(required);
-    if (type === "number" || type === "integer" || type === "severity") {
+    if (type === "location-cell") {
+      field.add(new Option("Choose a registered cell", ""));
+      Promise.all([apiFetch("locations/cells"), apiFetch("locations/sectors")]).then(async ([response, sectorResponse]) => {
+        if (!response.ok) return;
+        const cells = await response.json();
+        const sectors = sectorResponse.ok ? await sectorResponse.json() : [];
+        const sectorNames = Object.fromEntries(sectors.map((sector) => [sector.id, sector.name]));
+        cells.forEach((cell) => field.add(new Option(`${sectorNames[cell.sector_id] || `Sector #${cell.sector_id}`} / ${cell.name}`, cell.id)));
+      }).catch(() => {});
+    } else if (type === "location-sector") {
+      field.add(new Option("Choose a registered sector", ""));
+      apiFetch("locations/sectors").then(async (response) => {
+        if (response.ok) (await response.json()).forEach((sector) => field.add(new Option(sector.name, sector.id)));
+      }).catch(() => {});
+    } else if (type === "location-scheme") {
+      field.add(new Option("Choose a scheme", ""));
+      apiFetch("irrigation-schemes").then(async (response) => {
+        if (response.ok) (await response.json()).forEach((scheme) => field.add(new Option(scheme.name, scheme.id)));
+      }).catch(() => {});
+    } else if (type === "number" || type === "integer" || type === "severity") {
       field.type = "number";
       field.step = type === "number" ? "any" : "1";
       field.min = type === "severity" || type === "integer" ? "1" : name === "latitude" ? "-90" : name === "longitude" ? "-180" : "0";
@@ -303,6 +322,22 @@ document.querySelector("#add-button").addEventListener("click", () => {
     if (name === "category") field.minLength = 2;
     label.append(field);
     container.append(label);
+    if (name === "latitude") {
+      const locationButton = document.createElement("button");
+      locationButton.type = "button";
+      locationButton.className = "secondary-button location-button";
+      locationButton.textContent = "Use my current map location";
+      locationButton.addEventListener("click", () => {
+        if (!navigator.geolocation) { document.querySelector("#entry-message").textContent = "Location is not available in this browser."; return; }
+        navigator.geolocation.getCurrentPosition((position) => {
+          field.value = position.coords.latitude.toFixed(6);
+          const longitude = container.querySelector('[name="longitude"]');
+          if (longitude) longitude.value = position.coords.longitude.toFixed(6);
+          document.querySelector("#entry-message").textContent = "Location added from your device.";
+        }, () => { document.querySelector("#entry-message").textContent = "Location permission was denied or unavailable."; });
+      });
+      container.append(locationButton);
+    }
   }
   entryDialog.showModal();
 });
@@ -317,6 +352,7 @@ entryForm.addEventListener("submit", async (event) => {
     if (value === null || String(value).trim() === "") continue;
     payload[name] = ["number", "integer", "severity"].includes(type) ? Number(value) : String(value).trim();
   }
+  delete payload.sector_id;
   const message = document.querySelector("#entry-message");
   if (activeModule === "schemes" && payload.baseline_yield_target_tons !== undefined && !payload.baseline_source) {
     message.textContent = "Enter a source for the verified yield target.";
@@ -337,9 +373,27 @@ entryForm.addEventListener("submit", async (event) => {
 });
 document.querySelector("#close-dialog").addEventListener("click", () => dialog.close());
 document.querySelector("#cancel-dialog").addEventListener("click", () => dialog.close());
+async function loadUserLocations() {
+  const sectorField = document.querySelector("#user-sector");
+  const cellField = document.querySelector("#user-cell");
+  if (!sectorField || !liveMode) return;
+  const [sectorResponse, cellResponse] = await Promise.all([apiFetch("locations/sectors"), apiFetch("locations/cells")]);
+  if (!sectorResponse.ok || !cellResponse.ok) return;
+  const sectors = await sectorResponse.json();
+  const cells = await cellResponse.json();
+  sectorField.replaceChildren(new Option("Choose a sector", ""));
+  sectors.forEach((sector) => sectorField.add(new Option(sector.name, sector.id)));
+  sectorField.onchange = () => {
+    const selected = Number(sectorField.value);
+    cellField.replaceChildren(new Option(selected ? "Choose a cell" : "Choose a sector first", ""));
+    cellField.disabled = !selected;
+    cells.filter((cell) => cell.sector_id === selected).forEach((cell) => cellField.add(new Option(cell.name, cell.id)));
+  };
+}
 document.querySelector("#user-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const payload = Object.fromEntries([...new FormData(event.currentTarget)].filter(([, value]) => String(value).trim() !== ""));
+  delete payload.sector_id;
   for (const name of ["cell_id", "latitude", "longitude"]) if (name in payload) payload[name] = Number(payload[name]);
   const message = document.querySelector("#form-message");
   try {
@@ -358,4 +412,5 @@ document.querySelector("#user-form").addEventListener("submit", async (event) =>
 });
 
 render("users");
-if (sessionStorage.getItem("cs_ircfs_api_key")) connectApi();
+if (sessionStorage.getItem("cs_ircfs_api_key")) connectApi().then(loadUserLocations);
+document.querySelector("#connect-api").addEventListener("click", () => window.setTimeout(loadUserLocations, 250));

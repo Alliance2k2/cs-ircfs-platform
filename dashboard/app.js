@@ -12,6 +12,8 @@ function apiKeyFromInput(value) {
 document.querySelectorAll('a[href="management.html"]').forEach((link) => { link.href = `management.html${window.location.search}`; });
 let liveMap;
 let bugeseraBoundaryLayer;
+let sectorBoundaryLayer;
+let cellBoundaryLayer;
 let selectedCaseId = null;
 let currentMapData = null;
 const BUGESERA_VIEW = { center: [-2.28, 30.15], zoom: 10, features: [] };
@@ -84,6 +86,17 @@ async function loadBugeseraBoundary() {
     bugeseraBoundaryLayer = L.geoJSON(boundary, {
       style: { color: "#0d6b4f", weight: 3, opacity: 1, fillColor: "#3a9b72", fillOpacity: 0.12 }
     }).bindTooltip("Bugesera District", { permanent: true, direction: "center", className: "district-label" }).addTo(liveMap);
+    try {
+      const [sectorResponse, cellResponse] = await Promise.all([apiFetch("geography/sectors"), apiFetch("geography/cells")]);
+      if (sectorResponse.ok) {
+        const sectors = await sectorResponse.json();
+        sectorBoundaryLayer = L.geoJSON(sectors.map((item) => ({ type: "Feature", properties: { name: item.name }, geometry: item.geometry })), { style: { color: "#167052", weight: 1, fillOpacity: 0.02 } }).bindTooltip((layer) => layer.feature.properties.name).addTo(liveMap);
+      }
+      if (cellResponse.ok) {
+        const cells = await cellResponse.json();
+        cellBoundaryLayer = L.geoJSON(cells.map((item) => ({ type: "Feature", properties: { name: item.name }, geometry: item.geometry })), { style: { color: "#4d8aa3", weight: 0.5, fillOpacity: 0 } }).bindTooltip((layer) => layer.feature.properties.name).addTo(liveMap);
+      }
+    } catch (_) { /* boundary overlays remain optional */ }
     resetBugeseraView();
   } catch (_) {
     liveMap.setView([-2.20, 30.10], 10);

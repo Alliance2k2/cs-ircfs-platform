@@ -25,7 +25,7 @@
       </aside>
 
       <main class="management-main">
-        <header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button class="outline-button" id="export-button">⇩ Export</button><button class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
+<header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button type="button" class="outline-button" id="export-button">⇩ Export</button><button type="button" class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
 
         <section class="summary-row" id="summary-row"></section>
         <section class="content-card">
@@ -44,7 +44,8 @@
         <label>Phone number<input name="phone_number" required minlength="8" maxlength="20" placeholder="e.g. +250788123456" /></label>
         <label>Role<select name="role"><option value="farmer">Farmer</option><option value="citizen_science_monitor">Citizen Science Monitor</option><option value="cooperative_leader">Cooperative Leader</option><option value="district_planner">District Planner</option><option value="administrator">Administrator</option></select></label>
         <label>Cooperative (optional)<input name="cooperative_name" maxlength="120" placeholder="e.g. Koperative Mwesa" /></label>
-        <label>Cell ID (optional)<input name="cell_id" type="number" min="1" placeholder="Choose after sectors and cells are registered" /></label>
+        <label>Sector<select name="sector_id" id="user-sector" required><option value="">Choose a sector</option></select></label>
+        <label>Cell<select name="cell_id" id="user-cell" required disabled><option value="">Choose a sector first</option></select></label>
         <div class="form-row"><label>Latitude (optional)<input name="latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. -2.05" /></label><label>Longitude (optional)<input name="longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. 30.1" /></label></div>
         <p id="form-message" class="form-message"></p>
         <div class="dialog-actions"><button type="button" class="outline-button" id="cancel-dialog">Cancel</button><button type="submit" class="primary-button">Save user</button></div>
@@ -58,6 +59,23 @@
         <div class="dialog-actions"><button type="button" class="outline-button" id="entry-cancel">Cancel</button><button type="submit" class="primary-button">Save record</button></div>
       </form>
     </dialog>
-    <script src="management.js?v=20260915-filters-pagination"></script>
+    <script src="management.js?v=20260922-sector-cell-v7"></script>
+    <script>
+      window.fallbackAddRecord = function () {
+        const title = (document.querySelector('#page-title')?.textContent || '').toLowerCase();
+        const dialog = document.querySelector('#entry-dialog');
+        if (title.includes('user') || title.includes('analytics') || !dialog) return;
+        const box = document.querySelector('#entry-fields');
+        if (box.children.length >= 8) { dialog.showModal(); return; }
+        box.replaceChildren();
+        const fields = title.includes('citizen')
+          ? [['crop_type','Crop type','text'],['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['planting_date','Planting date','date'],['expected_harvest_tons','Expected harvest (tons)','number'],['reported_harvest_tons','Reported harvest (tons)','number'],['pest_or_disease','Pest or disease','text'],['severity','Severity','number'],['notes','Notes','text'],['latitude','Latitude','number'],['longitude','Longitude','number']]
+          : title.includes('rainfall') ? [['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['infrastructure_name','Asset or rain gauge name','text'],['operational_status','Operational status','text'],['rainfall_mm','Rainfall (mm)','number'],['latitude','Latitude','number'],['longitude','Longitude','number']]
+          : [['category','Category','text'],['message','Message','text'],['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['latitude','Latitude','number'],['longitude','Longitude','number']];
+        fields.forEach(([name,label,type]) => { const l=document.createElement('label'); l.textContent=label; const i=(name==='scheme_id'||name==='sector_id'||name==='cell_id')?document.createElement('select'):document.createElement('input'); i.name=name; i.type=type; if(i.tagName==='SELECT'){ i.add(new Option(`Choose ${label.toLowerCase()}`,'')); const endpoint=name==='scheme_id'?'irrigation-schemes':name==='sector_id'?'locations/sectors':'locations/cells'; fetch(`${window.location.origin}/api/v1/${endpoint}`,{headers:sessionStorage.getItem('cs_ircfs_api_key')?{'X-API-Key':sessionStorage.getItem('cs_ircfs_api_key')}: {}}).then(r=>r.ok?r.json():[]).then(items=>items.forEach(x=>i.add(new Option(x.name, x.id)))); } l.append(i); box.append(l); });
+        dialog.showModal();
+      };
+      document.querySelector('#add-button')?.addEventListener('click', () => setTimeout(window.fallbackAddRecord, 50));
+    </script>
   </body>
 </html>

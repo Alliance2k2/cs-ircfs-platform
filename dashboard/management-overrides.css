@@ -7,7 +7,8 @@ dialog form { padding: 25px; }
 .close-dialog { border: 0; background: #f0f4f1; border-radius: 50%; width: 29px; height: 29px; font-size: 22px; line-height: 1; color: #5e6c65; cursor: pointer; }
 dialog label { display: block; color: #536058; font-size: 12px; font-weight: 700; margin: 12px 0; }
 dialog input, dialog select, dialog textarea { display: block; width: 100%; margin-top: 5px; border: 1px solid var(--line); border-radius: 7px; padding: 10px; font: inherit; color: var(--ink); background: white; }
-#entry-dialog { max-height: min(85vh, 720px); overflow-y: auto; }
+#entry-dialog { max-height: 88vh; overflow: hidden; }
+#entry-dialog form { max-height: 88vh; overflow-y: auto; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
 .form-message { min-height: 18px; margin: 8px 0 0; color: var(--coral); font-size: 12px; }
 .empty-row { text-align: center; color: var(--muted); padding: 38px !important; }

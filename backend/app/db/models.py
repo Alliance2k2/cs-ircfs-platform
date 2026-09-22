@@ -118,6 +118,8 @@ class CitizenScienceLog(Base):
     pest_or_disease: Mapped[str | None] = mapped_column(String(120))
     severity: Mapped[int | None] = mapped_column(Integer)
     notes: Mapped[str | None] = mapped_column(Text)
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -132,6 +134,8 @@ class IrrigationClimateLog(Base):
     bottleneck_category: Mapped[str | None] = mapped_column(String(30))
     fault_description: Mapped[str | None] = mapped_column(Text)
     rainfall_mm: Mapped[float | None] = mapped_column(Float)
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -143,6 +147,8 @@ class CommunityFeedback(Base):
     cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
     category: Mapped[str] = mapped_column(String(80))
     message: Mapped[str] = mapped_column(Text)
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
     status: Mapped[ReportStatus] = mapped_column(Enum(ReportStatus), default=ReportStatus.open)
     assigned_to_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), index=True)
     due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

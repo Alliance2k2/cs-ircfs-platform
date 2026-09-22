@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import require_roles
-from app.db.models import Farm, Sector, User, UserRole
+from app.db.models import Cell, Farm, Sector, User, UserRole
 from app.db.session import get_db
 
 router = APIRouter(prefix="/api/v1/geography", tags=["geography"])
@@ -52,6 +52,13 @@ def list_sector_boundaries(db: Session = Depends(get_db), _: object = reader) ->
     if db.bind.dialect.name != "postgresql":
         raise HTTPException(status_code=501, detail="Boundary geometry requires PostgreSQL/PostGIS")
     rows = db.execute(select(Sector.id, Sector.name, ST_AsGeoJSON(Sector.boundary)).where(Sector.boundary.is_not(None))).all()
+    return [{"id": row.id, "name": row.name, "geometry": __import__("json").loads(row[2])} for row in rows]
+
+@router.get("/cells", response_model=list[GeometryRead])
+def list_cell_boundaries(db: Session = Depends(get_db), _: object = reader) -> list[dict]:
+    if db.bind.dialect.name != "postgresql":
+        raise HTTPException(status_code=501, detail="Boundary geometry requires PostgreSQL/PostGIS")
+    rows = db.execute(select(Cell.id, Cell.name, ST_AsGeoJSON(Cell.boundary)).where(Cell.boundary.is_not(None)).order_by(Cell.name)).all()
     return [{"id": row.id, "name": row.name, "geometry": __import__("json").loads(row[2])} for row in rows]
 
 

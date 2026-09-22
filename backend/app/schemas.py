@@ -115,6 +115,8 @@ class CropReportCreate(BaseModel):
     pest_or_disease: str | None = Field(default=None, max_length=120)
     severity: int | None = Field(default=None, ge=1, le=5)
     notes: str | None = Field(default=None, max_length=2000)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
 
     @field_validator("planting_date")
     @classmethod
@@ -141,6 +143,8 @@ class IrrigationReportCreate(BaseModel):
     )
     fault_description: str | None = Field(default=None, max_length=2000)
     rainfall_mm: float | None = Field(default=None, ge=0, le=500)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
 
 
 class IrrigationReportRead(IrrigationReportCreate):
@@ -155,6 +159,8 @@ class FeedbackCreate(BaseModel):
     cell_id: int | None = Field(default=None, gt=0)
     category: str = Field(min_length=2, max_length=80)
     message: str = Field(min_length=5, max_length=3000)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
 
 
 class FeedbackUpdate(BaseModel):
