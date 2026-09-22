@@ -49,6 +49,11 @@ async def request_logging(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
+    # Dashboard assets change during local development; prevent the browser
+    # from reusing an older JavaScript bundle at the plain management URL.
+    if request.url.path.endswith((".html", ".js", ".css")):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
     logger.info("request_id=%s method=%s path=%s status=%s duration_ms=%.1f", request_id, request.method, request.url.path, response.status_code, (time.perf_counter() - started) * 1000)
     return response
 
