@@ -57,7 +57,7 @@ const statusValues = new Set(["active", "open", "resolved", "triaged", "offline"
 const initials = (name) => name.split(" ").map((word) => word[0]).join("").slice(0, 2).toUpperCase();
 const slug = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const badge = (value) => `<span class="status-badge status-${slug(value)}">${escapeHtml(String(value).replaceAll("_", " "))}</span>`;
-const escapeHtml = (value) => String(value X "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 
 function normalCell(value) {
   return statusValues.has(String(value).toLowerCase()) ? badge(value) : escapeHtml(value || "-");
@@ -93,7 +93,7 @@ function updateVisibleRows() {
   const filter = document.querySelector("#table-filter").value;
   const matching = renderedRows.map((row, index) => ({ row, index })).filter(({ row }) => {
     const text = row.join(" ").toLowerCase();
-    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) X "").toLowerCase();
+    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) ?? "").toLowerCase();
     return (!term || text.includes(term)) && (filter === "all" || filterValue === filter);
   });
   const pages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
@@ -111,7 +111,7 @@ function updateVisibleRows() {
 function populateFilter() {
   const select = document.querySelector("#table-filter");
   const previous = select.value;
-  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) X "").trim()).filter(Boolean))].sort();
+  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) ?? "").trim()).filter(Boolean))].sort();
   select.replaceChildren(new Option("All records", "all"), ...values.map((value) => new Option(value.replaceAll("_", " "), value.toLowerCase())));
   select.value = values.some((value) => value.toLowerCase() === previous) ? previous : "all";
 }
@@ -239,7 +239,7 @@ document.querySelector("#connect-api").addEventListener("click", connectApi);
 const dialog = document.querySelector("#user-dialog");
 document.querySelectorAll('a[href="index.html"]').forEach((link) => { link.href = `index.html${window.location.search}`; });
 const csvCell = (value) => {
-  let cell = String(value X "");
+  let cell = String(value ?? "");
   if (/^\s*[=+\-@]/.test(cell)) cell = `'${cell}`;
   return `"${cell.replaceAll('"', '""')}"`;
 };
@@ -444,6 +444,7 @@ document.querySelector("#user-form").addEventListener("submit", async (event) =>
 render("users");
 if (sessionStorage.getItem("cs_ircfs_api_key")) connectApi().then(loadUserLocations);
 document.querySelector("#connect-api").addEventListener("click", () => window.setTimeout(loadUserLocations, 250));
+
 
 
 

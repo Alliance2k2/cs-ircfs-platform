@@ -17,7 +17,7 @@ let cellBoundaryLayer;
 let selectedCaseId = null;
 let currentMapData = null;
 const BUGESERA_VIEW = { center: [-2.28, 30.15], zoom: 10, features: [] };
-const escapeHtml = (value) => String(value X "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 
 const demo = {
   summary: { registered_farmers: 250, total_reports: 1250, active_schemes: 2, open_complaints: 35, faulty_or_offline_assets: 3 },
@@ -47,7 +47,7 @@ function showQueue(items) {
     return;
   }
   list.innerHTML = items.map((item) => `
-    <article class="alert-row" data-scheme="${item.scheme_id X "other"}">
+    <article class="alert-row" data-scheme="${item.scheme_id ?? "other"}">
       <div class="alert-band ${escapeHtml(item.priority)}"></div>
       <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.details || "No additional details provided.")}</p>${modeForCase(item) ? `<button type="button" class="case-open secondary-button" data-case-id="${Number(item.item_id)}">Open case</button>` : ""}</div>
       <div class="alert-meta"><span class="priority ${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span><br />${escapeHtml(humanize(item.status))} Â· ${formatDate(item.created_at)}</div>
@@ -246,4 +246,5 @@ display(demo, "demo");
 renderMap(BUGESERA_VIEW);
 loadMapData();
 if (new URLSearchParams(window.location.search).has("api")) loadLiveData();
+
 
