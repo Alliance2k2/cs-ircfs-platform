@@ -87,12 +87,24 @@ class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), unique=True, index=True)
+    password_hash: Mapped[str | None] = mapped_column(String(256))
     full_name: Mapped[str | None] = mapped_column(String(120))
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.farmer)
     cooperative_name: Mapped[str | None] = mapped_column(String(120))
     cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     location: Mapped[object | None] = mapped_column(SpatialGeometry("POINT"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class PlatformAccount(Base):
+    __tablename__ = "platform_accounts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
+    full_name: Mapped[str] = mapped_column(String(160))
+    password_hash: Mapped[str] = mapped_column(String(256))
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.citizen_science_monitor)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

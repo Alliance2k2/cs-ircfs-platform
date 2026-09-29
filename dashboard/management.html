@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -12,36 +12,36 @@
   <body>
     <div class="management-shell">
       <aside class="management-sidebar">
-        <a href="index.html" class="management-brand"><span class="logo-box">C</span><span><strong>CS-IRCFS</strong><small>Platform Management</small></span></a>
+        <a href="planner.html" class="management-brand"><span class="logo-box">C</span><span><strong>CS-IRCFS</strong><small>Platform Management</small></span></a>
         <p class="nav-caption">MANAGE PLATFORM DATA</p>
         <nav id="module-nav">
-          <button class="module-link active" data-module="users"><span>♙</span> Users <b data-count="users">—</b></button>
-          <button class="module-link" data-module="schemes"><span>⌁</span> Irrigation schemes <b data-count="schemes">—</b></button>
-          <button class="module-link" data-module="citizen"><span>▤</span> Citizen reports <b data-count="citizen">—</b></button>
-          <button class="module-link" data-module="irrigation"><span>≋</span> Rainfall &amp; irrigation <b data-count="irrigation">—</b></button>
-          <button class="module-link" data-module="feedback"><span>◌</span> Community feedback <b data-count="feedback">—</b></button>
-          <button class="module-link" data-module="analytics"><span>◔</span> Analytics</button>
-          <a class="module-link" href="index.html"><span>▦</span> Planner dashboard</a>
+          <button class="module-link active" data-module="users"><span>U</span> Users <b data-count="users">-</b></button>
+          <button class="module-link" data-module="schemes"><span>I</span> Irrigation schemes <b data-count="schemes">-</b></button>
+          <button class="module-link" data-module="citizen"><span>C</span> Citizen reports <b data-count="citizen">-</b></button>
+          <button class="module-link" data-module="irrigation"><span>R</span> Rainfall &amp; irrigation <b data-count="irrigation">-</b></button>
+          <button class="module-link" data-module="feedback"><span>F</span> Community feedback <b data-count="feedback">-</b></button>
+          <button class="module-link" data-module="analytics"><span>A</span> Analytics</button>
+          <a class="module-link" href="planner.html"><span>P</span> Planner dashboard</a>
         </nav>
-        <div class="sidebar-bottom"><p>Current view</p><span id="data-label" class="data-label">SAMPLE DATA</span><button id="connect-api" class="connect-button">Connect local API ↗</button></div>
+        <div class="sidebar-bottom"><p>Current view</p><span id="data-label" class="data-label">SAMPLE DATA</span><button id="connect-api" class="connect-button">Connect local API</button></div>
       </aside>
 
       <main class="management-main">
-<header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button type="button" class="outline-button" id="export-button">⇩ Export</button><button type="button" class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
+<header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button type="button" class="outline-button" id="export-button">Export</button><button type="button" class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
 
         <section class="summary-row" id="summary-row"></section>
         <section class="content-card">
-          <div class="table-toolbar"><div class="search-box">⌕ <input id="table-search" type="search" placeholder="Search users..." /></div><button class="filter-button" id="filter-button" type="button" aria-expanded="false" aria-controls="filter-panel">☷ Filters</button></div>
+          <div class="table-toolbar"><div class="search-box"><input id="table-search" type="search" placeholder="Search users..." /></div><button class="filter-button" id="filter-button" type="button" aria-expanded="false" aria-controls="filter-panel">Filters</button></div>
           <div id="filter-panel" class="filter-panel" hidden><label>Status or category <select id="table-filter"><option value="all">All records</option></select></label><button id="clear-filters" type="button">Clear</button></div>
           <div class="table-wrap"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
-          <footer class="table-footer"><span id="table-count"></span><div><button class="page-button" id="previous-page" type="button" aria-label="Previous page">‹</button><button class="page-number" id="current-page" type="button" aria-label="Current page">1</button><button class="page-button" id="next-page" type="button" aria-label="Next page">›</button></div></footer>
+          <footer class="table-footer"><span id="table-count"></span><div><button class="page-button" id="previous-page" type="button" aria-label="Previous page"><</button><button class="page-number" id="current-page" type="button" aria-label="Current page">1</button><button class="page-button" id="next-page" type="button" aria-label="Next page">></button></div></footer>
         </section>
 
       </main>
     </div>
     <dialog id="user-dialog">
       <form id="user-form" method="dialog">
-        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM USER</p><h2>Add user</h2><p>Register a user for local development. A phone number is required.</p></div><button class="close-dialog" type="button" id="close-dialog">×</button></div>
+        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM USER</p><h2>Add user</h2><p>Register a user for local development. A phone number is required.</p></div><button class="close-dialog" type="button" id="close-dialog">X</button></div>
         <label>Full name<input name="full_name" maxlength="120" placeholder="e.g. Aline Umutoni" /></label>
         <label>Phone number<input name="phone_number" required minlength="8" maxlength="20" placeholder="e.g. +250788123456" /></label>
         <label>Role<select name="role"><option value="farmer">Farmer</option><option value="citizen_science_monitor">Citizen Science Monitor</option><option value="cooperative_leader">Cooperative Leader</option><option value="district_planner">District Planner</option><option value="administrator">Administrator</option></select></label>
@@ -55,29 +55,18 @@
     </dialog>
     <dialog id="entry-dialog">
       <form id="entry-form">
-        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM DATA</p><h2 id="entry-title">Add record</h2><p>Fields marked required must be completed.</p></div><button class="close-dialog" type="button" id="entry-close" aria-label="Close">×</button></div>
+        <div class="dialog-heading"><div><p class="eyebrow">PLATFORM DATA</p><h2 id="entry-title">Add record</h2><p>Fields marked required must be completed.</p></div><button class="close-dialog" type="button" id="entry-close" aria-label="Close">X</button></div>
         <div id="entry-fields"></div>
         <p id="entry-message" class="form-message" role="alert"></p>
         <div class="dialog-actions"><button type="button" class="outline-button" id="entry-cancel">Cancel</button><button type="submit" class="primary-button">Save record</button></div>
       </form>
     </dialog>
-    <script src="management.js?v=20260922-sector-cell-v8"></script>
-    <script>
-      window.fallbackAddRecord = function () {
-        const title = (document.querySelector('#page-title')?.textContent || '').toLowerCase();
-        const dialog = document.querySelector('#entry-dialog');
-        if (title.includes('user') || title.includes('analytics') || !dialog) return;
-        const box = document.querySelector('#entry-fields');
-        if (box.children.length >= 8) { dialog.showModal(); return; }
-        box.replaceChildren();
-        const fields = title.includes('citizen')
-          ? [['crop_type','Crop type','text'],['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['planting_date','Planting date','date'],['expected_harvest_tons','Expected harvest (tons)','number'],['reported_harvest_tons','Reported harvest (tons)','number'],['pest_or_disease','Pest or disease','text'],['severity','Severity','number'],['notes','Notes','text'],['latitude','Latitude','number'],['longitude','Longitude','number']]
-          : title.includes('rainfall') ? [['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['infrastructure_name','Asset or rain gauge name','text'],['operational_status','Operational status','text'],['rainfall_mm','Rainfall (mm)','number'],['latitude','Latitude','number'],['longitude','Longitude','number']]
-          : [['category','Category','text'],['message','Message','text'],['reporter_id','Reporter user ID','number'],['scheme_id','Scheme','text'],['sector_id','Sector','text'],['cell_id','Cell','text'],['latitude','Latitude','number'],['longitude','Longitude','number']];
-        fields.forEach(([name,label,type]) => { const l=document.createElement('label'); l.textContent=label; const i=(name==='scheme_id'||name==='sector_id'||name==='cell_id')?document.createElement('select'):document.createElement('input'); i.name=name; i.type=type; if(i.tagName==='SELECT'){ i.add(new Option(`Choose ${label.toLowerCase()}`,'')); const endpoint=name==='scheme_id'?'irrigation-schemes':name==='sector_id'?'locations/sectors':'locations/cells'; fetch(`${window.location.origin}/api/v1/${endpoint}`,{headers:sessionStorage.getItem('cs_ircfs_api_key')?{'X-API-Key':sessionStorage.getItem('cs_ircfs_api_key')}: {}}).then(r=>r.ok?r.json():[]).then(items=>items.forEach(x=>i.add(new Option(x.name, x.id)))); } l.append(i); box.append(l); });
-        dialog.showModal();
-      };
-      document.querySelector('#add-button')?.addEventListener('click', () => setTimeout(window.fallbackAddRecord, 50));
-    </script>
+    <script src="management.js?v=20260922-sector-cell-v15"></script>
   </body>
 </html>
+
+
+
+
+
+

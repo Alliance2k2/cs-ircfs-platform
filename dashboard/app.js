@@ -1,4 +1,4 @@
-// Local PostgreSQL/PostGIS API. Change to the deployed HTTPS API at rollout.
+﻿// Local PostgreSQL/PostGIS API. Change to the deployed HTTPS API at rollout.
 const API_URL = new URLSearchParams(window.location.search).get("api") || (window.location.port === "8080" ? "http://127.0.0.1:8002/api/v1" : `${window.location.origin}/api/v1`);
 sessionStorage.setItem("cs_ircfs_api_url", API_URL);
 const apiFetch = (path, options = {}) => fetch(`${API_URL}/${path}`, { ...options, headers: { ...(options.headers || {}), ...(sessionStorage.getItem("cs_ircfs_api_key") ? { "X-API-Key": sessionStorage.getItem("cs_ircfs_api_key") } : {}) } });
@@ -17,7 +17,7 @@ let cellBoundaryLayer;
 let selectedCaseId = null;
 let currentMapData = null;
 const BUGESERA_VIEW = { center: [-2.28, 30.15], zoom: 10, features: [] };
-const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+const escapeHtml = (value) => String(value X "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 
 const demo = {
   summary: { registered_farmers: 250, total_reports: 1250, active_schemes: 2, open_complaints: 35, faulty_or_offline_assets: 3 },
@@ -47,10 +47,10 @@ function showQueue(items) {
     return;
   }
   list.innerHTML = items.map((item) => `
-    <article class="alert-row" data-scheme="${item.scheme_id ?? "other"}">
+    <article class="alert-row" data-scheme="${item.scheme_id X "other"}">
       <div class="alert-band ${escapeHtml(item.priority)}"></div>
       <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.details || "No additional details provided.")}</p>${modeForCase(item) ? `<button type="button" class="case-open secondary-button" data-case-id="${Number(item.item_id)}">Open case</button>` : ""}</div>
-      <div class="alert-meta"><span class="priority ${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span><br />${escapeHtml(humanize(item.status))} · ${formatDate(item.created_at)}</div>
+      <div class="alert-meta"><span class="priority ${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span><br />${escapeHtml(humanize(item.status))} Â· ${formatDate(item.created_at)}</div>
     </article>`).join("");
   document.querySelector("#scheme-filter").dispatchEvent(new Event("change"));
 }
@@ -154,7 +154,7 @@ async function loadMapData() {
 
 async function loadLiveData() {
   const button = document.querySelector("#load-live-data");
-  button.textContent = "Connecting…";
+  button.textContent = "Connecting...";
   try {
     let summaryResponse = await apiFetch("analytics/dashboard-summary");
     if (summaryResponse.status === 401) {
@@ -188,10 +188,10 @@ async function loadLiveData() {
     document.querySelector("#scheme-filter-help").hidden = schemes.length > 0;
     display({ summary, queue }, "live");
     await loadMapData();
-    button.textContent = "PostgreSQL API connected ✓";
+    button.textContent = "PostgreSQL API connected ";
   } catch (error) {
     display(demo, "demo");
-    button.textContent = error.message === "API key required" ? "Enter API key to connect ↗" : error.message === "API key rejected" ? "Key rejected — try again ↗" : error.message === "No API keys configured on Render" ? "Set API_KEY_ROLES on Render ↗" : "API unavailable — retry ↗";
+    button.textContent = error.message === "API key required" ? "Enter API key to connect " : error.message === "API key rejected" ? "Key rejected - try again " : error.message === "No API keys configured on Render" ? "Set API_KEY_ROLES on Render " : "API unavailable - retry ";
     document.querySelector("#data-mode").title = error.message;
   }
 }
@@ -212,7 +212,7 @@ document.querySelector("#act-now-list").addEventListener("click", async (event) 
   if (!response.ok) return;
   const record = await response.json();
   document.querySelector("#case-title").textContent = `Case #${record.id}`;
-  document.querySelector("#case-summary").textContent = `${record.source_type} report · ${record.priority} priority`;
+  document.querySelector("#case-summary").textContent = `${record.source_type} report Â· ${record.priority} priority`;
   document.querySelector("#case-form [name=status]").value = record.status === "open" ? "triaged" : record.status;
   document.querySelector("#case-form [name=assigned_to_user_id]").value = record.assigned_to_user_id || "";
   document.querySelector("#case-form [name=action_taken]").value = record.action_taken || "";
@@ -246,3 +246,4 @@ display(demo, "demo");
 renderMap(BUGESERA_VIEW);
 loadMapData();
 if (new URLSearchParams(window.location.search).has("api")) loadLiveData();
+

@@ -1,4 +1,4 @@
-// Local PostgreSQL/PostGIS API. Change to the deployed HTTPS API at rollout.
+﻿// Local PostgreSQL/PostGIS API. Change to the deployed HTTPS API at rollout.
 const API = new URLSearchParams(window.location.search).get("api") || (window.location.port === "8080" ? "http://127.0.0.1:8002/api/v1" : `${window.location.origin}/api/v1`);
 sessionStorage.setItem("cs_ircfs_api_url", API);
 const apiFetch = (path, options = {}) => fetch(`${API}/${path}`, { ...options, headers: { ...(options.headers || {}), ...(sessionStorage.getItem("cs_ircfs_api_key") ? { "X-API-Key": sessionStorage.getItem("cs_ircfs_api_key") } : {}) } });
@@ -34,7 +34,7 @@ const modules = {
     title: "Rainfall & irrigation", subtitle: "Monitor rain gauges, water availability, pumps, canals, and faults.", add: "+ New observation", search: "Search irrigation reports...",
     cards: [["Irrigation reports", "84", "This reporting period", ""], ["Rainfall readings", "49", "Local gauge network", "blue"], ["Offline assets", "3", "Critical follow-up", "coral"], ["Operational assets", "18", "Reported this month", "gold"]],
     columns: ["Asset / observation", "Scheme", "Condition", "Rainfall", "Bottleneck", "Status"],
-    rows: [["Mwesa Pump A", "MP", "PADAB", "offline", "12.5 mm", "technical", "offline"], ["Ngeruka solar pump", "NS", "APEFA Solar", "operational", "8.0 mm", "—", "operational"], ["Canal section 4", "C4", "PADAB", "faulty", "15.0 mm", "environmental", "faulty"]],
+    rows: [["Mwesa Pump A", "MP", "PADAB", "offline", "12.5 mm", "technical", "offline"], ["Ngeruka solar pump", "NS", "APEFA Solar", "operational", "8.0 mm", "-", "operational"], ["Canal section 4", "C4", "PADAB", "faulty", "15.0 mm", "environmental", "faulty"]],
     helper: ["Water reliability is visible", "Infrastructure failures and rainfall observations become priority cases so the responsible team can act quickly."]
   },
   feedback: {
@@ -57,10 +57,10 @@ const statusValues = new Set(["active", "open", "resolved", "triaged", "offline"
 const initials = (name) => name.split(" ").map((word) => word[0]).join("").slice(0, 2).toUpperCase();
 const slug = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const badge = (value) => `<span class="status-badge status-${slug(value)}">${escapeHtml(String(value).replaceAll("_", " "))}</span>`;
-const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+const escapeHtml = (value) => String(value X "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 
 function normalCell(value) {
-  return statusValues.has(String(value).toLowerCase()) ? badge(value) : escapeHtml(value || "—");
+  return statusValues.has(String(value).toLowerCase()) ? badge(value) : escapeHtml(value || "-");
 }
 
 function draw(data, rows, isLive = false) {
@@ -73,14 +73,14 @@ function draw(data, rows, isLive = false) {
   document.querySelector("#add-button").disabled = false;
   document.querySelector("#add-button").title = activeModule === "analytics" ? "Open the planner Act Now queue" : `Add ${data.title.toLowerCase()}`;
   document.querySelector("#table-search").placeholder = data.search;
-  const cards = isLive ? data.cards.map((card, index) => [card[0], index === 0 ? rows.length.toLocaleString() : "—", index === 0 ? "Live PostgreSQL records" : "Calculated when records are entered", card[3]]) : data.cards;
+  const cards = isLive ? data.cards.map((card, index) => [card[0], index === 0 ? rows.length.toLocaleString() : "-", index === 0 ? "Live PostgreSQL records" : "Calculated when records are entered", card[3]]) : data.cards;
   document.querySelector("#summary-row").innerHTML = cards.map((card) => `<article class="summary-card ${card[3]}"><p>${card[0]}</p><strong>${card[1]}</strong><small>${card[2]}</small></article>`).join("");
   document.querySelector("#table-head").innerHTML = `<tr>${data.columns.map((column) => `<th>${column}</th>`).join("")}${activeModule === "users" ? "<th>Actions</th>" : ""}</tr>`;
   const body = document.querySelector("#table-body");
   if (!rows.length) {
     body.innerHTML = `<tr><td class="empty-row" colspan="${data.columns.length + (activeModule === "users" ? 1 : 0)}">No ${data.title.toLowerCase()} have been entered in PostgreSQL yet. Use the Add button to create the first record.</td></tr>`;
   } else if (activeModule === "users") {
-    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><span><strong>${escapeHtml(row[0])}</strong><small>${escapeHtml(row[2].replaceAll("_", " "))}</small></span></div></td><td>${badge(row[2])}</td><td>${escapeHtml(row[3] || "—")}</td><td>${escapeHtml(row[4] || "—")}</td><td><button class="row-action" data-action="edit" data-id="${Number(row[6])}">Edit</button><button class="row-action danger" data-action="delete" data-id="${Number(row[6])}">Delete</button></td></tr>`).join("");
+    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><span><strong>${escapeHtml(row[0])}</strong><small>${escapeHtml(row[2].replaceAll("_", " "))}</small></span></div></td><td>${badge(row[2])}</td><td>${escapeHtml(row[3] || "—")}</td><td>${escapeHtml(row[4] || "—")}</td><td>${badge(row[5])}</td><td><button class="row-action" data-action="edit" data-id="${Number(row[6])}">Edit</button><button class="row-action danger" data-action="delete" data-id="${Number(row[6])}">Delete</button></td></tr>`).join("");
   } else {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td>${row.slice(2).map(normalCell).map((value) => `<td>${value}</td>`).join("")}</tr>`).join("");
   }
@@ -93,7 +93,7 @@ function updateVisibleRows() {
   const filter = document.querySelector("#table-filter").value;
   const matching = renderedRows.map((row, index) => ({ row, index })).filter(({ row }) => {
     const text = row.join(" ").toLowerCase();
-    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) ?? "").toLowerCase();
+    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) X "").toLowerCase();
     return (!term || text.includes(term)) && (filter === "all" || filterValue === filter);
   });
   const pages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
@@ -104,14 +104,14 @@ function updateVisibleRows() {
   document.querySelector("#previous-page").disabled = currentPage <= 1;
   document.querySelector("#next-page").disabled = currentPage >= pages;
   document.querySelector("#table-count").textContent = matching.length
-    ? `Showing ${(currentPage - 1) * PAGE_SIZE + 1}–${Math.min(currentPage * PAGE_SIZE, matching.length)} of ${matching.length} ${renderedLive ? "PostgreSQL" : "demonstration"} records`
+    ? `Showing ${(currentPage - 1) * PAGE_SIZE + 1}-${Math.min(currentPage * PAGE_SIZE, matching.length)} of ${matching.length} ${renderedLive ? "PostgreSQL" : "demonstration"} records`
     : `No matching ${renderedLive ? "PostgreSQL" : "demonstration"} records`;
 }
 
 function populateFilter() {
   const select = document.querySelector("#table-filter");
   const previous = select.value;
-  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) ?? "").trim()).filter(Boolean))].sort();
+  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) X "").trim()).filter(Boolean))].sort();
   select.replaceChildren(new Option("All records", "all"), ...values.map((value) => new Option(value.replaceAll("_", " "), value.toLowerCase())));
   select.value = values.some((value) => value.toLowerCase() === previous) ? previous : "all";
 }
@@ -123,12 +123,22 @@ async function fetchLiveRows(module) {
   const response = await apiFetch(endpoints[module]);
   if (!response.ok) throw new Error("API request failed");
   const records = await response.json();
-  if (module === "users") return records.map((item) => [item.full_name || "Unnamed user", initials(item.full_name || "User"), item.role, item.cooperative_name, item.cell_id ? `Cell #${item.cell_id}` : "—", item.is_active ? "active" : "inactive", item.id]);
-  if (module === "schemes") return records.map((item) => [item.name, initials(item.name), item.implementing_partner || "—", item.sector_id ? `Sector #${item.sector_id}` : "—", item.hectares_developed ? `${item.hectares_developed} ha` : "—", item.is_active ? "active" : "reference only"]);
-  if (module === "citizen") return records.map((item) => [`${item.crop_type} report`, initials(item.crop_type), item.crop_type, item.pest_or_disease || "Crop update", item.scheme_id ? `Scheme #${item.scheme_id}` : "—", item.cell_id ? `Cell #${item.cell_id}` : "—", item.severity ? (item.severity >= 5 ? "critical" : "triaged") : "active"]);
-  if (module === "irrigation") return records.map((item) => [item.infrastructure_name || "Rainfall observation", initials(item.infrastructure_name || "Rain"), item.scheme_id ? `Scheme #${item.scheme_id}` : "—", item.operational_status || "reported", item.rainfall_mm === null ? "—" : `${item.rainfall_mm} mm`, item.bottleneck_category || "—", item.operational_status || "active"]);
-  if (module === "feedback") return records.map((item) => [`FB-${String(item.id).padStart(3, "0")}`, "FB", item.category, item.scheme_id ? `Scheme #${item.scheme_id}` : "—", item.cell_id ? `Cell #${item.cell_id}` : "—", item.assigned_to_user_id ? `User #${item.assigned_to_user_id}` : "Unassigned", item.status]);
-  return records.map((item) => [item.title, initials(item.item_type), item.item_type, item.scheme_id ? `Scheme #${item.scheme_id}` : "—", item.cell_id ? `Cell #${item.cell_id}` : "—", new Date(item.created_at).toLocaleDateString(), item.priority]);
+  if (module === "users") {
+    const [cellResponse, sectorResponse] = await Promise.all([apiFetch("locations/cells"), apiFetch("locations/sectors")]);
+    const cells = cellResponse.ok ? await cellResponse.json() : [];
+    const sectors = sectorResponse.ok ? await sectorResponse.json() : [];
+    const cellNames = Object.fromEntries(cells.map((cell) => [cell.id, cell]));
+    const sectorNames = Object.fromEntries(sectors.map((sector) => [sector.id, sector.name]));
+    return records.map((item) => {
+      const cell = cellNames[item.cell_id];
+      const location = cell ? `${sectorNames[cell.sector_id] || `Sector #${cell.sector_id}`} / ${cell.name}` : (item.cell_id ? `Cell #${item.cell_id}` : "—");
+      return [item.full_name || "Unnamed user", initials(item.full_name || "User"), item.role, item.cooperative_name, location, item.is_active ? "active" : "inactive", item.id];
+    });
+  }  if (module === "schemes") return records.map((item) => [item.name, initials(item.name), item.implementing_partner || "-", item.sector_id ? `Sector #${item.sector_id}` : "-", item.hectares_developed ? `${item.hectares_developed} ha` : "-", item.is_active ? "active" : "reference only"]);
+  if (module === "citizen") return records.map((item) => [`${item.crop_type} report`, initials(item.crop_type), item.crop_type, item.pest_or_disease || "Crop update", item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", item.severity ? (item.severity >= 5 ? "critical" : "triaged") : "active"]);
+  if (module === "irrigation") return records.map((item) => [item.infrastructure_name || "Rainfall observation", initials(item.infrastructure_name || "Rain"), item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.operational_status || "reported", item.rainfall_mm === null ? "-" : `${item.rainfall_mm} mm`, item.bottleneck_category || "-", item.operational_status || "active"]);
+  if (module === "feedback") return records.map((item) => [`FB-${String(item.id).padStart(3, "0")}`, "FB", item.category, item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", item.assigned_to_user_id ? `User #${item.assigned_to_user_id}` : "Unassigned", item.status]);
+  return records.map((item) => [item.title, initials(item.item_type), item.item_type, item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", new Date(item.created_at).toLocaleDateString(), item.priority]);
 }
 
 async function render(module) {
@@ -182,9 +192,15 @@ document.querySelector("#table-body").addEventListener("click", async (event) =>
     alert(`Could not delete user: ${response.status}`);
   }
   if (action === "edit") {
-    const name = prompt("Full name", event.target.closest("tr").querySelector("strong").textContent);
+    const row = event.target.closest("tr");
+    const cells = row.querySelectorAll("td");
+    const name = prompt("Full name", row.querySelector("strong").textContent);
     if (name === null) return;
-    const response = await apiFetch(`users/${userId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ full_name: name }) });
+    const cooperative = prompt("Cooperative", cells[2]?.textContent.trim() || "");
+    if (cooperative === null) return;
+    const cellId = prompt("Cell ID (enter the numeric ID from the cells table)", "");
+    if (cellId === null) return;
+    const response = await apiFetch(`users/${userId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ full_name: name, cooperative_name: cooperative, cell_id: Number(cellId) }) });
     if (response.ok) await render("users"); else alert(`Could not update user: ${response.status}`);
   }
 });
@@ -209,13 +225,13 @@ async function connectApi() {
     label.textContent = "POSTGRESQL CONNECTED";
     label.title = API;
     label.classList.add("live");
-    button.textContent = "API connected ✓";
+    button.textContent = "API connected OK";
   } catch (error) {
     liveMode = false;
     label.textContent = error.message === "API key rejected" ? "API KEY REJECTED" : "API UNAVAILABLE";
     label.title = `${error.message}. Endpoint: ${API}`;
     label.classList.remove("live");
-    button.textContent = "Reconnect PostgreSQL ↗";
+    button.textContent = "Reconnect PostgreSQL ";
   }
 }
 document.querySelector("#connect-api").addEventListener("click", connectApi);
@@ -223,7 +239,7 @@ document.querySelector("#connect-api").addEventListener("click", connectApi);
 const dialog = document.querySelector("#user-dialog");
 document.querySelectorAll('a[href="index.html"]').forEach((link) => { link.href = `index.html${window.location.search}`; });
 const csvCell = (value) => {
-  let cell = String(value ?? "");
+  let cell = String(value X "");
   if (/^\s*[=+\-@]/.test(cell)) cell = `'${cell}`;
   return `"${cell.replaceAll('"', '""')}"`;
 };
@@ -252,14 +268,14 @@ const entryDefinitions = {
     ["latitude", "Latitude", "number"], ["longitude", "Longitude", "number"]
   ] },
   citizen: { title: "Add citizen report", endpoint: "citizen-reports", fields: [
-    ["crop_type", "Crop type", "text", true], ["reporter_id", "Reporter user ID", "integer"],
+    ["crop_type", "Crop type", "text", true], ["reporter_id", "Reporter", "location-user"],
     ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
     ["planting_date", "Planting date", "date"], ["expected_harvest_tons", "Expected harvest (tons)", "number"],
     ["reported_harvest_tons", "Reported harvest (tons)", "number"], ["pest_or_disease", "Pest or disease", "text"],
     ["severity", "Severity", "severity"], ["notes", "Notes", "textarea"], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] },
   irrigation: { title: "Add rainfall or irrigation report", endpoint: "irrigation-reports", fields: [
-    ["reporter_id", "Reporter user ID", "integer"], ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
+    ["reporter_id", "Reporter", "location-user"], ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
     ["infrastructure_name", "Asset or rain gauge name", "text"],
     ["operational_status", "Operational status", "select", false, ["", "operational", "faulty", "offline"]],
     ["bottleneck_category", "Bottleneck category", "select", false, ["", "technical", "social", "institutional", "environmental"]],
@@ -267,7 +283,7 @@ const entryDefinitions = {
   ] },
   feedback: { title: "Add community feedback", endpoint: "feedback", fields: [
     ["category", "Category", "text", true], ["message", "Message", "textarea", true],
-    ["reporter_id", "Reporter user ID (optional for anonymous feedback)", "integer"],
+    ["reporter_id", "Reporter (optional for anonymous feedback)", "location-user"],
     ["scheme_id", "Scheme", "location-scheme"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] }
 };
@@ -275,7 +291,7 @@ const entryDialog = document.querySelector("#entry-dialog");
 const entryForm = document.querySelector("#entry-form");
 document.querySelector("#add-button").addEventListener("click", async () => {
   if (activeModule === "analytics") { window.location.href = `index.html${window.location.search}#act-now`; return; }
-  if (activeModule === "users") { document.querySelector("#form-message").textContent = ""; dialog.showModal(); return; }
+  if (activeModule === "users") { document.querySelector("#form-message").textContent = ""; await loadUserLocations(); dialog.showModal(); return; }
   const definition = entryDefinitions[activeModule];
   document.querySelector("#entry-title").textContent = definition.title;
   document.querySelector("#entry-message").textContent = "";
@@ -290,13 +306,6 @@ document.querySelector("#add-button").addEventListener("click", async () => {
     field.required = Boolean(required);
     if (type === "location-cell") {
       field.add(new Option("Choose a registered cell", ""));
-      Promise.all([apiFetch("locations/cells"), apiFetch("locations/sectors")]).then(async ([response, sectorResponse]) => {
-        if (!response.ok) return;
-        const cells = await response.json();
-        const sectors = sectorResponse.ok ? await sectorResponse.json() : [];
-        const sectorNames = Object.fromEntries(sectors.map((sector) => [sector.id, sector.name]));
-        cells.forEach((cell) => field.add(new Option(`${sectorNames[cell.sector_id] || `Sector #${cell.sector_id}`} / ${cell.name}`, cell.id)));
-      }).catch(() => {});
     } else if (type === "location-sector") {
       field.add(new Option("Choose a registered sector", ""));
       apiFetch("locations/sectors").then(async (response) => {
@@ -306,6 +315,11 @@ document.querySelector("#add-button").addEventListener("click", async () => {
       field.add(new Option("Choose a scheme", ""));
       apiFetch("irrigation-schemes").then(async (response) => {
         if (response.ok) (await response.json()).forEach((scheme) => field.add(new Option(scheme.name, scheme.id)));
+      }).catch(() => {});
+    } else if (type === "location-user") {
+      field.add(new Option("Choose a user", ""));
+      apiFetch("users").then(async (response) => {
+        if (response.ok) (await response.json()).forEach((user) => field.add(new Option(`${user.full_name || "Unnamed user"} (${user.phone_number || "no phone"})`, user.id)));
       }).catch(() => {});
     } else if (type === "number" || type === "integer" || type === "severity") {
       field.type = "number";
@@ -317,7 +331,7 @@ document.querySelector("#add-button").addEventListener("click", async () => {
       if (name === "longitude") field.max = "180";
     } else if (type === "date") field.type = "date";
     else if (type === "text") field.type = "text";
-    if (type === "select") options.forEach((option) => field.add(new Option(option || "Select…", option)));
+    if (type === "select") options.forEach((option) => field.add(new Option(option || "Select...", option)));
     if (name === "message") field.minLength = 5;
     if (name === "category") field.minLength = 2;
     label.append(field);
@@ -339,6 +353,22 @@ document.querySelector("#add-button").addEventListener("click", async () => {
       container.append(locationButton);
     }
   }
+  const sectorField = container.querySelector('[name="sector_id"]');
+  const cellField = container.querySelector('[name="cell_id"]');
+  if (sectorField && cellField) {
+    try {
+      const response = await apiFetch("locations/cells");
+      const cells = response.ok ? await response.json() : [];
+      const updateCells = () => {
+        const selectedSector = Number(sectorField.value);
+        cellField.replaceChildren(new Option(selectedSector ? "Choose a cell" : "Choose a sector first", ""));
+        cells.filter((cell) => !selectedSector || cell.sector_id === selectedSector).forEach((cell) => cellField.add(new Option(cell.name, cell.id)));
+        cellField.disabled = !selectedSector;
+      };
+      sectorField.addEventListener("change", updateCells);
+      updateCells();
+    } catch (_) { /* keep the empty cell selector if the API is unavailable */ }
+  }
   entryDialog.showModal();
 });
 document.querySelector("#entry-close").addEventListener("click", () => entryDialog.close());
@@ -350,7 +380,7 @@ entryForm.addEventListener("submit", async (event) => {
   for (const [name, , type] of definition.fields) {
     const value = new FormData(entryForm).get(name);
     if (value === null || String(value).trim() === "") continue;
-    payload[name] = ["number", "integer", "severity"].includes(type) ? Number(value) : String(value).trim();
+    payload[name] = ["number", "integer", "severity", "location-user", "location-scheme", "location-sector", "location-cell"].includes(type) ? Number(value) : String(value).trim();
   }
   delete payload.sector_id;
   const message = document.querySelector("#entry-message");
@@ -414,3 +444,8 @@ document.querySelector("#user-form").addEventListener("submit", async (event) =>
 render("users");
 if (sessionStorage.getItem("cs_ircfs_api_key")) connectApi().then(loadUserLocations);
 document.querySelector("#connect-api").addEventListener("click", () => window.setTimeout(loadUserLocations, 250));
+
+
+
+
+

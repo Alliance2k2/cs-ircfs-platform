@@ -9,6 +9,18 @@ class HealthResponse(BaseModel):
     status: str
     service: str
 
+class AccountRegister(BaseModel):
+    email: str
+    password: str = Field(min_length=8, max_length=200)
+    first_name: str = Field(min_length=1, max_length=80)
+    middle_name: str | None = Field(default=None, max_length=80)
+    surname: str = Field(min_length=1, max_length=80)
+    role: UserRole = UserRole.citizen_science_monitor
+
+class AccountLogin(BaseModel):
+    email: str
+    password: str
+
 
 class UserCreate(BaseModel):
     phone_number: str = Field(min_length=8, max_length=20)

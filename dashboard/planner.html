@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS district planning dashboard" />
+    <title>CS-IRCFS | District Planning Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="overrides.css?v=20260915-bugesera-label" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="CS-IRCFS home">
+          <span class="brand-mark">C</span>
+          <span><strong>CS-IRCFS</strong><small>Bugesera District</small></span>
+        </a>
+        <nav aria-label="Main navigation">
+          <a class="nav-link active" href="#overview"><span>O</span> Overview</a>
+          <a class="nav-link" href="#act-now"><span>A</span> Act Now <b id="nav-alert-count">0</b></a>
+          <a class="nav-link" href="#schemes"><span>I</span> Irrigation schemes</a>
+          <a class="nav-link" href="#map"><span>M</span> Map &amp; observations</a>
+          <a class="nav-link" href="#feedback"><span>F</span> Community feedback</a>
+          <a class="nav-link" href="management.html"><span>P</span> Platform management</a>
+        </nav>
+        <div class="sidebar-foot">
+          <p>Data source</p>
+          <span id="data-mode" class="mode-pill">DEMONSTRATION DATA</span>
+          <button id="load-live-data" class="text-button">Connect PostgreSQL</button>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">DISTRICT DECISION SUPPORT</p>
+            <h1>Good morning, Planner</h1>
+            <p class="subtle">A clear view of irrigation performance, crop risks, and community action.</p>
+          </div>
+          <div class="topbar-actions">
+            <label class="scheme-select">Scheme <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label>
+            <a id="scheme-filter-help" class="scheme-empty-help" href="management.html" hidden>Add a scheme to use this filter</a>
+            <button class="icon-button" aria-label="Notifications"></button>
+            <div class="avatar">DP</div>
+          </div>
+        </header>
+
+        <section id="overview" class="metrics" aria-label="Overview metrics">
+          <article class="metric-card accent-green"><span class="metric-icon"></span><p>Registered farmers</p><strong id="metric-farmers">-</strong><small><i></i> Pilot coverage</small></article>
+          <article class="metric-card accent-blue"><span class="metric-icon"></span><p>Total reports</p><strong id="metric-reports">-</strong><small>Across all channels</small></article>
+          <article class="metric-card accent-gold"><span class="metric-icon"></span><p>Active schemes</p><strong id="metric-schemes">-</strong><small>PADAB &amp; APEFA</small></article>
+          <article class="metric-card accent-coral"><span class="metric-icon">!</span><p>Open complaints</p><strong id="metric-complaints">-</strong><small id="metric-complaints-note">Need follow-up</small></article>
+        </section>
+
+        <section id="act-now" class="panel act-now-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">PRIORITISED WORK QUEUE</p><h2>Act now</h2><p class="subtle">Reports needing district attention, ranked by urgency.</p></div>
+            <button id="refresh-queue" class="secondary-button"> Refresh</button>
+          </div>
+          <div id="act-now-list" class="act-now-list" aria-live="polite"></div>
+        </section>
+
+        <section class="panel phone-demo-panel" aria-labelledby="phone-demo-title">
+          <p class="eyebrow">LOCAL PHONE DEMONSTRATION</p><h2 id="phone-demo-title">Simulate an irrigation report</h2>
+          <p class="subtle">Saves a report to the local API. No USSD session or SMS is sent.</p>
+          <form id="phone-demo-form">
+            <label>Asset <input name="infrastructure_name" required maxlength="120" placeholder="Mwesa Pump A" /></label>
+            <label>Condition <select name="operational_status"><option value="offline">Offline</option><option value="faulty">Faulty</option><option value="operational">Operational</option></select></label>
+            <button class="secondary-button" type="submit">Submit demonstration report</button>
+          </form><p id="phone-demo-message" role="status"></p>
+        </section>
+        <section id="schemes" class="content-grid">
+          <article class="panel performance-panel">
+            <div class="panel-heading compact"><div><p class="eyebrow">OUTCOME VERIFICATION</p><h2>Scheme performance</h2></div></div>
+            <div class="empty-insight"><span>I</span><div><strong>Waiting for verified field data</strong><p>Performance will appear after schemes, expected harvest targets, and reported harvests are entered and approved.</p></div></div>
+          </article>
+          <article id="feedback" class="panel response-panel">
+            <p class="eyebrow">COMMUNITY ACCOUNTABILITY</p><h2>Response health</h2>
+            <div class="empty-insight compact-empty"><span>F</span><div><strong>No feedback cases yet</strong><p>Resolution and response-time measures will be calculated from real feedback cases.</p></div></div>
+          </article>
+        </section>
+
+        <section id="map" class="panel map-panel">
+          <div class="panel-heading compact"><div><p class="eyebrow">SPATIAL INTELLIGENCE</p><h2>Map &amp; live observations</h2></div><div class="map-legend"><span><i class="dot offline"></i> Offline asset</span><span><i class="dot pest"></i> Pest alert</span><span><i class="dot rain"></i> Rainfall</span></div></div>
+          <div class="map-toolbar"><span>Bugesera District, Rwanda Â· official district boundary</span><button id="map-reset-view" type="button" class="secondary-button">Reset Bugesera view</button></div>
+          <div id="map-canvas" class="map-canvas" role="application" aria-label="Interactive map centered on Bugesera District"></div>
+          <p id="map-status" class="map-status" role="status"></p>
+        </section>
+      </main>
+    </div>
+    <dialog id="case-dialog"><form id="case-form">
+      <h2 id="case-title">Planner case</h2><p id="case-summary"></p>
+      <label>Status <select name="status"><option value="triaged">Triaged</option><option value="assigned">Assigned</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label><br />
+      <label>Owner user ID <input name="assigned_to_user_id" type="number" min="1" /></label><br />
+      <label>Action taken <textarea name="action_taken" rows="3" maxlength="3000"></textarea></label><br />
+      <label>Deadline <input name="due_at" type="datetime-local" /></label><p id="case-message" role="status"></p>
+      <button type="button" id="case-cancel">Cancel</button> <button type="submit">Save case</button> <button type="button" id="case-notify">Record simulated SMS response</button>
+    </form></dialog>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js?v=20260915-bugesera-boundary"></script>
+  </body>
+</html>
+
+
