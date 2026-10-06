@@ -1,25 +1,29 @@
-# CS-IRCFS Planner Dashboard
+# CS-IRCFS web pages
 
-The dashboard starts in demonstration mode, allowing the competition story to be shown before the live USSD gateway and official scheme data are ready. Click **Connect local API** to load the running FastAPI backend's dashboard summary and Act Now queue.
+FastAPI serves this folder at `/`, so the pages and the API share one address and no separate web server is needed. Start the platform with `..\start-local.ps1 -Demo` (or `..\start-local.ps1`) and open `http://127.0.0.1:8000`.
 
-The Scheme selector lists records from PostgreSQL in live mode. PADAB and APEFA Solar are seeded as inactive reference names, so they appear with a **reference** label; their area, yield targets, and boundaries remain unverified and blank. In demonstration mode, the dropdown shows the same scheme names while the separate data-source badge identifies the sample data. The selector filters Act Now rows and map features; overview totals remain district-wide.
+| File | Page |
+| --- | --- |
+| `index.html` | Public home page: how it works, the three modules |
+| `planner.html` + `app.js` + `planner-extra.css` | District Planner dashboard |
+| `simulator.html` + `simulator.js` + `simulator.css` | Feature-phone simulator for USSD `*801#` and SMS `8448` |
+| `management.html` + `management.js` | Platform Management: data tables, forms, accounts |
+| `login.html`, `register.html` | Staff sign-in and registration |
+| `backend-console.html` | Technical console for the project team |
+| `shared.js` + `shared.css` | Used by every page: API calls, sign-in session, EN/RW switch, notices, dialogs |
+| `tour.js` | The **▶ Presentation tour** on the dashboard |
+| `bugesera-boundary.geojson` | District outline for the map |
 
-In local API mode, use **Simulate an irrigation report** to submit an offline or faulty asset. Open the resulting Act Now case, set its status and action, and record a simulated SMS response after resolving it. This records a notification timestamp; it does not contact a phone. The scheme filter applies to Act Now items. Scheme outcome and response-health panels remain placeholders until verified data and calculation rules exist.
+## How the dashboard gets data
 
-If the API requires a key, click **Connect local API** and enter the administrator key from the ignored project `.env` file. The key is kept in this browser tab's session storage. A custom API endpoint can be selected with `?api=http://127.0.0.1:8002/api/v1`; the link to Platform Management preserves that choice.
+- On load, the dashboard tries the API straight away. If the API answers, the badge shows **LIVE DATABASE** and the page refreshes every 15 seconds. A notice appears when new Act Now items arrive.
+- If the API needs sign-in, the page shows labelled **demonstration data** until someone signs in with a District Planner, officer or administrator account. A service API key can still be pasted through **Connect live data**.
+- To use a different API, add `?api=https://host/api/v1` to the address. Links between pages keep this setting.
 
-On the management page, **Export** downloads the currently visible table rows as UTF-8 CSV. Search-hidden rows are excluded. The filename identifies whether the rows came from PostgreSQL or from demonstration data; an empty table exports headers only.
+## Interactions
 
-**Add** now opens forms for users, irrigation schemes, citizen reports, rainfall/irrigation reports, and community feedback. These forms save to the PostgreSQL API after connection; foreign-key ID fields must refer to existing records. The Analytics button opens the planner's Act Now queue, while Analytics export downloads the visible queue rows.
-
-## Run locally
-
-1. Start the API from `../backend`: `python -m uvicorn app.main:app --reload`.
-2. From this folder, serve the dashboard: `python -m http.server 8080`.
-3. Open `http://127.0.0.1:8080`.
-
-The production GIS step will replace the illustrated map with a Leaflet map and verified PADAB/APEFA boundaries, assets, and observation layers.
-
-## Technical Operations Console
-
-Open `http://127.0.0.1:8080/backend-console.html` only for a technical explanation of the backend flow, live API status, stored-report totals, urgent queue count, and direct links to each readable endpoint. District Planners should use the main dashboard. The default FastAPI `/docs` page remains available for developers who need to test POST/PATCH requests.
+- **Act Now:** filter by type, open a case or grievance, set status, owner, action and deadline, see the history, then **Notify the community by SMS** (preview first, then send).
+- **Irrigation advice:** preview, then SMS each sector's advice to its cooperatives.
+- **Map:** layer chips for schemes, infrastructure, crop reports, pest heatmap, rainfall and drought, nutrition risk, and farmers.
+- **EN / RW** switch on every page. Kinyarwanda strings live in `shared.js` and should be reviewed by the field team.
+- **Export** in Platform Management downloads the visible rows as CSV.

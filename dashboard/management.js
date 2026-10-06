@@ -1,7 +1,5 @@
-﻿// Local PostgreSQL/PostGIS API. Change to the deployed HTTPS API at rollout.
-const API = new URLSearchParams(window.location.search).get("api") || (window.location.port === "8080" ? "http://127.0.0.1:8002/api/v1" : `${window.location.origin}/api/v1`);
-sessionStorage.setItem("cs_ircfs_api_url", API);
-const apiFetch = (path, options = {}) => fetch(`${API}/${path}`, { ...options, headers: { ...(options.headers || {}), ...(sessionStorage.getItem("cs_ircfs_api_key") ? { "X-API-Key": sessionStorage.getItem("cs_ircfs_api_key") } : {}) } });
+// Platform Management. API access, sign-in session and language come from shared.js (window.CS).
+const { API, apiFetch } = window.CS;
 let activeModule = "users";
 let liveMode = false;
 let renderedRows = [];
@@ -44,6 +42,24 @@ const modules = {
     rows: [["FB-058", "F5", "Water pricing", "PADAB", "Nyamata", "District Planner", "open"], ["FB-052", "F5", "Canal access", "APEFA Solar", "Ngeruka", "Water Officer", "triaged"], ["FB-041", "F4", "Input distribution", "PADAB", "Mwesa", "Cooperative Lead", "resolved"]],
     helper: ["Closing the loop builds trust", "Every community issue needs an owner, action record, and response. Anonymous feedback remains protected."]
   },
+  accounts: {
+    title: "Accounts", subtitle: "Approve web sign-ins and give planners and officers the right role.", add: "Refresh", search: "Search accounts...",
+    cards: [["Web accounts", "12", "Signed-up people", ""], ["District planners", "3", "Can view planner data", "blue"], ["Administrators", "1", "Manage the platform", "gold"], ["Suspended", "0", "Blocked from sign-in", "coral"]],
+    columns: ["Account", "Email", "Role", "Joined", "Status"],
+    rows: [["David Niyonzima", "DN", "david@example.org", "district_planner", "2026-09-01", "active"], ["Grace Ingabire", "GI", "grace@example.org", "citizen_science_monitor", "2026-09-20", "active"]],
+  },
+  nutrition: {
+    title: "Household nutrition", subtitle: "Household Nutrition Tracker answers collected through USSD option 6.", add: "+ New survey", search: "Search surveys...",
+    cards: [["Households surveyed", "184", "Across pilot cells", ""], ["High stunting risk", "31", "Score 4 or 5", "coral"], ["One meal a day", "18", "Households", "gold"], ["Short of food", "52", "Until next harvest", "blue"]],
+    columns: ["Survey", "Location", "Meals / day", "Varied diet", "Enough food", "Risk"],
+    rows: [["NS-001", "NS", "Gihembe", "1", "no", "no", "high"], ["NS-002", "NS", "Rango", "3", "yes", "yes", "low"]],
+  },
+  messages: {
+    title: "SMS & airtime log", subtitle: "Every message sent to citizens: advice, automatic replies, and closing-the-loop notices.", add: "Refresh", search: "Search messages...",
+    cards: [["Messages sent", "1,024", "Advice, replies, closing the loop", ""], ["Closing the loop", "214", "Community notifications", "blue"], ["Irrigation advice", "306", "Scheduling assistant", "gold"], ["Automatic replies", "504", "Thank-you and local tips", "coral"]],
+    columns: ["Recipient", "Message", "Purpose", "Sent", "Status"],
+    rows: [["+250788550011", "SM", "Inama: imvura yabaye nke (6.1 mm mu minsi 7). Ongera kuhira ho 10%.", "irrigation schedule", "Today", "dry_run"]],
+  },
   analytics: {
     title: "Analytics", subtitle: "Use validated reports to prioritise district decisions.", add: "View Act Now", search: "Search analytics...",
     cards: [["Act Now alerts", "3", "Critical and high priority", "coral"], ["Harvest performance", "71%", "Illustrative pilot trend", ""], ["Data quality", "94%", "Valid submitted reports", "blue"], ["Report coverage", "74%", "Active reporter rate", "gold"]],
@@ -53,7 +69,9 @@ const modules = {
   }
 };
 
-const statusValues = new Set(["active", "open", "resolved", "triaged", "offline", "operational", "faulty", "critical"]);
+const statusValues = new Set(["active", "open", "resolved", "triaged", "offline", "operational", "faulty", "critical", "suspended", "pending", "high", "medium", "low", "sent", "dry_run", "failed", "reference only", "assigned", "in_progress", "closed"]);
+const ROLES = ["farmer", "citizen_science_monitor", "cooperative_leader", "district_officer", "district_planner", "administrator"];
+let lookups = { schemes: {}, cells: {}, sectors: {} };
 const initials = (name) => name.split(" ").map((word) => word[0]).join("").slice(0, 2).toUpperCase();
 const slug = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const badge = (value) => `<span class="status-badge status-${slug(value)}">${escapeHtml(String(value).replaceAll("_", " "))}</span>`;
@@ -75,14 +93,17 @@ function draw(data, rows, isLive = false) {
   document.querySelector("#table-search").placeholder = data.search;
   const cards = isLive ? data.cards.map((card, index) => [card[0], index === 0 ? rows.length.toLocaleString() : "-", index === 0 ? "Live PostgreSQL records" : "Calculated when records are entered", card[3]]) : data.cards;
   document.querySelector("#summary-row").innerHTML = cards.map((card) => `<article class="summary-card ${card[3]}"><p>${card[0]}</p><strong>${card[1]}</strong><small>${card[2]}</small></article>`).join("");
-  document.querySelector("#table-head").innerHTML = `<tr>${data.columns.map((column) => `<th>${column}</th>`).join("")}${activeModule === "users" ? "<th>Actions</th>" : ""}</tr>`;
+  const hasActions = activeModule === "users" || (isLive && ["accounts", "schemes"].includes(activeModule));
+  document.querySelector("#table-head").innerHTML = `<tr>${data.columns.map((column) => `<th>${column}</th>`).join("")}${hasActions ? "<th>Actions</th>" : ""}</tr>`;
   const body = document.querySelector("#table-body");
   if (!rows.length) {
-    body.innerHTML = `<tr><td class="empty-row" colspan="${data.columns.length + (activeModule === "users" ? 1 : 0)}">No ${data.title.toLowerCase()} have been entered in PostgreSQL yet. Use the Add button to create the first record.</td></tr>`;
+    body.innerHTML = `<tr><td class="empty-row" colspan="${data.columns.length + (hasActions ? 1 : 0)}">No ${data.title.toLowerCase()} have been entered in PostgreSQL yet. Use the Add button to create the first record.</td></tr>`;
   } else if (activeModule === "users") {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><span><strong>${escapeHtml(row[0])}</strong><small>${escapeHtml(row[2].replaceAll("_", " "))}</small></span></div></td><td>${badge(row[2])}</td><td>${escapeHtml(row[3] || "—")}</td><td>${escapeHtml(row[4] || "—")}</td><td>${badge(row[5])}</td><td><button class="row-action" data-action="edit" data-id="${Number(row[6])}">Edit</button><button class="row-action danger" data-action="delete" data-id="${Number(row[6])}">Delete</button></td></tr>`).join("");
+  } else if (hasActions && activeModule === "accounts") {
+    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td><td>${escapeHtml(row[2])}</td><td><select class="role-select" data-account="${Number(row[6])}" aria-label="Role">${ROLES.map((role) => `<option value="${role}" ${role === row[3] ? "selected" : ""}>${role.replaceAll("_", " ")}</option>`).join("")}</select></td><td>${escapeHtml(row[4])}</td><td>${badge(row[5])}</td><td><button class="row-action ${row[5] === "active" ? "danger" : ""}" data-action="toggle-account" data-id="${Number(row[6])}" data-status="${escapeHtml(row[5])}">${row[5] === "active" ? "Suspend" : "Activate"}</button></td></tr>`).join("");
   } else {
-    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td>${row.slice(2).map(normalCell).map((value) => `<td>${value}</td>`).join("")}</tr>`).join("");
+    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td>${row.slice(2, hasActions ? -1 : undefined).map(normalCell).map((value) => `<td>${value}</td>`).join("")}${hasActions ? `<td><button class="row-action" data-action="edit-scheme" data-id="${Number(row.at(-1))}">Edit figures</button></td>` : ""}</tr>`).join("");
   }
   populateFilter();
   updateVisibleRows();
@@ -93,7 +114,7 @@ function updateVisibleRows() {
   const filter = document.querySelector("#table-filter").value;
   const matching = renderedRows.map((row, index) => ({ row, index })).filter(({ row }) => {
     const text = row.join(" ").toLowerCase();
-    const filterValue = String(activeModule === "users" ? row[5] : row.at(-1) ?? "").toLowerCase();
+    const filterValue = filterCell(row).toLowerCase();
     return (!term || text.includes(term)) && (filter === "all" || filterValue === filter);
   });
   const pages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
@@ -111,16 +132,36 @@ function updateVisibleRows() {
 function populateFilter() {
   const select = document.querySelector("#table-filter");
   const previous = select.value;
-  const values = [...new Set(renderedRows.map((row) => String(activeModule === "users" ? row[5] : row.at(-1) ?? "").trim()).filter(Boolean))].sort();
+  const values = [...new Set(renderedRows.map((row) => filterCell(row).trim()).filter(Boolean))].sort();
   select.replaceChildren(new Option("All records", "all"), ...values.map((value) => new Option(value.replaceAll("_", " "), value.toLowerCase())));
   select.value = values.some((value) => value.toLowerCase() === previous) ? previous : "all";
 }
 
+function filterCell(row) {
+  if (activeModule === "users" || activeModule === "accounts") return String(row[5] ?? "");
+  if (activeModule === "schemes" && renderedLive) return String(row.at(-2) ?? "");
+  return String(row.at(-1) ?? "");
+}
+
 function sampleRows(module) { return modules[module].rows; }
 
+const schemeName = (id) => (id ? lookups.schemes[id] || `Scheme #${id}` : "-");
+const cellName = (id) => (id ? lookups.cells[id] || `Cell #${id}` : "-");
+
+async function loadLookups() {
+  const [schemes, cells, sectors] = await Promise.all(["irrigation-schemes", "locations/cells", "locations/sectors"].map((path) => apiFetch(path).then((r) => (r.ok ? r.json() : [])).catch(() => [])));
+  const sectorNames = Object.fromEntries(sectors.map((sector) => [sector.id, sector.name]));
+  lookups = {
+    schemes: Object.fromEntries(schemes.map((scheme) => [scheme.id, scheme.name])),
+    cells: Object.fromEntries(cells.map((cell) => [cell.id, `${cell.name}${sectorNames[cell.sector_id] ? ` (${sectorNames[cell.sector_id]})` : ""}`])),
+    sectors: sectorNames,
+  };
+}
+
 async function fetchLiveRows(module) {
-  const endpoints = { users: "users", schemes: "irrigation-schemes", citizen: "citizen-reports", irrigation: "irrigation-reports", feedback: "feedback", analytics: "analytics/act-now" };
+  const endpoints = { users: "users", schemes: "irrigation-schemes", citizen: "citizen-reports", irrigation: "irrigation-reports", feedback: "feedback", analytics: "analytics/act-now", accounts: "auth/accounts", nutrition: "nutrition-surveys", messages: "advisory/messages" };
   const response = await apiFetch(endpoints[module]);
+  if (response.status === 403) throw Object.assign(new Error("Your role cannot open this section"), { forbidden: true });
   if (!response.ok) throw new Error("API request failed");
   const records = await response.json();
   if (module === "users") {
@@ -134,27 +175,35 @@ async function fetchLiveRows(module) {
       const location = cell ? `${sectorNames[cell.sector_id] || `Sector #${cell.sector_id}`} / ${cell.name}` : (item.cell_id ? `Cell #${item.cell_id}` : "—");
       return [item.full_name || "Unnamed user", initials(item.full_name || "User"), item.role, item.cooperative_name, location, item.is_active ? "active" : "inactive", item.id];
     });
-  }  if (module === "schemes") return records.map((item) => [item.name, initials(item.name), item.implementing_partner || "-", item.sector_id ? `Sector #${item.sector_id}` : "-", item.hectares_developed ? `${item.hectares_developed} ha` : "-", item.is_active ? "active" : "reference only"]);
-  if (module === "citizen") return records.map((item) => [`${item.crop_type} report`, initials(item.crop_type), item.crop_type, item.pest_or_disease || "Crop update", item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", item.severity ? (item.severity >= 5 ? "critical" : "triaged") : "active"]);
-  if (module === "irrigation") return records.map((item) => [item.infrastructure_name || "Rainfall observation", initials(item.infrastructure_name || "Rain"), item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.operational_status || "reported", item.rainfall_mm === null ? "-" : `${item.rainfall_mm} mm`, item.bottleneck_category || "-", item.operational_status || "active"]);
-  if (module === "feedback") return records.map((item) => [`FB-${String(item.id).padStart(3, "0")}`, "FB", item.category, item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", item.assigned_to_user_id ? `User #${item.assigned_to_user_id}` : "Unassigned", item.status]);
-  return records.map((item) => [item.title, initials(item.item_type), item.item_type, item.scheme_id ? `Scheme #${item.scheme_id}` : "-", item.cell_id ? `Cell #${item.cell_id}` : "-", new Date(item.created_at).toLocaleDateString(), item.priority]);
+  }
+  if (module === "schemes") return records.map((item) => [item.name, initials(item.name), item.implementing_partner || "-", item.sector_id ? (lookups.sectors[item.sector_id] || `Sector #${item.sector_id}`) : "-", `${item.hectares_developed ? `${item.hectares_developed} ha` : "Area to verify"} · ${item.baseline_yield_target_tons ? `target ${item.baseline_yield_target_tons} t` : "no yield target"}`, item.is_active ? "active" : "reference only", item.id]);
+  if (module === "citizen") return records.map((item) => [`${item.crop_type} report`, initials(item.crop_type), item.crop_type, item.pest_or_disease || (item.expected_harvest_tons ? `Forecast ${item.expected_harvest_tons} t` : "Crop update"), schemeName(item.scheme_id), cellName(item.cell_id), item.severity ? (item.severity >= 5 ? "critical" : item.severity >= 4 ? "high" : "triaged") : "active"]);
+  if (module === "irrigation") return records.map((item) => [item.infrastructure_name || "Rainfall observation", initials(item.infrastructure_name || "Rain"), schemeName(item.scheme_id), item.operational_status || "reported", item.rainfall_mm === null ? "-" : `${item.rainfall_mm} mm`, item.bottleneck_category || "-", item.operational_status || "active"]);
+  if (module === "feedback") return records.map((item) => [`FB-${String(item.id).padStart(3, "0")}`, "FB", item.category, schemeName(item.scheme_id), cellName(item.cell_id), item.assigned_to_user_id ? `User #${item.assigned_to_user_id}` : "Unassigned", item.status]);
+  if (module === "accounts") return records.map((item) => [item.full_name, initials(item.full_name || item.email), item.email, item.role, new Date(item.created_at).toLocaleDateString(), item.status, item.id]);
+  if (module === "nutrition") return records.map((item) => [`NS-${String(item.id).padStart(3, "0")}`, "NS", cellName(item.cell_id), item.meals_per_day === 3 ? "3+" : String(item.meals_per_day), item.ate_protein_or_vegetables ? "yes" : "no", item.food_sufficient ? "yes" : "no", item.stunting_risk_score >= 4 ? "high" : item.stunting_risk_score >= 3 ? "medium" : "low"]);
+  if (module === "messages") return records.map((item) => [item.phone_number, "SM", item.message, String(item.purpose || "advisory").replaceAll("_", " "), new Date(item.created_at).toLocaleString(), item.status]);
+  return records.map((item) => [item.title, initials(item.item_type), item.item_type, schemeName(item.scheme_id), cellName(item.cell_id), new Date(item.created_at).toLocaleDateString(), item.priority]);
 }
 
 async function render(module) {
   activeModule = module;
   document.querySelectorAll(".module-link").forEach((button) => button.classList.toggle("active", button.dataset.module === module));
   try { draw(modules[module], liveMode ? await fetchLiveRows(module) : sampleRows(module), liveMode); }
-  catch (_) { liveMode = false; document.querySelector("#data-label").textContent = "SAMPLE DATA"; document.querySelector("#data-label").classList.remove("live"); draw(modules[module], sampleRows(module)); }
+  catch (error) {
+    if (error.forbidden) { draw(modules[module], [], true); document.querySelector("#table-body").innerHTML = `<tr><td class="empty-row" colspan="7">${error.message}. Ask an administrator for access.</td></tr>`; return; }
+    liveMode = false; document.querySelector("#data-label").textContent = "SAMPLE DATA"; document.querySelector("#data-label").classList.remove("live"); draw(modules[module], sampleRows(module));
+  }
 }
 
 async function refreshNavigationCounts() {
-  const endpoints = { users: "users", schemes: "irrigation-schemes", citizen: "citizen-reports", irrigation: "irrigation-reports", feedback: "feedback" };
+  const endpoints = { users: "users", schemes: "irrigation-schemes", citizen: "citizen-reports", irrigation: "irrigation-reports", feedback: "feedback", accounts: "auth/accounts", nutrition: "nutrition-surveys", messages: "advisory/messages" };
+  await loadLookups();
   await Promise.all(Object.entries(endpoints).map(async ([module, endpoint]) => {
-    const response = await apiFetch(endpoint);
-    if (!response.ok) throw new Error("Unable to load navigation counts");
-    const records = await response.json();
-    document.querySelector(`[data-count="${module}"]`).textContent = records.length.toLocaleString();
+    const badge = document.querySelector(`[data-count="${module}"]`);
+    if (!badge) return;
+    const response = await apiFetch(endpoint).catch(() => null);
+    badge.textContent = response?.ok ? (await response.json()).length.toLocaleString() : "–";
   }));
 }
 
@@ -178,6 +227,14 @@ document.querySelector("#table-body").addEventListener("click", async (event) =>
   const action = event.target.dataset.action;
   const userId = event.target.dataset.id;
   if (!action || !userId) return;
+  if (action === "toggle-account") {
+    const next = event.target.dataset.status === "active" ? "suspended" : "active";
+    if (next === "suspended" && !confirm("Suspend this account? The person is signed out immediately.")) return;
+    const response = await apiFetch(`auth/accounts/${userId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: next }) });
+    if (response.ok) { CS.toast(`Account ${next}`, "success"); await render("accounts"); } else alert(`Could not update account: ${response.status}`);
+    return;
+  }
+  if (action === "edit-scheme") { openSchemeEditor(Number(userId)); return; }
   if (action === "delete") {
     if (!confirm("Permanently delete this user? Users linked to reports can only be deactivated.")) return;
     const response = await apiFetch(`users/${userId}`, { method: "DELETE" });
@@ -209,14 +266,16 @@ async function connectApi() {
   const button = document.querySelector("#connect-api");
   try {
     let probe = await apiFetch("users");
+    if (probe.status === 403) throw new Error("Your role cannot manage platform data");
+    if (probe.status === 401 && CS.session.token()) { CS.session.clear(); window.location.href = "login.html"; return; }
     if (probe.status === 401) {
-      sessionStorage.removeItem("cs_ircfs_api_key");
-      const key = prompt("Enter the administrator API key for this API (the secret before :administrator in API_KEY_ROLES):");
+      CS.session.clearApiKey();
+      const key = prompt("Sign in to manage data, or paste a service API key (the secret before :administrator in API_KEY_ROLES):");
       if (!key) throw new Error("API key required");
-      sessionStorage.setItem("cs_ircfs_api_key", key.trim());
+      CS.session.setApiKey(key.trim());
       probe = await apiFetch("users");
     }
-    if (probe.status === 401) { sessionStorage.removeItem("cs_ircfs_api_key"); throw new Error("API key rejected"); }
+    if (probe.status === 401) { CS.session.clearApiKey(); throw new Error("API key rejected"); }
     if (!probe.ok) throw new Error(`API returned ${probe.status}`);
     liveMode = true;
     await refreshNavigationCounts();
@@ -228,7 +287,7 @@ async function connectApi() {
     button.textContent = "API connected OK";
   } catch (error) {
     liveMode = false;
-    label.textContent = error.message === "API key rejected" ? "API KEY REJECTED" : "API UNAVAILABLE";
+    label.textContent = error.message === "API key rejected" ? "API KEY REJECTED" : error.message.startsWith("Your role") ? "ROLE NOT ALLOWED" : "API UNAVAILABLE";
     label.title = `${error.message}. Endpoint: ${API}`;
     label.classList.remove("live");
     button.textContent = "Reconnect PostgreSQL ";
@@ -237,7 +296,12 @@ async function connectApi() {
 document.querySelector("#connect-api").addEventListener("click", connectApi);
 
 const dialog = document.querySelector("#user-dialog");
-document.querySelectorAll('a[href="index.html"]').forEach((link) => { link.href = `index.html${window.location.search}`; });
+document.querySelector("#table-body").addEventListener("change", async (event) => {
+  const select = event.target.closest(".role-select");
+  if (!select) return;
+  const response = await apiFetch(`auth/accounts/${select.dataset.account}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: select.value }) });
+  if (response.ok) CS.toast(`Role changed to ${select.value.replaceAll("_", " ")}`, "success"); else { alert(`Could not change role: ${response.status}`); await render("accounts"); }
+});
 const csvCell = (value) => {
   let cell = String(value ?? "");
   if (/^\s*[=+\-@]/.test(cell)) cell = `'${cell}`;
@@ -281,6 +345,12 @@ const entryDefinitions = {
     ["bottleneck_category", "Bottleneck category", "select", false, ["", "technical", "social", "institutional", "environmental"]],
     ["rainfall_mm", "Rainfall (mm)", "number"], ["fault_description", "Fault description", "textarea"], ["latitude", "Latitude (map point)", "number"], ["longitude", "Longitude (map point)", "number"]
   ] },
+  nutrition: { title: "Add household nutrition survey", endpoint: "nutrition-surveys", fields: [
+    ["reporter_id", "Reporter", "location-user"], ["sector_id", "Sector", "location-sector", true], ["cell_id", "Cell", "location-cell", true],
+    ["meals_per_day", "Meals eaten yesterday", "select", true, ["", "1", "2", "3"]],
+    ["ate_protein_or_vegetables", "Children ate meat, eggs, milk or vegetables this week", "select", true, ["", "yes", "no"]],
+    ["food_sufficient", "Enough food until the next harvest", "select", true, ["", "yes", "no"]]
+  ] },
   feedback: { title: "Add community feedback", endpoint: "feedback", fields: [
     ["category", "Category", "text", true], ["message", "Message", "textarea", true],
     ["reporter_id", "Reporter (optional for anonymous feedback)", "location-user"],
@@ -290,7 +360,8 @@ const entryDefinitions = {
 const entryDialog = document.querySelector("#entry-dialog");
 const entryForm = document.querySelector("#entry-form");
 document.querySelector("#add-button").addEventListener("click", async () => {
-  if (activeModule === "analytics") { window.location.href = `index.html${window.location.search}#act-now`; return; }
+  if (activeModule === "analytics") { window.location.href = `planner.html${window.location.search}#act-now`; return; }
+  if (activeModule === "accounts" || activeModule === "messages") { await refreshNavigationCounts(); await render(activeModule); return; }
   if (activeModule === "users") { document.querySelector("#form-message").textContent = ""; await loadUserLocations(); dialog.showModal(); return; }
   const definition = entryDefinitions[activeModule];
   document.querySelector("#entry-title").textContent = definition.title;
@@ -383,6 +454,11 @@ entryForm.addEventListener("submit", async (event) => {
     payload[name] = ["number", "integer", "severity", "location-user", "location-scheme", "location-sector", "location-cell"].includes(type) ? Number(value) : String(value).trim();
   }
   delete payload.sector_id;
+  if (activeModule === "nutrition") {
+    payload.meals_per_day = Number(payload.meals_per_day);
+    payload.ate_protein_or_vegetables = payload.ate_protein_or_vegetables === "yes";
+    payload.food_sufficient = payload.food_sufficient === "yes";
+  }
   const message = document.querySelector("#entry-message");
   if (activeModule === "schemes" && payload.baseline_yield_target_tons !== undefined && !payload.baseline_source) {
     message.textContent = "Enter a source for the verified yield target.";
@@ -442,11 +518,45 @@ document.querySelector("#user-form").addEventListener("submit", async (event) =>
 });
 
 render("users");
-if (sessionStorage.getItem("cs_ircfs_api_key")) connectApi().then(loadUserLocations);
+if (CS.session.token() || sessionStorage.getItem("cs_ircfs_api_key")) connectApi().then(loadUserLocations);
+else apiFetch("users").then((probe) => { if (probe.ok) connectApi().then(loadUserLocations); }).catch(() => {});
 document.querySelector("#connect-api").addEventListener("click", () => window.setTimeout(loadUserLocations, 250));
 
-
-
-
-
+// Edit verified scheme figures, e.g. the feasibility-study yield target used for outcome verification.
+async function openSchemeEditor(schemeId) {
+  const response = await apiFetch("irrigation-schemes");
+  const scheme = response.ok ? (await response.json()).find((item) => item.id === schemeId) : null;
+  if (!scheme) return;
+  document.querySelector("#entry-title").textContent = `Edit ${scheme.name}`;
+  document.querySelector("#entry-message").textContent = "Only enter figures confirmed in official scheme documents, and record their source.";
+  const container = document.querySelector("#entry-fields");
+  const fields = [["implementing_partner", "Implementing partner", "text"], ["hectares_developed", "Developed hectares", "number"], ["baseline_yield_target_tons", "Feasibility-study yield target (tons)", "number"], ["baseline_source", "Source of the yield target", "text"], ["is_active", "Status", "select"]];
+  container.innerHTML = fields.map(([name, label, type]) => type === "select"
+    ? `<label>${label}<select name="${name}"><option value="true" ${scheme.is_active ? "selected" : ""}>Active (pilot scheme)</option><option value="false" ${scheme.is_active ? "" : "selected"}>Reference only</option></select></label>`
+    : `<label>${label}<input name="${name}" type="${type}" ${type === "number" ? 'step="any" min="0"' : ""} value="${escapeHtml(scheme[name] ?? "")}" /></label>`).join("");
+  entryForm.dataset.editScheme = String(schemeId);
+  entryDialog.showModal();
+}
+// Runs before the generic "add record" handler (capture phase) and takes over when editing a scheme.
+entryForm.addEventListener("submit", async (event) => {
+  if (!entryForm.dataset.editScheme) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const payload = {};
+  for (const [name, value] of new FormData(entryForm).entries()) {
+    if (String(value).trim() === "") continue;
+    payload[name] = name === "is_active" ? value === "true" : ["hectares_developed", "baseline_yield_target_tons"].includes(name) ? Number(value) : String(value).trim();
+  }
+  const response = await apiFetch(`irrigation-schemes/${entryForm.dataset.editScheme}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    document.querySelector("#entry-message").textContent = typeof error.detail === "string" ? error.detail : `Save failed (${response.status})`;
+    return;
+  }
+  entryDialog.close();
+  CS.toast("Scheme figures saved", "success");
+  await refreshNavigationCounts();
+  await render("schemes");
+}, true);
+entryDialog.addEventListener("close", () => { delete entryForm.dataset.editScheme; });
 

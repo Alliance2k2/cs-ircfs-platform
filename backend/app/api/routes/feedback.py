@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from app.core.security import require_roles
 from app.db.models import CommunityFeedback, FeedbackStatusEvent, ReportStatus, User, UserRole
 from app.db.session import get_db
-from app.schemas import FeedbackCreate, FeedbackEventRead, FeedbackRead, FeedbackUpdate
+from app.schemas import CellNotification, FeedbackCreate, FeedbackEventRead, FeedbackRead, FeedbackUpdate
+from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided, validate_report_references
 
 router = APIRouter(prefix="/api/v1/feedback", tags=["feedback"])
@@ -68,3 +69,18 @@ def feedback_history(feedback_id: int, db: Session = Depends(get_db), _: object 
             .order_by(FeedbackStatusEvent.created_at.desc())
         )
     )
+
+
+@router.post("/{feedback_id}/notify-cell")
+def notify_feedback_cell(feedback_id: int, payload: CellNotification, db: Session = Depends(get_db), _: object = manager) -> dict:
+    """Closing-the-Loop SMS: tell everyone registered in the affected cell what was done."""
+    feedback = db.get(CommunityFeedback, feedback_id)
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback case not found")
+    if feedback.status not in {ReportStatus.resolved, ReportStatus.closed}:
+        raise HTTPException(status_code=422, detail="Resolve the feedback case before notifying the community")
+    message = payload.message or resolution_message(f"Ikibazo FB-{feedback.id:03d}", feedback.category, feedback.action_taken)
+    result = notify_cell(db, feedback.cell_id, message, payload.preview)
+    db.commit()
+    return result
+

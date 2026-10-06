@@ -107,7 +107,20 @@ class PlatformAccount(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
+class AuthSession(Base):
+    """A signed-in browser session. Only a SHA-256 hash of the bearer token is stored."""
+
+    __tablename__ = "auth_sessions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    account_id: Mapped[int] = mapped_column(ForeignKey("platform_accounts.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class AdvisoryMessage(Base):
+    """Every outbound SMS: advisories, auto-replies, local tips, and closing-the-loop blasts."""
+
     __tablename__ = "advisory_messages"
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), index=True)
@@ -115,6 +128,51 @@ class AdvisoryMessage(Base):
     message: Mapped[str] = mapped_column(Text)
     channel: Mapped[str] = mapped_column(String(10), default="sms")
     status: Mapped[str] = mapped_column(String(20), default="queued")
+    provider_id: Mapped[str | None] = mapped_column(String(120))
+    purpose: Mapped[str | None] = mapped_column(String(30), index=True)
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class InboundMessage(Base):
+    """A USSD step or SMS received from a citizen, and the record it produced."""
+
+    __tablename__ = "inbound_messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    phone_number: Mapped[str] = mapped_column(String(20), index=True)
+    channel: Mapped[str] = mapped_column(String(10))
+    session_id: Mapped[str | None] = mapped_column(String(120))
+    text: Mapped[str | None] = mapped_column(Text)
+    reply: Mapped[str | None] = mapped_column(Text)
+    record_type: Mapped[str | None] = mapped_column(String(40))
+    record_id: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class NutritionSurvey(Base):
+    """Household Nutrition Tracker: short USSD survey on food access and feeding frequency."""
+
+    __tablename__ = "nutrition_surveys"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reporter_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), index=True)
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
+    meals_per_day: Mapped[int] = mapped_column(Integer)
+    ate_protein_or_vegetables: Mapped[bool] = mapped_column(Boolean)
+    food_sufficient: Mapped[bool] = mapped_column(Boolean)
+    stunting_risk_score: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class IncentiveReward(Base):
+    """Airtime micro-bonus earned for regular weather or infrastructure reporting."""
+
+    __tablename__ = "incentive_rewards"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    phone_number: Mapped[str] = mapped_column(String(20))
+    amount_rwf: Mapped[int] = mapped_column(Integer)
+    reason: Mapped[str] = mapped_column(String(120))
+    status: Mapped[str] = mapped_column(String(20), default="pending")
     provider_id: Mapped[str | None] = mapped_column(String(120))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

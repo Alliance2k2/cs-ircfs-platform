@@ -16,6 +16,19 @@ services:
           property: connectionString
       - key: API_KEY_ROLES
         sync: false
+      # Field channels stay in dry-run (logged, not delivered) until Africa's Talking is configured.
+      - key: SMS_PROVIDER
+        value: dry_run
+      - key: AIRTIME_PROVIDER
+        value: dry_run
+      - key: AFRICAS_TALKING_USERNAME
+        sync: false
+      - key: AFRICAS_TALKING_API_KEY
+        sync: false
+      - key: SMS_SENDER_ID
+        value: CS-IRCFS
+      - key: GOOGLE_CLIENT_ID
+        sync: false
 
 databases:
   - name: cs-ircfs-postgres
