@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     require_api_key: bool = False
     api_key_roles: str = ""
     log_level: str = "INFO"
+    sms_provider: str = "dry_run"
+    africas_talking_username: str = ""
+    africas_talking_api_key: str = ""
+    sms_sender_id: str = "CS-IRCFS"
+    google_client_id: str = ""
 
     model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 

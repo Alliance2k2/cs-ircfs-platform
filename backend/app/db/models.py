@@ -107,6 +107,17 @@ class PlatformAccount(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
+class AdvisoryMessage(Base):
+    __tablename__ = "advisory_messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    phone_number: Mapped[str] = mapped_column(String(20), index=True)
+    language: Mapped[str] = mapped_column(String(10), default="rw")
+    message: Mapped[str] = mapped_column(Text)
+    channel: Mapped[str] = mapped_column(String(10), default="sms")
+    status: Mapped[str] = mapped_column(String(20), default="queued")
+    provider_id: Mapped[str | None] = mapped_column(String(120))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
 
 class Farm(Base):
     __tablename__ = "farms"

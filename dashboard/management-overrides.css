@@ -17,3 +17,28 @@ dialog input, dialog select, dialog textarea { display: block; width: 100%; marg
 .filter-panel label { display: grid; gap: 4px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .filter-panel select, .filter-panel button { min-height: 36px; border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; background: white; color: var(--ink); font: inherit; }
 .page-button:disabled { cursor: not-allowed; opacity: .4; }
+
+/* Refined dashboard presentation */
+body { background: radial-gradient(circle at 85% 0%, #e9f4ee 0, #f5f8f6 38%, #eef4f0 100%); }
+.management-sidebar { background: linear-gradient(180deg, #0d3d31 0%, #123d31 65%, #0b3027 100%); box-shadow: 8px 0 28px #0b30271a; }
+.management-brand { padding-top: 2px; }
+.management-brand .logo-box { box-shadow: 0 5px 15px #e4ad4540; }
+.module-link { transition: background .18s ease, transform .18s ease; }
+.module-link:hover { transform: translateX(3px); }
+.management-main { padding-top: 46px; }
+.management-header { padding: 0 2px 6px; }
+.management-header h1 { font-size: clamp(30px, 3vw, 42px); letter-spacing: -.02em; }
+.summary-card { min-height: 128px; transition: transform .18s ease, box-shadow .18s ease; }
+.summary-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px #1c402f18; }
+.summary-card strong { font-size: 31px; }
+.content-card { box-shadow: 0 16px 38px #1c402f0d; }
+.table-toolbar { padding: 20px 22px; background: linear-gradient(90deg, #fff, #fbfdfc); }
+.search-box:focus-within { border-color: #2b8b69; box-shadow: 0 0 0 3px #2b8b6920; }
+th { padding-top: 14px; padding-bottom: 14px; }
+tr { transition: background .15s ease; }
+tbody tr:hover { background: #f5fbf7; }
+.outline-button, .filter-button { transition: border-color .15s ease, background .15s ease; }
+.outline-button:hover, .filter-button:hover { border-color: #2b8b69; background: #f2faf6; }
+.primary-button { box-shadow: 0 6px 14px #123d3130; transition: transform .15s ease, box-shadow .15s ease; }
+.primary-button:hover { transform: translateY(-1px); box-shadow: 0 9px 18px #123d3140; }
+@media (max-width: 980px) { .management-main { padding-top: 28px; } }
