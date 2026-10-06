@@ -39,7 +39,7 @@ services:
       AIRTIME_PROVIDER: ${AIRTIME_PROVIDER:-dry_run}
       AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME:-sandbox}
       AFRICAS_TALKING_API_KEY: ${AFRICAS_TALKING_API_KEY:-}
-      SMS_SENDER_ID: ${SMS_SENDER_ID:-CS-IRCFS}
+      SMS_SENDER_ID: ${SMS_SENDER_ID:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]

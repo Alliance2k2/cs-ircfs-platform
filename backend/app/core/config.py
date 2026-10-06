@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     sms_provider: str = "dry_run"
     africas_talking_username: str = ""
     africas_talking_api_key: str = ""
-    sms_sender_id: str = "CS-IRCFS"
+    sms_sender_id: str = ""  # only set once Africa's Talking approves the sender ID
     google_client_id: str = ""
     session_hours: int = 12
     # Field channels (architecture Section 4): USSD short code and SMS keyword number.

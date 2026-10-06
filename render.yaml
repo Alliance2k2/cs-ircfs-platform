@@ -26,7 +26,7 @@ services:
       - key: AFRICAS_TALKING_API_KEY
         sync: false
       - key: SMS_SENDER_ID
-        value: CS-IRCFS
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
 

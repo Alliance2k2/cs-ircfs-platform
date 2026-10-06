@@ -55,7 +55,7 @@ Every report gets an immediate reply in Kinyarwanda. Rain and harvest reports al
    AIRTIME_PROVIDER=africas_talking      # only when the airtime budget is approved
    AFRICAS_TALKING_USERNAME=sandbox      # your app username in production
    AFRICAS_TALKING_API_KEY=...
-   SMS_SENDER_ID=CS-IRCFS
+   SMS_SENDER_ID=                        # empty in the sandbox; set only after approval
    ```
 5. For a local sandbox test, expose the local platform with a tunnel such as `ngrok http 8000`, and use the tunnel URL as the callback.
 6. **Zero cost to farmers:** ask the aggregator for a reverse-billed (toll-free) USSD code and short code (Section 8.1).
