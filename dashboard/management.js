@@ -264,6 +264,7 @@ document.querySelector("#table-body").addEventListener("click", async (event) =>
 async function connectApi() {
   const label = document.querySelector("#data-label");
   const button = document.querySelector("#connect-api");
+  if (button.dataset.switchAccount) { await CS.signOut(); return; }
   try {
     const probe = await apiFetch("users");
     if (probe.status === 403) throw new Error("Your role cannot manage platform data");
@@ -279,10 +280,19 @@ async function connectApi() {
     button.textContent = "API connected OK";
   } catch (error) {
     liveMode = false;
-    label.textContent = error.message.startsWith("Your role") ? "ROLE NOT ALLOWED" : "API UNAVAILABLE";
     label.title = `${error.message}. Endpoint: ${API}`;
     label.classList.remove("live");
-    button.textContent = "Reconnect PostgreSQL ";
+    if (error.message.startsWith("Your role")) {
+      // Signed in, but as a Citizen Science Monitor: management is for planners and administrators.
+      const role = String(CS.session.account()?.role || "this account").replaceAll("_", " ");
+      label.textContent = "PLANNERS & ADMINS ONLY";
+      button.textContent = "Sign in as another user";
+      button.dataset.switchAccount = "1";
+      CS.toast(`You are signed in as ${role}. Platform management needs a District Planner or administrator account.`, "warn");
+    } else {
+      label.textContent = "API UNAVAILABLE";
+      button.textContent = "Reconnect PostgreSQL";
+    }
   }
 }
 document.querySelector("#connect-api").addEventListener("click", connectApi);
