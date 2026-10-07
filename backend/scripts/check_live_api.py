@@ -1,4 +1,9 @@
 """Verify the loopback production API using configured credentials."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # make the `app` package importable
+
 import json
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen

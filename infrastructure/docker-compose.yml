@@ -1,0 +1,51 @@
+# CS-IRCFS handover stack: PostgreSQL/PostGIS + the platform (API, dashboard, USSD/SMS callbacks).
+# Usage (from this folder):
+#   copy stack.env.example stack.env   # then edit the secrets
+#   docker compose --env-file stack.env up -d --build
+# The platform is then on http://localhost:8000. See README.md in this folder.
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cs_ircfs
+      POSTGRES_USER: cs_ircfs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in stack.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cs_ircfs -d cs_ircfs"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  platform:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PLATFORM_PORT:-8000}:8000"
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://cs_ircfs:${POSTGRES_PASSWORD}@db:5432/cs_ircfs
+      REQUIRE_API_KEY: "true"
+      API_KEY_ROLES: ${API_KEY_ROLES:?Set API_KEY_ROLES in stack.env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8000}
+      SMS_PROVIDER: ${SMS_PROVIDER:-dry_run}
+      AIRTIME_PROVIDER: ${AIRTIME_PROVIDER:-dry_run}
+      AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME:-sandbox}
+      AFRICAS_TALKING_API_KEY: ${AFRICAS_TALKING_API_KEY:-}
+      SMS_SENDER_ID: ${SMS_SENDER_ID:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:

@@ -1,8 +1,8 @@
-﻿# CS-IRCFS frontend
+# CS-IRCFS frontend (experimental, not in use)
 
-This is the separate React/Vite frontend. The FastAPI backend remains in `backend/`.
+> **Status: experimental draft.** The platform people actually use is the `dashboard/` folder, which FastAPI serves at `/`. This React/Vite draft only repeats the sign-in pages. It is kept as a possible future rewrite and is **not** part of the presentation, the Docker image, or the handover.
 
-## Run
+If you want to try it:
 
 ```powershell
 cd frontend
@@ -10,4 +10,4 @@ npm install
 npm run dev
 ```
 
-The backend URL will be configured through a central API client as authentication endpoints are added.
+Before any real use, pin the dependency versions in `package.json` (they currently say `latest`).

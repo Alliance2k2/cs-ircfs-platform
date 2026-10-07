@@ -5,9 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import require_roles
-from app.db.models import IncidentCase, IncidentEvent, ReportStatus, User, UserRole
+from app.db.models import CitizenScienceLog, IncidentCase, IncidentEvent, IrrigationClimateLog, ReportStatus, User, UserRole
 from app.db.session import get_db
-from app.schemas import IncidentCaseRead, IncidentEventRead, IncidentUpdate
+from app.schemas import CellNotification, IncidentCaseRead, IncidentEventRead, IncidentUpdate
+from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided
 
 router = APIRouter(prefix="/api/v1/cases", tags=["cases"])
@@ -68,3 +69,22 @@ def simulate_notification(case_id: int, db: Session = Depends(get_db), _: object
     db.commit()
     db.refresh(case)
     return case
+
+
+@router.post("/{case_id}/notify-cell")
+def notify_case_cell(case_id: int, payload: CellNotification, db: Session = Depends(get_db), _: object = planner) -> dict:
+    """Closing-the-Loop SMS for a resolved crop or infrastructure case."""
+    case = db.get(IncidentCase, case_id)
+    if not case:
+        raise HTTPException(status_code=404, detail="Case not found")
+    if case.status not in {ReportStatus.resolved, ReportStatus.closed}:
+        raise HTTPException(status_code=422, detail="Resolve the case before notifying the community")
+    report = db.get(IrrigationClimateLog if case.source_type == "irrigation" else CitizenScienceLog, case.source_id)
+    subject = (report.infrastructure_name if case.source_type == "irrigation" else (report.pest_or_disease or report.crop_type)) if report else case.source_type
+    message = payload.message or resolution_message(f"Ikibazo #{case.id}", subject or "raporo", case.action_taken)
+    result = notify_cell(db, report.cell_id if report else None, message, payload.preview)
+    if not payload.preview:
+        case.reporter_notified_at = datetime.now(timezone.utc)
+    db.commit()
+    return result
+

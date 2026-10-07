@@ -5,7 +5,7 @@ import sys
 
 
 def main() -> None:
-    env_path = Path(__file__).resolve().parents[1] / ".env"
+    env_path = Path(__file__).resolve().parents[2] / ".env"
     lines = env_path.read_text(encoding="utf-8").splitlines() if env_path.exists() else []
     existing = next((line.split("=", 1)[1].strip() for line in lines if line.startswith("API_KEY_ROLES=")), "")
     if existing and "--rotate" not in sys.argv:

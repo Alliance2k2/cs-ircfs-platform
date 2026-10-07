@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script>location.replace(`management.html${location.search}`);</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CS-IRCFS | Technical Operations Console</title>
     <link rel="stylesheet" href="backend-console.css" />
     <link rel="stylesheet" href="backend-console-overrides.css" />
+    <link rel="stylesheet" href="shared.css?v=20261006" />
   </head>
   <body>
     <header class="console-header">
       <a href="index.html" class="console-brand"><span>C</span><strong>CS-IRCFS</strong><small>Technical Operations Console</small></a>
-      <div class="api-status"><i id="status-light"></i><span id="api-status-text">Checking local API…</span><button id="refresh">↻ Refresh</button></div>
+      <a href="planner.html" class="console-back">← Planner dashboard</a><div class="api-status"><i id="status-light"></i><span id="api-status-text">Checking local API…</span><button id="refresh">↻ Refresh</button></div>
     </header>
     <main class="console-main">
       <section class="hero">
@@ -20,7 +20,7 @@
       </section>
 
       <section class="flow" aria-label="Report processing flow">
-        <article><b class="step">01</b><span class="flow-icon">⌕</span><h2>Receive</h2><p>USSD, SMS, or dashboard report arrives through an API endpoint.</p></article>
+        <article><b class="step">01</b><span class="flow-icon">⌕</span><h2>Receive</h2><p>USSD *801#, SMS 8448 (Africa's Talking callbacks), or a dashboard form.</p></article>
         <span class="arrow">→</span>
         <article><b class="step">02</b><span class="flow-icon">✓</span><h2>Validate</h2><p>Checks phone, date, report values, status, and priority fields.</p></article>
         <span class="arrow">→</span>
@@ -51,12 +51,18 @@
           <a href="/api/v1/irrigation-reports" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Rainfall &amp; irrigation</h3><code>/api/v1/irrigation-reports</code><p>Rain gauges, asset status, faults, and bottlenecks.</p></a>
           <a href="/api/v1/feedback" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Feedback cases</h3><code>/api/v1/feedback</code><p>Returns community issues and their status.</p></a>
           <a href="/api/v1/analytics/act-now" target="_blank" class="endpoint-card standout"><span class="method get">GET</span><h3>Act Now queue</h3><code>/api/v1/analytics/act-now</code><p>Returns prioritised issues for action.</p></a>
+          <a href="/docs#/field%20channels" target="_blank" class="endpoint-card standout"><span class="method post">POST</span><h3>USSD callback</h3><code>/api/v1/ussd</code><p>Africa's Talking calls this for every *801# keypress; replies CON/END in Kinyarwanda.</p></a>
+          <a href="/docs#/field%20channels" target="_blank" class="endpoint-card"><span class="method post">POST</span><h3>SMS keywords</h3><code>/api/v1/sms/inbound</code><p>NZANA, INDWARA, IMVURA, UMUSARURO, IKIBAZO sent to 8448.</p></a>
+          <a href="/api/v1/channels/activity" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Channel activity</h3><code>/api/v1/channels/activity</code><p>Latest inbound messages, outbound SMS and airtime rewards.</p></a>
+          <a href="/api/v1/analytics/scheme-performance" target="_blank" class="endpoint-card scheme-card"><span class="method get">GET</span><h3>Outcome verification</h3><code>/api/v1/analytics/scheme-performance</code><p>Harvest vs target and auto-flagged bottlenecks per scheme.</p></a>
+          <a href="/api/v1/advisory/irrigation-schedule" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Irrigation schedule</h3><code>/api/v1/advisory/irrigation-schedule</code><p>Seven-day rainfall and SMS advice by sector.</p></a>
           <a href="/api/v1/locations/sectors" target="_blank" class="endpoint-card"><span class="method get">GET</span><h3>Sectors &amp; cells</h3><code>/api/v1/locations/sectors</code><p>Administrative locations used to map every report.</p></a>
         </div>
       </section>
 
       <section class="integrity"><span>⊙</span><div><h2>Data integrity is part of the backend.</h2><p>Input rules prevent invalid dates, unrealistic rainfall, unsupported user roles, and incomplete resolved cases. The local database is temporary for development; PostgreSQL/PostGIS will be used in deployment.</p></div></section>
     </main>
-    <script src="backend-console.js?v=20260914-deploy1"></script>
+    <script src="shared.js?v=20261006"></script>
+    <script src="backend-console.js?v=20261006"></script>
   </body>
 </html>

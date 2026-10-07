@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $envFile = Join-Path $root ".env"
 $envText = Get-Content $envFile -Raw
 $dbUrl = [regex]::Match($envText, 'DATABASE_URL=postgresql\+psycopg://([^:]+):([^@]+)@([^:]+):(\d+)/([^\r\n]+)').Groups

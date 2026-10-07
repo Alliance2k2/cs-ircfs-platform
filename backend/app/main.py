@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.routes import advisory, analytics, auth, cases, feedback, geography, map_data, reference_data, reports, system, users
+from app.api.routes import advisory, analytics, auth, cases, channels, community, feedback, geography, map_data, public, reference_data, reports, system, users
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.db.base import Base
@@ -28,19 +28,20 @@ async def lifespan(_: FastAPI):
         raise RuntimeError("Deployment requires PostgreSQL")
     if settings.environment != "development" and not settings.configured_api_keys:
         logger.warning("No API keys configured; protected API endpoints will return 401")
-    # Create any newly introduced local tables (including platform_accounts).
-    # Existing production tables remain managed by Alembic migrations.
-    Base.metadata.create_all(bind=engine)
+    if settings.environment == "development":
+        # Convenience for a throwaway local database. Every other environment is managed
+        # by Alembic (`alembic upgrade head`), which start-local.ps1 and the Dockerfile run.
+        Base.metadata.create_all(bind=engine)
     yield
 
 
-app = FastAPI(title=settings.app_name, version="0.2.0", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, version="0.3.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
-    allow_headers=["Content-Type", "X-API-Key", "X-Request-ID"],
+    allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Request-ID"],
 )
 
 
@@ -65,7 +66,7 @@ async def database_error_handler(_: Request, error: SQLAlchemyError):
     return JSONResponse(status_code=500, content={"detail": "Database operation failed"})
 
 
-for api_router in (system.router, auth.router, advisory.router, users.router, reference_data.router, reports.router, cases.router, feedback.router, analytics.router, map_data.router, geography.router):
+for api_router in (system.router, auth.router, channels.router, advisory.router, users.router, reference_data.router, reports.router, community.router, cases.router, feedback.router, analytics.router, map_data.router, geography.router, public.router):
     app.include_router(api_router)
 
 

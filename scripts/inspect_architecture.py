@@ -6,7 +6,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DOC = Path(__file__).with_name("cs-ircfs-platform-architecture.docx")
+DOC = Path(__file__).resolve().parents[1] / "cs-ircfs-platform-architecture.docx"
 NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
 
 

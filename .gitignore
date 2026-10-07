@@ -17,3 +17,4 @@ backend/pytest-cache-files-*/
 .pytest_cache/
 backend/.pytest-tmp/
 .openai/
+infrastructure/stack.env

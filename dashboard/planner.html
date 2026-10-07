@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,27 +7,34 @@
     <title>CS-IRCFS | District Planning Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="overrides.css?v=20260915-bugesera-label" />
+    <link rel="stylesheet" href="overrides.css?v=20261006" />
+    <link rel="stylesheet" href="shared.css?v=20261006" />
+    <link rel="stylesheet" href="planner-extra.css?v=20261007" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="#overview" aria-label="CS-IRCFS home">
+        <a class="brand" href="index.html" aria-label="CS-IRCFS home">
           <span class="brand-mark">C</span>
           <span><strong>CS-IRCFS</strong><small>Bugesera District</small></span>
         </a>
         <nav aria-label="Main navigation">
-          <a class="nav-link active" href="#overview"><span>O</span> Overview</a>
-          <a class="nav-link" href="#act-now"><span>A</span> Act Now <b id="nav-alert-count">0</b></a>
-          <a class="nav-link" href="#schemes"><span>I</span> Irrigation schemes</a>
-          <a class="nav-link" href="#map"><span>M</span> Map &amp; observations</a>
-          <a class="nav-link" href="#feedback"><span>F</span> Community feedback</a>
-          <a class="nav-link" href="management.html"><span>P</span> Platform management</a>
+          <a class="nav-link active" href="#overview"><span aria-hidden="true">◎</span> <em data-i18n="nav.overview">Overview</em></a>
+          <a class="nav-link" href="#act-now" data-planner-only><span aria-hidden="true">!</span> <em data-i18n="nav.actnow">Act now</em> <b id="nav-alert-count">0</b></a>
+          <a class="nav-link" href="#channels"><span aria-hidden="true">✆</span> <em data-i18n="nav.channels">Field channels</em></a>
+          <a class="nav-link" href="#schemes"><span aria-hidden="true">▤</span> <em data-i18n="nav.schemes">Scheme performance</em></a>
+          <a class="nav-link" href="#advice"><span aria-hidden="true">☂</span> <em data-i18n="nav.advice">Irrigation advice</em></a>
+          <a class="nav-link" href="#food"><span aria-hidden="true">♥</span> <em data-i18n="nav.food">Household nutrition</em></a>
+          <a class="nav-link" href="#map"><span aria-hidden="true">⌖</span> <em data-i18n="nav.map">Map &amp; observations</em></a>
+          <a class="nav-link" href="#feedback"><span aria-hidden="true">✉</span> <em data-i18n="nav.feedback">Community feedback</em></a>
+          <a class="nav-link nav-external" href="simulator.html"><span aria-hidden="true">☏</span> <em data-i18n="nav.simulator">Phone simulator</em></a>
+          <a class="nav-link nav-external" href="management.html" data-planner-only><span aria-hidden="true">⚙</span> <em data-i18n="nav.management">Platform management</em></a>
         </nav>
         <div class="sidebar-foot">
-          <p>Data source</p>
-          <span id="data-mode" class="mode-pill">DEMONSTRATION DATA</span>
-          <button id="load-live-data" class="text-button">Connect PostgreSQL</button>
+          <p data-i18n="data.source">Data source</p>
+          <span id="data-mode" class="mode-pill" data-i18n="data.demo">DEMONSTRATION DATA</span>
+          <button id="load-live-data" class="text-button" data-i18n="data.connect">Connect live data</button>
+          <p id="live-pulse" class="live-pulse" hidden><i></i> Auto-refresh every 15 s</p>
         </div>
       </aside>
 
@@ -35,72 +42,143 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">DISTRICT DECISION SUPPORT</p>
-            <h1>Good morning, Planner</h1>
-            <p class="subtle">A clear view of irrigation performance, crop risks, and community action.</p>
+            <h1><span id="greeting" data-i18n="greet.morning">Good morning</span>, <span id="greet-name" data-i18n="greet.planner">Planner</span></h1>
+            <p class="subtle" data-i18n="top.subtitle">A clear view of irrigation performance, crop risks, and community action.</p>
+            <p id="role-note" class="role-note" hidden>Citizen Science Monitor view: live field reports, scheme progress, rainfall advice and the map. District Planners act on cases and send SMS.</p>
           </div>
           <div class="topbar-actions">
-            <label class="scheme-select">Scheme <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label>
+            <label class="scheme-select"><span data-i18n="top.scheme">Scheme</span> <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label>
             <a id="scheme-filter-help" class="scheme-empty-help" href="management.html" hidden>Add a scheme to use this filter</a>
-            <button class="icon-button" aria-label="Notifications"></button>
-            <div class="avatar">DP</div>
+            <button id="start-tour" class="tour-button" type="button" data-planner-only>▶ <span data-i18n="tour.start">Presentation tour</span></button>
+            <div class="header-controls" data-header-controls></div>
           </div>
         </header>
 
-        <section id="overview" class="metrics" aria-label="Overview metrics">
-          <article class="metric-card accent-green"><span class="metric-icon"></span><p>Registered farmers</p><strong id="metric-farmers">-</strong><small><i></i> Pilot coverage</small></article>
-          <article class="metric-card accent-blue"><span class="metric-icon"></span><p>Total reports</p><strong id="metric-reports">-</strong><small>Across all channels</small></article>
-          <article class="metric-card accent-gold"><span class="metric-icon"></span><p>Active schemes</p><strong id="metric-schemes">-</strong><small>PADAB &amp; APEFA</small></article>
-          <article class="metric-card accent-coral"><span class="metric-icon">!</span><p>Open complaints</p><strong id="metric-complaints">-</strong><small id="metric-complaints-note">Need follow-up</small></article>
+        <div id="demo-banner" class="demo-banner" role="status">
+          <strong>Demonstration data.</strong> Numbers below are illustrative. <button type="button" id="banner-connect" class="link-button">Connect live data</button> or <a href="login.html">sign in</a> to see the database.
+        </div>
+
+        <section id="overview" class="metrics metrics-six" aria-label="Overview metrics">
+          <article class="metric-card accent-green"><span class="metric-icon">☘</span><p data-i18n="metric.farmers">Registered farmers</p><strong id="metric-farmers">-</strong><small>Pilot coverage</small></article>
+          <article class="metric-card accent-blue"><span class="metric-icon">✆</span><p data-i18n="metric.reports">Total reports</p><strong id="metric-reports">-</strong><small id="metric-reports-note" data-i18n="metric.reportsNote">USSD, SMS and web</small></article>
+          <article class="metric-card accent-gold"><span class="metric-icon">▤</span><p data-i18n="metric.schemes">Active schemes</p><strong id="metric-schemes">-</strong><small data-i18n="metric.schemesNote">PADAB &amp; APEFA Solar</small></article>
+          <article class="metric-card accent-coral"><span class="metric-icon">!</span><p data-i18n="metric.complaints">Open complaints</p><strong id="metric-complaints">-</strong><small id="metric-complaints-note">Need follow-up</small></article>
+          <article class="metric-card accent-purple"><span class="metric-icon">♥</span><p data-i18n="metric.households">Households surveyed</p><strong id="metric-households">-</strong><small id="metric-households-note">Average stunting risk</small></article>
+          <article class="metric-card accent-teal"><span class="metric-icon">₣</span><p data-i18n="metric.rewards">Airtime rewards</p><strong id="metric-rewards">-</strong><small>100 RWF per 3 weather reports</small></article>
         </section>
 
-        <section id="act-now" class="panel act-now-panel">
+        <section id="act-now" class="panel act-now-panel" data-planner-only>
           <div class="panel-heading">
-            <div><p class="eyebrow">PRIORITISED WORK QUEUE</p><h2>Act now</h2><p class="subtle">Reports needing district attention, ranked by urgency.</p></div>
-            <button id="refresh-queue" class="secondary-button"> Refresh</button>
+            <div><p class="eyebrow" data-i18n="actnow.eyebrow">PRIORITISED WORK QUEUE</p><h2 data-i18n="actnow.title">Act now</h2><p class="subtle" data-i18n="actnow.sub">Reports needing district attention, ranked by urgency.</p></div>
+            <button id="refresh-queue" class="secondary-button">↻ <span data-i18n="btn.refresh">Refresh</span></button>
+          </div>
+          <div class="chip-row" role="group" aria-label="Filter the queue">
+            <button type="button" class="chip active" data-queue-filter="all"><span data-i18n="filter.all">All</span> <b data-queue-count="all">0</b></button>
+            <button type="button" class="chip" data-queue-filter="infrastructure"><span data-i18n="filter.infrastructure">Infrastructure</span> <b data-queue-count="infrastructure">0</b></button>
+            <button type="button" class="chip" data-queue-filter="pest_or_disease"><span data-i18n="filter.pests">Pests &amp; disease</span> <b data-queue-count="pest_or_disease">0</b></button>
+            <button type="button" class="chip" data-queue-filter="community_feedback"><span data-i18n="filter.feedback">Feedback</span> <b data-queue-count="community_feedback">0</b></button>
           </div>
           <div id="act-now-list" class="act-now-list" aria-live="polite"></div>
         </section>
 
-        <section class="panel phone-demo-panel" aria-labelledby="phone-demo-title">
-          <p class="eyebrow">LOCAL PHONE DEMONSTRATION</p><h2 id="phone-demo-title">Simulate an irrigation report</h2>
-          <p class="subtle">Saves a report to the local API. No USSD session or SMS is sent.</p>
-          <form id="phone-demo-form">
-            <label>Asset <input name="infrastructure_name" required maxlength="120" placeholder="Mwesa Pump A" /></label>
-            <label>Condition <select name="operational_status"><option value="offline">Offline</option><option value="faulty">Faulty</option><option value="operational">Operational</option></select></label>
-            <button class="secondary-button" type="submit">Submit demonstration report</button>
-          </form><p id="phone-demo-message" role="status"></p>
+        <section id="channels" class="panel channels-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow" data-i18n="channels.eyebrow">NO INTERNET NEEDED</p><h2 data-i18n="channels.title">Field channels, live</h2><p class="subtle" data-i18n="channels.sub">Feature-phone reports arrive through USSD and SMS, are stored centrally, and appear here.</p></div>
+            <a class="primary-link" href="simulator.html">☏ <span data-i18n="channels.open">Open phone simulator</span></a>
+          </div>
+          <ol class="flow-strip" aria-label="How a report travels">
+            <li><b>☏</b><strong>Citizen phone</strong><small>No internet · feature phone</small></li>
+            <li><b>#</b><strong>USSD *801# · SMS 8448</strong><small>Africa's Talking gateway</small></li>
+            <li><b>▣</b><strong>Central database</strong><small>PostgreSQL / PostGIS</small></li>
+            <li><b>◎</b><strong>Planner dashboard</strong><small>Verify outcomes · detect bottlenecks</small></li>
+            <li><b>✉</b><strong>SMS back to citizens</strong><small>Tips · advice · closing the loop</small></li>
+          </ol>
+          <div class="channels-grid">
+            <div><h3 class="mini-title">Latest messages from the field</h3><ul id="channel-feed" class="channel-feed" aria-live="polite"></ul></div>
+            <details class="quick-report">
+              <summary>Quick infrastructure report (without the phone simulator)</summary>
+              <form id="phone-demo-form">
+                <label>Asset <input name="infrastructure_name" required maxlength="120" placeholder="PADAB Pumping Station 1" /></label>
+                <label>Condition <select name="operational_status"><option value="offline">Offline</option><option value="faulty">Faulty</option><option value="operational">Operational</option></select></label>
+                <button class="secondary-button" type="submit">Submit report</button>
+              </form><p id="phone-demo-message" role="status"></p>
+            </details>
+          </div>
         </section>
+
         <section id="schemes" class="content-grid">
           <article class="panel performance-panel">
-            <div class="panel-heading compact"><div><p class="eyebrow">OUTCOME VERIFICATION</p><h2>Scheme performance</h2></div></div>
-            <div class="empty-insight"><span>I</span><div><strong>Waiting for verified field data</strong><p>Performance will appear after schemes, expected harvest targets, and reported harvests are entered and approved.</p></div></div>
+            <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="perf.eyebrow">OUTCOME VERIFICATION · OBJECTIVES 1-2</p><h2 data-i18n="perf.title">Scheme performance</h2><p class="subtle" data-i18n="perf.sub">Farmer-reported harvest against each scheme's yield target, with recurring bottlenecks flagged automatically.</p></div></div>
+            <div id="scheme-performance" class="performance-list"></div>
           </article>
           <article id="feedback" class="panel response-panel">
-            <p class="eyebrow">COMMUNITY ACCOUNTABILITY</p><h2>Response health</h2>
-            <div class="empty-insight compact-empty"><span>F</span><div><strong>No feedback cases yet</strong><p>Resolution and response-time measures will be calculated from real feedback cases.</p></div></div>
+            <p class="eyebrow" data-i18n="health.eyebrow">COMMUNITY ACCOUNTABILITY</p><h2 data-i18n="health.title">Response health</h2>
+            <div id="response-health"></div>
+          </article>
+        </section>
+
+        <section class="content-grid even">
+          <article id="advice" class="panel advice-panel">
+            <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="advice.eyebrow">IRRIGATION SCHEDULING ASSISTANT</p><h2 data-i18n="advice.title">Irrigation advice by sector</h2><p class="subtle" data-i18n="advice.sub">Seven-day rain-gauge totals become SMS advice for cooperatives.</p></div></div>
+            <div id="advice-list" class="advice-list"></div>
+            <button id="send-advice" type="button" data-planner-only class="primary-button wide">✉ <span data-i18n="advice.send">Send advice to cooperatives</span></button>
+          </article>
+          <article id="food" class="panel food-panel">
+            <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="food.eyebrow">HOUSEHOLD NUTRITION TRACKER</p><h2 data-i18n="food.title">Food security &amp; stunting risk</h2></div></div>
+            <div id="food-summary"></div>
           </article>
         </section>
 
         <section id="map" class="panel map-panel">
-          <div class="panel-heading compact"><div><p class="eyebrow">SPATIAL INTELLIGENCE</p><h2>Map &amp; live observations</h2></div><div class="map-legend"><span><i class="dot offline"></i> Offline asset</span><span><i class="dot pest"></i> Pest alert</span><span><i class="dot rain"></i> Rainfall</span></div></div>
-          <div class="map-toolbar"><span>Bugesera District, Rwanda Â· official district boundary</span><button id="map-reset-view" type="button" class="secondary-button">Reset Bugesera view</button></div>
+          <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="map.eyebrow">SPATIAL INTELLIGENCE</p><h2 data-i18n="map.title">Map &amp; live observations</h2></div><button id="map-reset-view" type="button" class="secondary-button" data-i18n="map.reset">Reset Bugesera view</button></div>
+          <div class="layer-chips" role="group" aria-label="Map layers">
+            <label class="layer-chip"><input type="checkbox" data-layer="schemes" checked /><i class="swatch scheme"></i><span data-i18n="layer.schemes">Schemes</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="infrastructure" checked /><i class="swatch offline"></i><span data-i18n="layer.infrastructure">Infrastructure</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="crops" checked /><i class="swatch pest"></i><span data-i18n="layer.crops">Crop reports</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="heat" /><i class="swatch heat"></i><span data-i18n="layer.heat">Pest heatmap</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="rain" /><i class="swatch rain"></i><span data-i18n="layer.rain">Rainfall &amp; drought</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="food" /><i class="swatch food"></i><span data-i18n="layer.food">Nutrition risk</span></label>
+            <label class="layer-chip"><input type="checkbox" data-layer="farmers" /><i class="swatch farmer"></i><span data-i18n="layer.farmers">Farmers</span></label>
+          </div>
+          <div class="map-toolbar"><span>Bugesera District, Rwanda · official district boundary</span></div>
           <div id="map-canvas" class="map-canvas" role="application" aria-label="Interactive map centered on Bugesera District"></div>
           <p id="map-status" class="map-status" role="status"></p>
         </section>
       </main>
     </div>
-    <dialog id="case-dialog"><form id="case-form">
-      <h2 id="case-title">Planner case</h2><p id="case-summary"></p>
-      <label>Status <select name="status"><option value="triaged">Triaged</option><option value="assigned">Assigned</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label><br />
-      <label>Owner user ID <input name="assigned_to_user_id" type="number" min="1" /></label><br />
-      <label>Action taken <textarea name="action_taken" rows="3" maxlength="3000"></textarea></label><br />
-      <label>Deadline <input name="due_at" type="datetime-local" /></label><p id="case-message" role="status"></p>
-      <button type="button" id="case-cancel">Cancel</button> <button type="submit">Save case</button> <button type="button" id="case-notify">Record simulated SMS response</button>
+
+    <dialog id="case-dialog" class="cs-dialog"><form id="case-form">
+      <p class="eyebrow" id="case-kind">PLANNER CASE</p>
+      <h2 id="case-title">Planner case</h2><p id="case-summary" class="dialog-note"></p>
+      <label>Status <select name="status"><option value="triaged">Triaged</option><option value="assigned">Assigned</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+      <label>Owner user ID <input name="assigned_to_user_id" type="number" min="1" /></label>
+      <label>Action taken <textarea name="action_taken" rows="3" maxlength="3000" placeholder="Required to resolve, e.g. Technician replaced the pump motor"></textarea></label>
+      <label>Deadline <input name="due_at" type="datetime-local" /></label>
+      <div id="case-history-wrap" hidden><p class="dialog-note"><strong>History</strong></p><ul id="case-history" class="history-list"></ul></div>
+      <div id="notify-box" hidden>
+        <p class="dialog-note"><strong>Closing-the-loop SMS</strong> · <span id="notify-meta"></span></p>
+        <div id="notify-preview" class="sms-preview"></div>
+      </div>
+      <p id="case-message" role="status" class="dialog-note"></p>
+      <div class="dialog-actions">
+        <button type="button" id="case-cancel" data-i18n="case.cancel">Close</button>
+        <button type="button" id="case-notify" class="accent">✉ <span data-i18n="case.notify">Notify the community by SMS</span></button>
+        <button type="submit" class="primary" data-i18n="case.save">Save</button>
+      </div>
     </form></dialog>
+
+    <dialog id="advice-dialog" class="cs-dialog"><div class="dialog-body">
+      <p class="eyebrow">IRRIGATION SCHEDULING ASSISTANT</p>
+      <h2>Send irrigation advice</h2>
+      <div id="advice-preview"></div>
+      <p id="advice-message" class="dialog-note" role="status"></p>
+      <div class="dialog-actions"><button type="button" id="advice-cancel">Cancel</button><button type="button" id="advice-confirm" class="primary">Send SMS now</button></div>
+    </div></dialog>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=20260915-bugesera-boundary"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="shared.js?v=20261006"></script>
+    <script src="tour.js?v=20261006"></script>
+    <script src="app.js?v=20261007"></script>
   </body>
 </html>
-
-
-

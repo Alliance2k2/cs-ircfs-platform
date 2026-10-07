@@ -1,4 +1,9 @@
 """Compare application model tables and columns with the configured database."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # make the `app` package importable
+
 from sqlalchemy import create_engine, inspect
 
 from app.core.config import get_settings

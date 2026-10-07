@@ -2,62 +2,91 @@
 
 [Deploy to Render](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FAlliance2k2%2Fcs-ircfs-platform)
 
-> A low-bandwidth platform for agricultural, irrigation, climate, and community-issue monitoring in Bugesera, Rwanda.
+> Citizen Science for Irrigation Resilience and Climate-smart Food Security in Bugesera, Rwanda. Citizens report from any phone through **USSD `*801#`** and **SMS `8448`**. District Planners use the evidence to verify whether the **PADAB** and **APEFA Solar** irrigation schemes deliver their expected outcomes, and to find where they fall short.
 
-## What works today
+```text
+Farmers · Citizen Science Monitors · Cooperatives   (feature phone, no internet)
+        │  USSD *801#  ·  SMS 8448   (Kinyarwanda first)
+        ▼
+Africa's Talking gateway  ──►  FastAPI  ──►  PostgreSQL / PostGIS
+                                               │
+        ┌──────────────────────────────────────┘
+        ▼
+Planner dashboard: outcome verification · bottleneck detection · Act Now
+        │
+        └──►  SMS back to citizens: tips · irrigation advice · airtime · closing the loop
+```
 
-| Capability | Status | Evidence |
-| --- | --- | --- |
-| FastAPI reporting, users, feedback, and case workflow | Working locally | `/api/v1/*` endpoints and API test |
-| Planner dashboard and Act Now case actions | Working with local API | `dashboard/index.html` |
-| Irrigation phone-flow demonstration | Simulator only | Saves a report through the API; no telecom gateway |
-| SMS response | Simulator only | Records a notification timestamp; sends no message |
-| PADAB/APEFA outcomes and example counts | Demonstration data | Not verified field evidence |
-| Real USSD/SMS gateway, verified boundaries, backups and deployment | Planned | Requires field and operations decisions |
+## Quick start
 
-The main platform flow is **report → verify → case → assign and act → resolve → record response → measure**. The local API intentionally permits administrator access in development. Production needs individual authentication, area-level authorization, approved provider integration, verified geography, and operational controls before real personal data is used.
+```powershell
+python -m pip install -r backend/requirements.txt
+.\start-local.ps1 -Demo        # presentation data in a separate demo.db
+```
 
-## Purpose
+Open **http://127.0.0.1:8000**. In VS Code you can use **Terminal → Run Task → CS-IRCFS: Start demo** instead. Use `.\start-local.ps1` (without `-Demo`) for your real PostgreSQL. It applies migrations first.
 
-Community users submit structured reports through USSD or SMS. The platform validates and stores them, then gives District Planners a web dashboard, maps, analytics, and follow-up tools for better decisions.
+| Page | What you can do |
+| --- | --- |
+| `/planner.html` | Act Now queue, live field messages, scheme performance against targets, response health, irrigation advice, nutrition risk, layered map, **▶ presentation tour**, EN/RW |
+| `/simulator.html` | Dial `*801#` or text `NYAMATA NZANA 5` on an on-screen phone and watch the record appear |
+| `/management.html` | People, schemes (verified yield targets), reports, feedback, nutrition, SMS log, accounts and roles |
+| `/docs` | Interactive API reference |
 
-**Start here:** [Simple Project Guide](docs/00-how-to-use-this-project.md). It explains the difference between the main planner platform and the technical backend.
-For exact live metric definitions and remaining production gates, see [Current System and Metrics](docs/07-current-system-and-metrics.md).
-For a GitHub-backed hosted preview, see [Deployment](docs/10-deployment.md). The hosted preview requires a separate PostgreSQL database and API key; it does not copy local records.
+## What it does (architecture Modules 1–3)
+
+| Module | Features |
+| --- | --- |
+| **1. Citizen science and food security** | Crowdsourced yield forecaster compared with scheme targets · SMS pest alerts with heatmap · household nutrition tracker (stunting risk) |
+| **2. Irrigation resilience and climate** | Infrastructure health reporter with bottleneck categories and auto-flagging · citizen rain-gauge network and drought map · irrigation scheduling assistant (SMS advice) |
+| **3. Community feedback loops** | Anonymous grievance log, including resettlement and downstream impacts · closing-the-loop SMS to the affected cell |
+| **Participation (§8)** | Airtime reward every 3rd weather report · local tips after every report · cooperative Data Champion roles · Kinyarwanda, numeric, ≤3 menu levels |
 
 ## Project structure
 
 ```text
 cs-ircfs-platform/
-├── docs/             # requirements, architecture, data model, roadmap, current limits
-├── backend/          # FastAPI service, database migrations, and API tests
-└── dashboard/        # planner and management pages
+├── backend/            FastAPI service
+│   ├── app/api/routes/   channels (USSD/SMS), reports, cases, feedback, analytics, advisory, auth, …
+│   ├── app/services/     ussd.py, sms_keywords.py, reporting.py, advisory.py, notifications.py, sms.py
+│   ├── migrations/       Alembic versions 01–08
+│   ├── scripts/          load_locations, seed_demo_data, create_admin, check_db, …
+│   └── tests/            API, USSD, SMS, closing-the-loop, analytics, and sign-in tests
+├── dashboard/          Web pages served at /  (planner, simulator, management, sign-in)
+├── ussd-sms/           Menu map, SMS keywords, Africa's Talking setup
+├── infrastructure/     Docker Compose (PostGIS + platform) and operations guide for handover
+├── data/               Bugesera sector and cell boundaries (GeoPackage)
+├── docs/               Guides (older documents are in docs/archive/)
+├── scripts/            Repository utilities (architecture reader, QGIS location import)
+├── frontend/           Experimental React draft, not used
+├── Dockerfile, render.yaml, start-local.ps1, start-platform.bat
+└── cs-ircfs-platform-architecture.docx
 ```
 
-## Source brief
+## Documentation
 
-The requirements were organized from `../Steps_of_creating_platform.pdf` and `../cs-ircfs-platform-architecture.docx`. Start with [docs/05-platform-blueprint.md](docs/05-platform-blueprint.md) for the platform vision, then use the supporting requirement and engineering documents.
+1. [Platform guide](docs/01-platform-guide.md): pages, roles, running, scripts
+2. [Architecture alignment](docs/02-architecture-alignment.md): every architecture item and where it is implemented
+3. [Data model](docs/03-data-model.md)
+4. [Deployment](docs/04-deployment.md): demo, Docker, Render, production checklist
+5. [Presentation demo script](docs/05-presentation-demo-script.md)
+6. [Roadmap and current limits](docs/06-roadmap-and-limits.md)
+7. [USSD and SMS channels](ussd-sms/README.md) · [Handover stack](infrastructure/README.md)
 
-## Delivery sequence
+## Tests
 
-1. Confirm field requirements and terminology.
-2. Build the database and FastAPI foundation.
-3. Deliver USSD/SMS reporting flows.
-4. Deliver the district dashboard and map.
-5. Add analytics, test end-to-end, run the Bugesera pilot, improve, then deploy.
+```powershell
+cd backend
+python -m pytest -q -p no:cacheprovider
+```
 
-The detailed scope and acceptance criteria are in [docs/04-delivery-roadmap.md](docs/04-delivery-roadmap.md).
+Tests always use an in-memory database (`tests/conftest.py`). They never touch the database in `.env`.
 
-For the competition story, feature priorities, and live-demonstration flow, see [docs/06-competitive-strategy.md](docs/06-competitive-strategy.md).
+## Status
 
-## Start the local API
+All features above work end to end through the simulator and the API. Two things are needed before real field use:
 
-1. Install dependencies once: `python -m pip install -r backend/requirements.txt`.
-2. In VS Code, open **Terminal → Run Task → CS-IRCFS: Start local platform**. Alternatively, run `powershell -ExecutionPolicy Bypass -File .\start-local.ps1` from the project root.
-3. Open `http://127.0.0.1:8000` for the platform and `http://127.0.0.1:8000/docs` for interactive API documentation.
-4. Keep the terminal running. Refresh the browser after changing HTML, CSS, or JavaScript. After a Python change, press `Ctrl+C` and start the task again.
+- Africa's Talking credentials. Until then, outgoing SMS and airtime are logged as `dry_run`.
+- The official PADAB and APEFA yield targets.
 
-The launcher creates `.env` from `.env.example` only when `.env` does not already exist. It never overwrites your current database or API-key settings. In VS Code, **Run and Debug → CS-IRCFS: Debug local platform** starts the same application with Python debugging enabled.
-If you want Python auto-reload and your Windows setup supports it, run `powershell -ExecutionPolicy Bypass -File .\start-local.ps1 -Reload`.
-
-The API has health, user registration, crop and irrigation/rainfall reports, feedback history, actionable report cases, a dashboard summary, and the prioritised **Act Now** planner queue at `/api/v1/analytics/act-now`. It runs with local SQLite until PostgreSQL/PostGIS is configured. Spatial boundary and farm endpoints return 501 on SQLite.
+See [roadmap and limits](docs/06-roadmap-and-limits.md). Never commit `.env` or `infrastructure/stack.env`.

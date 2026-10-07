@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,11 +8,12 @@
     <title>CS-IRCFS | Platform Management</title>
     <link rel="stylesheet" href="management.css" />
     <link rel="stylesheet" href="management-overrides.css" />
+    <link rel="stylesheet" href="shared.css?v=20261006" />
   </head>
   <body>
     <div class="management-shell">
       <aside class="management-sidebar">
-        <a href="planner.html" class="management-brand"><span class="logo-box">C</span><span><strong>CS-IRCFS</strong><small>Platform Management</small></span></a>
+        <a href="index.html" class="management-brand"><span class="logo-box">C</span><span><strong>CS-IRCFS</strong><small>Platform Management</small></span></a>
         <p class="nav-caption">MANAGE PLATFORM DATA</p>
         <nav id="module-nav">
           <button class="module-link active" data-module="users"><span>U</span> Users <b data-count="users">-</b></button>
@@ -20,14 +21,18 @@
           <button class="module-link" data-module="citizen"><span>C</span> Citizen reports <b data-count="citizen">-</b></button>
           <button class="module-link" data-module="irrigation"><span>R</span> Rainfall &amp; irrigation <b data-count="irrigation">-</b></button>
           <button class="module-link" data-module="feedback"><span>F</span> Community feedback <b data-count="feedback">-</b></button>
+          <button class="module-link" data-module="nutrition"><span>N</span> Household nutrition <b data-count="nutrition">-</b></button>
+          <button class="module-link" data-module="messages"><span>S</span> SMS log <b data-count="messages">-</b></button>
+          <button class="module-link" data-module="accounts"><span>K</span> Accounts <b data-count="accounts">-</b></button>
           <button class="module-link" data-module="analytics"><span>A</span> Analytics</button>
           <a class="module-link" href="planner.html"><span>P</span> Planner dashboard</a>
+          <a class="module-link" href="simulator.html"><span>T</span> Phone simulator</a>
         </nav>
         <div class="sidebar-bottom"><p>Current view</p><span id="data-label" class="data-label">SAMPLE DATA</span><button id="connect-api" class="connect-button">Connect local API</button></div>
       </aside>
 
       <main class="management-main">
-<header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button type="button" class="outline-button" id="export-button">Export</button><button type="button" class="primary-button" id="add-button">+ Add user</button><div class="avatar">AD</div></div></header>
+<header class="management-header"><div><p class="eyebrow">CS-IRCFS DATA CENTRE</p><h1 id="page-title">Users</h1><p id="page-subtitle">Manage the people who report, monitor, and use district information.</p></div><div class="header-actions"><button type="button" class="outline-button" id="export-button">Export</button><button type="button" class="primary-button" id="add-button">+ Add user</button><div class="header-controls" data-header-controls></div></div></header>
 
         <section class="summary-row" id="summary-row"></section>
         <section class="content-card">
@@ -61,7 +66,8 @@
         <div class="dialog-actions"><button type="button" class="outline-button" id="entry-cancel">Cancel</button><button type="submit" class="primary-button">Save record</button></div>
       </form>
     </dialog>
-    <script src="management.js?v=20260922-sector-cell-v15"></script>
+    <script src="shared.js?v=20261006"></script>
+    <script src="management.js?v=20261007"></script>
   </body>
 </html>
 

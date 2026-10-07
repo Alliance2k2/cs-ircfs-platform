@@ -15,11 +15,25 @@ class AccountRegister(BaseModel):
     first_name: str = Field(min_length=1, max_length=80)
     middle_name: str | None = Field(default=None, max_length=80)
     surname: str = Field(min_length=1, max_length=80)
-    role: UserRole = UserRole.citizen_science_monitor
 
 class AccountLogin(BaseModel):
     email: str
     password: str
+
+
+class AccountRead(BaseModel):
+    id: int
+    email: str
+    full_name: str
+    role: UserRole
+    status: str
+    created_at: datetime
+    model_config = {"from_attributes": True}
+
+
+class AccountUpdate(BaseModel):
+    role: UserRole | None = None
+    status: str | None = Field(default=None, pattern="^(active|pending|suspended)$")
 
 
 class UserCreate(BaseModel):
@@ -207,6 +221,10 @@ class DashboardSummary(BaseModel):
     active_schemes: int
     open_complaints: int
     faulty_or_offline_assets: int
+    households_surveyed: int = 0
+    average_stunting_risk: float | None = None
+    rewards_paid_rwf: int = 0
+    field_messages: int = 0
 
 
 class ActNowItem(BaseModel):
@@ -291,3 +309,46 @@ class IncidentEventRead(BaseModel):
     changed_by_user_id: int | None
     created_at: datetime
     model_config = {"from_attributes": True}
+
+
+class IrrigationSchemeUpdate(BaseModel):
+    implementing_partner: str | None = Field(default=None, max_length=100)
+    hectares_developed: float | None = Field(default=None, ge=0)
+    baseline_yield_target_tons: float | None = Field(default=None, ge=0)
+    baseline_source: str | None = Field(default=None, max_length=255)
+    sector_id: int | None = Field(default=None, gt=0)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    is_active: bool | None = None
+
+
+class AdvisorySmsCreate(BaseModel):
+    phone_number: str = Field(min_length=9, max_length=20)
+    message: str = Field(min_length=2, max_length=480)
+
+
+class CellNotification(BaseModel):
+    """Closing-the-loop SMS. Leave message empty to use the default Kinyarwanda text."""
+    message: str | None = Field(default=None, max_length=480)
+    preview: bool = False
+
+
+class ScheduleBroadcast(BaseModel):
+    sector_ids: list[int] | None = None
+    preview: bool = False
+
+
+class NutritionSurveyCreate(BaseModel):
+    reporter_id: int | None = Field(default=None, gt=0)
+    cell_id: int | None = Field(default=None, gt=0)
+    meals_per_day: int = Field(ge=1, le=3)
+    ate_protein_or_vegetables: bool
+    food_sufficient: bool
+
+
+class NutritionSurveyRead(NutritionSurveyCreate):
+    id: int
+    stunting_risk_score: int
+    created_at: datetime
+    model_config = {"from_attributes": True}
+

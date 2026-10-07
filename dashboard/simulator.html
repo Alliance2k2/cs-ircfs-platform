@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Try the CS-IRCFS USSD *801# menu and SMS 8448 keywords from a simulated feature phone." />
+    <title>CS-IRCFS | Field Phone Simulator</title>
+    <link rel="stylesheet" href="shared.css?v=20261006" />
+    <link rel="stylesheet" href="simulator.css?v=20261006" />
+  </head>
+  <body>
+    <header class="sim-header">
+      <a class="sim-brand" href="index.html"><span>C</span><strong>CS-IRCFS</strong><small>Bugesera District</small></a>
+      <nav class="sim-nav" aria-label="Main navigation">
+        <a href="planner.html" data-i18n="nav.dashboard">Planner dashboard</a>
+        <a href="simulator.html" aria-current="page" data-i18n="nav.simulator">Phone simulator</a>
+        <a href="management.html" data-i18n="nav.management">Platform management</a>
+      </nav>
+      <div class="header-controls" data-header-controls></div>
+    </header>
+
+    <main class="sim-main">
+      <section class="sim-intro">
+        <p class="eyebrow">NO INTERNET · ANY FEATURE PHONE</p>
+        <h1 data-i18n="sim.title">Field phone simulator</h1>
+        <p>This works exactly like a farmer's phone. Every keypress goes to the same <code>/api/v1/ussd</code> and <code>/api/v1/sms/inbound</code> endpoints that Africa's Talking calls in the field. Reports are saved to the database and appear on the planner dashboard straight away.</p>
+      </section>
+
+      <div class="sim-grid">
+        <section class="phone-column" aria-label="Simulated phone">
+          <div class="caller-bar">
+            <label>Calling as
+              <select id="caller-select"><option value="+250788000001">+250 788 000 001 (new farmer)</option></select>
+            </label>
+            <label class="caller-custom">or number <input id="caller-input" type="tel" inputmode="tel" placeholder="0788 123 456" /></label>
+          </div>
+          <div class="channel-tabs" role="tablist">
+            <button type="button" role="tab" id="tab-ussd" aria-selected="true" aria-controls="panel-ussd">USSD *801#</button>
+            <button type="button" role="tab" id="tab-sms" aria-selected="false" aria-controls="panel-sms">SMS 8448</button>
+          </div>
+
+          <div class="phone">
+            <div class="phone-top"><span class="speaker"></span></div>
+            <div class="phone-status"><span>MTN RW</span><span id="phone-clock">08:00</span><span>▮▮▮▯</span></div>
+
+            <div id="panel-ussd" role="tabpanel" aria-labelledby="tab-ussd" class="phone-screen">
+              <div id="ussd-idle" class="ussd-idle">
+                <p class="dial-display" id="dial-display">*801#</p>
+                <button type="button" id="dial-button" class="dial-button">✆ Dial</button>
+                <p class="hint">Press Dial to start the CS-IRCFS menu</p>
+              </div>
+              <div id="ussd-session" class="ussd-session" hidden>
+                <pre id="ussd-text" class="ussd-text" aria-live="polite"></pre>
+                <form id="ussd-form" class="ussd-form">
+                  <input id="ussd-input" autocomplete="off" aria-label="Your answer" />
+                  <div class="ussd-actions"><button type="button" id="ussd-cancel">Cancel</button><button type="submit" id="ussd-send">Send</button></div>
+                </form>
+                <button type="button" id="ussd-ok" class="ussd-ok" hidden>OK</button>
+              </div>
+            </div>
+
+            <div id="panel-sms" role="tabpanel" aria-labelledby="tab-sms" class="phone-screen sms-screen" hidden>
+              <div class="sms-head">To: <b>8448</b> · CS-IRCFS</div>
+              <div id="sms-thread" class="sms-thread" aria-live="polite"></div>
+              <form id="sms-form" class="sms-form"><input id="sms-input" autocomplete="off" placeholder="Type a message" aria-label="SMS text" /><button type="submit">➤</button></form>
+            </div>
+
+            <div class="keypad" aria-label="Keypad">
+              <button type="button" data-key="1">1</button><button type="button" data-key="2">2<small>ABC</small></button><button type="button" data-key="3">3<small>DEF</small></button>
+              <button type="button" data-key="4">4<small>GHI</small></button><button type="button" data-key="5">5<small>JKL</small></button><button type="button" data-key="6">6<small>MNO</small></button>
+              <button type="button" data-key="7">7<small>PQRS</small></button><button type="button" data-key="8">8<small>TUV</small></button><button type="button" data-key="9">9<small>WXYZ</small></button>
+              <button type="button" data-key="*">*</button><button type="button" data-key="0">0</button><button type="button" data-key="#">#</button>
+              <button type="button" data-key="back" class="key-wide">⌫ Delete</button><button type="button" data-key="." class="key-wide">. (decimal)</button>
+            </div>
+          </div>
+
+          <label class="translate-toggle"><input type="checkbox" id="show-english" checked /> Show English translation under the phone</label>
+          <div id="english-box" class="english-box" aria-live="polite" hidden></div>
+
+          <div class="sms-shortcuts" id="sms-shortcuts" hidden>
+            <p>Try a keyword:</p>
+            <button type="button" data-sms="NYAMATA NZANA 5">NYAMATA NZANA 5</button>
+            <button type="button" data-sms="IMVURA 12">IMVURA 12</button>
+            <button type="button" data-sms="UMUSARURO IBIGORI 2.5">UMUSARURO IBIGORI 2.5</button>
+            <button type="button" data-sms="INDWARA IBISHYIMBO">INDWARA IBISHYIMBO</button>
+            <button type="button" data-sms="IKIBAZO Amazi ntageze ku mirima yacu">IKIBAZO …</button>
+            <button type="button" data-sms="UBUFASHA">UBUFASHA (help)</button>
+          </div>
+        </section>
+
+        <section class="trace-column">
+          <article class="trace-card">
+            <div class="trace-head"><div><p class="eyebrow">WHAT THE PLATFORM DID</p><h2>This session</h2></div><button type="button" id="clear-trace" class="ghost-button">Clear</button></div>
+            <ol id="trace" class="trace"><li class="trace-empty">Dial *801# or send an SMS. Each step will appear here with the record it created.</li></ol>
+          </article>
+
+          <article class="trace-card">
+            <div class="trace-head"><div><p class="eyebrow">LIVE · ALL PHONES</p><h2>Recent field activity</h2></div><a href="planner.html#channels" class="ghost-button">Open dashboard →</a></div>
+            <ul id="activity" class="activity"><li class="trace-empty">Loading…</li></ul>
+          </article>
+
+          <details class="trace-card menu-map" open>
+            <summary><span class="eyebrow">MENU MAP</span> USSD *801# (Kinyarwanda first, at most 3 levels)</summary>
+            <ol class="menu-tree">
+              <li><b>1 Rapora umusaruro</b> <i>Report harvest</i> → crop → expected tons → <em>tip by rainfall</em></li>
+              <li><b>2 Indwara/udukoko</b> <i>Disease/pests</i> → crop → problem (1 Nzana…) → severity 1–5 → <em>severity 4–5 opens an Act Now case</em></li>
+              <li><b>3 Rapora imvura</b> <i>Report rainfall</i> → mm today → <em>airtime every 3 reports + irrigation tip</em></li>
+              <li><b>4 Ibikorwa remezo</b> <i>Infrastructure</i> → PADAB/APEFA asset → condition → bottleneck category</li>
+              <li><b>5 Tanga ikibazo</b> <i>Grievance</i> → category (incl. resettlement) → message → <em>anonymous, cell kept for closing the loop</em></li>
+              <li><b>6 Imirire y'urugo</b> <i>Household nutrition</i> → meals → diet → food stocks → <em>stunting-risk score</em></li>
+            </ol>
+            <p class="menu-note">SMS keywords to 8448: <code>NZANA</code>, <code>INDWARA</code>, <code>IMVURA</code>, <code>UMUSARURO</code>, <code>IKIBAZO</code>. Add a sector name to locate a report, e.g. <code>NYAMATA NZANA 4</code>.</p>
+          </details>
+        </section>
+      </div>
+    </main>
+    <script src="shared.js?v=20261006"></script>
+    <script src="simulator.js?v=20261006"></script>
+  </body>
+</html>

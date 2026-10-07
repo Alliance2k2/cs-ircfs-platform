@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
@@ -17,10 +18,23 @@ class Settings(BaseSettings):
     sms_provider: str = "dry_run"
     africas_talking_username: str = ""
     africas_talking_api_key: str = ""
-    sms_sender_id: str = "CS-IRCFS"
+    sms_sender_id: str = ""  # only set once Africa's Talking approves the sender ID
     google_client_id: str = ""
+    session_hours: int = 12
+    # Field channels (architecture Section 4): USSD short code and SMS keyword number.
+    ussd_service_code: str = "*801#"
+    sms_shortcode: str = "8448"
+    # Airtime incentive (architecture Section 8.1): reward every N weather/infrastructure reports.
+    airtime_provider: str = "dry_run"
+    incentive_amount_rwf: int = 100
+    incentive_every_n_reports: int = 3
+    # Irrigation Scheduling Assistant thresholds (7-day rainfall, mm). Calibrate these against
+    # PADAB (Mwesa Valley) and APEFA (Ngeruka/Mareba) historical records — Section 9.2.
+    dry_spell_threshold_mm: float = 10.0
+    wet_spell_threshold_mm: float = 40.0
 
-    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
+    # The project-root .env, found from this file so scripts work from any folder.
+    model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore")
 
     @field_validator("database_url")
     @classmethod

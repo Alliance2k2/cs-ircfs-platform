@@ -32,6 +32,19 @@
       }
     },
     {
+      "label": "CS-IRCFS: Start demo (presentation data)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/start-local.ps1", "-Demo"],
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "cs-ircfs-demo",
+        "pattern": { "regexp": "^(.*)$", "message": 1 },
+        "background": { "activeOnStart": true, "beginsPattern": "DEMONSTRATION MODE", "endsPattern": "Uvicorn running on" }
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+    },
+    {
       "label": "CS-IRCFS: Run tests",
       "type": "shell",
       "command": "python",
