@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Cell, CitizenScienceLog, InboundMessage, IrrigationClimateLog, IrrigationScheme, Sector, User, UserRole
 from app.db.session import get_db
+from app.services.advisory import sector_schedule
 
 router = APIRouter(prefix="/api/v1/public", tags=["public"])
 
@@ -38,6 +39,16 @@ def public_overview(db: Session = Depends(get_db)) -> dict:
         else:
             kind, label = "water", "Irrigation asset check"
         recent.append({"kind": kind, "label": label, "sector": sector, "created_at": log.created_at})
+    # Per-sector activity and this week's irrigation advice, for the public map.
+    activity: dict[int, int] = {}
+    for model in (CitizenScienceLog, IrrigationClimateLog):
+        rows = db.execute(select(Cell.sector_id, func.count()).join(model, model.cell_id == Cell.id).where(model.created_at >= since).group_by(Cell.sector_id))
+        for sector_id, total in rows:
+            activity[sector_id] = activity.get(sector_id, 0) + total
+    sectors = [{"name": row["sector"], "latitude": row["latitude"], "longitude": row["longitude"], "reports_30d": activity.get(row["sector_id"], 0),
+                "advice_level": row["level"], "rainfall_mm_7d": row["rainfall_mm_7d"], "forecast_mm_7d": row["forecast_mm_7d"], "advice_en": row["message_en"], "advice_rw": row["message_rw"]}
+               for row in sector_schedule(db)]
+
     recent.sort(key=lambda item: item["created_at"].replace(tzinfo=None) if item["created_at"] else datetime.min, reverse=True)
 
     return {
@@ -49,5 +60,6 @@ def public_overview(db: Session = Depends(get_db)) -> dict:
         "sectors_reporting": count(select(func.count()).select_from(crop_sectors.union(water_sectors).subquery())),
         "sectors_total": count(select(func.count()).select_from(Sector)),
         "recent": recent[:6],
+        "sectors": sectors,
         "updated_at": datetime.now(timezone.utc),
     }

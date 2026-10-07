@@ -1,6 +1,6 @@
 # Data model
 
-The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261006_08`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
+The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261007_09`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
 
 ## Tables
 

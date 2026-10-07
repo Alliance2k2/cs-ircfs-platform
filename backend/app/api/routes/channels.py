@@ -72,6 +72,13 @@ async def sms_callback(request: Request, db: Session = Depends(get_db)):
     fields = await read_fields(request)
     phone = caller(fields, "from")
     text = fields.get("text", "")
+    message_id = fields.get("id") or None
+    # Africa's Talking retries a callback it thinks failed. The same message ID must not
+    # create a second report or a second reply.
+    if message_id:
+        earlier = db.scalar(select(InboundMessage).where(InboundMessage.channel == "sms", InboundMessage.session_id == message_id).limit(1))
+        if earlier is not None:
+            return {"reply": earlier.reply, "reply_status": "duplicate", "record_type": earlier.record_type, "record_id": earlier.record_id}
     user = find_or_register_user(db, phone)
     result = sms_keywords.handle(db, user, text)
     reply = deliver(db, phone, result.reply, purpose="auto_reply", cell_id=user.cell_id)

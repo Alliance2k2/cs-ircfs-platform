@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     # PADAB (Mwesa Valley) and APEFA (Ngeruka/Mareba) historical records — Section 9.2.
     dry_spell_threshold_mm: float = 10.0
     wet_spell_threshold_mm: float = 40.0
+    # Staff alerts: comma-separated phone numbers that get an SMS when a case opens at or
+    # above ALERT_MIN_PRIORITY ("critical" or "high"). Empty means no alerts.
+    # Add the Open-Meteo 7-day rainfall forecast to irrigation advice (needs internet; free, no key).
+    weather_forecast_enabled: bool = True
+    alert_phone_numbers: str = ""
+    alert_min_priority: str = "critical"
 
     # The project-root .env, found from this file so scripts work from any folder.
     model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore")

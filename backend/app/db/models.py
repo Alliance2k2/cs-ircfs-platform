@@ -141,7 +141,7 @@ class InboundMessage(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), index=True)
     channel: Mapped[str] = mapped_column(String(10))
-    session_id: Mapped[str | None] = mapped_column(String(120))
+    session_id: Mapped[str | None] = mapped_column(String(120), index=True)
     text: Mapped[str | None] = mapped_column(Text)
     reply: Mapped[str | None] = mapped_column(Text)
     record_type: Mapped[str | None] = mapped_column(String(40))

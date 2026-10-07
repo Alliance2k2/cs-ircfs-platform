@@ -1,7 +1,7 @@
 // Feature-phone simulator: drives the real USSD and SMS callbacks and shows what each step created.
 const { apiFetch, apiJson, escapeHtml, toast } = window.CS;
 const $ = (selector) => document.querySelector(selector);
-const RECORD_LABEL = { crop_report: "Crop report", irrigation_report: "Water / infrastructure report", community_feedback: "Anonymous grievance", nutrition_survey: "Nutrition survey" };
+const RECORD_LABEL = { crop_report: "Crop report", irrigation_report: "Water / infrastructure report", community_feedback: "Anonymous grievance", nutrition_survey: "Nutrition survey", location: "Caller location" };
 const RECORD_LINK = { crop_report: "planner.html#act-now", irrigation_report: "planner.html#advice", community_feedback: "planner.html#feedback", nutrition_survey: "planner.html#food" };
 
 let channel = "ussd";

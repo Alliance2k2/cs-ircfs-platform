@@ -194,13 +194,15 @@ function renderAdvice(rows) {
   const order = { irrigate_more: 0, reduce: 1, normal: 2, no_data: 3 };
   const withData = rows.filter((row) => row.level !== "no_data").sort((a, b) => order[a.level] - order[b.level]);
   const missing = rows.length - withData.length;
+  const forecasts = rows.filter((row) => row.level === "no_data" && row.forecast_mm_7d != null).map((row) => row.forecast_mm_7d);
+  const forecastRange = forecasts.length ? ` Forecast for them: ${number(Math.min(...forecasts), 0)}–${number(Math.max(...forecasts), 0)} mm over the next 7 days.` : "";
   const host = $("#advice-list");
   host.innerHTML = withData.length
     ? withData.map((row) => `<div class="advice-row level-${row.level}">
         <div class="advice-rain"><b>${number(row.rainfall_mm_7d, 1)}</b><small>mm / 7 days</small></div>
-        <div><strong>${escapeHtml(row.sector)}</strong> <span class="level-chip ${row.level}">${escapeHtml(ADVICE_LABEL[row.level][CS.lang === "rw" ? 1 : 0])}</span><p>${escapeHtml(CS.lang === "rw" ? row.message_rw : row.message_en)}</p><small>${row.readings} gauge reading${row.readings === 1 ? "" : "s"}</small></div>
-      </div>`).join("") + (missing ? `<p class="data-note">${missing} sector${missing === 1 ? "" : "s"} without rain-gauge readings this week.</p>` : "")
-    : '<div class="empty-insight"><span>☂</span><div><strong>No rain-gauge readings this week</strong><p>Cooperative leaders text IMVURA &lt;mm&gt; or use USSD option 3.</p></div></div>';
+        <div><strong>${escapeHtml(row.sector)}</strong> <span class="level-chip ${row.level}">${escapeHtml(ADVICE_LABEL[row.level][CS.lang === "rw" ? 1 : 0])}</span><p>${escapeHtml(CS.lang === "rw" ? row.message_rw : row.message_en)}</p><small>${row.readings} gauge reading${row.readings === 1 ? "" : "s"}${row.forecast_mm_7d != null ? ` · forecast ${number(row.forecast_mm_7d, 1)} mm next 7 days` : ""}</small></div>
+      </div>`).join("") + (missing ? `<p class="data-note">${missing} sector${missing === 1 ? "" : "s"} without rain-gauge readings this week.${forecastRange}</p>` : "")
+    : '<div class="empty-insight"><span>☂</span><div><strong>No rain-gauge readings this week</strong><p>Cooperative leaders text IMVURA &lt;mm&gt; or use USSD option 3.${escapeHtml(forecastRange)}</p></div></div>';
   $("#send-advice").disabled = !withData.length;
 }
 

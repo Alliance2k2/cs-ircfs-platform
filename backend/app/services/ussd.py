@@ -10,9 +10,10 @@ except the grievance message, and at most three levels below the main menu.
 """
 from dataclasses import dataclass, field
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.models import CommunityFeedback, NutritionSurvey, User
+from app.db.models import Cell, CommunityFeedback, NutritionSurvey, Sector, User
 from app.services.advisory import local_tip, maybe_reward, nutrition_risk_score
 from app.services.reporting import create_crop_report, create_irrigation_report, scheme_by_prefix, scheme_for_cell
 
@@ -35,6 +36,10 @@ GRIEVANCES = [("Ikwirakwizwa ry'inyongeramusaruro", "Input Distribution"), ("Igi
               ("Ibindi", "Other")]
 MEALS = [("Rimwe", "Once"), ("Kabiri", "Twice"), ("Gatatu cyangwa kurenga", "Three times or more")]
 YES_NO = [("Yego", "Yes"), ("Oya", "No")]
+# First call: a caller without a cell chooses sector and cell once, so every later report is mapped,
+# linked to its scheme, and reaches closing-the-loop SMS for that cell.
+SECTORS_PER_PAGE = 8
+MORE_SECTORS = ("Indi mirenge", "Other sectors")
 INVALID = ("Igisubizo ntikemewe. Ongera ugerageze ukanda *801#.", "That answer is not valid. Please dial *801# again.")
 
 
@@ -77,11 +82,42 @@ def end(screen: tuple[str, str], record_type: str | None = None, record_id: int 
 def handle(db: Session, user: User, text: str) -> UssdResult:
     """Route one USSD request. The caller commits the transaction."""
     steps = [step.strip() for step in text.split("*")] if text else []
+    if user.cell_id is None:
+        sectors = db.scalars(select(Sector).order_by(Sector.name)).all()
+        if sectors:
+            return set_location(db, user, sectors, steps)
     if not steps:
         return con(MAIN)
     flows = {"1": harvest, "2": pest, "3": rainfall, "4": infrastructure, "5": grievance, "6": nutrition}
     flow = flows.get(steps[0])
     return flow(db, user, steps[1:]) if flow else end(INVALID)
+
+
+def set_location(db: Session, user: User, sectors: list[Sector], steps: list[str]) -> UssdResult:
+    """Ask a first-time caller for sector then cell. 15 sectors fit on two screens."""
+    first, rest = sectors[:SECTORS_PER_PAGE], sectors[SECTORS_PER_PAGE:]
+    page_one = [(sector.name, sector.name) for sector in first] + ([MORE_SECTORS] if rest else [])
+    if not steps:
+        return con(menu(("Murakaza neza! Hitamo umurenge utuyemo:", "Welcome! Choose the sector where you live:"), page_one))
+    if rest and steps[0] == str(len(page_one)):
+        if len(steps) == 1:
+            return con(menu(("Hitamo umurenge utuyemo:", "Choose the sector where you live:"), [(sector.name, sector.name) for sector in rest]))
+        sector, steps = pick(rest, steps[1]), steps[2:]
+    else:
+        sector, steps = pick(first, steps[0]), steps[1:]
+    if not sector:
+        return end(INVALID)
+    cells = db.scalars(select(Cell).where(Cell.sector_id == sector.id).order_by(Cell.name)).all()
+    if not cells:
+        return end(INVALID)
+    if not steps:
+        return con(menu((f"{sector.name}: hitamo akagari utuyemo:", f"{sector.name}: choose your cell:"), [(cell.name, cell.name) for cell in cells]))
+    cell = pick(cells, steps[0])
+    if not cell:
+        return end(INVALID)
+    user.cell_id = cell.id
+    return end((f"Murakoze! Aho utuye habitswe: {cell.name}, {sector.name}.\nKanda *801# wongere utange raporo.",
+                f"Thank you! Your location is saved: {cell.name}, {sector.name}.\nDial *801# again to send a report."), "location", user.id)
 
 
 def harvest(db: Session, user: User, steps: list[str]) -> UssdResult:

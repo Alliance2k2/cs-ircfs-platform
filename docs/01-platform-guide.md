@@ -56,6 +56,11 @@ Then open `http://127.0.0.1:8000`.
 - Integrations can still use service API keys (`API_KEY_ROLES`).
 - In demo mode (`ENVIRONMENT=development`) everything is open, so a presenter does not need to sign in.
 
+## Alerts and forecasts
+
+- **Staff alerts.** Put district phone numbers in `ALERT_PHONE_NUMBERS` in `.env` (comma-separated). Each gets an SMS when a case opens: offline assets and severity-5 pests by default, or also faulty assets and severity-4 pests with `ALERT_MIN_PRIORITY=high`. Alerts appear in the SMS log as `staff_alert`.
+- **Rain forecast.** Irrigation advice adds the Open-Meteo 7-day forecast for each sector (free, no key, cached for 3 hours). If a dry week is followed by heavy forecast rain, the advice is to keep the usual schedule instead of irrigating more. Set `WEATHER_FORECAST_ENABLED=false` to turn it off.
+
 ## Useful scripts (`backend/scripts/`)
 
 | Script | Use |
