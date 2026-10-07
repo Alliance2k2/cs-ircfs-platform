@@ -162,3 +162,29 @@ def test_registration_cannot_choose_role_and_sessions_authorise(monkeypatch, cli
     assert client.get("/api/v1/analytics/act-now").status_code == 401
     client.post("/api/v1/auth/logout", headers=headers)
     assert client.get("/api/v1/map-data", headers=headers).status_code == 401
+
+
+def test_monitor_reads_live_figures_but_cannot_act(monkeypatch, client_and_db):
+    client, _ = client_and_db
+    client.post("/api/v1/auth/register", json={"email": "m@example.org", "password": "Str0ng!pass", "first_name": "M", "surname": "O"})
+    token = client.post("/api/v1/auth/login", json={"email": "m@example.org", "password": "Str0ng!pass"}).json()["access_token"]
+    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles=""))
+    headers = {"Authorization": f"Bearer {token}"}
+    for path in ("analytics/dashboard-summary", "analytics/scheme-performance", "analytics/response-health", "analytics/rainfall-map",
+                 "analytics/pest-heatmap", "analytics/nutrition-summary", "advisory/irrigation-schedule", "channels/activity"):
+        assert client.get(f"/api/v1/{path}", headers=headers).status_code == 200, path
+    assert client.get("/api/v1/analytics/act-now", headers=headers).status_code == 403
+    assert client.post("/api/v1/advisory/irrigation-schedule/send", headers=headers, json={"preview": True}).status_code == 403
+    assert client.get("/api/v1/analytics/dashboard-summary").status_code == 401
+
+
+def test_public_overview_needs_no_sign_in_and_hides_people(monkeypatch, client_and_db):
+    client, _ = client_and_db
+    dial(client, "3*12")  # a rain-gauge reading from the Ngeruka monitor
+    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles=""))
+    response = client.get("/api/v1/public/overview")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["reports"] >= 1 and data["sectors_reporting"] == 1 and data["sectors_total"] == 1
+    assert data["recent"][0]["sector"] == "Ngeruka"
+    assert "+2507" not in response.text and "Monitor" not in response.text

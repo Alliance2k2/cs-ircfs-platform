@@ -265,17 +265,9 @@ async function connectApi() {
   const label = document.querySelector("#data-label");
   const button = document.querySelector("#connect-api");
   try {
-    let probe = await apiFetch("users");
+    const probe = await apiFetch("users");
     if (probe.status === 403) throw new Error("Your role cannot manage platform data");
-    if (probe.status === 401 && CS.session.token()) { CS.session.clear(); window.location.href = "login.html"; return; }
-    if (probe.status === 401) {
-      CS.session.clearApiKey();
-      const key = prompt("Sign in to manage data, or paste a service API key (the secret before :administrator in API_KEY_ROLES):");
-      if (!key) throw new Error("API key required");
-      CS.session.setApiKey(key.trim());
-      probe = await apiFetch("users");
-    }
-    if (probe.status === 401) { CS.session.clearApiKey(); throw new Error("API key rejected"); }
+    if (probe.status === 401) { CS.session.clear(); window.location.href = "login.html?next=management.html"; return; }
     if (!probe.ok) throw new Error(`API returned ${probe.status}`);
     liveMode = true;
     await refreshNavigationCounts();
@@ -287,7 +279,7 @@ async function connectApi() {
     button.textContent = "API connected OK";
   } catch (error) {
     liveMode = false;
-    label.textContent = error.message === "API key rejected" ? "API KEY REJECTED" : error.message.startsWith("Your role") ? "ROLE NOT ALLOWED" : "API UNAVAILABLE";
+    label.textContent = error.message.startsWith("Your role") ? "ROLE NOT ALLOWED" : "API UNAVAILABLE";
     label.title = `${error.message}. Endpoint: ${API}`;
     label.classList.remove("live");
     button.textContent = "Reconnect PostgreSQL ";

@@ -146,3 +146,7 @@
 }
 .priority.critical { background: #fbe6e2; color: #a83f36; }
 .show-more { width: 100%; margin-top: 4px; }
+
+/* Citizen Science Monitor: read-only view of live data */
+body.read-only [data-planner-only] { display: none !important; }
+.role-note { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; background: #e8f4ee; color: #1d5a45; font-size: 13px; max-width: 640px; }

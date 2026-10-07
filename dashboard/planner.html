@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="overrides.css?v=20261006" />
     <link rel="stylesheet" href="shared.css?v=20261006" />
-    <link rel="stylesheet" href="planner-extra.css?v=20261006" />
+    <link rel="stylesheet" href="planner-extra.css?v=20261007" />
   </head>
   <body>
     <div class="app-shell">
@@ -20,7 +20,7 @@
         </a>
         <nav aria-label="Main navigation">
           <a class="nav-link active" href="#overview"><span aria-hidden="true">◎</span> <em data-i18n="nav.overview">Overview</em></a>
-          <a class="nav-link" href="#act-now"><span aria-hidden="true">!</span> <em data-i18n="nav.actnow">Act now</em> <b id="nav-alert-count">0</b></a>
+          <a class="nav-link" href="#act-now" data-planner-only><span aria-hidden="true">!</span> <em data-i18n="nav.actnow">Act now</em> <b id="nav-alert-count">0</b></a>
           <a class="nav-link" href="#channels"><span aria-hidden="true">✆</span> <em data-i18n="nav.channels">Field channels</em></a>
           <a class="nav-link" href="#schemes"><span aria-hidden="true">▤</span> <em data-i18n="nav.schemes">Scheme performance</em></a>
           <a class="nav-link" href="#advice"><span aria-hidden="true">☂</span> <em data-i18n="nav.advice">Irrigation advice</em></a>
@@ -28,7 +28,7 @@
           <a class="nav-link" href="#map"><span aria-hidden="true">⌖</span> <em data-i18n="nav.map">Map &amp; observations</em></a>
           <a class="nav-link" href="#feedback"><span aria-hidden="true">✉</span> <em data-i18n="nav.feedback">Community feedback</em></a>
           <a class="nav-link nav-external" href="simulator.html"><span aria-hidden="true">☏</span> <em data-i18n="nav.simulator">Phone simulator</em></a>
-          <a class="nav-link nav-external" href="management.html"><span aria-hidden="true">⚙</span> <em data-i18n="nav.management">Platform management</em></a>
+          <a class="nav-link nav-external" href="management.html" data-planner-only><span aria-hidden="true">⚙</span> <em data-i18n="nav.management">Platform management</em></a>
         </nav>
         <div class="sidebar-foot">
           <p data-i18n="data.source">Data source</p>
@@ -42,13 +42,14 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">DISTRICT DECISION SUPPORT</p>
-            <h1><span id="greeting" data-i18n="greet.morning">Good morning</span>, <span data-i18n="greet.planner">Planner</span></h1>
+            <h1><span id="greeting" data-i18n="greet.morning">Good morning</span>, <span id="greet-name" data-i18n="greet.planner">Planner</span></h1>
             <p class="subtle" data-i18n="top.subtitle">A clear view of irrigation performance, crop risks, and community action.</p>
+            <p id="role-note" class="role-note" hidden>Citizen Science Monitor view: live field reports, scheme progress, rainfall advice and the map. District Planners act on cases and send SMS.</p>
           </div>
           <div class="topbar-actions">
             <label class="scheme-select"><span data-i18n="top.scheme">Scheme</span> <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label>
             <a id="scheme-filter-help" class="scheme-empty-help" href="management.html" hidden>Add a scheme to use this filter</a>
-            <button id="start-tour" class="tour-button" type="button">▶ <span data-i18n="tour.start">Presentation tour</span></button>
+            <button id="start-tour" class="tour-button" type="button" data-planner-only>▶ <span data-i18n="tour.start">Presentation tour</span></button>
             <div class="header-controls" data-header-controls></div>
           </div>
         </header>
@@ -66,7 +67,7 @@
           <article class="metric-card accent-teal"><span class="metric-icon">₣</span><p data-i18n="metric.rewards">Airtime rewards</p><strong id="metric-rewards">-</strong><small>100 RWF per 3 weather reports</small></article>
         </section>
 
-        <section id="act-now" class="panel act-now-panel">
+        <section id="act-now" class="panel act-now-panel" data-planner-only>
           <div class="panel-heading">
             <div><p class="eyebrow" data-i18n="actnow.eyebrow">PRIORITISED WORK QUEUE</p><h2 data-i18n="actnow.title">Act now</h2><p class="subtle" data-i18n="actnow.sub">Reports needing district attention, ranked by urgency.</p></div>
             <button id="refresh-queue" class="secondary-button">↻ <span data-i18n="btn.refresh">Refresh</span></button>
@@ -120,7 +121,7 @@
           <article id="advice" class="panel advice-panel">
             <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="advice.eyebrow">IRRIGATION SCHEDULING ASSISTANT</p><h2 data-i18n="advice.title">Irrigation advice by sector</h2><p class="subtle" data-i18n="advice.sub">Seven-day rain-gauge totals become SMS advice for cooperatives.</p></div></div>
             <div id="advice-list" class="advice-list"></div>
-            <button id="send-advice" type="button" class="primary-button wide">✉ <span data-i18n="advice.send">Send advice to cooperatives</span></button>
+            <button id="send-advice" type="button" data-planner-only class="primary-button wide">✉ <span data-i18n="advice.send">Send advice to cooperatives</span></button>
           </article>
           <article id="food" class="panel food-panel">
             <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="food.eyebrow">HOUSEHOLD NUTRITION TRACKER</p><h2 data-i18n="food.title">Food security &amp; stunting risk</h2></div></div>
@@ -178,6 +179,6 @@
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script src="shared.js?v=20261006"></script>
     <script src="tour.js?v=20261006"></script>
-    <script src="app.js?v=20261006"></script>
+    <script src="app.js?v=20261007"></script>
   </body>
 </html>

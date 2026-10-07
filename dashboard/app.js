@@ -13,15 +13,11 @@ let currentMapData = null;
 let queueFilter = "all";
 let openRecord = null; // { kind: "case" | "feedback", id, item }
 const cache = {};
+// Citizen Science Monitors see the same live data read-only; acting on it stays with planners.
+const PLANNER_ROLES = ["district_officer", "district_planner", "administrator"];
+const signedIn = CS.session.account();
+const readOnly = Boolean(signedIn) && !PLANNER_ROLES.includes(signedIn.role);
 const layers = {};
-
-function apiKeyFromInput(value) {
-  let input = String(value || "").trim();
-  if (input.startsWith("API_KEY_ROLES=")) input = input.slice("API_KEY_ROLES=".length).trim();
-  input = input.replace(/^['"]|['"]$/g, "");
-  if (input.endsWith(":administrator")) input = input.slice(0, -":administrator".length);
-  return input.trim();
-}
 
 // Illustrative numbers so the story can be told before the API is connected.
 const demo = {
@@ -59,6 +55,11 @@ function setGreeting() {
   const key = hour < 12 ? "greet.morning" : hour < 17 ? "greet.afternoon" : "greet.evening";
   $("#greeting").dataset.i18n = key;
   $("#greeting").textContent = t(key);
+  if (signedIn) {
+    const name = $("#greet-name");
+    delete name.dataset.i18n;
+    name.textContent = (signedIn.full_name || signedIn.email).split(/[\s@]/)[0];
+  }
 }
 
 function countUp(element, target, suffix = "") {
@@ -385,7 +386,7 @@ function showDemo() {
 
 async function loadLive({ quiet = false } = {}) {
   const results = await Promise.allSettled([
-    apiJson("analytics/dashboard-summary"), apiJson("analytics/act-now"), apiJson("irrigation-schemes"), apiJson("analytics/scheme-performance"),
+    apiJson("analytics/dashboard-summary"), (readOnly ? Promise.resolve(null) : apiJson("analytics/act-now")), apiJson("irrigation-schemes"), apiJson("analytics/scheme-performance"),
     apiJson("analytics/response-health"), apiJson("advisory/irrigation-schedule"), apiJson("analytics/nutrition-summary"), apiJson("channels/activity?limit=15")
   ]);
   const [summary, queue, schemes, performance, health, schedule, nutrition, activity] = results.map((r) => (r.status === "fulfilled" ? r.value : null));
@@ -419,11 +420,10 @@ async function connect({ interactive = false } = {}) {
     } catch (error) {
       if (error.status === 403) throw error;
       if (error.status !== 401 || !interactive) throw error;
-      if (CS.session.token()) { CS.session.clear(); toast("Your session expired. Please sign in again.", "warn"); window.location.href = "login.html"; return; }
-      const key = apiKeyFromInput(window.prompt("Sign in for live data, or paste a service API key (the secret before :administrator in API_KEY_ROLES):"));
-      if (!key) throw Object.assign(new Error("Sign in to see live data"), { status: 401 });
-      CS.session.setApiKey(key);
-      try { await apiJson("analytics/dashboard-summary"); } catch (retry) { CS.session.clearApiKey(); throw retry; }
+      // People sign in with their account; service API keys are for integrations, not the browser.
+      if (CS.session.token()) { CS.session.clear(); toast("Your session expired. Please sign in again.", "warn"); }
+      window.location.href = "login.html?next=planner.html";
+      return;
     }
     setMode("live");
     await loadLive();
@@ -589,6 +589,8 @@ const TOUR = [
 $("#start-tour").addEventListener("click", () => window.CSTour.start(TOUR));
 
 /* ---------- Start ---------- */
+document.body.classList.toggle("read-only", readOnly);
+$("#role-note").hidden = !readOnly;
 setGreeting();
 showDemo();
 connect();

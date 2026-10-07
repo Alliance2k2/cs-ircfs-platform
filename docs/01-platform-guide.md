@@ -48,7 +48,10 @@ Then open `http://127.0.0.1:8000`.
 
 - New registrations always start as **Citizen Science Monitor**. Nobody can register as a planner or administrator.
 - The first administrator is created on the server: `python backend/scripts/create_admin.py you@example.org`.
-- Administrators set roles in **Platform Management → Accounts**. Only district officers, District Planners and administrators can see the planner dashboard data.
+- Administrators set roles in **Platform Management → Accounts**.
+- **Citizen Science Monitors** see the planner dashboard with live data, read-only: figures, field channels, scheme performance, irrigation advice, nutrition and the map.
+- **District Planners**, district officers and administrators also get the Act Now queue, case and feedback updates, SMS sending and Platform Management.
+- The home page (`/`) shows live totals and recent activity from `GET /api/v1/public/overview`. It needs no sign-in and never returns names, phone numbers, message text or grievances.
 - Sign-in sessions are stored in the database (only a hash of the token) and expire after 12 hours (`SESSION_HOURS`).
 - Integrations can still use service API keys (`API_KEY_ROLES`).
 - In demo mode (`ENVIRONMENT=development`) everything is open, so a presenter does not need to sign in.

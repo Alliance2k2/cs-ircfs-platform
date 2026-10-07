@@ -14,6 +14,8 @@ from app.services.advisory import advice_for_rainfall
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 planner = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
+# Citizen Science Monitors read the same live figures as planners; acting on cases stays with planners.
+viewer = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
 CLOSED = [ReportStatus.resolved, ReportStatus.closed]
 # Objective 2: a bottleneck category is auto-flagged when it recurs this often in the window.
 BOTTLENECK_FLAG_COUNT = 3
@@ -26,7 +28,7 @@ def aware(value: datetime | None) -> datetime | None:
 
 
 @router.get("/dashboard-summary", response_model=DashboardSummary)
-def dashboard_summary(db: Session = Depends(get_db), _: object = planner) -> DashboardSummary:
+def dashboard_summary(db: Session = Depends(get_db), _: object = viewer) -> DashboardSummary:
     count = lambda query: db.scalar(query) or 0  # noqa: E731
     registered_farmers = count(select(func.count()).select_from(User).where(User.role == UserRole.farmer))
     crop_reports = count(select(func.count()).select_from(CitizenScienceLog))
@@ -79,7 +81,7 @@ def farmer_summary(db: Session = Depends(get_db), _: object = planner) -> Dashbo
 
 
 @router.get("/scheme-performance")
-def scheme_performance(db: Session = Depends(get_db), _: object = planner) -> list[dict]:
+def scheme_performance(db: Session = Depends(get_db), _: object = viewer) -> list[dict]:
     """Objective 1 (outcome verification) and Objective 2 (bottleneck detection), scheme by scheme."""
     window_start = datetime.now(timezone.utc) - timedelta(days=BOTTLENECK_WINDOW_DAYS)
     results = []
@@ -112,7 +114,7 @@ def scheme_performance(db: Session = Depends(get_db), _: object = planner) -> li
 
 
 @router.get("/response-health")
-def response_health(db: Session = Depends(get_db), _: object = planner) -> dict:
+def response_health(db: Session = Depends(get_db), _: object = viewer) -> dict:
     """Module 3 accountability: how fast community concerns are resolved and communicated back."""
     feedback = list(db.scalars(select(CommunityFeedback)))
     resolved = [item for item in feedback if item.status in CLOSED]
@@ -147,7 +149,7 @@ def report_position(report, cells: dict[int, Cell]) -> tuple[float, float] | Non
 
 
 @router.get("/pest-heatmap")
-def pest_heatmap(days: int = 90, db: Session = Depends(get_db), _: object = planner) -> list[dict]:
+def pest_heatmap(days: int = 90, db: Session = Depends(get_db), _: object = viewer) -> list[dict]:
     """SMS/USSD pest and disease alerts as weighted points for the heatmap layer."""
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
@@ -161,7 +163,7 @@ def pest_heatmap(days: int = 90, db: Session = Depends(get_db), _: object = plan
 
 
 @router.get("/rainfall-map")
-def rainfall_map(days: int = 7, db: Session = Depends(get_db), _: object = planner) -> list[dict]:
+def rainfall_map(days: int = 7, db: Session = Depends(get_db), _: object = viewer) -> list[dict]:
     """Citizen-Led Rain Gauge Network: 7-day rainfall per cell and its drought-warning level."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     rows = db.execute(
@@ -176,7 +178,7 @@ def rainfall_map(days: int = 7, db: Session = Depends(get_db), _: object = plann
 
 
 @router.get("/nutrition-summary")
-def nutrition_summary(db: Session = Depends(get_db), _: object = planner) -> dict:
+def nutrition_summary(db: Session = Depends(get_db), _: object = viewer) -> dict:
     """Household Nutrition Tracker: stunting-risk drivers by cell."""
     surveys = list(db.scalars(select(NutritionSurvey)))
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}

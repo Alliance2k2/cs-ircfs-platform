@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.routes import advisory, analytics, auth, cases, channels, community, feedback, geography, map_data, reference_data, reports, system, users
+from app.api.routes import advisory, analytics, auth, cases, channels, community, feedback, geography, map_data, public, reference_data, reports, system, users
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.db.base import Base
@@ -66,7 +66,7 @@ async def database_error_handler(_: Request, error: SQLAlchemyError):
     return JSONResponse(status_code=500, content={"detail": "Database operation failed"})
 
 
-for api_router in (system.router, auth.router, channels.router, advisory.router, users.router, reference_data.router, reports.router, community.router, cases.router, feedback.router, analytics.router, map_data.router, geography.router):
+for api_router in (system.router, auth.router, channels.router, advisory.router, users.router, reference_data.router, reports.router, community.router, cases.router, feedback.router, analytics.router, map_data.router, geography.router, public.router):
     app.include_router(api_router)
 
 

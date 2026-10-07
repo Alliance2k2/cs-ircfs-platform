@@ -12,6 +12,7 @@ from app.services.sms import deliver, is_valid_phone, normalise_phone
 router = APIRouter(prefix="/api/v1/advisory", tags=["farmer advisory"])
 admin = Depends(require_roles(UserRole.administrator, UserRole.district_planner))
 planner = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
+viewer = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
 
 
 @router.post("/sms")
@@ -32,7 +33,7 @@ def list_messages(limit: int = Query(default=100, ge=1, le=500), db: Session = D
 
 
 @router.get("/irrigation-schedule")
-def irrigation_schedule(db: Session = Depends(get_db), _: object = planner) -> list[dict]:
+def irrigation_schedule(db: Session = Depends(get_db), _: object = viewer) -> list[dict]:
     """Irrigation Scheduling Assistant: 7-day rainfall per sector and the advice it triggers."""
     return sector_schedule(db)
 
