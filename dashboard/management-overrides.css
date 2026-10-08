@@ -18,7 +18,7 @@ dialog input, dialog select, dialog textarea { display: block; width: 100%; marg
 .filter-panel select, .filter-panel button { min-height: 36px; border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; background: white; color: var(--ink); font: inherit; }
 .page-button:disabled { cursor: not-allowed; opacity: .4; }
 
-/* Refined dashboard presentation */
+/* Refined dashboard layout */
 body { background: radial-gradient(circle at 85% 0%, #e9f4ee 0, #f5f8f6 38%, #eef4f0 100%); }
 .management-sidebar { background: linear-gradient(180deg, #0d3d31 0%, #123d31 65%, #0b3027 100%); box-shadow: 8px 0 28px #0b30271a; }
 .management-brand { padding-top: 2px; }

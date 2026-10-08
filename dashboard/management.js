@@ -19,7 +19,7 @@ const modules = {
     cards: [["Active schemes", "2", "Pilot investments", ""], ["PADAB coverage", "650 ha", "Verify official figure", "blue"], ["Infrastructure assets", "2", "Pumping stations recorded", "gold"], ["Outcome status", "Watch", "Needs verified field data", "coral"]],
     columns: ["Scheme", "Partner", "Location", "Area", "Status"],
     rows: [["PADAB", "PD", "AfDB", "Mwesa Valley", "650 ha", "operational"], ["APEFA Solar", "AS", "APEFA", "Ngeruka & Mareba", "To verify", "operational"]],
-    helper: ["Scheme data must be verified", "PADAB and APEFA figures are presentation examples until official scheme records, asset lists, and yield targets are approved."]
+    helper: ["Scheme data must be verified", "PADAB and APEFA figures must be confirmed against official scheme records, asset lists, and yield targets."]
   },
   citizen: {
     title: "Citizen reports", subtitle: "Review crop production, harvest, pest, and disease observations.", add: "+ New report", search: "Search citizen reports...",

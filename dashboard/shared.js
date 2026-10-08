@@ -70,7 +70,7 @@
     "greet.morning": ["Good morning", "Mwaramutse"], "greet.afternoon": ["Good afternoon", "Mwiriwe"], "greet.evening": ["Good evening", "Mwiriwe"],
     "greet.planner": ["Planner", "Mugenamigambi"],
     "top.subtitle": ["A clear view of irrigation performance, crop risks, and community action.", "Ishusho isobanutse y'imikorere yo kuhira, ibyago ku bihingwa n'ibikorwa by'abaturage."],
-    "top.scheme": ["Scheme", "Umushinga"], "top.allSchemes": ["All schemes", "Imishinga yose"], "tour.start": ["Presentation tour", "Urugendo rw'imurika"],
+    "top.scheme": ["Scheme", "Umushinga"], "top.allSchemes": ["All schemes", "Imishinga yose"],
     "metric.farmers": ["Registered farmers", "Abahinzi banditswe"], "metric.reports": ["Total reports", "Raporo zose"],
     "metric.schemes": ["Active schemes", "Imishinga ikora"], "metric.complaints": ["Open complaints", "Ibibazo bitarakemuka"],
     "metric.households": ["Households surveyed", "Ingo zabajijwe"], "metric.rewards": ["Airtime rewards", "Ibihembo by'itumanaho"],

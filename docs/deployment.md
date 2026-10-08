@@ -4,7 +4,7 @@ There are three ways to run the platform. All three use the same code.
 
 | Option | For | How |
 | --- | --- | --- |
-| Local demo | Presentations, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db`, open access) |
+| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, no sign-in) |
 | Local real database | Development against your PostgreSQL | `.\start-local.ps1` (runs migrations first) |
 | Docker Compose | District IT / MINAGRI handover | [infrastructure/README.md](../infrastructure/README.md) |
 | Render (hosted preview) | A shareable online demo | `render.yaml` Blueprint, described below |

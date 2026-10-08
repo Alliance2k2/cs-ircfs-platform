@@ -1,6 +1,6 @@
 # CS-IRCFS Backend
 
-## Clean structure
+## Structure
 
 ```text
 app/
@@ -44,4 +44,4 @@ Never commit a real `.env` file or API keys.
 
 The local PostgreSQL setup uses the ignored project `.env` file. Run `python scripts/check_db.py` to confirm connectivity and the Alembic revision, then `python -m alembic upgrade head` when a migration is pending. `python scripts/configure_api_key.py` creates an administrator key only if no key is configured; use `python scripts/configure_api_key.py --rotate` if a key is exposed. Restart the API after changing `.env`. For a loopback preview, run `python -m uvicorn app.main:app --host 127.0.0.1 --port 8002`; the dashboard can use `http://127.0.0.1:8080/?api=http://127.0.0.1:8002/api/v1`. On connecting, enter the key portion before `:administrator` in `API_KEY_ROLES` from `.env`. The dashboard keeps it in browser session storage for that tab's session.
 
-People sign in with individual platform accounts (database-backed sessions, roles set by an administrator). API keys remain for service integrations. Area-level access rules and live telecom delivery are still to do. See `../docs/06-roadmap-and-limits.md`.
+People sign in with individual platform accounts (database-backed sessions; roles and areas set by an administrator). API keys remain for service integrations. See [`../docs/roadmap.md`](../docs/roadmap.md) for known limitations.

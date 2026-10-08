@@ -1,6 +1,6 @@
 """Fill a DEMONSTRATION database with a realistic month of pilot activity.
 
-Use it for presentations and training, never on the real pilot database. All people,
+Use it for evaluation and training, never on the real pilot database. All people,
 cooperatives, and yield targets are invented and labelled as demonstration values.
 
     start-local.ps1 -Demo            # recommended: separate demo.db, seeded automatically

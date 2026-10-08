@@ -1,6 +1,6 @@
-# How the platform implements the architecture
+# Architecture
 
-This document maps each element of `cs-ircfs-platform-architecture.docx` to the part of the platform that delivers it.
+This document maps each element of the system design ([architecture-design.docx](architecture-design.docx)) to the part of the platform that delivers it.
 
 ## End-to-end flow (Section 4)
 
@@ -41,7 +41,7 @@ flowchart TD
 
 ## Deliberate differences from the sample schema (Section 7)
 
-The running schema keeps the same six core tables and improves them. Details are in [03-data-model.md](03-data-model.md).
+The running schema keeps the same six core tables and improves them. Details are in [data-model.md](data-model.md).
 
 - Expected and reported harvest are separate, so a forecast can be compared with the result.
 - Feedback has a full status workflow and audit history instead of a single `is_resolved` flag.

@@ -1,4 +1,4 @@
-# Platform guide
+# User guide
 
 CS-IRCFS lets citizens of Bugesera report crop, water and community information from any phone, and gives District Planners the evidence to verify whether the PADAB and APEFA Solar irrigation investments deliver their expected outcomes.
 
@@ -23,14 +23,14 @@ CS-IRCFS lets citizens of Bugesera report crop, water and community information 
 | Phone simulator | `/simulator.html` | A feature phone on screen. Dial `*801#` or text keywords; uses the real USSD/SMS endpoints |
 | Platform Management | `/management.html` | Users, schemes (incl. verified yield targets), reports, feedback, nutrition surveys, SMS log, accounts |
 | Sign in / Register | `/login.html`, `/register.html` | Web accounts for planners and staff |
-| Technical console | `/backend-console.html` | Backend flow and endpoint links for the technical team |
+| Technical console | `/backend-console.html` | Backend flow and endpoint links for developers |
 | API documentation | `/docs` | Interactive API reference |
 
-Every page has an **EN / RW** language switch. The dashboard has a **▶ Presentation tour** that walks through the eight parts of the platform.
+Every page has an **EN / RW** language switch.
 
 ## Running it
 
-**Presentation or training (recommended):** fills a separate demonstration database. Your real database is not touched.
+**Evaluation and training:** runs on a separate SQLite database filled with invented sample data. The database in `.env` is not touched.
 
 ```powershell
 .\start-local.ps1 -Demo          # or VS Code: Terminal → Run Task → "CS-IRCFS: Start demo"
@@ -56,7 +56,7 @@ Then open `http://127.0.0.1:8000`.
 - Sign-in sessions are stored in the database (only a hash of the token) and expire after 12 hours (`SESSION_HOURS`).
 - **Area-level access.** In **Platform Management → Accounts → Area**, tick the sectors an officer, planner or monitor works in. They then see cases, grievances, people, reports and messages from those sectors only, and can broadcast advice only to them. No ticks means the whole district. Administrators always see the whole district.
 - Integrations can still use service API keys (`API_KEY_ROLES`).
-- In demo mode (`ENVIRONMENT=development`) everything is open, so a presenter does not need to sign in.
+- In evaluation mode (`-Demo`, `ENVIRONMENT=development`) sign-in is turned off.
 
 ## Alerts and forecasts
 
@@ -69,7 +69,7 @@ Then open `http://127.0.0.1:8000`.
 | --- | --- |
 | `load_locations.py` | Load the 15 sectors and 72 cells from `data/*.gpkg`. No QGIS needed |
 | `seed_reference_schemes.py` | Add PADAB and APEFA Solar with their published figures |
-| `seed_demo_data.py` | Invented month of pilot activity, for demonstrations only |
+| `seed_demo_data.py` | Invented sample data for evaluation and training only |
 | `create_admin.py` | Create or promote an administrator |
 | `check_db.py`, `schema_audit.py` | Check the database connection, migration revision, and columns |
 | `configure_api_key.py` | Generate a service API key in `.env` |
