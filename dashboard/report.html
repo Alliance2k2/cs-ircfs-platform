@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CS-IRCFS | Monthly report</title>
+<style>
+:root{--deep:#072b25;--green:#0b6b52;--bar:#2f8f6d;--ink:#17302a;--muted:#5d736b;--line:#dbe6df;--soft:#f3f7f4;--warn:#fff6e3}
+*{box-sizing:border-box}
+body{margin:0;background:#eef3ef;color:var(--ink);font-family:Inter,"Segoe UI",system-ui,Arial,sans-serif;font-size:14px;line-height:1.45}
+.toolbar{position:sticky;top:0;z-index:5;background:var(--deep);color:#fff;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 20px}
+.toolbar a{color:#cfe6da;text-decoration:none;font-weight:600}
+.toolbar .spacer{flex:1}
+.toolbar input{height:36px;border-radius:8px;border:0;padding:0 10px;font:inherit}
+.toolbar button{height:36px;border-radius:8px;border:0;padding:0 16px;font-weight:700;cursor:pointer;background:#f2b544;color:var(--deep)}
+.page{max-width:900px;margin:24px auto;background:#fff;border-radius:12px;padding:36px 40px;box-shadow:0 10px 30px #1644331a}
+header.report{border-bottom:3px solid #f2b544;padding-bottom:14px;margin-bottom:18px}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--green)}
+h1{font-family:Georgia,serif;font-size:28px;margin:6px 0 4px;color:var(--deep)}
+h2{font-family:Georgia,serif;font-size:18px;color:var(--deep);margin:26px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--line);break-after:avoid}
+.meta{color:var(--muted);font-size:12.5px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;break-inside:avoid}
+.tile span{display:block;font-size:12px;color:var(--muted)}
+.tile b{display:block;font-size:24px;color:var(--deep);font-variant-numeric:tabular-nums;line-height:1.2}
+.tile small{font-size:11.5px;color:var(--muted)}
+.tile small.up,.tile small.down{color:var(--ink);font-weight:600}
+.brief{background:var(--soft);border-radius:10px;padding:12px 16px;margin:14px 0 0}
+.brief li{margin:3px 0}
+.brief ul{margin:0;padding-left:18px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 8px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 8px}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+tr{break-inside:avoid}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.bars{display:grid;gap:6px;margin:6px 0}
+.bar{display:grid;grid-template-columns:130px 1fr 70px;align-items:center;gap:10px;font-size:13px}
+.bar .track{height:12px;background:var(--soft);border-radius:0 4px 4px 0}
+.bar .fill{height:12px;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px}
+.bar .val{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;background:var(--soft);color:var(--green);margin:0 4px 3px 0}
+.note{background:var(--warn);border-left:4px solid #f2b544;padding:8px 12px;border-radius:6px;font-size:12.5px;margin:8px 0}
+.empty{color:var(--muted);font-style:italic}
+.status{padding:60px 20px;text-align:center;color:var(--muted)}
+footer.report{margin-top:28px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px}
+@media (max-width:720px){.page{margin:0;border-radius:0;padding:22px 16px}.tiles{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.bar{grid-template-columns:100px 1fr 56px}}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;font-size:12px}
+  .toolbar{display:none}
+  .page{margin:0;max-width:none;box-shadow:none;padding:0;border-radius:0}
+  .bar .fill,.tile,.brief,.note{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .two,.two section,.tiles,.brief{break-inside:avoid}
+  h2{margin-top:18px}
+  footer.report{margin-top:14px;break-before:avoid}
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <a href="planner.html">← Dashboard</a>
+  <span class="spacer"></span>
+  <label>Month <input type="month" id="month"></label>
+  <button type="button" id="print">Print / Save as PDF</button>
+</div>
+
+<main class="page">
+  <div id="report"><p class="status">Loading the report…</p></div>
+</main>
+
+<script src="shared.js?v=20261007"></script>
+<script>
+(() => {
+  const { apiJson, escapeHtml } = window.CS;
+  const fmt = (n, digits = 0) => (n === null || n === undefined ? "–" : Number(n).toLocaleString(undefined, { maximumFractionDigits: digits }));
+  const words = (s) => String(s || "").replaceAll("_", " ");
+  const params = new URLSearchParams(location.search);
+  const monthInput = document.querySelector("#month");
+  const now = new Date();
+  monthInput.value = params.get("month") || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  const TILES = [
+    ["reports", "Reports received"], ["harvest_reports", "Harvest reports"], ["pest_reports", "Pest & disease reports"], ["rain_readings", "Rain-gauge readings"],
+    ["asset_faults", "Irrigation asset faults"], ["grievances", "Grievances"], ["nutrition_surveys", "Households surveyed"], ["cases_opened", "Act Now cases opened"]
+  ];
+
+  function tile([key, label], figures, previousLabel) {
+    const f = figures[key];
+    let trend = `<small>${previousLabel}: ${fmt(f.previous)}</small>`;
+    if (f.change_percent !== null) {
+      const up = f.change_percent > 0;
+      trend = `<small class="${up ? "up" : f.change_percent < 0 ? "down" : ""}">${up ? "▲" : f.change_percent < 0 ? "▼" : "■"} ${Math.abs(f.change_percent)}% vs ${previousLabel}</small>`;
+    }
+    return `<div class="tile"><span>${label}</span><b>${fmt(f.value)}</b>${trend}</div>`;
+  }
+
+  function bars(rows, labelKey, valueKey, unit) {
+    if (!rows.length) return `<p class="empty">No data this month.</p>`;
+    const max = Math.max(...rows.map((r) => r[valueKey]), 1);
+    return `<div class="bars">${rows.map((r) => `<div class="bar" title="${escapeHtml(r[labelKey])}: ${fmt(r[valueKey], 1)} ${unit}">
+      <span>${escapeHtml(r[labelKey])}</span><div class="track"><div class="fill" style="width:${(r[valueKey] / max) * 100}%"></div></div><span class="val">${fmt(r[valueKey], 1)} ${unit}</span></div>`).join("")}</div>`;
+  }
+
+  function table(headers, rows) {
+    if (!rows.length) return `<p class="empty">None this month.</p>`;
+    return `<table><thead><tr>${headers.map(([h, cls]) => `<th class="${cls || ""}">${h}</th>`).join("")}</tr></thead><tbody>${rows.map((cells) => `<tr>${cells.map(([v, cls]) => `<td class="${cls || ""}">${v}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  }
+
+  function brief(r) {
+    const items = [];
+    const f = r.figures;
+    items.push(`${fmt(f.reports.value)} field reports from ${r.sectors_reporting} of ${r.sectors_total} sectors${f.reports.change_percent !== null ? ` (${f.reports.change_percent > 0 ? "up" : "down"} ${Math.abs(f.reports.change_percent)}% on last month)` : ""}.`);
+    if (r.cases.opened) items.push(`${r.cases.opened} Act Now case${r.cases.opened === 1 ? "" : "s"} opened (${Object.entries(r.cases.by_priority).map(([p, n]) => `${n} ${p}`).join(", ")}); ${r.cases.resolved_in_month} resolved this month; ${r.cases.open_at_month_end} still open at month end.`);
+    const pest = r.pests[0];
+    if (pest) items.push(`Main pest: ${escapeHtml(pest.pest)}, ${pest.reports} report${pest.reports === 1 ? "" : "s"}${pest.severe ? ` (${pest.severe} severe)` : ""}${pest.sectors.length ? ` in ${escapeHtml(pest.sectors.join(", "))}` : ""}.`);
+    const flagged = r.schemes.filter((s) => Object.values(s.bottlenecks).some((n) => n >= 3));
+    flagged.forEach((s) => items.push(`${escapeHtml(s.name)}: recurring ${escapeHtml(Object.entries(s.bottlenecks).filter(([, n]) => n >= 3).map(([c]) => c).join(", "))} bottleneck.`));
+    const known = r.rainfall.filter((x) => x.sector !== "Location not set");
+    if (known.length) items.push(`Driest sector: ${escapeHtml(known[0].sector)} with ${fmt(known[0].rainfall_mm, 1)} mm this month.`);
+    if (r.nutrition.high_risk_households) items.push(`${r.nutrition.high_risk_households} of ${r.nutrition.households} surveyed households at high stunting risk.`);
+    if (r.grievances.received) items.push(`${r.grievances.received} grievance${r.grievances.received === 1 ? "" : "s"} received, ${r.grievances.resolved} resolved; ${r.grievances.close_loop_sms} closing-the-loop SMS sent.`);
+    return `<div class="brief"><ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul></div>`;
+  }
+
+  function render(r) {
+    const previousLabel = new Date(`${r.previous_month}-15`).toLocaleString("en", { month: "short" });
+    const demoTargets = r.schemes.some((s) => /demonstration/i.test(s.target_source || ""));
+    const generated = new Date(r.generated_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+    document.title = `CS-IRCFS monthly report – ${r.label}`;
+    document.querySelector("#report").innerHTML = `
+      <header class="report">
+        <div class="eyebrow">Bugesera District · CS-IRCFS</div>
+        <h1>Monthly field report: ${escapeHtml(r.label)}</h1>
+        <div class="meta">Citizen reports by USSD *801#, SMS 8448 and the web · Generated ${generated} · Counts only, no personal data</div>
+      </header>
+
+      <div class="tiles">${TILES.map((t) => tile(t, r.figures, previousLabel)).join("")}</div>
+      <h2>In brief</h2>
+      ${brief(r)}
+
+      <h2>Irrigation schemes this month</h2>
+      ${demoTargets ? `<p class="note">Some yield targets are demonstration values. Replace them with the feasibility-study figures in Platform Management.</p>` : ""}
+      ${table([["Scheme"], ["Crop reports", "num"], ["Expected t", "num"], ["Reported t", "num"], ["Severe pests", "num"], ["Asset faults", "num"], ["Bottlenecks"], ["Grievances", "num"]],
+        r.schemes.map((s) => [[`<b>${escapeHtml(s.name)}</b>${s.is_active ? "" : " <small>(reference)</small>"}${s.target_tons ? `<br><small>Target ${fmt(s.target_tons, 1)} t</small>` : ""}`],
+          [fmt(s.crop_reports), "num"], [fmt(s.expected_tons, 1), "num"], [fmt(s.reported_tons, 1), "num"], [fmt(s.severe_pest_reports), "num"], [fmt(s.asset_faults), "num"],
+          [Object.entries(s.bottlenecks).map(([c, n]) => `<span class="chip">${escapeHtml(c)} ${n}</span>`).join("") || "–"], [fmt(s.grievances), "num"]]))}
+
+      <div class="two">
+        <section>
+          <h2>Act Now cases</h2>
+          ${table([["Measure"], ["Value", "num"]], [
+            [["Opened this month"], [fmt(r.cases.opened), "num"]],
+            ...Object.entries(r.cases.by_priority).map(([p, n]) => [[`&nbsp;&nbsp;${escapeHtml(p)}`], [fmt(n), "num"]]),
+            [["Resolved this month"], [fmt(r.cases.resolved_in_month), "num"]],
+            [["Still open at month end"], [fmt(r.cases.open_at_month_end), "num"]],
+            [["Median days to resolve"], [fmt(r.cases.median_days_to_resolve, 1), "num"]]])}
+        </section>
+        <section>
+          <h2>Community grievances</h2>
+          ${table([["Category"], ["Received", "num"]], Object.entries(r.grievances.by_category).map(([c, n]) => [[escapeHtml(c)], [fmt(n), "num"]]))}
+          <p class="meta">${fmt(r.grievances.resolved)} resolved · median ${fmt(r.grievances.median_days_to_resolve, 1)} days · ${fmt(r.grievances.close_loop_sms)} closing-the-loop SMS</p>
+        </section>
+      </div>
+
+      <h2>Pests and diseases</h2>
+      ${table([["Pest or disease"], ["Reports", "num"], ["Severe (4–5)", "num"], ["Sectors"]],
+        r.pests.map((p) => [[escapeHtml(p.pest)], [fmt(p.reports), "num"], [fmt(p.severe), "num"], [escapeHtml(p.sectors.join(", ")) || "–"]]))}
+
+      <div class="two">
+        <section>
+          <h2>Rainfall by sector (driest first)</h2>
+          ${bars(r.rainfall, "sector", "rainfall_mm", "mm")}
+          <p class="meta">Month total per rain gauge, averaged across the gauges in each sector.</p>
+        </section>
+        <section>
+          <h2>Reports by sector</h2>
+          ${bars(r.sector_activity, "sector", "reports", "")}
+        </section>
+      </div>
+
+      <h2>Household nutrition</h2>
+      <p>${fmt(r.nutrition.households)} households surveyed · average stunting risk ${fmt(r.nutrition.average_risk, 1)} / 5 · ${fmt(r.nutrition.high_risk_households)} at high risk (4–5)</p>
+      ${table([["Cell"], ["Sector"], ["Households", "num"], ["Average risk", "num"]],
+        r.nutrition.cells.map((c) => [[escapeHtml(c.cell)], [escapeHtml(c.sector || "–")], [fmt(c.households), "num"], [fmt(c.average_risk, 1), "num"]]))}
+
+      <h2>Messages back to citizens</h2>
+      ${table([["SMS purpose"], ["Sent", "num"]], Object.entries(r.messages.sms_sent_by_purpose).map(([p, n]) => [[escapeHtml(words(p))], [fmt(n), "num"]]))}
+      <p class="meta">Delivery: ${Object.entries(r.messages.delivery).map(([s, n]) => `${escapeHtml(words(s))} ${fmt(n)}`).join(" · ") || "none"} · Airtime rewards: ${fmt(r.messages.airtime_rewards)} (${fmt(r.messages.airtime_rwf)} RWF)</p>
+      ${r.messages.delivery.dry_run ? `<p class="note">"dry run" messages were recorded but not sent, because live SMS credentials are not configured yet.</p>` : ""}
+
+      <footer class="report">CS-IRCFS · Citizen Science for Irrigation Resilience and Climate-smart Food Security · Bugesera District. Figures cover ${escapeHtml(r.label)} in Kigali time and compare with the previous month.</footer>`;
+  }
+
+  async function load() {
+    const month = monthInput.value;
+    history.replaceState(null, "", `?month=${month}`);
+    document.querySelector("#report").innerHTML = `<p class="status">Loading the report…</p>`;
+    try {
+      render(await apiJson(`analytics/monthly-report?month=${encodeURIComponent(month)}`));
+    } catch (error) {
+      if (error.status === 401) { location.href = "login.html?next=report.html"; return; }
+      document.querySelector("#report").innerHTML = `<p class="status">${escapeHtml(error.status === 403 ? `${error.message}.` : error.message || "The platform is not reachable.")}</p>`;
+    }
+  }
+  monthInput.addEventListener("change", load);
+  document.querySelector("#print").addEventListener("click", () => window.print());
+  load();
+})();
+</script>
+</body>
+</html>

@@ -250,3 +250,23 @@ def test_forecast_adds_look_ahead_to_irrigation_advice(monkeypatch, client_and_d
     assert client.get("/api/v1/advisory/irrigation-schedule").json()[0]["level"] == "irrigate_more"
     monkeypatch.setattr(advisory, "rainfall_forecast", lambda points: {})  # forecast service down: gauges only
     assert client.get("/api/v1/advisory/irrigation-schedule").json()[0]["message_en"].endswith("this week.")
+
+
+def test_monthly_report_counts_this_month_only(client_and_db):
+    client, _ = client_and_db
+    dial(client, "2*2*1*5")      # critical pest report -> case
+    dial(client, "3*12")         # rain gauge
+    dial(client, "5*2*Fees went up")
+    dial(client, "6*1*2*2")      # nutrition survey, high risk
+    report = client.get("/api/v1/analytics/monthly-report").json()
+    figures = report["figures"]
+    assert figures["reports"]["value"] == 2 and figures["reports"]["previous"] == 0 and figures["reports"]["change_percent"] is None
+    assert figures["pest_reports"]["value"] == 1 and figures["grievances"]["value"] == 1 and figures["nutrition_surveys"]["value"] == 1
+    assert report["cases"]["opened"] == 1 and report["cases"]["by_priority"] == {"critical": 1} and report["cases"]["open_at_month_end"] == 1
+    assert report["pests"][0] == {"pest": "Fall armyworm", "reports": 1, "severe": 1, "sectors": ["Ngeruka"]}
+    assert report["rainfall"] == [{"sector": "Ngeruka", "rainfall_mm": 12.0, "gauges": 1, "readings": 1}]
+    assert report["nutrition"]["high_risk_households"] == 1 and report["sectors_reporting"] == 1
+    assert "+2507" not in str(report) and "Fees went up" not in str(report)
+    old = client.get("/api/v1/analytics/monthly-report?month=2020-01").json()
+    assert old["label"] == "January 2020" and old["previous_month"] == "2019-12" and old["figures"]["reports"]["value"] == 0
+    assert client.get("/api/v1/analytics/monthly-report?month=2026-13").status_code == 422

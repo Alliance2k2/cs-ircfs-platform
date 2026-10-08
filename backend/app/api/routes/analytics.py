@@ -11,6 +11,7 @@ from app.db.models import (AdvisoryMessage, Cell, CitizenScienceLog, CommunityFe
 from app.db.session import get_db
 from app.schemas import ActNowItem, DashboardSummary
 from app.services.advisory import advice_for_rainfall
+from app.services.monthly_report import build_monthly_report
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 planner = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
@@ -44,6 +45,12 @@ def dashboard_summary(db: Session = Depends(get_db), _: object = viewer) -> Dash
         rewards_paid_rwf=count(select(func.sum(IncentiveReward.amount_rwf)).where(IncentiveReward.status.in_(["sent", "dry_run"]))),
         field_messages=count(select(func.count()).select_from(InboundMessage)),
     )
+
+
+@router.get("/monthly-report")
+def monthly_report(month: str | None = None, db: Session = Depends(get_db), _: object = viewer) -> dict:
+    """One month of field evidence for the district (month as YYYY-MM, Kigali time; default: this month)."""
+    return build_monthly_report(db, month)
 
 
 @router.get("/act-now", response_model=list[ActNowItem])
