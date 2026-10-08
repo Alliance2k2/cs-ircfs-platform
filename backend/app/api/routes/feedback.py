@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter, check_cell
+from app.core.security import Principal, require_roles
 from app.db.models import CommunityFeedback, FeedbackStatusEvent, ReportStatus, User, UserRole
 from app.db.session import get_db
 from app.schemas import CellNotification, FeedbackCreate, FeedbackEventRead, FeedbackRead, FeedbackUpdate
@@ -25,8 +26,17 @@ def create_feedback(payload: FeedbackCreate, db: Session = Depends(get_db), _: o
 
 
 @router.get("", response_model=list[FeedbackRead])
-def list_feedback(db: Session = Depends(get_db), _: object = manager) -> list[CommunityFeedback]:
-    return list(db.scalars(select(CommunityFeedback).order_by(CommunityFeedback.id.desc())))
+def list_feedback(db: Session = Depends(get_db), principal: Principal = manager) -> list[CommunityFeedback]:
+    cells = allowed_cells(db, principal)
+    return list(db.scalars(select(CommunityFeedback).where(cell_filter(CommunityFeedback.cell_id, cells)).order_by(CommunityFeedback.id.desc())))
+
+
+def find_feedback(db: Session, feedback_id: int, principal: Principal) -> CommunityFeedback:
+    feedback = db.get(CommunityFeedback, feedback_id)
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback case not found")
+    check_cell(feedback.cell_id, allowed_cells(db, principal), "Feedback case")
+    return feedback
 
 
 @router.patch("/{feedback_id}", response_model=FeedbackRead)
@@ -34,11 +44,9 @@ def update_feedback(
     feedback_id: int,
     payload: FeedbackUpdate,
     db: Session = Depends(get_db),
-    _: object = manager,
+    principal: Principal = manager,
 ) -> CommunityFeedback:
-    feedback = db.get(CommunityFeedback, feedback_id)
-    if not feedback:
-        raise HTTPException(status_code=404, detail="Feedback case not found")
+    feedback = find_feedback(db, feedback_id, principal)
     require_if_provided(db, User, payload.assigned_to_user_id, "assigned_to_user_id")
     require_if_provided(db, User, payload.changed_by_user_id, "changed_by_user_id")
     event = FeedbackStatusEvent(
@@ -59,9 +67,8 @@ def update_feedback(
 
 
 @router.get("/{feedback_id}/history", response_model=list[FeedbackEventRead])
-def feedback_history(feedback_id: int, db: Session = Depends(get_db), _: object = manager) -> list[FeedbackStatusEvent]:
-    if not db.get(CommunityFeedback, feedback_id):
-        raise HTTPException(status_code=404, detail="Feedback case not found")
+def feedback_history(feedback_id: int, db: Session = Depends(get_db), principal: Principal = manager) -> list[FeedbackStatusEvent]:
+    find_feedback(db, feedback_id, principal)
     return list(
         db.scalars(
             select(FeedbackStatusEvent)
@@ -72,11 +79,9 @@ def feedback_history(feedback_id: int, db: Session = Depends(get_db), _: object 
 
 
 @router.post("/{feedback_id}/notify-cell")
-def notify_feedback_cell(feedback_id: int, payload: CellNotification, db: Session = Depends(get_db), _: object = manager) -> dict:
+def notify_feedback_cell(feedback_id: int, payload: CellNotification, db: Session = Depends(get_db), principal: Principal = manager) -> dict:
     """Closing-the-Loop SMS: tell everyone registered in the affected cell what was done."""
-    feedback = db.get(CommunityFeedback, feedback_id)
-    if not feedback:
-        raise HTTPException(status_code=404, detail="Feedback case not found")
+    feedback = find_feedback(db, feedback_id, principal)
     if feedback.status not in {ReportStatus.resolved, ReportStatus.closed}:
         raise HTTPException(status_code=422, detail="Resolve the feedback case before notifying the community")
     message = payload.message or resolution_message(f"Ikibazo FB-{feedback.id:03d}", feedback.category, feedback.action_taken)

@@ -5,7 +5,8 @@ from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
 from app.db.models import Cell, CitizenScienceLog, IrrigationClimateLog, IrrigationScheme, User, UserRole
 from app.db.session import get_db
 from app.schemas import MapData, MapFeature
@@ -28,8 +29,9 @@ reader = Depends(require_roles(UserRole.farmer, UserRole.citizen_science_monitor
 
 
 @router.get("/map-data", response_model=MapData)
-def map_data(db: Session = Depends(get_db), _: object = reader) -> MapData:
+def map_data(db: Session = Depends(get_db), principal: Principal = reader) -> MapData:
     features: list[MapFeature] = []
+    area = allowed_cells(db, principal)
     schemes = list(db.scalars(select(IrrigationScheme).where(IrrigationScheme.is_active.is_(True)).order_by(IrrigationScheme.name)))
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}
 
@@ -37,18 +39,18 @@ def map_data(db: Session = Depends(get_db), _: object = reader) -> MapData:
         if scheme.latitude is not None and scheme.longitude is not None:
             features.append(MapFeature(id=f"scheme-{scheme.id}", feature_type="scheme", name=scheme.name, latitude=scheme.latitude, longitude=scheme.longitude, scheme_id=scheme.id))
 
-    for report in db.scalars(select(IrrigationClimateLog).order_by(IrrigationClimateLog.id.desc())):
+    for report in db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, area)).order_by(IrrigationClimateLog.id.desc())):
         position = located(report, cells)
         if position:
             is_rain = report.operational_status is None and report.rainfall_mm is not None
             features.append(MapFeature(id=f"irrigation-{report.id}", feature_type="rainfall" if is_rain else "irrigation", name=report.infrastructure_name or "Irrigation observation", latitude=position[0], longitude=position[1], status=f"{report.rainfall_mm:g} mm" if is_rain else report.operational_status, scheme_id=report.scheme_id, details=report.fault_description or report.bottleneck_category))
 
-    for report in db.scalars(select(CitizenScienceLog).order_by(CitizenScienceLog.id.desc())):
+    for report in db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, area)).order_by(CitizenScienceLog.id.desc())):
         position = located(report, cells)
         if position:
             features.append(MapFeature(id=f"crop-{report.id}", feature_type="crop", name=report.pest_or_disease or report.crop_type, latitude=position[0], longitude=position[1], status="pest alert" if report.severity and report.severity >= 4 else "reported", scheme_id=report.scheme_id, details=report.notes))
 
-    farmer_query = select(User.id, User.full_name, ST_Y(User.location), ST_X(User.location)).where(User.role == UserRole.farmer, User.location.is_not(None)) if db.bind.dialect.name == "postgresql" else select(User.id, User.full_name, User.location).where(User.role == UserRole.farmer, User.location.is_not(None))
+    farmer_query = select(User.id, User.full_name, ST_Y(User.location), ST_X(User.location)).where(User.role == UserRole.farmer, User.location.is_not(None), cell_filter(User.cell_id, area)) if db.bind.dialect.name == "postgresql" else select(User.id, User.full_name, User.location).where(User.role == UserRole.farmer, User.location.is_not(None), cell_filter(User.cell_id, area))
     for row in db.execute(farmer_query):
         if db.bind.dialect.name == "postgresql":
             farmer_id, name, latitude, longitude = row

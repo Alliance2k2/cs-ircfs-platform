@@ -594,6 +594,10 @@ $("#start-tour").addEventListener("click", () => window.CSTour.start(TOUR));
 /* ---------- Start ---------- */
 document.body.classList.toggle("read-only", readOnly);
 $("#role-note").hidden = !readOnly;
+if (signedIn?.sector_ids?.length) {
+  $("#area-note").textContent = `Your area: ${signedIn.area}. Cases, grievances, people and reports are limited to it; district totals and trends cover all of Bugesera.`;
+  $("#area-note").hidden = false;
+}
 setGreeting();
 showDemo();
 connect();

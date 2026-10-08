@@ -46,3 +46,9 @@ tbody tr:hover { background: #f5fbf7; }
 /* Accounts role picker and header controls */
 .role-select{border:1px solid #ccdcd6;border-radius:7px;padding:6px 8px;background:#fff;font:inherit;font-size:12px;text-transform:capitalize}
 .header-actions{flex-wrap:wrap}
+
+/* Area-level access dialog */
+.area-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 14px; margin: 14px 0; }
+#area-dialog .area-option { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; font-weight: 600; cursor: pointer; margin: 0; text-align: left; }
+#area-dialog .area-option input { width: 18px; height: 18px; margin: 0; flex: none; }
+@media (max-width: 640px) { .area-grid { grid-template-columns: 1fr 1fr; } }

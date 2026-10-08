@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
 from app.db.models import CitizenScienceLog, IrrigationClimateLog, UserRole
 from app.db.session import get_db
 from app.schemas import CropReportCreate, CropReportRead, IrrigationReportCreate, IrrigationReportRead
@@ -24,8 +25,9 @@ def create_crop_report(payload: CropReportCreate, db: Session = Depends(get_db),
 
 
 @router.get("/citizen-reports", response_model=list[CropReportRead])
-def list_crop_reports(db: Session = Depends(get_db), _: object = reader) -> list[CitizenScienceLog]:
-    return list(db.scalars(select(CitizenScienceLog).order_by(CitizenScienceLog.id.desc())))
+def list_crop_reports(db: Session = Depends(get_db), principal: Principal = reader) -> list[CitizenScienceLog]:
+    cells = allowed_cells(db, principal)
+    return list(db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, cells)).order_by(CitizenScienceLog.id.desc())))
 
 
 @router.post("/irrigation-reports", response_model=IrrigationReportRead, status_code=status.HTTP_201_CREATED)
@@ -38,5 +40,6 @@ def create_irrigation_report(payload: IrrigationReportCreate, db: Session = Depe
 
 
 @router.get("/irrigation-reports", response_model=list[IrrigationReportRead])
-def list_irrigation_reports(db: Session = Depends(get_db), _: object = reader) -> list[IrrigationClimateLog]:
-    return list(db.scalars(select(IrrigationClimateLog).order_by(IrrigationClimateLog.id.desc())))
+def list_irrigation_reports(db: Session = Depends(get_db), principal: Principal = reader) -> list[IrrigationClimateLog]:
+    cells = allowed_cells(db, principal)
+    return list(db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, cells)).order_by(IrrigationClimateLog.id.desc())))

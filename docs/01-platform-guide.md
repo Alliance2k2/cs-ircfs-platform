@@ -54,6 +54,7 @@ Then open `http://127.0.0.1:8000`.
 - **District Planners**, district officers and administrators also get the Act Now queue, case and feedback updates, SMS sending and Platform Management.
 - The home page (`/`) shows live totals and recent activity from `GET /api/v1/public/overview`. It needs no sign-in and never returns names, phone numbers, message text or grievances.
 - Sign-in sessions are stored in the database (only a hash of the token) and expire after 12 hours (`SESSION_HOURS`).
+- **Area-level access.** In **Platform Management → Accounts → Area**, tick the sectors an officer, planner or monitor works in. They then see cases, grievances, people, reports and messages from those sectors only, and can broadcast advice only to them. No ticks means the whole district. Administrators always see the whole district.
 - Integrations can still use service API keys (`API_KEY_ROLES`).
 - In demo mode (`ENVIRONMENT=development`) everything is open, so a presenter does not need to sign in.
 

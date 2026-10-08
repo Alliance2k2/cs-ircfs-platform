@@ -4,7 +4,8 @@ from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
 from app.db.models import Cell, CitizenScienceLog, CommunityFeedback, Farm, FeedbackStatusEvent, IncidentCase, IncidentEvent, IrrigationClimateLog, User, UserRole
 from app.db.session import get_db
 from app.schemas import UserCreate, UserRead, UserUpdate
@@ -38,9 +39,9 @@ def list_users(
     q: str | None = Query(default=None, min_length=1, max_length=120),
     role: UserRole | None = None,
     db: Session = Depends(get_db),
-    _: object = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator)),
+    principal: Principal = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator)),
 ) -> list[User]:
-    query = select(User).order_by(User.id.desc())
+    query = select(User).where(cell_filter(User.cell_id, allowed_cells(db, principal))).order_by(User.id.desc())
     if q:
         term = f"%{q.strip()}%"
         query = query.where(User.full_name.ilike(term) | User.phone_number.ilike(term) | User.cooperative_name.ilike(term))

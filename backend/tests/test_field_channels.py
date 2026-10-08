@@ -1,7 +1,7 @@
 """USSD, SMS keywords, closing-the-loop, analytics, incentives, and session sign-in."""
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -282,3 +282,51 @@ def test_trends_put_this_month_last(client_and_db):
     latest = months[-1]
     assert latest["reports"] == 2 and latest["severe_pests"] == 1 and latest["cases_opened"] == 1
     assert latest["rainfall_mm"] == 12.0 and latest["rain_readings"] == 1 and latest["households"] == 1 and latest["average_risk"] == 5
+
+
+def test_area_limited_officer_sees_only_their_sectors(monkeypatch, client_and_db):
+    client, Session = client_and_db
+    from app.db.models import PlatformAccount, UserRole
+    with Session() as db:
+        other = Sector(name="Nyamata")
+        db.add(other); db.flush()
+        far_cell = Cell(name="Kanazi", sector_id=other.id)
+        db.add(far_cell); db.flush()
+        db.add(User(phone_number="+250788000003", full_name="Far farmer", cell_id=far_cell.id))
+        db.commit()
+        ngeruka = db.scalar(select(Sector.id).where(Sector.name == "Ngeruka"))
+    dial(client, "2*2*1*5")                                       # Ngeruka: critical case
+    dial(client, "2*2*1*4", phone="+250788000003")                # Nyamata: high case
+    dial(client, "5*2*Water fee doubled", phone="+250788000003")  # Nyamata grievance
+
+    client.post("/api/v1/auth/register", json={"email": "o@example.org", "password": "Str0ng!pass", "first_name": "O", "surname": "F"})
+    with Session() as db:
+        account = db.scalar(select(PlatformAccount).where(PlatformAccount.email == "o@example.org"))
+        account.role = UserRole.district_officer
+        db.commit()
+        account_id = account.id
+    assert client.patch(f"/api/v1/auth/accounts/{account_id}", json={"sector_ids": [ngeruka]}).json()["sector_ids"] == [ngeruka]
+    assert client.patch(f"/api/v1/auth/accounts/{account_id}", json={"sector_ids": [999]}).status_code == 422
+    login = client.post("/api/v1/auth/login", json={"email": "o@example.org", "password": "Str0ng!pass"}).json()
+    assert login["account"]["area"] == "Ngeruka"
+    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles=""))
+    h = {"Authorization": f"Bearer {login['access_token']}"}
+
+    queue = client.get("/api/v1/analytics/act-now", headers=h).json()
+    assert [item["priority"] for item in queue] == ["critical"]
+    cases = client.get("/api/v1/cases", headers=h).json()
+    assert len(cases) == 1
+    assert client.get("/api/v1/feedback", headers=h).json() == []
+    assert {u["phone_number"] for u in client.get("/api/v1/users", headers=h).json()} == {"+250788000001", "+250788000002"}
+    assert len(client.get("/api/v1/citizen-reports", headers=h).json()) == 1
+    assert "+250788000003" not in str(client.get("/api/v1/channels/activity", headers=h).json()["inbound"])
+    other_case_id = cases[0]["id"] + 1
+    assert client.get(f"/api/v1/cases/{other_case_id}", headers=h).status_code == 404
+    assert client.patch(f"/api/v1/cases/{other_case_id}", headers=h, json={"status": "triaged"}).status_code == 404
+    # District totals stay district-wide.
+    assert client.get("/api/v1/analytics/dashboard-summary", headers=h).json()["total_reports"] == 2
+    # Clearing the sectors restores district-wide access.
+    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="development", require_api_key=False))
+    client.patch(f"/api/v1/auth/accounts/{account_id}", json={"sector_ids": []})
+    monkeypatch.setattr(security, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles=""))
+    assert len(client.get("/api/v1/cases", headers=h).json()) == 2

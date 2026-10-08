@@ -45,7 +45,7 @@ const modules = {
   accounts: {
     title: "Accounts", subtitle: "Approve web sign-ins and give planners and officers the right role.", add: "Refresh", search: "Search accounts...",
     cards: [["Web accounts", "12", "Signed-up people", ""], ["District planners", "3", "Can view planner data", "blue"], ["Administrators", "1", "Manage the platform", "gold"], ["Suspended", "0", "Blocked from sign-in", "coral"]],
-    columns: ["Account", "Email", "Role", "Joined", "Status"],
+    columns: ["Account", "Email", "Role", "Area", "Joined", "Status"],
     rows: [["David Niyonzima", "DN", "david@example.org", "district_planner", "2026-09-01", "active"], ["Grace Ingabire", "GI", "grace@example.org", "citizen_science_monitor", "2026-09-20", "active"]],
   },
   nutrition: {
@@ -101,7 +101,7 @@ function draw(data, rows, isLive = false) {
   } else if (activeModule === "users") {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><span><strong>${escapeHtml(row[0])}</strong><small>${escapeHtml(row[2].replaceAll("_", " "))}</small></span></div></td><td>${badge(row[2])}</td><td>${escapeHtml(row[3] || "—")}</td><td>${escapeHtml(row[4] || "—")}</td><td>${badge(row[5])}</td><td><button class="row-action" data-action="edit" data-id="${Number(row[6])}">Edit</button><button class="row-action danger" data-action="delete" data-id="${Number(row[6])}">Delete</button></td></tr>`).join("");
   } else if (hasActions && activeModule === "accounts") {
-    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td><td>${escapeHtml(row[2])}</td><td><select class="role-select" data-account="${Number(row[6])}" aria-label="Role">${ROLES.map((role) => `<option value="${role}" ${role === row[3] ? "selected" : ""}>${role.replaceAll("_", " ")}</option>`).join("")}</select></td><td>${escapeHtml(row[4])}</td><td>${badge(row[5])}</td><td><button class="row-action ${row[5] === "active" ? "danger" : ""}" data-action="toggle-account" data-id="${Number(row[6])}" data-status="${escapeHtml(row[5])}">${row[5] === "active" ? "Suspend" : "Activate"}</button></td></tr>`).join("");
+    body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td><td>${escapeHtml(row[2])}</td><td><select class="role-select" data-account="${Number(row[6])}" aria-label="Role">${ROLES.map((role) => `<option value="${role}" ${role === row[3] ? "selected" : ""}>${role.replaceAll("_", " ")}</option>`).join("")}</select></td><td><button class="row-action" data-action="account-area" data-id="${Number(row[6])}" data-sectors="${escapeHtml((row[7] || []).join(","))}" title="Choose the sectors this account works in">${escapeHtml(areaLabel(row[3], row[7]))}</button></td><td>${escapeHtml(row[4])}</td><td>${badge(row[5])}</td><td><button class="row-action ${row[5] === "active" ? "danger" : ""}" data-action="toggle-account" data-id="${Number(row[6])}" data-status="${escapeHtml(row[5])}">${row[5] === "active" ? "Suspend" : "Activate"}</button></td></tr>`).join("");
   } else {
     body.innerHTML = rows.map((row) => `<tr><td><div class="user-cell"><span class="mini-avatar">${escapeHtml(row[1])}</span><strong>${escapeHtml(row[0])}</strong></div></td>${row.slice(2, hasActions ? -1 : undefined).map(normalCell).map((value) => `<td>${value}</td>`).join("")}${hasActions ? `<td><button class="row-action" data-action="edit-scheme" data-id="${Number(row.at(-1))}">Edit figures</button></td>` : ""}</tr>`).join("");
   }
@@ -180,7 +180,7 @@ async function fetchLiveRows(module) {
   if (module === "citizen") return records.map((item) => [`${item.crop_type} report`, initials(item.crop_type), item.crop_type, item.pest_or_disease || (item.expected_harvest_tons ? `Forecast ${item.expected_harvest_tons} t` : "Crop update"), schemeName(item.scheme_id), cellName(item.cell_id), item.severity ? (item.severity >= 5 ? "critical" : item.severity >= 4 ? "high" : "triaged") : "active"]);
   if (module === "irrigation") return records.map((item) => [item.infrastructure_name || "Rainfall observation", initials(item.infrastructure_name || "Rain"), schemeName(item.scheme_id), item.operational_status || "reported", item.rainfall_mm === null ? "-" : `${item.rainfall_mm} mm`, item.bottleneck_category || "-", item.operational_status || "active"]);
   if (module === "feedback") return records.map((item) => [`FB-${String(item.id).padStart(3, "0")}`, "FB", item.category, schemeName(item.scheme_id), cellName(item.cell_id), item.assigned_to_user_id ? `User #${item.assigned_to_user_id}` : "Unassigned", item.status]);
-  if (module === "accounts") return records.map((item) => [item.full_name, initials(item.full_name || item.email), item.email, item.role, new Date(item.created_at).toLocaleDateString(), item.status, item.id]);
+  if (module === "accounts") return records.map((item) => [item.full_name, initials(item.full_name || item.email), item.email, item.role, new Date(item.created_at).toLocaleDateString(), item.status, item.id, item.sector_ids || []]);
   if (module === "nutrition") return records.map((item) => [`NS-${String(item.id).padStart(3, "0")}`, "NS", cellName(item.cell_id), item.meals_per_day === 3 ? "3+" : String(item.meals_per_day), item.ate_protein_or_vegetables ? "yes" : "no", item.food_sufficient ? "yes" : "no", item.stunting_risk_score >= 4 ? "high" : item.stunting_risk_score >= 3 ? "medium" : "low"]);
   if (module === "messages") return records.map((item) => [item.phone_number, "SM", item.message, String(item.purpose || "advisory").replaceAll("_", " "), new Date(item.created_at).toLocaleString(), item.status]);
   return records.map((item) => [item.title, initials(item.item_type), item.item_type, schemeName(item.scheme_id), cellName(item.cell_id), new Date(item.created_at).toLocaleDateString(), item.priority]);
@@ -235,6 +235,7 @@ document.querySelector("#table-body").addEventListener("click", async (event) =>
     return;
   }
   if (action === "edit-scheme") { openSchemeEditor(Number(userId)); return; }
+  if (action === "account-area") { openAreaDialog(Number(userId), event.target.dataset.sectors ? event.target.dataset.sectors.split(",").map(Number) : []); return; }
   if (action === "delete") {
     if (!confirm("Permanently delete this user? Users linked to reports can only be deactivated.")) return;
     const response = await apiFetch(`users/${userId}`, { method: "DELETE" });
@@ -296,6 +297,37 @@ async function connectApi() {
   }
 }
 document.querySelector("#connect-api").addEventListener("click", connectApi);
+
+// Area-level access: an account limited to some sectors sees cases, grievances, people and reports from those sectors only.
+function areaLabel(role, sectorIds) {
+  if (role === "administrator" || !sectorIds || !sectorIds.length) return "Whole district";
+  return sectorIds.map((id) => lookups.sectors[id] || `Sector #${id}`).join(", ");
+}
+
+function openAreaDialog(accountId, current) {
+  const areaDialog = document.querySelector("#area-dialog");
+  const list = document.querySelector("#area-sectors");
+  const sectors = Object.entries(lookups.sectors).sort((a, b) => a[1].localeCompare(b[1]));
+  list.innerHTML = sectors.length
+    ? sectors.map(([id, name]) => `<label class="area-option"><input type="checkbox" value="${Number(id)}" ${current.includes(Number(id)) ? "checked" : ""}> ${escapeHtml(name)}</label>`).join("")
+    : "<p>No sectors are loaded yet. Run scripts/load_locations.py first.</p>";
+  areaDialog.dataset.account = accountId;
+  document.querySelector("#area-message").textContent = "";
+  areaDialog.showModal();
+}
+
+document.querySelector("#area-form")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const areaDialog = document.querySelector("#area-dialog");
+  const sectorIds = [...document.querySelectorAll("#area-sectors input:checked")].map((input) => Number(input.value));
+  const response = await apiFetch(`auth/accounts/${areaDialog.dataset.account}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sector_ids: sectorIds }) });
+  if (!response.ok) { document.querySelector("#area-message").textContent = `Could not save the area (${response.status}).`; return; }
+  areaDialog.close();
+  CS.toast(sectorIds.length ? "Area saved. The person sees these sectors from their next page load." : "Area cleared: whole district.", "success");
+  await render("accounts");
+});
+["#area-close", "#area-cancel"].forEach((id) => document.querySelector(id)?.addEventListener("click", () => document.querySelector("#area-dialog").close()));
+document.querySelector("#area-clear")?.addEventListener("click", () => document.querySelectorAll("#area-sectors input").forEach((input) => { input.checked = false; }));
 
 const dialog = document.querySelector("#user-dialog");
 document.querySelector("#table-body").addEventListener("change", async (event) => {

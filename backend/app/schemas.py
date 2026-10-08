@@ -28,12 +28,14 @@ class AccountRead(BaseModel):
     role: UserRole
     status: str
     created_at: datetime
+    sector_ids: list[int] = []  # empty = whole district
     model_config = {"from_attributes": True}
 
 
 class AccountUpdate(BaseModel):
     role: UserRole | None = None
     status: str | None = Field(default=None, pattern="^(active|pending|suspended)$")
+    sector_ids: list[int] | None = None  # [] = whole district
 
 
 class UserCreate(BaseModel):
