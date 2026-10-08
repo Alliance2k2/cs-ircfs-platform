@@ -123,7 +123,7 @@ cs-ircfs-platform/
 ├── docs/               Documentation
 ├── scripts/            Repository utilities
 ├── Dockerfile · render.yaml · start-local.ps1 · .env.example
-└── README.md
+└── README.md · CONTRIBUTING.md · LICENSE
 ```
 
 ## Documentation
@@ -153,6 +153,14 @@ Tests always run on an in-memory database and make no network calls.
 - Self-registration cannot choose a role; only administrators assign roles and areas.
 - Grievances are anonymous, and public pages show aggregates only.
 - Never commit `.env` or `infrastructure/stack.env`. See the production checklist in [docs/deployment.md](docs/deployment.md).
+
+## Contributing
+
+Contributions are welcome through pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests and the review workflow.
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ## Status
 
