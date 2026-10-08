@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.db.models import Cell, IncentiveReward, IrrigationClimateLog, Sector, User
+from app.services.forecast import rainfall_forecast
 from app.services.sms import send_airtime
 
 
@@ -40,6 +41,33 @@ def advice_for_rainfall(total_mm: float | None, readings: int) -> IrrigationAdvi
                             f"Rainfall is normal ({mm} mm in 7 days). Keep the usual irrigation schedule.")
 
 
+def with_forecast(advice: IrrigationAdvice, forecast_mm: float | None) -> IrrigationAdvice:
+    """Add a look-ahead note when the 7-day forecast changes what a farmer should do."""
+    if forecast_mm is None:
+        return advice
+    settings = get_settings()
+    f = forecast_mm
+    if advice.level == "irrigate_more" and f >= 2 * settings.dry_spell_threshold_mm:
+        # A dry week followed by heavy forecast rain: one clear action instead of "irrigate more, but…".
+        mm = advice.rainfall_mm
+        return IrrigationAdvice("normal", mm, advice.readings,
+                                f"Inama: imvura yabaye nke ({mm} mm mu minsi 7), ariko imvura ya {f} mm iteganyijwe mu minsi 7 iri imbere. "
+                                "Komeza gahunda isanzwe, mwongere murebe nyuma y'iminsi 2-3.",
+                                f"Rainfall was low ({mm} mm in 7 days), but {f} mm is forecast for the next 7 days. "
+                                "Keep the usual schedule and check again in 2-3 days.")
+    notes = {
+        "normal": (f < 2, " Nta mvura iteganyijwe mu minsi 7 iri imbere: mwitegure kongera kuhira.",
+                   " No rain is forecast for the next 7 days: be ready to irrigate more."),
+        "reduce": (f < 2, " Imvura nke iteganyijwe mu minsi 7 iri imbere: muzasubire kuri gahunda isanzwe vuba.",
+                   " Little rain is forecast for the next 7 days: return to the usual schedule soon."),
+        "no_data": (True, f" Iteganyagihe: imvura ya {f} mm mu minsi 7 iri imbere.", f" Forecast: {f} mm of rain in the next 7 days."),
+    }
+    applies, rw, en = notes.get(advice.level, (False, "", ""))
+    if not applies:
+        return advice
+    return IrrigationAdvice(advice.level, advice.rainfall_mm, advice.readings, advice.message_rw + rw, advice.message_en + en)
+
+
 def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int]]:
     """Return {sector_id: (total_mm, readings)} for citizen rain-gauge readings in the window."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
@@ -62,12 +90,14 @@ def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int
 
 def sector_schedule(db: Session) -> list[dict]:
     rainfall = rainfall_by_sector(db)
+    sectors = db.scalars(select(Sector).order_by(Sector.name)).all()
+    forecast = rainfall_forecast({s.id: (s.latitude, s.longitude) for s in sectors if s.latitude is not None and s.longitude is not None})
     rows = []
-    for sector in db.scalars(select(Sector).order_by(Sector.name)):
+    for sector in sectors:
         total, readings = rainfall.get(sector.id, (None, 0))
-        advice = advice_for_rainfall(total, readings)
+        advice = with_forecast(advice_for_rainfall(total, readings), forecast.get(sector.id))
         rows.append({"sector_id": sector.id, "sector": sector.name, "level": advice.level, "rainfall_mm_7d": advice.rainfall_mm,
-                     "readings": advice.readings, "message_rw": advice.message_rw, "message_en": advice.message_en,
+                     "forecast_mm_7d": forecast.get(sector.id), "readings": advice.readings, "message_rw": advice.message_rw, "message_en": advice.message_en,
                      "latitude": sector.latitude, "longitude": sector.longitude})
     return rows
 

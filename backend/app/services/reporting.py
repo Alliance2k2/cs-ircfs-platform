@@ -9,13 +9,25 @@ from sqlalchemy.orm import Session
 from app.db.models import Cell, CitizenScienceLog, IncidentCase, IrrigationClimateLog, IrrigationScheme, User
 
 
+def open_case(db: Session, source_type: str, report, priority: str, summary: str) -> IncidentCase:
+    """Create an Act Now case and alert district staff by SMS when it is urgent enough."""
+    from app.services.notifications import alert_staff  # notifications imports sms; keep reporting import-light
+
+    case = IncidentCase(source_type=source_type, source_id=report.id, priority=priority)
+    db.add(case)
+    db.flush()
+    alert_staff(db, case, summary, report.cell_id)
+    return case
+
+
 def create_crop_report(db: Session, **values) -> CitizenScienceLog:
     report = CitizenScienceLog(**values)
     db.add(report)
     db.flush()
     severity = values.get("severity")
     if severity is not None and severity >= 4:
-        db.add(IncidentCase(source_type="crop", source_id=report.id, priority="critical" if severity == 5 else "high"))
+        summary = f"{report.pest_or_disease or 'Pest or disease'} on {report.crop_type}, severity {severity}"
+        open_case(db, "crop", report, "critical" if severity == 5 else "high", summary)
     return report
 
 
@@ -25,7 +37,8 @@ def create_irrigation_report(db: Session, **values) -> IrrigationClimateLog:
     db.flush()
     status = values.get("operational_status")
     if status in {"faulty", "offline"}:
-        db.add(IncidentCase(source_type="irrigation", source_id=report.id, priority="critical" if status == "offline" else "high"))
+        summary = f"{report.infrastructure_name or 'Irrigation asset'} is {status}" + (f" ({report.bottleneck_category})" if report.bottleneck_category else "")
+        open_case(db, "irrigation", report, "critical" if status == "offline" else "high", summary)
     return report
 
 

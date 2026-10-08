@@ -94,9 +94,15 @@ def test_every_third_rainfall_report_earns_airtime(client_and_db):
 
 def test_new_caller_is_registered_and_grievance_is_anonymous(client_and_db):
     client, _ = client_and_db
-    dial(client, "", phone="0788 999 111")
-    assert any(user["phone_number"] == "+250788999111" for user in client.get("/api/v1/users").json())
-    assert dial(client, "5*2*The water fee doubled this season").text.startswith("END Murakoze")
+    new = "0788 999 111"
+    assert "Hitamo umurenge" in dial(client, "", phone=new).text
+    assert any(user["phone_number"] == "+250788999111" and user["cell_id"] is None for user in client.get("/api/v1/users").json())
+    assert "Gihembe" in dial(client, "1", phone=new).text
+    assert dial(client, "1*1", phone=new).text.startswith("END Murakoze! Aho utuye habitswe: Gihembe, Ngeruka")
+    assert next(u for u in client.get("/api/v1/users").json() if u["phone_number"] == "+250788999111")["cell_id"] is not None
+    # Next session goes straight to the main menu, and the grievance is tied to the caller's cell.
+    assert dial(client, "", phone=new).text.startswith("CON Kaze kuri CS-IRCFS")
+    assert dial(client, "5*2*The water fee doubled this season", phone=new).text.startswith("END Murakoze")
     feedback = client.get("/api/v1/feedback").json()[0]
     assert feedback["category"] == "Water Pricing" and feedback["reporter_id"] is None
 
@@ -187,4 +193,92 @@ def test_public_overview_needs_no_sign_in_and_hides_people(monkeypatch, client_a
     data = response.json()
     assert data["reports"] >= 1 and data["sectors_reporting"] == 1 and data["sectors_total"] == 1
     assert data["recent"][0]["sector"] == "Ngeruka"
+    assert data["sectors"][0]["name"] == "Ngeruka" and data["sectors"][0]["reports_30d"] == 1 and data["sectors"][0]["rainfall_mm_7d"] == 12
     assert "+2507" not in response.text and "Monitor" not in response.text
+
+
+def test_first_call_location_pages_through_sectors(client_and_db):
+    client, Session = client_and_db
+    with Session() as db:
+        for name in ("Gashora", "Juru", "Kamabuye", "Mareba", "Mayange", "Musenyi", "Mwogo", "Nyamata", "Rilima"):
+            sector = Sector(name=name)
+            db.add(sector); db.flush()
+            db.add(Cell(name=f"{name} Cell", sector_id=sector.id))
+        db.commit()
+    phone = "+250788777666"
+    first = dial(client, "", phone=phone).text
+    assert "8. Ngeruka" in first and "9. Indi mirenge" in first and "Rilima" not in first
+    second = dial(client, "9", phone=phone).text
+    assert second.startswith("CON Hitamo umurenge") and "1. Nyamata" in second and "2. Rilima" in second
+    assert "Rilima Cell" in dial(client, "9*2", phone=phone).text
+    assert dial(client, "9*7", phone=phone).text.startswith("END Igisubizo ntikemewe")
+    assert dial(client, "9*2*1", phone=phone).text.startswith("END Murakoze! Aho utuye habitswe: Rilima Cell, Rilima")
+
+
+def test_retried_sms_is_not_recorded_twice(client_and_db):
+    client, _ = client_and_db
+    message = {"from": "+250788000001", "to": "8448", "text": "IMVURA 15", "id": "ATXid_abc123"}
+    first = client.post("/api/v1/sms/inbound", data=message).json()
+    retry = client.post("/api/v1/sms/inbound", data=message).json()
+    assert retry["reply_status"] == "duplicate" and retry["record_id"] == first["record_id"]
+    assert len(client.get("/api/v1/irrigation-reports").json()) == 1
+    assert len(client.get("/api/v1/advisory/messages").json()) == 1
+    assert client.post("/api/v1/sms/inbound", data={**message, "id": "ATXid_other"}).json()["record_id"] != first["record_id"]
+
+
+def test_urgent_case_alerts_staff_by_sms(monkeypatch, client_and_db):
+    client, _ = client_and_db
+    settings = Settings(_env_file=None, environment="development", require_api_key=False, alert_phone_numbers="0788 111 222, +250788111222, bad")
+    monkeypatch.setattr("app.services.notifications.get_settings", lambda: settings)
+    dial(client, "2*2*1*4")  # severity 4: high, below the default "critical" threshold
+    assert not [m for m in client.get("/api/v1/advisory/messages").json() if m["purpose"] == "staff_alert"]
+    dial(client, "2*2*1*5")  # severity 5: critical
+    alerts = [m for m in client.get("/api/v1/advisory/messages").json() if m["purpose"] == "staff_alert"]
+    assert len(alerts) == 1 and alerts[0]["phone_number"] == "+250788111222"
+    assert alerts[0]["message"].startswith("CS-IRCFS CRITICAL: Fall armyworm on Maize, severity 5 (Ngeruka / Gihembe). Case #")
+
+
+def test_forecast_adds_look_ahead_to_irrigation_advice(monkeypatch, client_and_db):
+    client, _ = client_and_db
+    import app.services.advisory as advisory
+    dial(client, "3*2")  # 2 mm this week in Ngeruka: dry, so irrigate more
+    monkeypatch.setattr(advisory, "rainfall_forecast", lambda points: {sector_id: 35.0 for sector_id in points})
+    row = client.get("/api/v1/advisory/irrigation-schedule").json()[0]
+    assert row["level"] == "normal" and row["forecast_mm_7d"] == 35.0
+    assert row["message_en"] == "Rainfall was low (2.0 mm in 7 days), but 35.0 mm is forecast for the next 7 days. Keep the usual schedule and check again in 2-3 days."
+    monkeypatch.setattr(advisory, "rainfall_forecast", lambda points: {sector_id: 0.0 for sector_id in points})
+    assert client.get("/api/v1/advisory/irrigation-schedule").json()[0]["level"] == "irrigate_more"
+    monkeypatch.setattr(advisory, "rainfall_forecast", lambda points: {})  # forecast service down: gauges only
+    assert client.get("/api/v1/advisory/irrigation-schedule").json()[0]["message_en"].endswith("this week.")
+
+
+def test_monthly_report_counts_this_month_only(client_and_db):
+    client, _ = client_and_db
+    dial(client, "2*2*1*5")      # critical pest report -> case
+    dial(client, "3*12")         # rain gauge
+    dial(client, "5*2*Fees went up")
+    dial(client, "6*1*2*2")      # nutrition survey, high risk
+    report = client.get("/api/v1/analytics/monthly-report").json()
+    figures = report["figures"]
+    assert figures["reports"]["value"] == 2 and figures["reports"]["previous"] == 0 and figures["reports"]["change_percent"] is None
+    assert figures["pest_reports"]["value"] == 1 and figures["grievances"]["value"] == 1 and figures["nutrition_surveys"]["value"] == 1
+    assert report["cases"]["opened"] == 1 and report["cases"]["by_priority"] == {"critical": 1} and report["cases"]["open_at_month_end"] == 1
+    assert report["pests"][0] == {"pest": "Fall armyworm", "reports": 1, "severe": 1, "sectors": ["Ngeruka"]}
+    assert report["rainfall"] == [{"sector": "Ngeruka", "rainfall_mm": 12.0, "gauges": 1, "readings": 1}]
+    assert report["nutrition"]["high_risk_households"] == 1 and report["sectors_reporting"] == 1
+    assert "+2507" not in str(report) and "Fees went up" not in str(report)
+    old = client.get("/api/v1/analytics/monthly-report?month=2020-01").json()
+    assert old["label"] == "January 2020" and old["previous_month"] == "2019-12" and old["figures"]["reports"]["value"] == 0
+    assert client.get("/api/v1/analytics/monthly-report?month=2026-13").status_code == 422
+
+
+def test_trends_put_this_month_last(client_and_db):
+    client, _ = client_and_db
+    dial(client, "2*2*1*5")
+    dial(client, "3*12")
+    dial(client, "6*1*2*2")
+    months = client.get("/api/v1/analytics/trends?months=6").json()["months"]
+    assert len(months) == 6 and months[0]["reports"] == 0
+    latest = months[-1]
+    assert latest["reports"] == 2 and latest["severe_pests"] == 1 and latest["cases_opened"] == 1
+    assert latest["rainfall_mm"] == 12.0 and latest["rain_readings"] == 1 and latest["households"] == 1 and latest["average_risk"] == 5

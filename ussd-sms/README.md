@@ -8,7 +8,9 @@ Citizens with feature phones and no internet report through two channels. Both a
 | SMS keywords | `8448` | `POST /api/v1/sms/inbound` | [backend/app/services/sms_keywords.py](../backend/app/services/sms_keywords.py) |
 | Outbound SMS and airtime | (sender ID `CS-IRCFS`) | Africa's Talking Messaging and Airtime APIs | [backend/app/services/sms.py](../backend/app/services/sms.py) |
 
-A first-time caller is registered automatically as a farmer, keyed by phone number. Planners then add their cell and cooperative in **Platform Management → Users**. The cell is what links a report to the map, to a scheme, and to closing-the-loop messages.
+A first-time caller is registered automatically as a farmer, keyed by phone number. On their first `*801#` call they choose their sector (two screens of 8 + 7) and then their cell; the session ends and they dial again to report. The cell is what links a report to the map, to a scheme, and to closing-the-loop messages. Planners can still correct it in **Platform Management → Users**.
+
+Retried SMS deliveries (same Africa's Talking message `id`) are ignored, so a retry never creates a second report or reply.
 
 ## USSD menu (Kinyarwanda first)
 

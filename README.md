@@ -28,7 +28,7 @@ Open **http://127.0.0.1:8000**. In VS Code you can use **Terminal → Run Task �
 
 | Page | What you can do |
 | --- | --- |
-| `/planner.html` | Act Now queue, live field messages, scheme performance against targets, response health, irrigation advice, nutrition risk, layered map, **▶ presentation tour**, EN/RW |
+| `/planner.html` | Act Now queue, live field messages, scheme performance against targets, response health, 12-month trends, irrigation advice, nutrition risk, layered map, **▶ presentation tour**, EN/RW |
 | `/simulator.html` | Dial `*801#` or text `NYAMATA NZANA 5` on an on-screen phone and watch the record appear |
 | `/management.html` | People, schemes (verified yield targets), reports, feedback, nutrition, SMS log, accounts and roles |
 | `/docs` | Interactive API reference |

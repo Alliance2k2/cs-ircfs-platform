@@ -18,7 +18,8 @@ CS-IRCFS lets citizens of Bugesera report crop, water and community information 
 | Page | Address | Purpose |
 | --- | --- | --- |
 | Home | `/` | Public introduction and how it works |
-| Planner dashboard | `/planner.html` | Overview, Act Now queue, field channels, scheme performance, response health, irrigation advice, nutrition, map |
+| Planner dashboard | `/planner.html` | Overview, Act Now queue, field channels, scheme performance, response health, 12-month trends (with a table view), irrigation advice, nutrition, map |
+| Monthly report | `/report.html` | One month of field evidence: reports, scheme results, cases, grievances, pests, rainfall, nutrition, messages, with a comparison to the previous month. **Print / Save as PDF** gives an A4 report |
 | Phone simulator | `/simulator.html` | A feature phone on screen. Dial `*801#` or text keywords; uses the real USSD/SMS endpoints |
 | Platform Management | `/management.html` | Users, schemes (incl. verified yield targets), reports, feedback, nutrition surveys, SMS log, accounts |
 | Sign in / Register | `/login.html`, `/register.html` | Web accounts for planners and staff |
@@ -55,6 +56,11 @@ Then open `http://127.0.0.1:8000`.
 - Sign-in sessions are stored in the database (only a hash of the token) and expire after 12 hours (`SESSION_HOURS`).
 - Integrations can still use service API keys (`API_KEY_ROLES`).
 - In demo mode (`ENVIRONMENT=development`) everything is open, so a presenter does not need to sign in.
+
+## Alerts and forecasts
+
+- **Staff alerts.** Put district phone numbers in `ALERT_PHONE_NUMBERS` in `.env` (comma-separated). Each gets an SMS when a case opens: offline assets and severity-5 pests by default, or also faulty assets and severity-4 pests with `ALERT_MIN_PRIORITY=high`. Alerts appear in the SMS log as `staff_alert`.
+- **Rain forecast.** Irrigation advice adds the Open-Meteo 7-day forecast for each sector (free, no key, cached for 3 hours). If a dry week is followed by heavy forecast rain, the advice is to keep the usual schedule instead of irrigating more. Set `WEATHER_FORECAST_ENABLED=false` to turn it off.
 
 ## Useful scripts (`backend/scripts/`)
 

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CS-IRCFS | Bugesera Citizen Science &amp; Irrigation</title>
 <meta name="description" content="Farmers and Citizen Science Monitors in Bugesera report by USSD *801# and SMS 8448. District Planners use the evidence to verify irrigation outcomes and act.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{--deep:#072b25;--green:#0b6b52;--mint:#e7f4ec;--lime:#b9e27a;--gold:#f2b544;--cream:#f7faf6;--ink:#14332b;--muted:#5d736b;--line:#dce9e1;--red:#d0574b;--amber:#e09a2c;--blue:#3d8bb0}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -99,6 +100,46 @@ section{padding:80px 0}
 .module div{padding:20px 22px}
 .module h3{margin:0 0 8px;font-size:19px}.module p{margin:0;color:var(--muted);font-size:15px}
 
+/* Live map */
+.map-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:stretch}
+.map-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;min-height:440px;box-shadow:0 10px 30px #1644330d}
+#public-map{position:absolute;inset:0;background:#eef3ef}
+.legend{position:absolute;left:12px;bottom:12px;z-index:500;background:#fffffff2;border-radius:10px;padding:8px 12px;font-size:12.5px;display:flex;gap:12px;flex-wrap:wrap;box-shadow:0 4px 14px #0000001a;margin-right:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.advice-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 10px 30px #1644330d;display:flex;flex-direction:column}
+.advice-card h3{margin:0 0 4px;font-size:19px}.advice-card>p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.advice{list-style:none;margin:0;padding:0;overflow:auto;max-height:360px}
+.advice li{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.advice li b{grid-column:2}.advice li span{grid-column:2;color:var(--muted);font-size:13px}
+.advice li i{grid-row:span 2;width:12px;height:12px;border-radius:50%;margin-top:5px}
+.advice li.more{display:block;color:var(--muted);font-size:13px}
+.lvl-irrigate_more{background:#d9822b}.lvl-normal{background:#2f9e6e}.lvl-reduce{background:#3d8bb0}.lvl-no_data{background:#a9b5b0}
+.soft-tiles{filter:saturate(.35) brightness(1.06)}
+section[id]{scroll-margin-top:72px}
+.leaflet-tooltip.sector-tip{font-size:13px;border-radius:8px;padding:7px 10px}
+
+/* Phone demo */
+.how-grid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:center}
+.how-grid .steps{grid-template-columns:1fr 1fr}
+.phone{width:280px;margin:0 auto;background:#1c2421;border-radius:38px;padding:18px 16px 22px;box-shadow:0 30px 60px #0007,inset 0 0 0 2px #3a4642}
+.phone-screen{background:#c9e4b4;border-radius:14px;height:250px;padding:14px;font-family:Consolas,"Courier New",monospace;color:#16261c;font-size:13px;line-height:1.45;display:flex;flex-direction:column;justify-content:space-between}
+.ussd{white-space:pre-line;transition:opacity .25s}.ussd.fade{opacity:0}
+.ussd.dial{font-size:28px;text-align:center;margin-top:60px;letter-spacing:2px}
+.ussd-caption{font-family:Inter,"Segoe UI",sans-serif;font-size:11.5px;background:#ffffffa6;border-radius:7px;padding:5px 8px;color:#21412f}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.keys span{background:#2d3834;color:#e9f2ee;border-radius:10px;text-align:center;padding:8px 0;font-weight:700;transition:background .15s,transform .15s}
+.keys span.press{background:var(--gold);color:var(--deep);transform:scale(.94)}
+
+/* FAQ */
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;align-items:start}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.faq summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";color:var(--green);font-size:20px;line-height:1}
+.faq details[open] summary:after{content:"\2013"}
+.faq p{margin:10px 0 0;color:var(--muted);font-size:15px}
+
 .cta{background:linear-gradient(120deg,var(--green),#0d4e3e);color:#fff;border-radius:22px;padding:42px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
 .cta h2{margin:0;font-size:clamp(24px,3vw,34px)}.cta p{margin:6px 0 0;color:#cfe6da}
 footer{padding:28px 0 40px;color:var(--muted);font-size:14px}
@@ -106,13 +147,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 @media (max-width:960px){
   .hero .wrap{grid-template-columns:1fr;padding:48px 0 56px}
-  .roles,.modules{grid-template-columns:1fr}
+  .roles,.modules,.map-grid,.how-grid,.faq{grid-template-columns:1fr}
+  .map-card{min-height:360px}
   .steps{grid-template-columns:1fr 1fr}
   .links a:not(.btn){display:none}
 }
 @media (max-width:560px){
   .wrap{width:calc(100% - 32px)}
-  .steps{grid-template-columns:1fr}
+  .steps,.how-grid .steps{grid-template-columns:1fr}
   .stat b{font-size:24px}
   section{padding:56px 0}
   .cta{padding:28px}
@@ -125,9 +167,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <div class="wrap">
     <a class="brand" href="#top"><span class="mark">C</span><span>CS-IRCFS<small>Bugesera citizen science &amp; irrigation</small></span></a>
     <nav class="links">
+      <a href="#live-map">Live map</a>
       <a href="#roles">Who it's for</a>
       <a href="#how">How it works</a>
-      <a href="simulator.html">Try *801#</a>
+      <a href="#faq">FAQ</a>
       <a class="btn gold" id="nav-cta" href="login.html">Sign in</a>
     </nav>
   </div>
@@ -165,6 +208,27 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <ul class="feed" id="feed"><li><span class="empty">Waiting for the latest reports…</span></li></ul>
         <p class="live-note">Counts and sectors only. Names, phone numbers and grievances are never shown publicly.</p>
       </aside>
+    </div>
+  </section>
+
+  <section id="live-map">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Live across Bugesera</span>
+        <h2>Where reports come from, and this week's irrigation advice.</h2>
+        <p>Circles grow with the reports sent from each sector in the last 30 days. Their colour shows the advice from citizen rain gauges.</p>
+      </div>
+      <div class="map-grid">
+        <div class="map-card">
+          <div id="public-map" role="img" aria-label="Map of Bugesera sectors with report activity and irrigation advice"></div>
+          <div class="legend"><span><i class="lvl-irrigate_more"></i>Dry: irrigate more</span><span><i class="lvl-normal"></i>Normal</span><span><i class="lvl-reduce"></i>Wet: irrigate less</span><span><i class="lvl-no_data"></i>No rain data</span></div>
+        </div>
+        <aside class="advice-card">
+          <h3>This week's irrigation advice</h3>
+          <p>Seven-day rainfall from citizen rain gauges, plus the rain forecast for the week ahead.</p>
+          <ul class="advice" id="advice"><li><span>Loading…</span></li></ul>
+        </aside>
+      </div>
     </div>
   </section>
 
@@ -222,10 +286,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   <section id="how" class="how">
     <div class="wrap">
+      <div class="how-grid">
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen"><div class="ussd" id="ussd"></div><div class="ussd-caption" id="ussd-caption"></div></div>
+        <div class="keys" id="keys"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+      </div>
+      <div>
       <div class="head">
         <span class="eyebrow">How it works</span>
         <h2>From a feature phone to a district decision.</h2>
-        <p>Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
+        <p>A pest report takes four key presses. Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
       </div>
       <ol class="steps">
         <li><h3>Report</h3><p>Citizens dial *801# or text 8448 in Kinyarwanda.</p></li>
@@ -233,6 +303,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <li><h3>Verify</h3><p>Harvests are compared with scheme targets. Severe pests and broken pumps become cases automatically.</p></li>
         <li><h3>Reply</h3><p>Advice, tips, airtime and closing-the-loop messages go back by SMS.</p></li>
       </ol>
+      </div>
+      </div>
     </div>
   </section>
 
@@ -246,6 +318,23 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <article class="module"><img alt="" src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80"><div><h3>Food security</h3><p>Harvest forecasts, SMS pest alerts with a heatmap, and household stunting risk.</p></div></article>
         <article class="module"><img alt="" src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80"><div><h3>Irrigation &amp; climate</h3><p>Pump and canal faults by bottleneck, a citizen rain-gauge network, and irrigation advice.</p></div></article>
         <article class="module"><img alt="" src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80"><div><h3>Community feedback</h3><p>An anonymous grievance log, and an SMS to each cell saying what action was taken.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Questions</span>
+        <h2>Good to know.</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Do I need a smartphone or internet?</summary><p>No. Any mobile phone works. Dial *801# or send an SMS to 8448.</p></details>
+        <details><summary>Which language does it use?</summary><p>The phone menus are in Kinyarwanda, with numbered choices and no more than three steps. The website has an English and Kinyarwanda switch.</p></details>
+        <details><summary>What do I get back for reporting?</summary><p>An SMS with irrigation advice for your sector after each harvest or rain report, and 100 RWF airtime for every third weather or infrastructure report.</p></details>
+        <details><summary>Who can see my information?</summary><p>District staff see reports so they can act on them. Grievances are anonymous: only the cell is kept, never who sent it. This public page shows counts and sectors only.</p></details>
+        <details><summary>What happens after I report a problem?</summary><p>Severe pests and broken pumps become cases for District Planners straight away. When a problem is solved, everyone registered in that cell gets an SMS saying what was done.</p></details>
+        <details><summary>How do I become a Citizen Science Monitor?</summary><p>Create an account on this site. Cooperatives can also nominate Data Champions, who report rainfall and field conditions regularly.</p></details>
       </div>
     </div>
   </section>
@@ -264,6 +353,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <div class="wrap"><strong>CS-IRCFS · Bugesera District</strong><span>Citizen Science for Irrigation Resilience and Climate-smart Food Security</span></div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="shared.js?v=20261007"></script>
 <script>
 (() => {
@@ -287,6 +377,42 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     return `${Math.floor(seconds / 86400)} d ago`;
   }
 
+  // ---------- Live map of sectors ----------
+  const LEVEL = { irrigate_more: ["#d9822b", "Dry: irrigate more", 0], reduce: ["#3d8bb0", "Wet: irrigate less", 1], normal: ["#2f9e6e", "Normal", 2], no_data: ["#a9b5b0", "No rain data", 3] };
+  let map = null, sectorLayer = null;
+  function ensureMap() {
+    if (map || !window.L) return;
+    map = L.map("public-map", { scrollWheelZoom: false }).setView([-2.22, 30.15], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 18, className: "soft-tiles" }).addTo(map);
+    sectorLayer = L.layerGroup().addTo(map);
+    fetch("bugesera-boundary.geojson").then((r) => r.json()).then((geo) => {
+      const outline = L.geoJSON(geo, { style: { color: "#0b6b52", weight: 2, fillColor: "#0b6b52", fillOpacity: 0.05 }, interactive: false }).addTo(map);
+      map.fitBounds(outline.getBounds(), { padding: [16, 16] });
+    }).catch(() => {});
+  }
+  function renderSectors(sectors) {
+    ensureMap();
+    if (sectorLayer) {
+      sectorLayer.clearLayers();
+      sectors.filter((s) => s.latitude && s.longitude).forEach((s) => {
+        const [color, label] = LEVEL[s.advice_level] || LEVEL.no_data;
+        const rain = (s.rainfall_mm_7d == null ? "no rain-gauge readings yet" : `${s.rainfall_mm_7d} mm rain in 7 days`)
+          + (s.forecast_mm_7d == null ? "" : `<br>Forecast: ${s.forecast_mm_7d} mm in the next 7 days`);
+        L.circleMarker([s.latitude, s.longitude], { radius: 7 + Math.sqrt(s.reports_30d) * 4, color: "#fff", weight: 2, fillColor: color, fillOpacity: 0.85 })
+          .bindTooltip(`<b>${escapeHtml(s.name)}</b><br>${s.reports_30d} report${s.reports_30d === 1 ? "" : "s"} in 30 days<br>${escapeHtml(label)} · ${rain}`, { className: "sector-tip", direction: "top" })
+          .addTo(sectorLayer);
+      });
+    }
+    const withData = sectors.filter((s) => s.advice_level !== "no_data").sort((a, b) => (LEVEL[a.advice_level]?.[2] ?? 9) - (LEVEL[b.advice_level]?.[2] ?? 9));
+    const missing = sectors.length - withData.length;
+    const forecasts = sectors.filter((s) => s.advice_level === "no_data" && s.forecast_mm_7d != null).map((s) => s.forecast_mm_7d);
+    const range = forecasts.length ? ` Forecast: ${Math.round(Math.min(...forecasts))}–${Math.round(Math.max(...forecasts))} mm of rain in the next 7 days.` : "";
+    document.querySelector("#advice").innerHTML = (withData.length
+      ? withData.map((s) => `<li><i class="lvl-${escapeHtml(s.advice_level)}"></i><b>${escapeHtml(s.name)} · ${s.rainfall_mm_7d} mm</b><span>${escapeHtml(s.advice_en)}</span></li>`).join("")
+      : `<li><span>No rain-gauge readings this week yet. Monitors report rain with *801# option 3, or by SMS: IMVURA 12.${range}</span></li>`)
+      + (missing && withData.length ? `<li class="more">${missing} more sector${missing === 1 ? "" : "s"} without rain data this week.${range}</li>` : "");
+  }
+
   async function refresh() {
     const dot = document.querySelector("#live-dot"), time = document.querySelector("#live-time");
     try {
@@ -299,6 +425,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       document.querySelector("#feed").innerHTML = data.recent.length
         ? data.recent.slice(0, 5).map((item) => `<li><i class="${escapeHtml(item.kind)}"></i><span>${escapeHtml(item.label)}${item.sector ? ` <em>· ${escapeHtml(item.sector)}</em>` : ""}</span><small>${ago(item.created_at)}</small></li>`).join("")
         : `<li><span class="empty">No reports yet. Dial *801# to send the first one.</span></li>`;
+      renderSectors(data.sectors || []);
       dot.classList.remove("off");
       time.textContent = `updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
     } catch (_) {
@@ -307,6 +434,35 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       document.querySelector("#feed").innerHTML = `<li><span class="empty">Live figures appear when the platform is running.</span></li>`;
     }
   }
+  // ---------- Phone demo: the real *801# screens for a pest report ----------
+  const SCREENS = [
+    { text: "*801#", key: "#", caption: "Dial *801#", dial: true },
+    { text: "Kaze kuri CS-IRCFS. Hitamo:\n1. Rapora umusaruro\n2. Indwara/udukoko\n3. Rapora imvura\n4. Ibikorwa remezo byo kuhira\n5. Tanga ikibazo/igitekerezo\n6. Imirire y'urugo", key: "2", caption: "Main menu · press 2 for pests & disease" },
+    { text: "Igihingwa cyafashwe:\n1. Umuceri\n2. Ibigori\n3. Ibishyimbo\n4. Imyumbati\n5. Imboga", key: "2", caption: "Which crop? 2 = maize" },
+    { text: "Hitamo ikibazo:\n1. Nzana\n2. Indwara y'ibibabi\n3. Indwara y'imizi\n4. Ibindi byonnyi", key: "1", caption: "Which problem? 1 = fall armyworm" },
+    { text: "Ubukana bw'ikibazo:\n1. Buke\n2. Buringaniye\n3. Bukabije\n4. Bukabije cyane\n5. Byangiritse byose", key: "5", caption: "How severe? 5 = everything damaged" },
+    { text: "Murakoze! Raporo #1 ya Nzana yakiriwe.\nAbashinzwe ubuhinzi bamenyeshejwe.", key: null, caption: "Saved. Planners see a critical case straight away." }
+  ];
+  let step = 0;
+  const ussd = document.querySelector("#ussd"), caption = document.querySelector("#ussd-caption"), keys = [...document.querySelectorAll("#keys span")];
+  function showScreen() {
+    const screen = SCREENS[step];
+    ussd.classList.add("fade");
+    window.setTimeout(() => {
+      ussd.textContent = screen.text;
+      ussd.classList.toggle("dial", Boolean(screen.dial));
+      caption.textContent = screen.caption;
+      ussd.classList.remove("fade");
+    }, 250);
+    if (screen.key) {
+      const key = keys.find((k) => k.textContent === screen.key);
+      window.setTimeout(() => { key?.classList.add("press"); window.setTimeout(() => key?.classList.remove("press"), 350); }, 2300);
+    }
+    step = (step + 1) % SCREENS.length;
+  }
+  showScreen();
+  window.setInterval(() => { if (!document.hidden) showScreen(); }, 2900);
+
   refresh();
   window.setInterval(() => { if (!document.hidden) refresh(); }, 20000);
 })();

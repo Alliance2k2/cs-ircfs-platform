@@ -15,8 +15,8 @@
 3. **Calibration.** Irrigation-advice thresholds (10 mm / 40 mm per 7 days) are starting values. They must be calibrated from Mwesa Valley and Ngeruka/Mareba history (Section 9.2).
 4. **Kinyarwanda review.** Every phone screen and the dashboard translations need review by native speakers in the field team.
 5. **Area-level access.** Roles control what someone can do, but not which sectors they can see. Add this if officers should be limited to their own area.
-6. **Caller location.** A first-time caller is registered without a cell. Until a planner adds it, their reports are not mapped. A later improvement: a one-time "choose your sector" USSD step.
-7. **Duplicate protection.** A repeated identical SMS creates a second report. Add de-duplication by provider message ID before scale-up.
+6. **Caller location (SMS only).** USSD callers now choose their sector and cell on their first call. A person who only ever uses SMS has no cell until they name a sector in a message (`NYAMATA IMVURA 12`) or a planner adds it.
+7. **Forecast needs internet.** Irrigation advice adds the Open-Meteo 7-day rain forecast. Without internet the advice uses the rain gauges alone.
 
 ## Suggested next steps
 

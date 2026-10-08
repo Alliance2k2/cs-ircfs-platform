@@ -150,3 +150,32 @@
 /* Citizen Science Monitor: read-only view of live data */
 body.read-only [data-planner-only] { display: none !important; }
 .role-note { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; background: #e8f4ee; color: #1d5a45; font-size: 13px; max-width: 640px; }
+
+/* Trends: month-by-month charts */
+.trends-panel { margin-top: 22px; }
+.trend-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.trend { margin: 0; border: 1px solid rgba(11, 11, 11, 0.08); border-radius: 12px; padding: 14px 16px 8px; background: #fff; }
+.trend figcaption { display: flex; flex-direction: column; margin-bottom: 4px; }
+.trend figcaption b { font-size: 15px; color: #0b0b0b; }
+.trend figcaption span { font-size: 12.5px; color: #52514e; }
+.trend-chart { position: relative; }
+.trend-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.trend-chart rect[tabindex]:focus { outline: none; }
+.trend-chart rect[tabindex]:focus-visible { outline: 2px solid #2a78d6; outline-offset: -2px; }
+.trend-axis { font-size: 11px; fill: #898781; font-variant-numeric: tabular-nums; }
+.trend-value { font-size: 11.5px; fill: #52514e; font-weight: 600; font-variant-numeric: tabular-nums; }
+.trend-legend { display: flex; gap: 14px; font-size: 12.5px; color: #52514e; margin: 2px 0 2px; }
+.trend-legend span, .trend-tip div { display: inline-flex; align-items: center; gap: 6px; }
+.trend-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.trend-tip { position: absolute; top: 0; pointer-events: none; background: #fff; border: 1px solid rgba(11, 11, 11, 0.12); border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); padding: 7px 10px; font-size: 12.5px; color: #52514e; min-width: 120px; z-index: 5; }
+.trend-tip strong { display: block; color: #0b0b0b; margin-bottom: 2px; }
+.trend-tip div { display: flex; }
+.trend-tip b { color: #0b0b0b; font-variant-numeric: tabular-nums; }
+.trend-tip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.trend-table-wrap { overflow-x: auto; margin-top: 14px; }
+.trend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.trend-table th { text-align: right; font-size: 11.5px; color: #52514e; padding: 6px 8px; border-bottom: 1px solid #e1e0d9; white-space: nowrap; }
+.trend-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid #f0efec; font-variant-numeric: tabular-nums; }
+.trend-table th:first-child, .trend-table td:first-child { text-align: left; }
+@media (max-width: 900px) { .trend-grid { grid-template-columns: 1fr; } }
