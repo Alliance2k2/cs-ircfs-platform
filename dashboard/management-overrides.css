@@ -52,3 +52,8 @@ tbody tr:hover { background: #f5fbf7; }
 #area-dialog .area-option { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; font-weight: 600; cursor: pointer; margin: 0; text-align: left; }
 #area-dialog .area-option input { width: 18px; height: 18px; margin: 0; flex: none; }
 @media (max-width: 640px) { .area-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Sidebar icons: symbols matching the planner dashboard; page links look like menu items. */
+a.module-link { text-decoration: none; }
+.module-link > span { font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", sans-serif; font-size: 17px; line-height: 1; color: #a9c9bb; }
+.module-link:hover > span, .module-link.active > span { color: #f2c56b; }

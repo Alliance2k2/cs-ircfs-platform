@@ -177,3 +177,14 @@ body.read-only [data-planner-only] { display: none !important; }
 .trend-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid #f0efec; font-variant-numeric: tabular-nums; }
 .trend-table th:first-child, .trend-table td:first-child { text-align: left; }
 @media (max-width: 900px) { .trend-grid { grid-template-columns: 1fr; } }
+
+/* Sidebar: keep every link reachable on laptop-height screens. */
+@media (min-width: 981px) {
+  .sidebar { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #2c5a4c transparent; }
+}
+@media (min-width: 981px) and (max-height: 900px) {
+  .sidebar { padding-top: 18px; padding-bottom: 14px; }
+  .sidebar nav { gap: 2px; }
+  .sidebar .nav-link { padding: 8px 12px; }
+  .sidebar-foot { padding-top: 12px; }
+}
