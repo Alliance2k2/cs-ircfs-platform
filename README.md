@@ -1,77 +1,142 @@
-# CS-IRCFS Platform
+# CS-IRCFS
 
-[Deploy to Render](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FAlliance2k2%2Fcs-ircfs-platform)
+**Citizen Science for Irrigation Resilience and Climate-smart Food Security** — a field-reporting and decision-support platform for Bugesera District, Rwanda.
 
-> Citizen Science for Irrigation Resilience and Climate-smart Food Security in Bugesera, Rwanda. Citizens report from any phone through **USSD `*801#`** and **SMS `8448`**. District Planners use the evidence to verify whether the **PADAB** and **APEFA Solar** irrigation schemes deliver their expected outcomes, and to find where they fall short.
+Farmers, Citizen Science Monitors and cooperatives report crop, water and community information from any mobile phone through **USSD `*801#`** and **SMS `8448`**, in Kinyarwanda and without internet access. District staff use that evidence to verify whether the **PADAB** and **APEFA Solar** irrigation schemes deliver their expected outcomes, to act on problems as they are reported, and to send advice back to the community.
+
+![Public home page with live field activity](docs/images/home.jpg)
+
+## How it works
 
 ```text
-Farmers · Citizen Science Monitors · Cooperatives   (feature phone, no internet)
+Farmers · Citizen Science Monitors · Cooperatives      (any phone, no internet)
         │  USSD *801#  ·  SMS 8448   (Kinyarwanda first)
         ▼
 Africa's Talking gateway  ──►  FastAPI  ──►  PostgreSQL / PostGIS
                                                │
         ┌──────────────────────────────────────┘
         ▼
-Planner dashboard: outcome verification · bottleneck detection · Act Now
+District dashboard: outcome verification · Act Now cases · trends · monthly report
         │
-        └──►  SMS back to citizens: tips · irrigation advice · airtime · closing the loop
+        └──►  SMS back to citizens: irrigation advice · local tips · airtime · closing the loop
 ```
 
-## Quick start
+## Features
+
+**Field reporting**
+- Kinyarwanda USSD menu (six options, numeric choices, at most three levels) and SMS keywords (`IMVURA`, `NZANA`, `UMUSARURO`, `IKIBAZO`).
+- First-time callers choose their sector and cell once, so every later report is mapped and linked to its irrigation scheme.
+- Retried gateway deliveries are recognised and never recorded twice.
+
+**Food security, irrigation and climate**
+- Crowdsourced harvest reports compared with each scheme's verified yield target.
+- Pest and disease alerts with a heat map; severe reports open an Act Now case automatically.
+- Infrastructure health reporting by bottleneck type (technical, social, institutional, environmental), with recurring bottlenecks flagged per scheme.
+- Citizen rain-gauge network and an irrigation scheduling assistant that combines 7-day gauge totals with the Open-Meteo rainfall forecast.
+- Household nutrition survey with a stunting-risk score by cell.
+
+**Accountability**
+- Anonymous grievance log (the reporter is never stored, only the cell), including resettlement and downstream impacts.
+- Case workflow with owners, deadlines and a full audit trail.
+- Closing-the-loop SMS to every registered person in the affected cell when a problem is resolved.
+- SMS alerts to district staff when a critical case opens.
+- Airtime rewards for regular weather and infrastructure reporting.
+
+**Analysis**
+- District dashboard with live figures, Act Now queue, scheme performance, response health, irrigation advice, nutrition risk and a layered map.
+- Twelve-month trend charts with a table view.
+- Printable monthly district report, compared with the previous month.
+
+**Access**
+- Staff sign-in with roles: Citizen Science Monitors (read-only), district officers, District Planners and administrators.
+- Area-level access: accounts can be limited to the sectors they work in.
+- Public home page with live totals and sector activity; it never exposes names, phone numbers, message text or grievances.
+- English and Kinyarwanda interface.
+
+| | |
+|---|---|
+| ![District dashboard](docs/images/dashboard.jpg) | ![Twelve-month trends](docs/images/trends.jpg) |
+| District dashboard | Twelve-month trends |
+
+![Monthly district report](docs/images/monthly-report.jpg)
+
+*Screenshots show invented sample data.*
+
+## Getting started
+
+Requirements: Python 3.11 or later. PostgreSQL 16 with PostGIS for real use; SQLite works for evaluation.
 
 ```powershell
 python -m pip install -r backend/requirements.txt
-.\start-local.ps1 -Demo        # presentation data in a separate demo.db
+copy .env.example .env
+.\start-local.ps1 -Demo
 ```
 
-Open **http://127.0.0.1:8000**. In VS Code you can use **Terminal → Run Task → CS-IRCFS: Start demo** instead. Use `.\start-local.ps1` (without `-Demo`) for your real PostgreSQL. It applies migrations first.
+Open **http://127.0.0.1:8000**. The `-Demo` option runs on a separate SQLite database (`backend/demo.db`) filled with invented sample data, with sign-in turned off. It never touches the database configured in `.env`.
 
-| Page | What you can do |
+To run against PostgreSQL, set `DATABASE_URL` in `.env` and start without `-Demo`. Migrations are applied automatically:
+
+```powershell
+.\start-local.ps1
+python backend/scripts/load_locations.py               # Bugesera's 15 sectors and 72 cells
+python backend/scripts/create_admin.py you@example.org # first administrator
+```
+
+For Docker and hosted deployment, see [docs/deployment.md](docs/deployment.md).
+
+| Address | Page |
 | --- | --- |
-| `/planner.html` | Act Now queue, live field messages, scheme performance against targets, response health, 12-month trends, irrigation advice, nutrition risk, layered map, **▶ presentation tour**, EN/RW |
-| `/simulator.html` | Dial `*801#` or text `NYAMATA NZANA 5` on an on-screen phone and watch the record appear |
-| `/management.html` | People, schemes (verified yield targets), reports, feedback, nutrition, SMS log, accounts and roles |
+| `/` | Public home page with live field activity |
+| `/planner.html` | District dashboard |
+| `/report.html` | Monthly district report |
+| `/management.html` | Platform management: people, schemes, reports, accounts and areas |
+| `/simulator.html` | On-screen feature phone for testing and training on `*801#` and `8448` |
 | `/docs` | Interactive API reference |
 
-## What it does (architecture Modules 1–3)
+## Configuration
 
-| Module | Features |
+All settings are environment variables, documented in [`.env.example`](.env.example). The main ones:
+
+| Setting | Purpose |
 | --- | --- |
-| **1. Citizen science and food security** | Crowdsourced yield forecaster compared with scheme targets · SMS pest alerts with heatmap · household nutrition tracker (stunting risk) |
-| **2. Irrigation resilience and climate** | Infrastructure health reporter with bottleneck categories and auto-flagging · citizen rain-gauge network and drought map · irrigation scheduling assistant (SMS advice) |
-| **3. Community feedback loops** | Anonymous grievance log, including resettlement and downstream impacts · closing-the-loop SMS to the affected cell |
-| **Participation (§8)** | Airtime reward every 3rd weather report · local tips after every report · cooperative Data Champion roles · Kinyarwanda, numeric, ≤3 menu levels |
+| `DATABASE_URL` | PostgreSQL (production) or SQLite (evaluation) |
+| `ENVIRONMENT`, `REQUIRE_API_KEY` | `production` with `REQUIRE_API_KEY=true` enforces sign-in |
+| `SMS_PROVIDER`, `AIRTIME_PROVIDER`, `AFRICAS_TALKING_*` | Live delivery through Africa's Talking; `dry_run` records messages without sending |
+| `ALERT_PHONE_NUMBERS`, `ALERT_MIN_PRIORITY` | Staff phones alerted by SMS when urgent cases open |
+| `DRY_SPELL_THRESHOLD_MM`, `WET_SPELL_THRESHOLD_MM` | Irrigation advice thresholds (7-day rainfall) |
+| `WEATHER_FORECAST_ENABLED` | Adds the Open-Meteo forecast to irrigation advice |
+| `GOOGLE_CLIENT_ID` | Optional Google sign-in |
 
 ## Project structure
 
 ```text
 cs-ircfs-platform/
 ├── backend/            FastAPI service
-│   ├── app/api/routes/   channels (USSD/SMS), reports, cases, feedback, analytics, advisory, auth, …
-│   ├── app/services/     ussd.py, sms_keywords.py, reporting.py, advisory.py, notifications.py, sms.py
-│   ├── migrations/       Alembic versions 01–08
-│   ├── scripts/          load_locations, seed_demo_data, create_admin, check_db, …
-│   └── tests/            API, USSD, SMS, closing-the-loop, analytics, and sign-in tests
-├── dashboard/          Web pages served at /  (planner, simulator, management, sign-in)
-├── ussd-sms/           Menu map, SMS keywords, Africa's Talking setup
-├── infrastructure/     Docker Compose (PostGIS + platform) and operations guide for handover
+│   ├── app/              API routes, services, models and settings
+│   ├── migrations/       Alembic database migrations
+│   ├── scripts/          Location import, administrator setup, health checks
+│   └── tests/            Automated tests (in-memory database)
+├── dashboard/          Web interface served by the API
+├── ussd-sms/           USSD menu map, SMS keywords and gateway setup
+├── infrastructure/     Docker Compose stack (PostgreSQL/PostGIS + platform)
 ├── data/               Bugesera sector and cell boundaries (GeoPackage)
-├── docs/               Guides (older documents are in docs/archive/)
-├── scripts/            Repository utilities (architecture reader, QGIS location import)
-├── frontend/           Experimental React draft, not used
-├── Dockerfile, render.yaml, start-local.ps1, start-platform.bat
-└── cs-ircfs-platform-architecture.docx
+├── docs/               Documentation
+├── scripts/            Repository utilities
+├── Dockerfile · render.yaml · start-local.ps1 · .env.example
+└── README.md · CONTRIBUTING.md · LICENSE
 ```
 
 ## Documentation
 
-1. [Platform guide](docs/01-platform-guide.md): pages, roles, running, scripts
-2. [Architecture alignment](docs/02-architecture-alignment.md): every architecture item and where it is implemented
-3. [Data model](docs/03-data-model.md)
-4. [Deployment](docs/04-deployment.md): demo, Docker, Render, production checklist
-5. [Presentation demo script](docs/05-presentation-demo-script.md)
-6. [Roadmap and current limits](docs/06-roadmap-and-limits.md)
-7. [USSD and SMS channels](ussd-sms/README.md) · [Handover stack](infrastructure/README.md)
+| Document | Contents |
+| --- | --- |
+| [User guide](docs/user-guide.md) | Pages, roles and areas, alerts, forecasts, scripts |
+| [Architecture](docs/architecture.md) | How the system design is implemented; design document in [docs/architecture-design.docx](docs/architecture-design.docx) |
+| [Data model](docs/data-model.md) | Tables, relationships and business rules |
+| [Deployment](docs/deployment.md) | Local, Docker and hosted deployment; production checklist |
+| [Field channels](ussd-sms/README.md) | USSD menu, SMS keywords, Africa's Talking setup |
+| [Operations](infrastructure/README.md) | Running and maintaining the Docker stack |
+| [Roadmap](docs/roadmap.md) | Project status, known limitations and next steps |
 
 ## Tests
 
@@ -80,13 +145,23 @@ cd backend
 python -m pytest -q -p no:cacheprovider
 ```
 
-Tests always use an in-memory database (`tests/conftest.py`). They never touch the database in `.env`.
+Tests always run on an in-memory database and make no network calls.
+
+## Security and privacy
+
+- Passwords are hashed with PBKDF2-SHA256; sign-in tokens are stored only as hashes and expire.
+- Self-registration cannot choose a role; only administrators assign roles and areas.
+- Grievances are anonymous, and public pages show aggregates only.
+- Never commit `.env` or `infrastructure/stack.env`. See the production checklist in [docs/deployment.md](docs/deployment.md).
+
+## Contributing
+
+Contributions are welcome through pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests and the review workflow.
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ## Status
 
-All features above work end to end through the simulator and the API. Two things are needed before real field use:
-
-- Africa's Talking credentials. Until then, outgoing SMS and airtime are logged as `dry_run`.
-- The official PADAB and APEFA yield targets.
-
-See [roadmap and limits](docs/06-roadmap-and-limits.md). Never commit `.env` or `infrastructure/stack.env`.
+The platform is complete for pilot use. Live SMS and airtime delivery require Africa's Talking production credentials and an approved short code; until then, outgoing messages are recorded as `dry_run`. Scheme yield targets must be entered from the official feasibility studies. See the [roadmap](docs/roadmap.md).

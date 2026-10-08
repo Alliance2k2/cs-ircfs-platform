@@ -25,6 +25,7 @@
           <button class="module-link" data-module="messages"><span>S</span> SMS log <b data-count="messages">-</b></button>
           <button class="module-link" data-module="accounts"><span>K</span> Accounts <b data-count="accounts">-</b></button>
           <button class="module-link" data-module="analytics"><span>A</span> Analytics</button>
+          <a class="module-link" href="index.html"><span>H</span> Home</a>
           <a class="module-link" href="planner.html"><span>P</span> Planner dashboard</a>
           <a class="module-link" href="simulator.html"><span>T</span> Phone simulator</a>
         </nav>
@@ -66,8 +67,16 @@
         <div class="dialog-actions"><button type="button" class="outline-button" id="entry-cancel">Cancel</button><button type="submit" class="primary-button">Save record</button></div>
       </form>
     </dialog>
+    <dialog id="area-dialog">
+      <form id="area-form">
+        <div class="dialog-heading"><div><p class="eyebrow">AREA-LEVEL ACCESS</p><h2>Sectors this account works in</h2><p>The person sees cases, grievances, people and reports from these sectors only. Leave all unticked for the whole district. District totals and trends stay district-wide. Administrators always see the whole district.</p></div><button class="close-dialog" type="button" id="area-close" aria-label="Close">X</button></div>
+        <div id="area-sectors" class="area-grid"></div>
+        <p id="area-message" class="form-message" role="alert"></p>
+        <div class="dialog-actions"><button type="button" class="outline-button" id="area-clear">Whole district</button><button type="button" class="outline-button" id="area-cancel">Cancel</button><button type="submit" class="primary-button">Save area</button></div>
+      </form>
+    </dialog>
     <script src="shared.js?v=20261006"></script>
-    <script src="management.js?v=20261008"></script>
+    <script src="management.js?v=20261009b"></script>
   </body>
 </html>
 

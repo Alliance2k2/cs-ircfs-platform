@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells
+from app.core.security import Principal, require_roles
 from app.db.models import (AdvisoryMessage, Cell, CitizenScienceLog, CommunityFeedback, FeedbackStatusEvent, IncentiveReward, IncidentCase,
                            InboundMessage, IrrigationClimateLog, IrrigationScheme, NutritionSurvey, ReportStatus, User, UserRole)
 from app.db.session import get_db
@@ -60,8 +61,9 @@ def trends(months: int = 12, db: Session = Depends(get_db), _: object = viewer) 
 
 
 @router.get("/act-now", response_model=list[ActNowItem])
-def act_now_queue(db: Session = Depends(get_db), _: object = planner) -> list[ActNowItem]:
+def act_now_queue(db: Session = Depends(get_db), principal: Principal = planner) -> list[ActNowItem]:
     items: list[ActNowItem] = []
+    cells = allowed_cells(db, principal)
     active = [ReportStatus.open, ReportStatus.triaged, ReportStatus.assigned, ReportStatus.in_progress]
     for case in db.scalars(select(IncidentCase).where(IncidentCase.status.in_(active))):
         if case.source_type == "irrigation":
@@ -82,6 +84,8 @@ def act_now_queue(db: Session = Depends(get_db), _: object = planner) -> list[Ac
     for feedback in db.scalars(select(CommunityFeedback).where(CommunityFeedback.status.in_(active))):
         items.append(ActNowItem(item_type="community_feedback", item_id=feedback.id, priority="medium", title=feedback.category, status=feedback.status.value, scheme_id=feedback.scheme_id, cell_id=feedback.cell_id, created_at=feedback.created_at, assigned_to_user_id=feedback.assigned_to_user_id, due_at=feedback.due_at, details=feedback.message))
     priority_order = {"critical": 0, "high": 1, "medium": 2}
+    if cells is not None:
+        items = [item for item in items if item.cell_id in cells]
     return sorted(items, key=lambda item: (priority_order.get(item.priority, 3), aware(item.created_at)))
 
 

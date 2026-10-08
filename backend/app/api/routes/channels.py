@@ -11,12 +11,13 @@ from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse
-from sqlalchemy import select
+from sqlalchemy import select, true
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.security import require_roles
-from app.db.models import AdvisoryMessage, IncentiveReward, InboundMessage, UserRole
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
+from app.db.models import AdvisoryMessage, IncentiveReward, InboundMessage, User, UserRole
 from app.db.session import get_db
 from app.services import sms_keywords, ussd
 from app.services.reporting import find_or_register_user
@@ -89,11 +90,16 @@ async def sms_callback(request: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/channels/activity")
-def channel_activity(limit: int = Query(default=30, ge=1, le=200), db: Session = Depends(get_db), _: object = reader) -> dict:
+def channel_activity(limit: int = Query(default=30, ge=1, le=200), db: Session = Depends(get_db), principal: Principal = reader) -> dict:
     """Latest inbound USSD/SMS, outbound SMS, and airtime rewards, for the live feed."""
-    inbound = db.scalars(select(InboundMessage).order_by(InboundMessage.id.desc()).limit(limit))
-    outbound = db.scalars(select(AdvisoryMessage).order_by(AdvisoryMessage.id.desc()).limit(limit))
-    rewards = db.scalars(select(IncentiveReward).order_by(IncentiveReward.id.desc()).limit(limit))
+    area = allowed_cells(db, principal)
+    # Inbound messages carry no cell: an area-limited person sees messages from phones registered in their area.
+    phones = select(User.phone_number).where(User.cell_id.in_(area)) if area is not None else None
+    inbound = db.scalars(select(InboundMessage).where(InboundMessage.phone_number.in_(phones) if phones is not None else true())
+                         .order_by(InboundMessage.id.desc()).limit(limit))
+    outbound = db.scalars(select(AdvisoryMessage).where(cell_filter(AdvisoryMessage.cell_id, area)).order_by(AdvisoryMessage.id.desc()).limit(limit))
+    rewards = db.scalars(select(IncentiveReward).where(IncentiveReward.phone_number.in_(phones) if phones is not None else true())
+                         .order_by(IncentiveReward.id.desc()).limit(limit))
     return {
         "inbound": [{"id": m.id, "phone_number": m.phone_number, "channel": m.channel, "text": m.text, "reply": m.reply,
                      "record_type": m.record_type, "record_id": m.record_id, "created_at": m.created_at} for m in inbound],

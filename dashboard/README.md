@@ -1,17 +1,18 @@
 # CS-IRCFS web pages
 
-FastAPI serves this folder at `/`, so the pages and the API share one address and no separate web server is needed. Start the platform with `..\start-local.ps1 -Demo` (or `..\start-local.ps1`) and open `http://127.0.0.1:8000`.
+FastAPI serves this folder at `/`, so the pages and the API share one address and no separate web server is needed. Start the platform with `..\start-local.ps1` (or `..\start-local.ps1 -Demo` for sample data) and open `http://127.0.0.1:8000`.
 
 | File | Page |
 | --- | --- |
-| `index.html` | Public home page: how it works, the three modules |
-| `planner.html` + `app.js` + `planner-extra.css` | District Planner dashboard |
+| `index.html` | Public home page: live totals, sector map with irrigation advice, how it works, FAQ |
+| `planner.html` + `app.js` + `planner-extra.css` | District dashboard |
+| `trends.js` | Twelve-month trend charts on the dashboard |
+| `report.html` | Monthly district report (print or save as PDF) |
 | `simulator.html` + `simulator.js` + `simulator.css` | Feature-phone simulator for USSD `*801#` and SMS `8448` |
 | `management.html` + `management.js` | Platform Management: data tables, forms, accounts |
 | `login.html`, `register.html` | Staff sign-in and registration |
-| `backend-console.html` | Technical console for the project team |
+| `backend-console.html` | Technical console for developers |
 | `shared.js` + `shared.css` | Used by every page: API calls, sign-in session, EN/RW switch, notices, dialogs |
-| `tour.js` | The **▶ Presentation tour** on the dashboard |
 | `bugesera-boundary.geojson` | District outline for the map |
 
 ## How the dashboard gets data

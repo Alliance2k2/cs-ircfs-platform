@@ -32,7 +32,7 @@
       }
     },
     {
-      "label": "CS-IRCFS: Start demo (presentation data)",
+      "label": "CS-IRCFS: Start demo (sample data)",
       "type": "shell",
       "command": "powershell",
       "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/start-local.ps1", "-Demo"],

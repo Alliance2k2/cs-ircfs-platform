@@ -19,6 +19,7 @@
           <span><strong>CS-IRCFS</strong><small>Bugesera District</small></span>
         </a>
         <nav aria-label="Main navigation">
+          <a class="nav-link nav-external" href="index.html"><span aria-hidden="true">⌂</span> <em data-i18n="nav.home">Home</em></a>
           <a class="nav-link active" href="#overview"><span aria-hidden="true">◎</span> <em data-i18n="nav.overview">Overview</em></a>
           <a class="nav-link" href="#act-now" data-planner-only><span aria-hidden="true">!</span> <em data-i18n="nav.actnow">Act now</em> <b id="nav-alert-count">0</b></a>
           <a class="nav-link" href="#channels"><span aria-hidden="true">✆</span> <em data-i18n="nav.channels">Field channels</em></a>
@@ -47,11 +48,11 @@
             <h1><span id="greeting" data-i18n="greet.morning">Good morning</span>, <span id="greet-name" data-i18n="greet.planner">Planner</span></h1>
             <p class="subtle" data-i18n="top.subtitle">A clear view of irrigation performance, crop risks, and community action.</p>
             <p id="role-note" class="role-note" hidden>Citizen Science Monitor view: live field reports, scheme progress, rainfall advice and the map. District Planners act on cases and send SMS.</p>
+            <p id="area-note" class="role-note" hidden></p>
           </div>
           <div class="topbar-actions">
             <label class="scheme-select"><span data-i18n="top.scheme">Scheme</span> <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label>
             <a id="scheme-filter-help" class="scheme-empty-help" href="management.html" hidden>Add a scheme to use this filter</a>
-            <button id="start-tour" class="tour-button" type="button" data-planner-only>▶ <span data-i18n="tour.start">Presentation tour</span></button>
             <div class="header-controls" data-header-controls></div>
           </div>
         </header>
@@ -195,8 +196,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script src="shared.js?v=20261006"></script>
-    <script src="tour.js?v=20261006"></script>
     <script src="trends.js?v=20261008"></script>
-    <script src="app.js?v=20261009"></script>
+    <script src="app.js?v=20261011"></script>
   </body>
 </html>

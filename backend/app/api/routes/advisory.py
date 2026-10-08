@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
 from app.db.models import AdvisoryMessage, Cell, User, UserRole
 from app.db.session import get_db
 from app.schemas import AdvisorySmsCreate, ScheduleBroadcast
@@ -26,10 +27,11 @@ def send_advisory_sms(payload: AdvisorySmsCreate, db: Session = Depends(get_db),
 
 
 @router.get("/messages")
-def list_messages(limit: int = Query(default=100, ge=1, le=500), db: Session = Depends(get_db), _: object = planner) -> list[dict]:
+def list_messages(limit: int = Query(default=100, ge=1, le=500), db: Session = Depends(get_db), principal: Principal = planner) -> list[dict]:
+    cells = allowed_cells(db, principal)
     return [{"id": m.id, "phone_number": m.phone_number, "message": m.message, "status": m.status, "purpose": m.purpose or "advisory",
              "cell_id": m.cell_id, "created_at": m.created_at}
-            for m in db.scalars(select(AdvisoryMessage).order_by(AdvisoryMessage.id.desc()).limit(limit))]
+            for m in db.scalars(select(AdvisoryMessage).where(cell_filter(AdvisoryMessage.cell_id, cells)).order_by(AdvisoryMessage.id.desc()).limit(limit))]
 
 
 @router.get("/irrigation-schedule")
@@ -39,9 +41,10 @@ def irrigation_schedule(db: Session = Depends(get_db), _: object = viewer) -> li
 
 
 @router.post("/irrigation-schedule/send")
-def send_irrigation_schedule(payload: ScheduleBroadcast, db: Session = Depends(get_db), _: object = admin) -> dict:
-    """SMS each sector's advice to its cooperative leaders and Citizen Science Monitors."""
-    schedule = [row for row in sector_schedule(db) if row["level"] != "no_data" and (not payload.sector_ids or row["sector_id"] in payload.sector_ids)]
+def send_irrigation_schedule(payload: ScheduleBroadcast, db: Session = Depends(get_db), principal: Principal = admin) -> dict:
+    """SMS each sector's advice to its cooperative leaders and Citizen Science Monitors (only the sender's own sectors)."""
+    schedule = [row for row in sector_schedule(db) if row["level"] != "no_data" and (not payload.sector_ids or row["sector_id"] in payload.sector_ids)
+                and (principal.sector_ids is None or row["sector_id"] in principal.sector_ids)]
     sent = []
     for row in schedule:
         recipients = db.execute(

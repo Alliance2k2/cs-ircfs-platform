@@ -18,7 +18,7 @@ dialog input, dialog select, dialog textarea { display: block; width: 100%; marg
 .filter-panel select, .filter-panel button { min-height: 36px; border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; background: white; color: var(--ink); font: inherit; }
 .page-button:disabled { cursor: not-allowed; opacity: .4; }
 
-/* Refined dashboard presentation */
+/* Refined dashboard layout */
 body { background: radial-gradient(circle at 85% 0%, #e9f4ee 0, #f5f8f6 38%, #eef4f0 100%); }
 .management-sidebar { background: linear-gradient(180deg, #0d3d31 0%, #123d31 65%, #0b3027 100%); box-shadow: 8px 0 28px #0b30271a; }
 .management-brand { padding-top: 2px; }
@@ -46,3 +46,9 @@ tbody tr:hover { background: #f5fbf7; }
 /* Accounts role picker and header controls */
 .role-select{border:1px solid #ccdcd6;border-radius:7px;padding:6px 8px;background:#fff;font:inherit;font-size:12px;text-transform:capitalize}
 .header-actions{flex-wrap:wrap}
+
+/* Area-level access dialog */
+.area-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 14px; margin: 14px 0; }
+#area-dialog .area-option { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; font-weight: 600; cursor: pointer; margin: 0; text-align: left; }
+#area-dialog .area-option input { width: 18px; height: 18px; margin: 0; flex: none; }
+@media (max-width: 640px) { .area-grid { grid-template-columns: 1fr 1fr; } }

@@ -1,7 +1,7 @@
 import enum
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text, TypeDecorator, UniqueConstraint, func
+from sqlalchemy import Boolean, Column, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Table, Text, TypeDecorator, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 
@@ -97,6 +97,15 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+# Area-level access: an account linked to sectors sees records from those sectors only.
+# No rows means the whole district.
+account_sectors = Table(
+    "account_sectors", Base.metadata,
+    Column("account_id", ForeignKey("platform_accounts.id", ondelete="CASCADE"), primary_key=True),
+    Column("sector_id", ForeignKey("sectors.id", ondelete="CASCADE"), primary_key=True),
+)
+
+
 class PlatformAccount(Base):
     __tablename__ = "platform_accounts"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -106,6 +115,12 @@ class PlatformAccount(Base):
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.citizen_science_monitor)
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    sectors: Mapped[list["Sector"]] = relationship(secondary=account_sectors, order_by="Sector.name")
+
+    @property
+    def sector_ids(self) -> list[int]:
+        return [sector.id for sector in self.sectors]
+
 
 class AuthSession(Base):
     """A signed-in browser session. Only a SHA-256 hash of the bearer token is stored."""

@@ -4,7 +4,7 @@ There are three ways to run the platform. All three use the same code.
 
 | Option | For | How |
 | --- | --- | --- |
-| Local demo | Presentations, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db`, open access) |
+| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, no sign-in) |
 | Local real database | Development against your PostgreSQL | `.\start-local.ps1` (runs migrations first) |
 | Docker Compose | District IT / MINAGRI handover | [infrastructure/README.md](../infrastructure/README.md) |
 | Render (hosted preview) | A shareable online demo | `render.yaml` Blueprint, described below |
@@ -27,7 +27,7 @@ There are three ways to run the platform. All three use the same code.
 - [ ] `DRY_SPELL_THRESHOLD_MM` / `WET_SPELL_THRESHOLD_MM` calibrated from Mwesa Valley and Ngeruka/Mareba rainfall records.
 - [ ] Daily database backups (`pg_dump`) stored off the server, and a restore that has been tested.
 - [ ] A consent message for first-time callers, and a data-retention policy agreed with the district.
-- [ ] Area-level access rules if officers should see only their own sectors (not yet implemented).
+- [ ] For officers who should see only their own sectors, set each account's **Area** in Platform Management → Accounts.
 
 ## Security notes
 

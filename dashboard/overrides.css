@@ -1,4 +1,4 @@
-/* Small layout corrections kept separate while the main presentation stylesheet is minified. */
+/* Small layout corrections kept separate from the minified main stylesheet. */
 .ring {
   position: relative;
 }

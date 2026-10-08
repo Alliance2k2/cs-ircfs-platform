@@ -578,22 +578,13 @@ document.addEventListener("cs:lang", () => {
   if (cache.activity) renderFeed(cache.activity);
 });
 
-/* ---------- Presentation tour ---------- */
-const TOUR = [
-  { target: "#overview", title: "Citizens are the sensors", text: "Farmers, Citizen Science Monitors and cooperative leaders report from feature phones. These totals come straight from their USSD and SMS reports. Airtime rewards keep them reporting." },
-  { target: "#channels", title: "No internet needed", text: "A farmer dials *801# or texts 8448. Africa's Talking forwards each step to our API, which stores it centrally and replies in Kinyarwanda. Open the phone simulator to try it live." },
-  { target: "#act-now", title: "Automatic triage", text: "A severe pest report or an offline pump becomes a ranked case on its own. Planners assign an owner, record the action, and keep a full audit trail." },
-  { target: "#schemes", title: "Outcome verification: Objectives 1 and 2", text: "Farmer-reported harvests are compared with each scheme's feasibility-study yield target. Bottlenecks that recur are flagged automatically, scheme by scheme." },
-  { target: "#advice", title: "Irrigation Scheduling Assistant", text: "Rain-gauge readings from cooperative leaders become a seven-day rainfall picture per sector, and the advice goes out by SMS in Kinyarwanda." },
-  { target: "#food", title: "Household nutrition", text: "Three USSD questions about meals, diet and food stocks give a stunting-risk score, so the district can see where food insecurity is growing." },
-  { target: "#map", title: "Spatial intelligence", text: "Switch layers to compare pest hotspots, dry-spell warnings and nutrition risk across Bugesera's sectors and cells." },
-  { target: "#feedback", title: "Closing the loop", text: "When a grievance is resolved, every registered person in the affected cell receives an SMS saying what was done. This builds trust and keeps reports coming." }
-];
-$("#start-tour").addEventListener("click", () => window.CSTour.start(TOUR));
-
 /* ---------- Start ---------- */
 document.body.classList.toggle("read-only", readOnly);
 $("#role-note").hidden = !readOnly;
+if (signedIn?.sector_ids?.length) {
+  $("#area-note").textContent = `Your area: ${signedIn.area}. Cases, grievances, people and reports are limited to it; district totals and trends cover all of Bugesera.`;
+  $("#area-note").hidden = false;
+}
 setGreeting();
 showDemo();
 connect();

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.security import account_for_token, hash_token, require_roles
-from app.db.models import AuthSession, PlatformAccount, UserRole
+from app.db.models import AuthSession, PlatformAccount, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import AccountLogin, AccountRead, AccountRegister, AccountUpdate
 
@@ -38,7 +38,9 @@ def verify_password(password: str, encoded: str) -> bool:
 
 
 def account_payload(account: PlatformAccount) -> dict:
-    return {"id": account.id, "email": account.email, "full_name": account.full_name, "role": account.role, "status": account.status}
+    district_wide = account.role == UserRole.administrator or not account.sectors
+    return {"id": account.id, "email": account.email, "full_name": account.full_name, "role": account.role, "status": account.status,
+            "sector_ids": [] if district_wide else account.sector_ids, "area": "Bugesera District" if district_wide else ", ".join(s.name for s in account.sectors)}
 
 
 def start_session(db: Session, account: PlatformAccount) -> dict:
@@ -141,5 +143,10 @@ def update_account(account_id: int, payload: AccountUpdate, db: Session = Depend
         account.status = payload.status
         if payload.status != "active":
             db.execute(delete(AuthSession).where(AuthSession.account_id == account.id))
+    if payload.sector_ids is not None:
+        sectors = list(db.scalars(select(Sector).where(Sector.id.in_(payload.sector_ids)))) if payload.sector_ids else []
+        if len(sectors) != len(set(payload.sector_ids)):
+            raise HTTPException(422, "Unknown sector")
+        account.sectors = sectors
     db.commit(); db.refresh(account)
     return account

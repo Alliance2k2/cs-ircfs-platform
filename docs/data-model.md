@@ -1,6 +1,6 @@
 # Data model
 
-The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261007_09`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
+The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261008_10`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
 
 ## Tables
 
@@ -19,6 +19,7 @@ The schema is created and changed **only** through Alembic migrations in `backen
 | `advisory_messages` | phone_number, message, status (sent/dry_run/failed), **purpose** (auto_reply, advisory, irrigation_schedule, close_loop), cell_id | Every SMS sent to citizens |
 | `incentive_rewards` | user_id, amount_rwf, reason, status | Airtime micro-bonuses |
 | `platform_accounts`, `auth_sessions` | email, role, status; SHA-256 token hash and expiry | Web sign-in for staff |
+| `account_sectors` | account_id, sector_id | Area-level access: the sectors an account works in (none = whole district) |
 | `farms` | farmer_id, PostGIS boundary | Optional farm plots |
 
 ## Relationships
@@ -29,6 +30,7 @@ sectors → irrigation_schemes → (citizen_science_logs, irrigation_climate_log
 cells → community_feedback → community_feedback_events
 crop / irrigation report → incident_cases → incident_events
 platform_accounts → auth_sessions
+platform_accounts ↔ sectors (account_sectors)
 ```
 
 ## Rules

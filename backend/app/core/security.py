@@ -15,6 +15,7 @@ class Principal:
     name: str
     role: UserRole
     account_id: int | None = None
+    sector_ids: frozenset[int] | None = None  # None = whole district
 
 
 def hash_token(token: str) -> str:
@@ -52,7 +53,9 @@ def get_current_principal(
         account = account_for_token(db, authorization[7:].strip())
         if account is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Your session has expired. Please sign in again.")
-        return Principal(name=account.email, role=UserRole(account.role), account_id=account.id)
+        role = UserRole(account.role)
+        sectors = frozenset(account.sector_ids) if role != UserRole.administrator and account.sector_ids else None
+        return Principal(name=account.email, role=role, account_id=account.id, sector_ids=sectors)
     role_value = settings.configured_api_keys.get(x_api_key or "")
     if not role_value:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sign in or provide a valid API key")
