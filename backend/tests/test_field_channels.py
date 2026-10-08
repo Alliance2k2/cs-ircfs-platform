@@ -270,3 +270,15 @@ def test_monthly_report_counts_this_month_only(client_and_db):
     old = client.get("/api/v1/analytics/monthly-report?month=2020-01").json()
     assert old["label"] == "January 2020" and old["previous_month"] == "2019-12" and old["figures"]["reports"]["value"] == 0
     assert client.get("/api/v1/analytics/monthly-report?month=2026-13").status_code == 422
+
+
+def test_trends_put_this_month_last(client_and_db):
+    client, _ = client_and_db
+    dial(client, "2*2*1*5")
+    dial(client, "3*12")
+    dial(client, "6*1*2*2")
+    months = client.get("/api/v1/analytics/trends?months=6").json()["months"]
+    assert len(months) == 6 and months[0]["reports"] == 0
+    latest = months[-1]
+    assert latest["reports"] == 2 and latest["severe_pests"] == 1 and latest["cases_opened"] == 1
+    assert latest["rainfall_mm"] == 12.0 and latest["rain_readings"] == 1 and latest["households"] == 1 and latest["average_risk"] == 5

@@ -374,6 +374,7 @@ function setMode(next) {
 
 function showDemo() {
   setMode("demo");
+  window.CSTrends?.clear("Sign in to see month-by-month trends from the live database.");
   $("#scheme-filter").replaceChildren(new Option(t("top.allSchemes"), "all"), new Option("PADAB", "1"), new Option("APEFA Solar", "2"));
   $("#scheme-filter-help").hidden = true;
   showSummary(demo.summary);
@@ -410,7 +411,7 @@ async function loadLive({ quiet = false } = {}) {
   if (nutrition) renderFood(nutrition);
   if (activity) renderFeed(activity);
   if (quiet && queue && previousQueue !== undefined && queue.length > previousQueue) toast(`${queue.length - previousQueue} new item${queue.length - previousQueue === 1 ? "" : "s"} in Act Now`, "warn");
-  if (!quiet) await loadMap();
+  if (!quiet) { window.CSTrends?.load(); await loadMap(); }
 }
 
 async function connect({ interactive = false } = {}) {

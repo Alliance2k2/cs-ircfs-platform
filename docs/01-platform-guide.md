@@ -18,7 +18,7 @@ CS-IRCFS lets citizens of Bugesera report crop, water and community information 
 | Page | Address | Purpose |
 | --- | --- | --- |
 | Home | `/` | Public introduction and how it works |
-| Planner dashboard | `/planner.html` | Overview, Act Now queue, field channels, scheme performance, response health, irrigation advice, nutrition, map |
+| Planner dashboard | `/planner.html` | Overview, Act Now queue, field channels, scheme performance, response health, 12-month trends (with a table view), irrigation advice, nutrition, map |
 | Monthly report | `/report.html` | One month of field evidence: reports, scheme results, cases, grievances, pests, rainfall, nutrition, messages, with a comparison to the previous month. **Print / Save as PDF** gives an A4 report |
 | Phone simulator | `/simulator.html` | A feature phone on screen. Dial `*801#` or text keywords; uses the real USSD/SMS endpoints |
 | Platform Management | `/management.html` | Users, schemes (incl. verified yield targets), reports, feedback, nutrition surveys, SMS log, accounts |

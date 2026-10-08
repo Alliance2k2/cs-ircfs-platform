@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="overrides.css?v=20261006" />
     <link rel="stylesheet" href="shared.css?v=20261006" />
-    <link rel="stylesheet" href="planner-extra.css?v=20261007" />
+    <link rel="stylesheet" href="planner-extra.css?v=20261008" />
   </head>
   <body>
     <div class="app-shell">
@@ -23,6 +23,7 @@
           <a class="nav-link" href="#act-now" data-planner-only><span aria-hidden="true">!</span> <em data-i18n="nav.actnow">Act now</em> <b id="nav-alert-count">0</b></a>
           <a class="nav-link" href="#channels"><span aria-hidden="true">✆</span> <em data-i18n="nav.channels">Field channels</em></a>
           <a class="nav-link" href="#schemes"><span aria-hidden="true">▤</span> <em data-i18n="nav.schemes">Scheme performance</em></a>
+          <a class="nav-link" href="#trends"><span aria-hidden="true">↗</span> <em>Trends</em></a>
           <a class="nav-link" href="#advice"><span aria-hidden="true">☂</span> <em data-i18n="nav.advice">Irrigation advice</em></a>
           <a class="nav-link" href="#food"><span aria-hidden="true">♥</span> <em data-i18n="nav.food">Household nutrition</em></a>
           <a class="nav-link" href="#map"><span aria-hidden="true">⌖</span> <em data-i18n="nav.map">Map &amp; observations</em></a>
@@ -118,6 +119,21 @@
           </article>
         </section>
 
+        <section id="trends" class="panel trends-panel">
+          <div class="panel-heading compact">
+            <div><p class="eyebrow">MONTH BY MONTH</p><h2>Trends</h2><p class="subtle">The last 12 months of field evidence. Hover or tab into a chart for exact values.</p></div>
+            <button id="trends-table-toggle" type="button" class="secondary-button">Show as table</button>
+          </div>
+          <p id="trends-status" class="subtle"></p>
+          <div class="trend-grid">
+            <figure class="trend"><figcaption><b>Field reports</b><span>per month, USSD, SMS and web</span></figcaption><div class="trend-chart" id="trend-reports"></div></figure>
+            <figure class="trend"><figcaption><b>Rainfall</b><span>mm per month, average per rain gauge</span></figcaption><div class="trend-chart" id="trend-rain"></div></figure>
+            <figure class="trend"><figcaption><b>Act Now cases</b><span>opened and resolved per month</span></figcaption><div class="trend-chart" id="trend-cases"></div></figure>
+            <figure class="trend"><figcaption><b>Harvest</b><span>expected and reported tons per month</span></figcaption><div class="trend-chart" id="trend-harvest"></div></figure>
+          </div>
+          <div id="trends-table" class="trend-table-wrap" hidden></div>
+        </section>
+
         <section class="content-grid even">
           <article id="advice" class="panel advice-panel">
             <div class="panel-heading compact"><div><p class="eyebrow" data-i18n="advice.eyebrow">IRRIGATION SCHEDULING ASSISTANT</p><h2 data-i18n="advice.title">Irrigation advice by sector</h2><p class="subtle" data-i18n="advice.sub">Seven-day rain-gauge totals become SMS advice for cooperatives.</p></div></div>
@@ -180,6 +196,7 @@
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script src="shared.js?v=20261006"></script>
     <script src="tour.js?v=20261006"></script>
-    <script src="app.js?v=20261008"></script>
+    <script src="trends.js?v=20261008"></script>
+    <script src="app.js?v=20261009"></script>
   </body>
 </html>

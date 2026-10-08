@@ -141,8 +141,9 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
     for reporter_id, cell_id, mm in db.execute(select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm)
                                                .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at))):
         name = sector_of(cell_id) or "Location not set"
-        gauges.setdefault(name, {}).setdefault(reporter_id, 0.0)
-        gauges[name][reporter_id] += float(mm)
+        gauge = (reporter_id, cell_id if reporter_id is None else None)  # same gauge identity as the irrigation advice
+        gauges.setdefault(name, {}).setdefault(gauge, 0.0)
+        gauges[name][gauge] += float(mm)
         readings[name] = readings.get(name, 0) + 1
     rainfall = sorted(({"sector": name, "rainfall_mm": round(sum(totals.values()) / len(totals), 1), "gauges": len(totals), "readings": readings[name]}
                        for name, totals in gauges.items()), key=lambda row: row["rainfall_mm"])
@@ -187,3 +188,70 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
         "messages": {"sms_sent_by_purpose": dict(sorted(sms_out.items(), key=lambda pair: -pair[1])), "delivery": delivery,
                      "airtime_rewards": rewards[0], "airtime_rwf": int(rewards[1])},
     }
+
+
+def build_trends(db: Session, months: int = 12) -> dict:
+    """Month-by-month series for the dashboard trend charts, oldest first (Kigali months)."""
+    months = max(2, min(months, 36))
+    current = datetime.now(KIGALI)
+    keys = []
+    year, number = current.year, current.month
+    for _ in range(months):
+        keys.append(f"{year:04d}-{number:02d}")
+        year, number = (year - 1, 12) if number == 1 else (year, number - 1)
+    keys.reverse()
+    start, _, _ = month_window(keys[0])
+    month_of = lambda value: aware(value).astimezone(KIGALI).strftime("%Y-%m")  # noqa: E731
+    rows = {key: {"month": key, "label": f"{MONTHS[int(key[5:]) - 1][:3]} {key[:4]}", "reports": 0, "severe_pests": 0, "rain_readings": 0,
+                  "asset_faults": 0, "grievances": 0, "cases_opened": 0, "cases_resolved": 0, "expected_tons": 0.0, "reported_tons": 0.0,
+                  "households": 0, "average_risk": None, "rainfall_mm": None} for key in keys}
+
+    def bucket(value):
+        return rows.get(month_of(value)) if value is not None else None
+
+    for created, severity, expected, reported in db.execute(select(CitizenScienceLog.created_at, CitizenScienceLog.severity,
+                                                                   CitizenScienceLog.expected_harvest_tons, CitizenScienceLog.reported_harvest_tons)
+                                                            .where(CitizenScienceLog.created_at >= start)):
+        row = bucket(created)
+        if row:
+            row["reports"] += 1
+            row["severe_pests"] += 1 if (severity or 0) >= 4 else 0
+            row["expected_tons"] += expected or 0
+            row["reported_tons"] += reported or 0
+    gauges: dict[str, dict] = {}
+    for created, status, mm, reporter_id, cell_id in db.execute(select(IrrigationClimateLog.created_at, IrrigationClimateLog.operational_status,
+                                                                       IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id)
+                                                       .where(IrrigationClimateLog.created_at >= start)):
+        row = bucket(created)
+        if not row:
+            continue
+        row["reports"] += 1
+        row["asset_faults"] += 1 if status in ("faulty", "offline") else 0
+        if mm is not None:
+            row["rain_readings"] += 1
+            gauge = (reporter_id, cell_id if reporter_id is None else None)
+            gauges.setdefault(row["month"], {}).setdefault(gauge, 0.0)
+            gauges[row["month"]][gauge] += float(mm)
+    for key, totals in gauges.items():
+        rows[key]["rainfall_mm"] = round(sum(totals.values()) / len(totals), 1)  # month total per gauge, averaged across gauges
+    for (created,) in db.execute(select(CommunityFeedback.created_at).where(CommunityFeedback.created_at >= start)):
+        if row := bucket(created):
+            row["grievances"] += 1
+    for (created,) in db.execute(select(IncidentCase.created_at).where(IncidentCase.created_at >= start)):
+        if row := bucket(created):
+            row["cases_opened"] += 1
+    for _, closed in db.execute(select(IncidentEvent.case_id, func.min(IncidentEvent.created_at)).where(IncidentEvent.new_status.in_(CLOSED))
+                                .group_by(IncidentEvent.case_id)):
+        if row := bucket(closed):
+            row["cases_resolved"] += 1
+    risks: dict[str, list[int]] = {}
+    for created, score in db.execute(select(NutritionSurvey.created_at, NutritionSurvey.stunting_risk_score).where(NutritionSurvey.created_at >= start)):
+        if row := bucket(created):
+            row["households"] += 1
+            risks.setdefault(row["month"], []).append(score)
+    for key, scores in risks.items():
+        rows[key]["average_risk"] = round(sum(scores) / len(scores), 1)
+    for row in rows.values():
+        row["expected_tons"] = round(row["expected_tons"], 1)
+        row["reported_tons"] = round(row["reported_tons"], 1)
+    return {"months": [rows[key] for key in keys]}
