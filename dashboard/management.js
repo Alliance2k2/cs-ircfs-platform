@@ -406,7 +406,8 @@ document.querySelector("#add-button").addEventListener("click", async () => {
   for (const [name, title, type, required, options] of definition.fields) {
     const label = document.createElement("label");
     label.textContent = title;
-    const field = document.createElement(type === "textarea" ? "textarea" : type === "select" ? "select" : "input");
+    // Location and reference pickers are drop-down lists, like plain "select" fields.
+    const field = document.createElement(type === "textarea" ? "textarea" : type === "select" || type.startsWith("location-") ? "select" : "input");
     field.name = name;
     field.required = Boolean(required);
     if (type === "location-cell") {
@@ -487,7 +488,7 @@ entryForm.addEventListener("submit", async (event) => {
     if (value === null || String(value).trim() === "") continue;
     payload[name] = ["number", "integer", "severity", "location-user", "location-scheme", "location-sector", "location-cell"].includes(type) ? Number(value) : String(value).trim();
   }
-  delete payload.sector_id;
+  if (activeModule !== "schemes") delete payload.sector_id;  // reports use the cell; a scheme keeps its sector
   if (activeModule === "nutrition") {
     payload.meals_per_day = Number(payload.meals_per_day);
     payload.ate_protein_or_vegetables = payload.ate_protein_or_vegetables === "yes";
