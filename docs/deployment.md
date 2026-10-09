@@ -4,10 +4,14 @@ There are three ways to run the platform. All three use the same code.
 
 | Option | For | How |
 | --- | --- | --- |
-| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, no sign-in) |
+| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, no sign-in; builds the React dashboard on first run when Node.js is installed) |
 | Local real database | Development against your PostgreSQL | `.\start-local.ps1` (runs migrations first) |
 | Docker Compose | District IT / MINAGRI handover | [infrastructure/README.md](../infrastructure/README.md) |
 | Render (hosted preview) | A shareable online demo | `render.yaml` Blueprint, described below |
+
+## The React dashboard
+
+The Docker image builds `frontend/` in a Node stage and serves the result at `/app/`; nothing extra is needed on the server. Locally, `start-local.ps1` builds it once. While changing the frontend, run the API and then `npm run dev` in `frontend/`: Vite serves the app on http://localhost:5173/app/ and forwards `/api` and the sign-in page to http://127.0.0.1:8000 (set `CS_IRCFS_API` to use another address).
 
 ## Render hosted preview
 
@@ -19,9 +23,12 @@ There are three ways to run the platform. All three use the same code.
 
 ## Before real citizen data (production checklist)
 
-- [ ] `ENVIRONMENT=production`, `REQUIRE_API_KEY=true`, and strong secrets that are not reused from development.
+- [ ] `ENVIRONMENT=production`, `REQUIRE_API_KEY=true`, `COOKIE_SECURE=true`, an empty `CORS_ORIGINS` (same-origin dashboard) and a `GATEWAY_CALLBACK_TOKEN`; the platform refuses to start otherwise. Strong secrets, not reused from development.
+- [ ] `FORWARDED_ALLOW_IPS` set to the reverse proxy's address so rate limits see real clients.
 - [ ] HTTPS in front of the platform. The Africa's Talking callbacks need a public HTTPS URL.
-- [ ] Africa's Talking credentials set, and `SMS_PROVIDER` / `AIRTIME_PROVIDER` switched from `dry_run`.
+- [ ] Africa's Talking credentials set, callback URLs ending in `?token=<GATEWAY_CALLBACK_TOKEN>`, and `SMS_PROVIDER` / `AIRTIME_PROVIDER` switched from `dry_run`.
+- [ ] New staff accounts approved in Platform Management → Accounts (self-registered accounts start pending).
+- [ ] The data protection impact assessment and registration required by Law N° 058/2021 completed by the district.
 - [ ] The Kinyarwanda USSD screens reviewed with the field team and cooperative leaders.
 - [ ] PADAB and APEFA yield targets, hectares and assets entered from official documents, with their sources.
 - [ ] `DRY_SPELL_THRESHOLD_MM` / `WET_SPELL_THRESHOLD_MM` calibrated from Mwesa Valley and Ngeruka/Mareba rainfall records.
@@ -32,7 +39,7 @@ There are three ways to run the platform. All three use the same code.
 ## Security notes
 
 - Passwords are hashed with PBKDF2-SHA256 (210,000 rounds). Session tokens are stored only as SHA-256 hashes and expire.
-- Self-registration cannot choose a role. Only an administrator can promote an account.
+- Self-registered accounts start pending and cannot choose a role. Only an administrator activates and promotes accounts.
 - Suspending an account signs the person out immediately.
-- The USSD and SMS callbacks are public by design. In production, restrict them at the reverse proxy to Africa's Talking's IP ranges.
+- The USSD and SMS callbacks are public URLs protected by `GATEWAY_CALLBACK_TOKEN`; `GATEWAY_ALLOWED_IPS` (or the reverse proxy) can also limit them to Africa's Talking's addresses. See [security.md](security.md).
 - Outgoing messages and rewards are logged with their delivery status (`sent`, `dry_run`, `failed`).

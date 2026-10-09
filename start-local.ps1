@@ -56,8 +56,27 @@ try {
         }
     }
 
+    # The React dashboard (/app/) is built once; rebuild after changing frontend/ (or use `npm run dev` there).
+    $FrontendRoot = Join-Path $ProjectRoot "frontend"
+    if (-not (Test-Path (Join-Path $FrontendRoot "dist\index.html"))) {
+        if (Get-Command npm -ErrorAction SilentlyContinue) {
+            Write-Host "Building the React dashboard (first run only)..." -ForegroundColor Cyan
+            Push-Location $FrontendRoot
+            try {
+                if (-not (Test-Path "node_modules")) { npm ci --no-audit --no-fund }
+                npm run build
+                if ($LASTEXITCODE -ne 0) { Write-Host "React build failed; the classic dashboard still works." -ForegroundColor Yellow }
+            }
+            finally { Pop-Location }
+        }
+        else {
+            Write-Host "Node.js is not installed, so the new dashboard (/app/) is not built. The classic pages work." -ForegroundColor Yellow
+        }
+    }
+
     Write-Host "CS-IRCFS is starting locally..." -ForegroundColor Green
     Write-Host "Platform:        http://127.0.0.1:$Port"
+    Write-Host "Executive view:  http://127.0.0.1:$Port/app/"
     Write-Host "Planner:         http://127.0.0.1:$Port/planner.html"
     Write-Host "Phone simulator: http://127.0.0.1:$Port/simulator.html"
     Write-Host "API docs:        http://127.0.0.1:$Port/docs"

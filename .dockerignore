@@ -10,3 +10,10 @@ backend/pytest-cache-files-*
 dashboard/*preview.png
 dashboard/node_modules
 dashboard/dist
+.venv-linux
+frontend/node_modules
+frontend/dist
+frontend/coverage
+CS_IRCFS_Landing
+*.docx
+*.jpeg
