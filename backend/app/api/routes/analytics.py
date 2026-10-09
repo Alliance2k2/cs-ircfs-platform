@@ -1,12 +1,13 @@
 """Analytics endpoints. Every handler is a thin delegator to :mod:`app.services.analytics`."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.security import Principal, require_roles
-from app.db.models import UserRole
+from app.db.models import IrrigationScheme, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import ActNowItem, DashboardSummary
 from app.services import analytics as analytics_service
+from app.services import executive
 from app.services.reporting import build_monthly_report, build_trends
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
@@ -18,6 +19,23 @@ viewer = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.distri
 @router.get("/dashboard-summary", response_model=DashboardSummary)
 def dashboard_summary(db: Session = Depends(get_db), principal: Principal = viewer) -> DashboardSummary:
     return analytics_service.dashboard_summary(db, principal)
+
+
+@router.get("/executive-overview")
+def executive_overview(
+    days: int = Query(default=30, ge=7, le=365),
+    scheme_id: int | None = Query(default=None, gt=0),
+    sector_id: int | None = Query(default=None, gt=0),
+    db: Session = Depends(get_db),
+    principal: Principal = viewer,
+) -> dict:
+    """The District Planning Dashboard's first screen: metric envelopes with their definition,
+    unit, period and source, plus schemes, assets, rainfall, priority actions and recent reports."""
+    if scheme_id is not None and db.get(IrrigationScheme, scheme_id) is None:
+        raise HTTPException(status_code=422, detail="Unknown scheme")
+    if sector_id is not None and db.get(Sector, sector_id) is None:
+        raise HTTPException(status_code=422, detail="Unknown sector")
+    return executive.overview(db, principal, days=days, scheme_id=scheme_id, sector_id=sector_id)
 
 
 @router.get("/farmer-summary", response_model=DashboardSummary)

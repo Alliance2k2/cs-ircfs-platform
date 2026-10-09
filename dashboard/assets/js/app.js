@@ -89,7 +89,7 @@ function showSummary(summary) {
   countUp($("#metric-complaints"), summary.open_complaints);
   countUp($("#metric-households"), summary.households_surveyed ?? 0);
   countUp($("#metric-rewards"), summary.rewards_paid_rwf ?? 0, " RWF");
-  setText("#metric-complaints-note", `${summary.faulty_or_offline_assets} asset report${summary.faulty_or_offline_assets === 1 ? "" : "s"} need attention`);
+  setText("#metric-complaints-note", `${summary.faulty_or_offline_assets} fault report${summary.faulty_or_offline_assets === 1 ? "" : "s"} received (all time)`);
   setText("#metric-households-note", summary.average_stunting_risk ? `Average stunting risk ${summary.average_stunting_risk} / 5` : "Collected through USSD option 6");
   setText("#mod-channels", number(summary.field_messages));
   setText("#mod-feedback", number(summary.open_complaints));

@@ -27,11 +27,13 @@ from app.db.models import (
     IrrigationScheme,
     NutritionSurvey,
     ReportStatus,
+    ORIGIN_SIMULATOR,
     UserRole,
 )
 from app.schemas import ActNowItem, DashboardSummary
 from app.services.advisory import advice_for_rainfall, threshold_map
 from app.services.cases import case_source
+from app.services.evidence import counted
 
 CLOSED = [ReportStatus.resolved, ReportStatus.closed]
 ACTIVE = [ReportStatus.open, ReportStatus.triaged, ReportStatus.assigned, ReportStatus.in_progress]
@@ -87,7 +89,7 @@ def act_now_queue(db: Session, principal: Principal) -> list[ActNowItem]:
     cells = allowed_cells(db, principal)
     for case in db.scalars(select(IncidentCase).where(IncidentCase.status.in_(ACTIVE))):
         report = case_source(db, case)
-        if report is None:
+        if report is None or report.data_origin == ORIGIN_SIMULATOR:  # simulator tests are not work to do
             continue
         if case.source_type == SOURCE_INFRASTRUCTURE:
             title = f"{report.infrastructure_name or 'Irrigation asset'} is {report.operational_status}"
@@ -100,7 +102,7 @@ def act_now_queue(db: Session, principal: Principal) -> list[ActNowItem]:
         items.append(ActNowItem(item_type=item_type, item_id=case.id, priority=case.priority, title=title, status=case.status.value,
                                 scheme_id=report.scheme_id, cell_id=report.cell_id, created_at=case.created_at,
                                 assigned_to_account_id=case.assigned_to_account_id, due_at=case.due_at, details=details))
-    for feedback in db.scalars(select(CommunityFeedback).where(CommunityFeedback.status.in_(ACTIVE))):
+    for feedback in db.scalars(select(CommunityFeedback).where(CommunityFeedback.status.in_(ACTIVE), counted(CommunityFeedback))):
         items.append(ActNowItem(item_type="community_feedback", item_id=feedback.id, priority="medium", title=feedback.category,
                                 status=feedback.status.value, scheme_id=feedback.scheme_id, cell_id=feedback.cell_id,
                                 created_at=feedback.created_at, assigned_to_field_user_id=feedback.assigned_to_field_user_id,
@@ -215,7 +217,8 @@ def pest_heatmap(db: Session, days: int = 90) -> list[dict]:
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     points = []
-    for report in db.scalars(select(CitizenScienceLog).where(CitizenScienceLog.pest_or_disease.is_not(None), CitizenScienceLog.created_at >= cutoff)):
+    for report in db.scalars(select(CitizenScienceLog).where(CitizenScienceLog.pest_or_disease.is_not(None), CitizenScienceLog.created_at >= cutoff,
+                                                             counted(CitizenScienceLog))):
         position = report_position(report, cells)
         if position:
             points.append({"latitude": position[0], "longitude": position[1], "weight": round((report.severity or 3) / 5, 2),
@@ -230,12 +233,38 @@ def rainfall_map(db: Session, days: int = 7) -> list[dict]:
     rows = db.execute(
         select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id, func.sum(IrrigationClimateLog.rainfall_mm), func.count(IrrigationClimateLog.id))
         .join(IrrigationClimateLog, IrrigationClimateLog.cell_id == Cell.id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff)
+        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
         .group_by(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
     ).all()
     return [{"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng, "rainfall_mm": round(total or 0, 1), "readings": readings,
              "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level}
             for cell_id, name, lat, lng, sector_id, total, readings in rows if lat is not None and lng is not None]
+
+
+DOWN = ("faulty", "offline")
+
+
+def latest_asset_status(db: Session, cells: set[int] | None = None, scheme_id: int | None = None) -> list[dict]:
+    """The most recent condition report for each named asset of each scheme.
+
+    "Assets down" means the latest report says faulty or offline. Counting every fault
+    report ever received (the legacy summary figure) overstates current problems once an
+    asset is repaired and reported working again.
+    """
+    query = (select(IrrigationClimateLog).where(IrrigationClimateLog.infrastructure_name.is_not(None),
+                                                IrrigationClimateLog.operational_status.is_not(None), counted(IrrigationClimateLog))
+             .order_by(IrrigationClimateLog.created_at, IrrigationClimateLog.id))
+    if cells is not None:
+        query = query.where(IrrigationClimateLog.cell_id.in_(cells))
+    if scheme_id is not None:
+        query = query.where(IrrigationClimateLog.scheme_id == scheme_id)
+    latest: dict[tuple, IrrigationClimateLog] = {}
+    for report in db.scalars(query):
+        latest[(report.scheme_id, report.infrastructure_name.strip().lower())] = report
+    return [{"asset": report.infrastructure_name, "scheme_id": report.scheme_id, "status": report.operational_status,
+             "down": report.operational_status in DOWN, "bottleneck": report.bottleneck_category, "description": report.fault_description,
+             "cell_id": report.cell_id, "reported_at": report.created_at}
+            for report in sorted(latest.values(), key=lambda item: (item.operational_status not in DOWN, item.infrastructure_name))]
 
 
 def nutrition_summary(db: Session) -> dict:

@@ -17,6 +17,7 @@ from app.db.models import (
     Sector,
     UserRole,
 )
+from app.services.evidence import counted
 from app.services.forecast import rainfall_forecast
 from app.services.sms import deliver, send_airtime
 
@@ -94,7 +95,7 @@ def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int
     rows = db.execute(
         select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm)
         .join(Cell, Cell.id == IrrigationClimateLog.cell_id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff)
+        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
     ).all()
     # Sum each gauge (reporter, or cell when anonymous) over the window, then average the
     # gauges in a sector so two gauges reading the same rain are not double-counted.
