@@ -1,4 +1,4 @@
-// Public landing page: template behaviour (menu, reveal, counters, FAQ, EN/RW menu) plus live platform data.
+// Public landing page: template behaviour (menu, reveal, FAQ, EN/RW menu) plus live platform data in the hero.
 (() => {
   const { API, escapeHtml, session } = window.CS;
   const $ = (selector) => document.querySelector(selector);
@@ -16,8 +16,8 @@
   links.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
 
   const NAV = {
-    en: { label: "EN", items: ["Our mission", "Live map", "Solutions", "How it works", "Pilot projects", "FAQs"] },
-    rw: { label: "RW", items: ["Intego yacu", "Ikarita", "Ibisubizo", "Uko bikora", "Imishinga y'igerageza", "Ibibazo"] },
+    en: { label: "EN", items: ["Our mission", "Solutions", "How it works", "Pilot projects", "FAQs"] },
+    rw: { label: "RW", items: ["Intego yacu", "Ibisubizo", "Uko bikora", "Imishinga y'igerageza", "Ibibazo"] },
   };
   let lang = "en";
   $("#langBtn").addEventListener("click", () => {
@@ -41,9 +41,8 @@
   // ---------- Signed-in people go straight to the dashboard ----------
   if (session.account()) {
     $("#nav-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
-    $("#hero-cta").innerHTML = 'Open live dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
-    $("#cta-main").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
-    ["#nav-cta", "#hero-cta", "#cta-main", "#mobile-cta", "#preview-cta"].forEach((id) => { const link = $(id); if (link) link.href = "planner.html"; });
+    $("#hero-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
+    ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "planner.html"; });
     const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = "Open dashboard";
   }
 
@@ -63,7 +62,7 @@
   window.addEventListener("scroll", () => { if (!ticking) { ticking = true; window.requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
 
-  // ---------- Reveal on scroll and project-fact counters ----------
+  // ---------- Reveal on scroll ----------
   const revealItems = document.querySelectorAll(".reveal");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if ("IntersectionObserver" in window && !reduceMotion) {
@@ -75,30 +74,11 @@
     revealItems.forEach((el) => el.classList.add("visible"));
   }
 
-  // Only fixed project facts from the proposal are animated here, never live figures.
-  function animateCount(el) {
-    const end = Number(el.dataset.count), suffix = el.dataset.suffix || "";
-    if (reduceMotion) { el.textContent = end + suffix; return; }
-    const begin = performance.now(), duration = 1200;
-    function frame(now) {
-      const t = Math.min((now - begin) / duration, 1), ease = 1 - Math.pow(1 - t, 3);
-      el.textContent = (Number.isInteger(end) ? Math.round(end * ease) : (end * ease).toFixed(1)) + suffix;
-      if (t < 1) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
-  if ("IntersectionObserver" in window) {
-    const counters = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { animateCount(e.target); counters.unobserve(e.target); } });
-    }, { threshold: 0.7 });
-    document.querySelectorAll("[data-count]").forEach((el) => counters.observe(el));
-  }
-
   // Keep one FAQ answer open at a time.
   const faqs = document.querySelectorAll(".faq-list details");
   faqs.forEach((d) => d.addEventListener("toggle", () => { if (d.open) faqs.forEach((other) => { if (other !== d) other.open = false; }); }));
 
-  // ---------- Live map of sectors ----------
+  // ---------- Live figures in the hero ----------
   function ago(value) {
     const seconds = Math.max(0, (Date.now() - new Date(String(value).endsWith("Z") || String(value).includes("+") ? value : `${value}Z`)) / 1000);
     if (seconds < 60) return "just now";
@@ -107,99 +87,40 @@
     return `${Math.floor(seconds / 86400)} d ago`;
   }
 
-  const LEVEL = { irrigate_more: ["#d9822b", "Dry: irrigate more", 0], reduce: ["#3d8bb0", "Wet: irrigate less", 1], normal: ["#2f9e6e", "Normal", 2], no_data: ["#a9b5b0", "No rain data", 3] };
-  const HOME_VIEW = [[-2.22, 30.15], 10];
-  let map = null, sectorLayer = null, districtBounds = null;
-  function showDistrict() {
-    if (!map) return;
-    if (districtBounds) map.fitBounds(districtBounds, { padding: [16, 16] });
-    else map.setView(...HOME_VIEW);
+  const KIND_ICON = { pest: "bug", fault: "tools", rain: "cloud-rain", harvest: "basket", water: "droplet", feedback: "chat-left-text", nutrition: "heart-pulse" };
+  function setLive(online) {
+    $("#hf-dot").classList.toggle("off", !online);
+    document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = online ? "LIVE" : "OFFLINE"; badge.classList.toggle("off", !online); });
   }
-  function ensureMap() {
-    if (map || !window.L) return;
-    map = L.map("public-map", { scrollWheelZoom: false }).setView(...HOME_VIEW);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 18, className: "soft-tiles" }).addTo(map);
-    sectorLayer = L.layerGroup().addTo(map);
-    fetch("assets/data/bugesera-boundary.geojson").then((r) => r.json()).then((geo) => {
-      const outline = L.geoJSON(geo, { style: { color: "#167949", weight: 2, fillColor: "#167949", fillOpacity: 0.05 }, interactive: false }).addTo(map);
-      districtBounds = outline.getBounds();
-      showDistrict();
-    }).catch(() => {});
-  }
-  $("#map-reset").addEventListener("click", showDistrict);
 
-  function renderSectors(sectors) {
-    ensureMap();
-    if (sectorLayer) {
-      sectorLayer.clearLayers();
-      sectors.filter((s) => s.latitude && s.longitude).forEach((s) => {
-        const [color, label] = LEVEL[s.advice_level] || LEVEL.no_data;
-        const rain = (s.rainfall_mm_7d == null ? "no rain-gauge readings yet" : `${s.rainfall_mm_7d} mm rain in 7 days`)
-          + (s.forecast_mm_7d == null ? "" : `<br>Forecast: ${s.forecast_mm_7d} mm in the next 7 days`);
-        L.circleMarker([s.latitude, s.longitude], { radius: 7 + Math.sqrt(s.reports_30d) * 4, color: "#fff", weight: 2, fillColor: color, fillOpacity: 0.85 })
-          .bindTooltip(`<b>${escapeHtml(s.name)}</b><br>${s.reports_30d} report${s.reports_30d === 1 ? "" : "s"} in 30 days<br>${escapeHtml(label)} · ${rain}`, { className: "sector-tip", direction: "top" })
-          .addTo(sectorLayer);
-      });
-    }
-    const withData = sectors.filter((s) => s.advice_level !== "no_data").sort((a, b) => (LEVEL[a.advice_level]?.[2] ?? 9) - (LEVEL[b.advice_level]?.[2] ?? 9));
-    const missing = sectors.length - withData.length;
-    const forecasts = sectors.filter((s) => s.advice_level === "no_data" && s.forecast_mm_7d != null).map((s) => s.forecast_mm_7d);
-    const range = forecasts.length ? ` Forecast: ${Math.round(Math.min(...forecasts))}–${Math.round(Math.max(...forecasts))} mm of rain in the next 7 days.` : "";
-    $("#advice").innerHTML = (withData.length
-      ? withData.map((s) => `<li><i class="lvl-${escapeHtml(s.advice_level)}"></i><b>${escapeHtml(s.name)} · ${s.rainfall_mm_7d} mm</b><span>${escapeHtml(s.advice_en)}</span></li>`).join("")
-      : `<li class="more">No rain-gauge readings this week yet. Monitors report rain with *801# option 3, or by SMS: IMVURA 12.${range}</li>`)
-      + (missing && withData.length ? `<li class="more">${missing} more sector${missing === 1 ? "" : "s"} without rain data this week.${range}</li>` : "");
+  function renderHero(data) {
+    // Before the first report, invite one instead of showing "0 farmer reports".
+    $("#hero-reports").textContent = data.reports ? `${fmt(data.reports)} farmer report${data.reports === 1 ? "" : "s"}` : "Pilot starting";
+    $("#hero-reports-note").textContent = data.reports ? "Community voices matter" : "Be the first: dial *801#";
+    $("#hero-feed").innerHTML = data.recent.length
+      ? data.recent.slice(0, 3).map((item) => `<li class="${escapeHtml(item.kind)}"><i class="bi bi-${KIND_ICON[item.kind] || "clipboard-data"}" aria-hidden="true"></i><div><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.sector || "Bugesera")} · ${ago(item.created_at)}</small></div></li>`).join("")
+      : `<li class="hf-empty">The pilot is starting. Reports appear here as soon as farmers dial *801# or text 8448.</li>`;
+    const share = data.sectors_total ? (data.sectors_reporting / data.sectors_total) * 100 : 0;
+    $("#sector-progress").style.width = `${Math.max(data.sectors_reporting ? 4 : 0, share)}%`;
   }
 
   async function refresh() {
-    const dot = $("#live-dot"), time = $("#live-time");
     try {
       const response = await fetch(`${API}/public/overview`);
       if (!response.ok) throw new Error(response.status);
       const data = await response.json();
-      const values = { reports: fmt(data.reports), field_messages: fmt(data.field_messages), farmers: fmt(data.farmers),
-                       monitors: fmt(data.monitors), schemes: fmt(data.active_schemes),
-                       sectors: `${data.sectors_reporting}${data.sectors_total ? ` / ${data.sectors_total}` : ""}` };
-      document.querySelectorAll("[data-stat]").forEach((el) => { el.textContent = values[el.dataset.stat]; });
-      $("#feed").innerHTML = data.recent.length
-        ? data.recent.slice(0, 5).map((item) => `<li><i class="${escapeHtml(item.kind)}"></i><span>${escapeHtml(item.label)}${item.sector ? ` <em>· ${escapeHtml(item.sector)}</em>` : ""}</span><small>${ago(item.created_at)}</small></li>`).join("")
-        : `<li><span class="empty">The pilot is starting. Reports appear here live as soon as farmers dial *801# or text 8448.</span></li>`;
-      const forecasts = (data.sectors || []).map((s) => s.forecast_mm_7d).filter((v) => v !== null && v !== undefined);
-      $("#forecast").hidden = !forecasts.length;
-      if (forecasts.length) {
-        const low = Math.round(Math.min(...forecasts)), high = Math.round(Math.max(...forecasts));
-        $("#forecast-range").textContent = low === high ? `${low} mm across Bugesera` : `${low}–${high} mm across Bugesera`;
-      }
-      renderSectors(data.sectors || []);
-      renderPreview(data);
+      document.querySelectorAll('[data-stat="sectors"]').forEach((el) => { el.textContent = `${data.sectors_reporting}${data.sectors_total ? ` / ${data.sectors_total}` : ""}`; });
+      renderHero(data);
       tickerItems = data.recent.slice(0, 8).map((item) => `${item.label}${item.sector ? ` · ${item.sector}` : ""} · ${ago(item.created_at)}`);
       setFooterStatus(true, `Platform online · ${fmt(data.reports)} reports from the field`);
-      dot.classList.remove("off");
-      document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = "LIVE"; badge.classList.remove("off"); });
-      time.textContent = `updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      setLive(true);
+      $("#hf-time").textContent = `updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
     } catch (_) {
-      dot.classList.add("off");
-      document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = "OFFLINE"; badge.classList.add("off"); });
-      time.textContent = "offline";
-      $("#feed").innerHTML = `<li><span class="empty">Live figures appear when the platform is running.</span></li>`;
-      $("#sector-bars").innerHTML = `<p class="preview-empty">Sector activity appears when the platform is running.</p>`;
-      $("#preview-feed").innerHTML = `<li class="preview-empty">No connection to the platform.</li>`;
+      setLive(false);
+      $("#hf-time").textContent = "offline";
+      $("#hero-feed").innerHTML = `<li class="hf-empty">Live reports appear here when the platform is running.</li>`;
       setFooterStatus(false, "Platform offline · live figures paused");
-      ensureMap();
     }
-  }
-
-  // ---------- Live platform preview ----------
-  const KIND_ICON = { pest: "bug", fault: "tools", rain: "cloud-rain", harvest: "basket", water: "droplet", feedback: "chat-left-text", nutrition: "heart-pulse" };
-  function renderPreview(data) {
-    const sectors = [...(data.sectors || [])].filter((s) => s.reports_30d > 0).sort((a, b) => b.reports_30d - a.reports_30d).slice(0, 6);
-    const top = Math.max(1, ...sectors.map((s) => s.reports_30d));
-    $("#sector-bars").innerHTML = sectors.length
-      ? sectors.map((s, i) => `<div class="sector-bar ${s.advice_level === "irrigate_more" ? "dry" : s.advice_level === "reduce" ? "wet" : ""}"><span>${escapeHtml(s.name)}</span><div class="track"><i style="width:${Math.max(3, (s.reports_30d / top) * 100)}%;animation-delay:${i * 80}ms"></i></div><b>${s.reports_30d}</b></div>`).join("")
-      : `<p class="preview-empty">No sector has reported in the last 30 days yet.</p>`;
-    $("#preview-feed").innerHTML = data.recent.length
-      ? data.recent.slice(0, 4).map((item) => `<li class="${escapeHtml(item.kind)}"><i class="bi bi-${KIND_ICON[item.kind] || "clipboard-data"}" aria-hidden="true"></i><div><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.sector || "Bugesera")} · ${ago(item.created_at)}</small></div></li>`).join("")
-      : `<li class="preview-empty">Reports appear here as soon as farmers dial *801#.</li>`;
   }
 
   function setFooterStatus(online, text) {

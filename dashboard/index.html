@@ -10,12 +10,11 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
-  <link rel="stylesheet" href="assets/css/landing.css?v=20261009b">
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261010k">
 </head>
 <body>
 <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
@@ -31,7 +30,6 @@
   </a>
   <nav class="site-links" id="site-links" aria-label="Main navigation">
     <a href="#about" data-nav>Our mission</a>
-    <a href="#live-map" data-nav>Live map</a>
     <a href="#solutions" data-nav>Solutions</a>
     <a href="#how" data-nav>How it works</a>
     <a href="#projects" data-nav>Pilot projects</a>
@@ -47,40 +45,70 @@
 
 <main>
   <section class="hero" id="home">
-    <div class="hero-art"></div>
+    <div class="hero-art" aria-hidden="true">
+      <span class="hero-photo"></span>
+      <span class="hero-shade"></span>
+      <span class="hero-dots"></span>
+      <span class="hero-glow glow-sun"></span>
+      <span class="hero-glow glow-one"></span>
+      <span class="hero-glow glow-two"></span>
+      <svg class="hero-rows" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path d="M0 250 C 380 150, 760 300, 1440 90"/>
+        <path d="M0 280 C 400 190, 780 330, 1440 140"/>
+        <path d="M0 310 C 420 230, 800 360, 1440 190"/>
+        <path d="M0 340 C 440 270, 820 390, 1440 240"/>
+      </svg>
+      <span class="hero-grain"></span>
+    </div>
     <div class="hero-grid wrap">
       <div class="hero-copy">
-        <div class="kicker light"><span class="kicker-line"></span> REIMAGINING RURAL RESILIENCE</div>
-        <h1>Better harvests.<br>Stronger communities.<br><em>A greener future.</em></h1>
-        <p>When farmers' voices become trusted data, smarter decisions follow. Farmers and Citizen Science Monitors report harvests, pests, rainfall and pump faults from any phone, so District Planners can check whether the PADAB and APEFA Solar schemes deliver.</p>
+        <div class="hero-badge"><span class="badge-pulse"></span>Bugesera District, Rwanda</div>
+        <h1>
+          <span>Better harvests,</span>
+          <em>backed by evidence.<svg class="swash" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 70 3, 150 3, 297 9"/></svg></em>
+        </h1>
+        <p>Farmers report from any phone. District teams use that evidence to verify irrigation schemes and act on problems.</p>
         <div class="hero-actions">
-          <a class="button button-lime" id="hero-cta" href="login.html">Sign in to live data <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-          <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>See how it works</span></a>
+          <a class="button button-lime" id="hero-cta" href="login.html">Sign in <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+          <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>How it works</span></a>
         </div>
-        <div class="codes">
-          <span class="code"><i class="bi bi-hash" aria-hidden="true"></i>USSD <b>*801#</b></span>
-          <span class="code"><i class="bi bi-chat-dots" aria-hidden="true"></i>SMS <b>8448</b></span>
-          <span class="code"><i class="bi bi-wifi-off" aria-hidden="true"></i>Kinyarwanda · no internet needed</span>
-        </div>
-        <div class="hero-proof">
-          <div class="hero-proof-icon"><i class="bi bi-asterisk" aria-hidden="true"></i></div>
-          <div><b>Built with communities, for communities</b><small>Kinyarwanda-first • Low-bandwidth • Evidence-led</small></div>
+        <div class="dial-card" aria-label="Report from any phone, in Kinyarwanda, without internet">
+          <div class="dial"><span class="dial-icon"><i class="bi bi-hash" aria-hidden="true"></i></span><div><small>USSD</small><b>*801#</b></div></div>
+          <div class="dial"><span class="dial-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><div><small>SMS</small><b>8448</b></div></div>
+          <div class="dial dial-note"><span class="dial-icon"><i class="bi bi-wifi-off" aria-hidden="true"></i></span><div><small>Kinyarwanda</small><b class="plain">No internet</b></div></div>
         </div>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="orbit orbit-one"></div>
-        <div class="orbit orbit-two"></div>
-        <div class="hero-emblem"><img src="assets/img/logo-512.png" alt="" width="380" height="380"></div>
-        <div class="float-card card-top"><span class="status-icon"><i class="bi bi-check-lg"></i></span><div><b><span data-stat="reports">–</span> farmer reports</b><small>Community voices matter</small></div><span class="green-mini off" data-live-badge>…</span></div>
-        <div class="float-card card-bottom"><span class="drop-icon"><i class="bi bi-droplet-fill"></i></span><div><b><span data-stat="sectors">–</span> sectors reporting</b><small>Smarter water use · last 30 days</small></div></div>
-        <div class="visual-caption">CITIZEN SCIENCE × IRRIGATION × FOOD SECURITY</div>
+      <div class="hero-visual">
+        <div class="hero-stage" aria-hidden="true">
+          <div class="orbit orbit-one">
+            <span class="orbit-chip chip-rain" style="--a:-35deg"><span><i class="bi bi-cloud-rain"></i></span></span>
+            <span class="orbit-chip chip-pest" style="--a:55deg"><span><i class="bi bi-bug"></i></span></span>
+            <span class="orbit-chip chip-harvest" style="--a:145deg"><span><i class="bi bi-basket"></i></span></span>
+            <span class="orbit-chip chip-pump" style="--a:235deg"><span><i class="bi bi-droplet-half"></i></span></span>
+          </div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-emblem"><img src="assets/img/logo-512.png" alt="" width="380" height="380"></div>
+          <div class="float-card card-top">
+            <span class="status-icon"><i class="bi bi-graph-up-arrow"></i></span>
+            <div><b id="hero-reports">– farmer reports</b><small id="hero-reports-note">Community voices matter</small></div>
+            <span class="green-mini off" data-live-badge>…</span>
+          </div>
+        </div>
+        <aside class="hero-feed" aria-live="polite" aria-label="Latest public reports">
+          <div class="hf-head"><span class="hf-title"><span class="hf-dot off" id="hf-dot"></span>Live from the field</span><small id="hf-time">connecting…</small></div>
+          <ul class="hf-list" id="hero-feed"><li class="hf-empty">Waiting for the latest reports…</li></ul>
+          <div class="hf-foot">
+            <div class="hf-sectors"><span><b data-stat="sectors">–</b> sectors reporting</span><small>last 30 days</small></div>
+            <div class="hf-track"><i id="sector-progress"></i></div>
+          </div>
+        </aside>
       </div>
     </div>
     <div class="hero-bottom">
       <div class="wrap bottom-inner">
-        <span><b>01</b> Citizen participation</span><span class="sep"></span>
-        <span><b>02</b> Irrigation intelligence</span><span class="sep"></span>
-        <span><b>03</b> Food security insights</span>
+        <span><i class="bi bi-people" aria-hidden="true"></i><b>01</b> Citizen participation</span><span class="sep"></span>
+        <span><i class="bi bi-water" aria-hidden="true"></i><b>02</b> Irrigation intelligence</span><span class="sep"></span>
+        <span><i class="bi bi-basket" aria-hidden="true"></i><b>03</b> Food security insights</span>
         <a href="#about" aria-label="Scroll to introduction">Explore <i class="bi bi-arrow-down" aria-hidden="true"></i></a>
       </div>
     </div>
@@ -113,64 +141,6 @@
     </div>
   </section>
 
-  <section class="metrics-strip" aria-label="Project facts">
-    <div class="wrap metric-grid">
-      <div><b data-count="2">2</b><span>Flagship irrigation schemes</span></div>
-      <div><b data-count="650" data-suffix=" ha">650 ha</b><span>PADAB developed area</span></div>
-      <div><b data-count="65.5" data-suffix=" km">65.5 km</b><span>PADAB canal network</span></div>
-      <div><b data-count="200">200</b><span>Target citizen science monitors</span></div>
-    </div>
-    <p class="metrics-note">Project facts and pilot targets from the CS-IRCFS proposal. Live figures from the field are shown in the next section.</p>
-  </section>
-
-  <section class="live-section section" id="live-map">
-    <div class="wrap">
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> LIVE ACROSS BUGESERA</div>
-          <h2>Where reports come from,<br><span class="serif-green">and this week's advice.</span></h2>
-        </div>
-        <p>Circles grow with the reports sent from each sector in the last 30 days. Their colour shows the irrigation advice from citizen rain gauges.</p>
-      </div>
-      <div class="live-grid">
-        <div class="map-card">
-          <div id="public-map" role="img" aria-label="Map of Bugesera sectors with report activity and irrigation advice"></div>
-          <div class="map-tools"><button type="button" id="map-reset"><i class="bi bi-fullscreen-exit me-1" aria-hidden="true"></i>Whole district</button></div>
-          <div class="legend">
-            <span><i class="lvl-irrigate_more"></i>Dry: irrigate more</span>
-            <span><i class="lvl-normal"></i>Normal</span>
-            <span><i class="lvl-reduce"></i>Wet: irrigate less</span>
-            <span><i class="lvl-no_data"></i>No rain data</span>
-          </div>
-        </div>
-        <aside class="live-card" aria-live="polite">
-          <div class="live-head">
-            <h3><span id="live-dot" class="pulse off"></span> Live from the field</h3>
-            <small id="live-time">connecting…</small>
-          </div>
-          <div class="stats">
-            <div class="stat"><b data-stat="reports">–</b><span>reports received</span></div>
-            <div class="stat"><b data-stat="field_messages">–</b><span>USSD &amp; SMS messages</span></div>
-            <div class="stat"><b data-stat="sectors">–</b><span>sectors reporting (30 days)</span></div>
-            <div class="stat"><b data-stat="farmers">–</b><span>farmers registered</span></div>
-          </div>
-          <div class="forecast" id="forecast" hidden>
-            <i class="bi bi-cloud-drizzle" aria-hidden="true"></i>
-            <span>Rain forecast, next 7 days<br><b id="forecast-range"></b></span>
-            <a href="#advice-block">By sector <i class="bi bi-arrow-down" aria-hidden="true"></i></a>
-          </div>
-          <ul class="feed" id="feed"><li><span class="empty">Waiting for the latest reports…</span></li></ul>
-          <p class="live-note"><i class="bi bi-shield-lock me-1" aria-hidden="true"></i>Counts and sectors only. Names, phone numbers and grievances are never shown publicly.</p>
-        </aside>
-      </div>
-      <div class="advice-block" id="advice-block">
-        <h3><i class="bi bi-cloud-rain me-2" aria-hidden="true" style="color:#167949"></i>This week's irrigation advice</h3>
-        <p>Seven-day rainfall from citizen rain gauges, plus the rain forecast for the week ahead.</p>
-        <ul class="advice" id="advice"><li class="more">Loading…</li></ul>
-      </div>
-    </div>
-  </section>
-
   <section class="solutions-section section" id="solutions">
     <div class="wrap">
       <div class="section-header reveal">
@@ -178,34 +148,46 @@
           <div class="eyebrow"><span class="eyebrow-dot"></span> ONE CONNECTED PLATFORM</div>
           <h2>Big challenges deserve<br><span class="serif-green">connected solutions.</span></h2>
         </div>
-        <p>Built around the real needs of farming communities, three connected pillars make information more useful and decisions more accountable.</p>
+        <p>Crops, water and community feedback arrive through the same channels and are reviewed side by side.</p>
       </div>
       <div class="solutions-grid">
-        <article class="solution-card card-forest reveal">
-          <div class="solution-top"><span class="num">01 / CITIZEN SCIENCE</span><span class="arrow-round"><i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></div>
-          <div class="solution-icon"><i class="bi bi-flower2" aria-hidden="true"></i></div>
-          <div class="solution-content">
-            <h3>Listen to the land.<br>Understand the harvest.</h3>
-            <p>Community-powered crop reports, pest alerts with a heatmap and household food-security surveys help decision makers see emerging needs.</p>
-            <div class="chips"><span>Crop monitoring</span><span>Pest alerts</span><span>Stunting risk</span></div>
+        <article class="pillar pillar-crops reveal">
+          <div class="pillar-media"><span class="pillar-num">01</span><span class="pillar-icon"><i class="bi bi-flower2" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Citizen science</span>
+            <h3>Listen to the land.</h3>
+            <p>Crop reports, pest alerts and household nutrition surveys show where help is needed first.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Crop monitoring</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Pest alerts with a heat map</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Stunting risk by cell</li>
+            </ul>
           </div>
         </article>
-        <article class="solution-card card-photo reveal">
-          <div class="solution-top"><span class="num">02 / WATER RESILIENCE</span><span class="arrow-round"><i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></div>
-          <div class="solution-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></div>
-          <div class="solution-content">
-            <h3>Every drop,<br>put to better use.</h3>
-            <p>Pump and canal faults by bottleneck, a citizen rain-gauge network, and weekly irrigation advice sent to cooperatives by SMS.</p>
-            <div class="chips"><span>Pump health</span><span>Rain gauges</span><span>Advisories</span></div>
+        <article class="pillar pillar-water reveal">
+          <div class="pillar-media"><span class="pillar-num">02</span><span class="pillar-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Water resilience</span>
+            <h3>Every drop, put to better use.</h3>
+            <p>Pump and canal faults, citizen rain gauges and weekly irrigation advice by SMS.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Pump and canal health</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Citizen rain gauges</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Irrigation advice</li>
+            </ul>
           </div>
         </article>
-        <article class="solution-card card-cream reveal">
-          <div class="solution-top"><span class="num">03 / COMMUNITY VOICE</span><span class="arrow-round"><i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></div>
-          <div class="solution-icon"><i class="bi bi-people" aria-hidden="true"></i></div>
-          <div class="solution-content">
-            <h3>Make every voice<br>part of progress.</h3>
-            <p>An anonymous grievance log, and an SMS to each cell saying what action was taken when a problem is solved.</p>
-            <div class="chips"><span>Feedback</span><span>Accountability</span><span>SMS updates</span></div>
+        <article class="pillar pillar-voice reveal">
+          <div class="pillar-media"><span class="pillar-num">03</span><span class="pillar-icon"><i class="bi bi-people" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Community voice</span>
+            <h3>Every voice is heard.</h3>
+            <p>Anonymous concerns are tracked as cases, and each cell is told by SMS when a problem is solved.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Anonymous feedback</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Case tracking</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Closing-the-loop SMS</li>
+            </ul>
           </div>
         </article>
       </div>
@@ -214,27 +196,31 @@
 
   <section class="feature-section section" id="how">
     <div class="wrap feature-layout">
-      <div class="feature-image reveal" aria-hidden="true">
+      <div class="feature-visual reveal" aria-hidden="true">
+        <div class="fv-rings"></div>
         <div class="phone">
-          <div class="phone-screen"><div class="ussd" id="ussd"></div><div class="ussd-caption" id="ussd-caption"></div></div>
+          <div class="phone-top"><span></span></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span><i class="bi bi-reception-4"></i> MTN RW</span><span><i class="bi bi-battery-half"></i></span></div>
+            <div class="ussd dial" id="ussd">*801#</div>
+            <div class="ussd-caption" id="ussd-caption">Dial *801#</div>
+          </div>
+          <div class="phone-nav"><span></span><span></span><span></span></div>
           <div class="keys" id="keys"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
         </div>
-        <div class="signal-bubble"><i class="bi bi-reception-4"></i><b>No smartphone needed</b><span>Feature-phone reporting</span></div>
-        <div class="feature-corner">INCLUSION<br>BY DESIGN <i class="bi bi-asterisk"></i></div>
+        <div class="fv-chip chip-a"><i class="bi bi-reception-4"></i><div><b>No smartphone needed</b><small>Any feature phone</small></div></div>
+        <div class="fv-chip chip-b"><i class="bi bi-translate"></i><div><b>Kinyarwanda</b><small>Numbered choices</small></div></div>
+        <div class="fv-chip chip-c"><i class="bi bi-hand-index-thumb"></i><div><b>4 key presses</b><small>for a pest report</small></div></div>
       </div>
       <div class="feature-copy reveal">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> TECHNOLOGY THAT INCLUDES EVERYONE</div>
+        <div class="eyebrow light"><span class="eyebrow-dot"></span> HOW IT WORKS</div>
         <h2>Simple for farmers.<br><span class="serif-green">Powerful for planners.</span></h2>
-        <p>A pest report takes four key presses. Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
-        <div class="feature-steps">
-          <div><span class="step-icon">01</span><div><h4>Farmers share observations</h4><p>Dial *801# or text 8448 in Kinyarwanda: harvests, pests, rainfall, pump faults and concerns.</p></div></div>
-          <div><span class="step-icon">02</span><div><h4>Reports become evidence</h4><p>Africa's Talking forwards each report to one central database. Harvests are compared with scheme targets; severe pests and broken pumps become cases automatically.</p></div></div>
-          <div><span class="step-icon">03</span><div><h4>Teams act, and communities hear back</h4><p>Advice, tips, airtime and closing-the-loop messages go back by SMS.</p></div></div>
-        </div>
-        <div class="button-row">
-          <a class="button button-dark" href="simulator.html"><i class="bi bi-telephone" aria-hidden="true"></i>Try the phone simulator</a>
-          <a class="button button-outline" href="#roles">Who it's for</a>
-        </div>
+        <p class="feature-lead">Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
+        <ol class="flow">
+          <li><span class="flow-icon"><i class="bi bi-phone" aria-hidden="true"></i></span><div><small>Step 01</small><h4>Farmers report</h4><p>Dial *801# or text 8448 in Kinyarwanda: harvests, pests, rain, pump faults and concerns.</p></div></li>
+          <li><span class="flow-icon"><i class="bi bi-database-check" aria-hidden="true"></i></span><div><small>Step 02</small><h4>Reports become evidence</h4><p>Harvests are compared with scheme targets. Severe pests and broken pumps open cases automatically.</p></div></li>
+          <li><span class="flow-icon"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span><div><small>Step 03</small><h4>Teams act and reply</h4><p>Advice, airtime and resolution messages go back to the community by SMS.</p></div></li>
+        </ol>
       </div>
     </div>
   </section>
@@ -287,49 +273,6 @@
           <div class="button-row"><a class="button button-dark" href="login.html">Sign in</a></div>
           <p class="fine">The district administrator gives the planner role.</p>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="preview-section section" id="preview">
-    <div class="wrap">
-      <div class="section-header reveal">
-        <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> INSIDE THE PLATFORM</div>
-          <h2>A dashboard built<br><span class="serif-green">for decisions.</span></h2>
-        </div>
-        <p>A live preview of what District Planners see: field reports by sector, the latest observations and the counts that matter, refreshed from the platform.</p>
-      </div>
-      <div class="preview-frame reveal">
-        <div class="preview-bar"><span></span><span></span><span></span><em>cs-ircfs · planner dashboard</em><b class="preview-live" data-live-badge>…</b></div>
-        <div class="preview-body">
-          <aside class="preview-side" aria-hidden="true">
-            <img src="assets/img/logo-96.png" alt="" width="34" height="34">
-            <i class="bi bi-speedometer2 active"></i><i class="bi bi-exclamation-triangle"></i><i class="bi bi-phone-vibrate"></i><i class="bi bi-bar-chart-line"></i><i class="bi bi-cloud-rain"></i><i class="bi bi-geo-alt"></i>
-          </aside>
-          <div class="preview-main">
-            <div class="preview-kpis">
-              <div><i class="bi bi-clipboard-data"></i><b data-stat="reports">–</b><span>Field reports</span></div>
-              <div><i class="bi bi-people"></i><b data-stat="farmers">–</b><span>Farmers</span></div>
-              <div><i class="bi bi-broadcast-pin"></i><b data-stat="monitors">–</b><span>Monitors</span></div>
-              <div><i class="bi bi-droplet-half"></i><b data-stat="schemes">–</b><span>Active schemes</span></div>
-            </div>
-            <div class="preview-grid">
-              <div class="preview-card">
-                <div class="preview-card-head"><strong>Reports by sector</strong><small>last 30 days</small></div>
-                <div class="sector-bars" id="sector-bars"><p class="preview-empty">Loading sector activity…</p></div>
-              </div>
-              <div class="preview-card">
-                <div class="preview-card-head"><strong>Latest observations</strong><small>public summary</small></div>
-                <ul class="preview-feed" id="preview-feed"><li class="preview-empty">Loading…</li></ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="preview-actions reveal">
-        <a class="button button-dark" href="login.html" id="preview-cta">Open the full dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-        <a class="button button-outline" href="simulator.html"><i class="bi bi-telephone" aria-hidden="true"></i> Send a test report</a>
       </div>
     </div>
   </section>
@@ -390,23 +333,6 @@
     </div>
   </section>
 
-  <section class="pathway section">
-    <div class="wrap">
-      <div class="pathway-top reveal">
-        <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> HOW THE PILOT UNFOLDS</div>
-          <h2>A thoughtful path from<br><span class="serif-green">idea to implementation.</span></h2>
-        </div>
-        <p>A six-month roadmap combines community-led design, iterative technology development and real-world piloting.</p>
-      </div>
-      <div class="path-cards">
-        <div class="path-card reveal"><span>MONTHS 01–02</span><b>Listen &amp; design</b><p>Community research, Kinyarwanda menu design and reporting workflows.</p><div>01 <i class="bi bi-arrow-right" aria-hidden="true"></i></div></div>
-        <div class="path-card reveal"><span>MONTHS 03–04</span><b>Build &amp; connect</b><p>Data services, the monitoring dashboard and SMS/USSD integration.</p><div>02 <i class="bi bi-arrow-right" aria-hidden="true"></i></div></div>
-        <div class="path-card reveal"><span>MONTHS 05–06</span><b>Pilot &amp; learn</b><p>Field testing with three cooperatives, training and handover preparation.</p><div>03 <i class="bi bi-arrow-up-right" aria-hidden="true"></i></div></div>
-      </div>
-    </div>
-  </section>
-
   <section class="faq-section section" id="faq">
     <div class="wrap faq-layout">
       <div class="reveal">
@@ -427,19 +353,6 @@
       </div>
     </div>
   </section>
-
-  <section class="cta-section">
-    <div class="wrap cta-content reveal">
-      <div class="eyebrow light">THE FUTURE IS COMMUNITY-POWERED</div>
-      <h2>A more resilient future<br><em>starts with listening.</em></h2>
-      <p>See what the field is reporting today. Sign in as a Citizen Science Monitor or District Planner.</p>
-      <div class="cta-buttons">
-        <a class="button button-lime" id="cta-main" href="login.html">Sign in <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-        <a class="button button-glass" href="register.html">Create account</a>
-      </div>
-      <div class="cta-decoration" aria-hidden="true"><i class="bi bi-asterisk"></i></div>
-    </div>
-  </section>
 </main>
 
 <footer class="footer">
@@ -448,7 +361,7 @@
       <a class="brand" href="#home"><img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="53" height="53"><span><strong>CS-IRCFS</strong><small>People • Water • Food • Future</small></span></a>
       <p>Turning community knowledge into better decisions for irrigation resilience and food security.</p>
     </div>
-    <div><b>Explore</b><a href="#about">Our mission</a><a href="#live-map">Live map</a><a href="#how">How it works</a><a href="#faq">Questions</a></div>
+    <div><b>Explore</b><a href="#about">Our mission</a><a href="#how">How it works</a><a href="#faq">Questions</a></div>
     <div><b>Platform</b><a href="login.html">Sign in</a><a href="register.html">Create account</a><a href="simulator.html">Phone simulator</a><a href="report.html">Monthly report</a></div>
     <div><b>Report from the field</b><p>USSD <b>*801#</b><br>SMS <b>8448</b>, e.g. IMVURA 12<br>Kinyarwanda, any phone</p><p>Bugesera District, Rwanda<br>AIMS Rwanda — KTT Office</p></div>
   </div>
@@ -465,9 +378,8 @@
 
 <a class="to-top" id="to-top" href="#home" aria-label="Back to top"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/shared.js?v=20261010"></script>
-<script src="assets/js/landing.js?v=20261009b"></script>
+<script src="assets/js/landing.js?v=20261010c"></script>
 </body>
 </html>
