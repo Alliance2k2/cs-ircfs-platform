@@ -135,5 +135,7 @@ export const authConfigSchema = z.object({
   development_bypass: z.boolean().default(false),
 });
 
+export const mapConfigSchema = z.object({ mapbox_token: z.string().nullable(), style: z.string().nullable() });
+
 export const schemeSchema = z.object({ id: z.number(), name: z.string(), is_active: z.boolean() });
 export const sectorSchema = z.object({ id: z.number(), name: z.string() });

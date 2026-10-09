@@ -1,5 +1,4 @@
 @import "./tokens.css";
-@import "leaflet/dist/leaflet.css";
 
 @tailwind base;
 @tailwind components;
@@ -69,13 +68,9 @@
   }
 }
 
-/* Leaflet: keep tooltips in the platform's type and colours. */
-.leaflet-container {
-  font: inherit;
-  background: rgb(var(--canvas));
-}
-.leaflet-tooltip.cs-tip {
-  @apply rounded-control border-line px-3 py-2 text-xs text-ink shadow-raised;
+/* Mapbox popups in the platform's type and colours. */
+.mapboxgl-popup-content {
+  @apply rounded-control px-3 py-2 font-sans text-xs text-ink shadow-raised;
 }
 
 /* Outside @layer on purpose: these names are built at runtime (tile-${accent}), so Tailwind

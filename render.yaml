@@ -40,6 +40,9 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
+      # Public Mapbox token (pk.…) for the dashboard map, restricted to this site's URL in Mapbox.
+      - key: MAPBOX_ACCESS_TOKEN
+        sync: false
 
 databases:
   - name: cs-ircfs-postgres

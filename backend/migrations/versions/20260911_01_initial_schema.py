@@ -30,6 +30,9 @@ LATER_TABLES = {
     "nutrition_surveys",
     "incentive_rewards",
     "account_sectors",
+    # Its changed_by_account_id points at platform_accounts, so it is created right after
+    # that table in 20260929_05 (a fresh database failed here before October 2026).
+    "community_feedback_events",
 }
 
 

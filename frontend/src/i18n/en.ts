@@ -134,6 +134,7 @@ export const en = {
   "advice.forecast": "Forecast next 7 days: {mm} mm",
   "advice.unvalidated": "Advice thresholds are starting values until calibrated with an agronomist.",
   "map.reset": "Whole district",
+  "map.noToken": "The map appears once a Mapbox public token is added: MAPBOX_ACCESS_TOKEN in .env, then restart the platform.",
   "map.label": "Map of Bugesera sectors coloured by this week's irrigation advice",
   "state.loading": "Loading…",
   "state.error": "The data could not be loaded.",

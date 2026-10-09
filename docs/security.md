@@ -44,6 +44,7 @@ Every control above has an automated test in `backend/tests/test_security.py` or
 | `GATEWAY_CALLBACK_TOKEN` | a random secret of 24+ characters, also in the Africa's Talking callback URLs |
 | `GATEWAY_ALLOWED_IPS` | optional: Africa's Talking callback addresses |
 | `FORWARDED_ALLOW_IPS` | the address of the trusted proxy |
+| `MAPBOX_ACCESS_TOKEN` | a **public** Mapbox token (`pk.`), restricted to the site's URLs in Mapbox; it is visible to browsers by design, and secret `sk.` tokens are refused |
 
 ## Open items
 
