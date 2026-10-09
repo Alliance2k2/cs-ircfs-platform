@@ -102,3 +102,12 @@ def test_priority_actions_are_for_district_staff(auth, client, district):
     monitor = client.get(OVERVIEW, headers=auth("m@example.org", role=UserRole.citizen_science_monitor)).json()
     assert monitor["priority_actions"] is None
     assert metrics(monitor)["critical_incidents"]["value"] == 1  # the count is not personal data
+
+
+def test_invented_demo_targets_are_never_called_documented(client, district, session_factory):
+    with session_factory() as session:
+        scheme = session.scalar(select(IrrigationScheme).where(IrrigationScheme.name == "PADAB"))
+        scheme.baseline_yield_target_tons, scheme.baseline_source = 140, "DEMONSTRATION VALUE - replace with the feasibility-study figure"
+        session.commit()
+    padab = next(row for row in client.get(OVERVIEW).json()["schemes"] if row["name"] == "PADAB")
+    assert padab["yield_target"]["source"] == "demo"

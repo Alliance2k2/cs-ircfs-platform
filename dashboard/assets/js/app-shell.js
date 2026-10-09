@@ -10,6 +10,7 @@
 
   const GROUPS = [
     { label: "Dashboard", items: [
+      { href: "/app/", icon: "stars", label: "Executive overview (new)", page: "executive" },
       { href: "planner.html", icon: "speedometer2", label: "Overview", i18n: "nav.overview", page: "overview" },
       { href: "act-now.html", icon: "exclamation-triangle", label: "Act now", i18n: "nav.actnow", page: "act-now", badge: onDashboard ? "nav-alert-count" : null, plannerOnly: true },
       { href: "channels.html", icon: "phone-vibrate", label: "Field channels", i18n: "nav.channels", page: "channels" },

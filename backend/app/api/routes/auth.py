@@ -91,8 +91,13 @@ def request_token(authorization: str | None, cookie: str | None) -> str:
 
 @router.get("/config")
 def auth_config() -> dict:
-    """Public sign-in settings for the login page (no secrets)."""
-    return {"google_client_id": get_settings().google_client_id.strip() or None}
+    """Public sign-in settings for the login page and the React app (no secrets).
+
+    ``development_bypass`` tells the app that local development runs without sign-in,
+    so it can open as a local administrator instead of sending people to the login page.
+    """
+    settings = get_settings()
+    return {"google_client_id": settings.google_client_id.strip() or None, "development_bypass": settings.dev_auth_bypass}
 
 
 @router.post("/register", status_code=201)

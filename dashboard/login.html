@@ -80,7 +80,9 @@
 <script src="assets/js/shared.js?v=20261010"></script>
 <script>
 const next = new URLSearchParams(location.search).get("next") || "planner.html";
-const goNext = () => { location.href = /^[a-z-]+\.html(#[a-z-]+)?$/.test(next) ? next : "planner.html"; };
+// Only same-site pages: a classic page ("act-now.html") or a React dashboard path ("/app/…").
+const SAFE_NEXT = /^([a-z-]+\.html(#[a-z-]+)?|\/app\/[A-Za-z0-9\/_?=&%.-]*)$/;
+const goNext = () => { location.href = SAFE_NEXT.test(next) && !next.includes("..") ? next : "planner.html"; };
 function finish(result) { CS.session.start(result); goNext(); }
 
 const notice = document.querySelector("#notice");

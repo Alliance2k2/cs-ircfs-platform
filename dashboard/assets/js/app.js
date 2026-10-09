@@ -185,7 +185,7 @@ function renderPerformance(rows) {
         <span class="status-chip ${escapeHtml(row.status)}">${escapeHtml(STATUS_LABEL[row.status] || row.status)}</span>
       </div>
       ${row.target_tons ? `
-      <div class="bar-label"><span>${row.basis === "reported" ? "Reported harvest" : "Forecast harvest"} <b>${number(achieved, 1)} t</b></span><span>Target <b>${number(row.target_tons, 1)} t</b> · <b>${number(row.achievement_percent, 1)}%</b></span></div>
+      <div class="bar-label"><span>${row.basis === "reported" ? "Reported harvest" : "Forecast harvest"} <b>${number(achieved, 1)} t</b></span><span>Target <b>${number(row.target_tons, 1)} t</b> · <b>${number(row.achievement_percent, 1)}%</b> <small title="Harvests reported by a sample of farmers, compared with the whole-scheme target. Not a verified yield achievement.">(sample, not verified)</small></span></div>
       <div class="track big" role="img" aria-label="${escapeHtml(`${row.name}: ${number(achieved, 1)} of ${number(row.target_tons, 1)} tons`)}"><div class="fill ${escapeHtml(row.status)}" style="width:${fill}%"></div><span class="target" style="left:${marker}%"></span></div>
       <p class="perf-source">${/demonstration/i.test(row.target_source || "") ? "⚠ " : ""}Target source: ${escapeHtml(row.target_source || "not recorded")}</p>`
       : `<p class="perf-missing">Forecast so far: <b>${number(row.expected_tons, 1)} t</b>. Add the feasibility-study yield target in <a href="#manage">Manage schemes</a> to verify this outcome.</p>`}

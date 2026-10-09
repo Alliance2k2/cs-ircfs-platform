@@ -146,7 +146,8 @@ def overview(db: Session, principal: Principal, days: int = 30, scheme_id: int |
         "assets": assets,
         "rainfall": [{"sector_id": row["sector_id"], "sector": row["sector"], "rainfall_mm_7d": row["rainfall_mm_7d"] if row["readings"] else None,
                       "readings": row["readings"], "forecast_mm_7d": row["forecast_mm_7d"], "level": row["level"], "advice": row["message_en"],
-                      "threshold_source": row["threshold_source"]} for row in schedule],
+                      "threshold_source": row["threshold_source"], "latitude": row["latitude"], "longitude": row["longitude"]}
+                     for row in schedule],
         # The Act Now queue is district staff work; monitors follow the figures only.
         "priority_actions": priority_actions(db, principal, cells, scheme_id) if sees_personal_data(principal) else None,
         "recent_reports": recent_reports(db, scope),
@@ -174,6 +175,8 @@ def scheme_rows(db: Session, scope, assets: list[dict], scheme_id: int | None, e
                              .where(*scope(CitizenScienceLog), CitizenScienceLog.scheme_id == scheme.id)) or 0
         scheme_assets = [asset for asset in assets if asset["scheme_id"] == scheme.id]
         target_note = f"Source: {scheme.baseline_source}" if scheme.baseline_source else "No documented target entered yet"
+        # scripts/seed_demo_data.py marks its invented targets; never call those documented.
+        target_source = DEMO if (scheme.baseline_source or "").upper().startswith("DEMONSTRATION") else DOCUMENTED
         rows.append({
             "scheme_id": scheme.id, "name": scheme.name, "implementing_partner": scheme.implementing_partner,
             "hectares_developed": scheme.hectares_developed,
@@ -188,7 +191,7 @@ def scheme_rows(db: Session, scope, assets: list[dict], scheme_id: int | None, e
             "reported_harvest": metric("reported_harvest", "Reported harvest", round(reported, 1), "t", period,
                                        "Sum of harvests reported by citizens in the period. A sample of farmers, not the scheme's total output.", evidence),
             "yield_target": metric("yield_target", "Yield target", scheme.baseline_yield_target_tons if scheme.baseline_source else None, "t",
-                                   "As documented", "The scheme's yield target as entered with its source document.", DOCUMENTED, target_note),
+                                   "As documented", "The scheme's yield target as entered with its source document.", target_source, target_note),
             "yield_achievement": metric("yield_achievement", "Yield achievement", None, "%", period,
                                         "100 × verified observed yield ÷ verified target yield, for the same crop, area and season.", MISSING,
                                         YIELD_NOT_COMPARABLE),

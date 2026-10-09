@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -92,9 +92,12 @@ async def request_logging(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
-    # Dashboard assets change during local development; Vite content hashes handle
-    # production caching, so avoid the browser reusing an older bundle locally.
-    if request.url.path.endswith((".html", ".js", ".css")):
+    # The React build's assets carry a content hash in their name: cache them for a year,
+    # which matters on rural mobile data. Everything else (legacy pages, the React
+    # index.html) must never be reused from an older version.
+    if request.url.path.startswith("/app/assets/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif request.url.path.endswith((".html", ".js", ".css")):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         response.headers["Pragma"] = "no-cache"
     logger.info(
@@ -152,6 +155,32 @@ for api_router in (
     public.router,
 ):
     app.include_router(api_router)
+
+
+# The React dashboard (frontend/, built to frontend/dist) is served at /app/. Any /app/
+# path that is not a built file returns index.html so the app's own routes work on reload.
+frontend_dir = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+NOT_BUILT = (
+    "<!doctype html><title>CS-IRCFS</title><p>The React dashboard has not been built yet. "
+    "Run <code>npm ci &amp;&amp; npm run build</code> in <code>frontend/</code>, or open "
+    "<a href=\"/planner.html\">the classic dashboard</a>.</p>"
+)
+
+
+@app.get("/app", include_in_schema=False)
+def react_app_root() -> RedirectResponse:
+    return RedirectResponse("/app/", status_code=308)
+
+
+@app.get("/app/{path:path}", include_in_schema=False)
+def react_app(path: str):
+    index = frontend_dir / "index.html"
+    if not index.is_file():
+        return HTMLResponse(NOT_BUILT, status_code=503)
+    candidate = (frontend_dir / path).resolve()
+    if path and candidate.is_file() and candidate.is_relative_to(frontend_dir.resolve()):
+        return FileResponse(candidate)
+    return FileResponse(index, headers={"Cache-Control": "no-cache"})
 
 
 # Production serves the built dashboard (dist); local development serves the source tree.

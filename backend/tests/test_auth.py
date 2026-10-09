@@ -89,3 +89,12 @@ def test_admin_can_update_role_and_area_sectors(auth, client, district):
     assert response.json()["role"] == "district_officer"
     assert response.json()["sector_ids"] == [district["sector_id"]]
     assert client.patch(f"/api/v1/auth/accounts/{officer_id}", headers=headers, json={"sector_ids": [999]}).status_code == 422
+
+
+def test_auth_config_reports_the_development_bypass(client, monkeypatch):
+    import app.api.routes.auth as auth_routes
+    from app.core.config import Settings
+
+    assert client.get("/api/v1/auth/config").json()["development_bypass"] is True
+    monkeypatch.setattr(auth_routes, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True))
+    assert client.get("/api/v1/auth/config").json()["development_bypass"] is False
