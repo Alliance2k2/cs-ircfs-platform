@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS household nutrition tracker: food security and stunting risk by cell." />
+    <title>CS-IRCFS | Household nutrition</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="food">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="food.eyebrow">HOUSEHOLD NUTRITION TRACKER</p>
+              <h1>Food security &amp; stunting risk</h1>
+              <p>Households answer three questions through USSD option 6. Scores run from 1 (low risk) to 5 (high risk).</p>
+              <div class="app-hero-stats"><div><b id="stat-households">–</b><span>households</span></div><div><b id="stat-avg-risk">–</b><span>average risk</span></div><div><b id="stat-high-risk">–</b><span>high risk (4–5)</span></div><div><b id="stat-short">–</b><span>short of food</span></div></div>
+            </div>
+            <div class="header-actions"></div>
+          </header>
+
+          <section class="panel food-panel">
+            <div class="panel-heading compact"><div><h2>Risk by cell</h2><p class="subtle">Cells with the highest average risk first.</p></div></div>
+            <div id="food-summary"></div>
+          </section>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

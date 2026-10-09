@@ -1,0 +1,35 @@
+/* Complete module grid for wide screens, with a compact responsive fallback. */
+@media (min-width: 1051px) {
+  .endpoint-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.endpoint-card.scheme-card { background: #fff7e7; border-color: #ecd099; }
+
+.method.post{background:#fcf0d9;color:#a46d13}.console-back{margin-left:auto;margin-right:16px;color:inherit;font-weight:700;text-decoration:none;font-size:13px}
+
+/* Five-step flow inside the platform shell: steps and arrows on one row, stacked on narrow screens. */
+.flow {
+  grid-template-columns: repeat(4, minmax(0, 1fr) auto) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.flow article {
+  height: auto;
+  min-height: 170px;
+}
+
+.flow .arrow {
+  align-self: center;
+  color: #138d58;
+  font-weight: 800;
+}
+
+@media (max-width: 1200px) {
+  .flow {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+
+  .flow .arrow {
+    display: none;
+  }
+}

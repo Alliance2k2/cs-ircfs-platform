@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS field channels: live USSD and SMS activity from Bugesera." />
+    <title>CS-IRCFS | Field channels</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="channels">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="channels.eyebrow">NO INTERNET NEEDED</p>
+              <h1 data-i18n="channels.title">Field channels, live</h1>
+              <p>Feature-phone reports arrive through USSD *801# and SMS 8448, are stored centrally, and appear here.</p>
+              <div class="app-hero-stats"><div><b id="stat-messages">–</b><span>messages received</span></div><div><b id="stat-reports">–</b><span>reports stored</span></div><div><b id="stat-rewards">–</b><span>airtime paid</span></div></div>
+            </div>
+            <div class="header-actions"><a class="app-hero-link" href="simulator.html"><i class="bi bi-telephone" aria-hidden="true"></i> <span data-i18n="channels.open">Open phone simulator</span></a></div>
+          </header>
+
+          <ol class="flow-strip" aria-label="How a report travels">
+            <li><b class="bi bi-phone" aria-hidden="true"></b><strong>Citizen phone</strong><small>No internet · feature phone</small></li>
+            <li><b class="bi bi-hash" aria-hidden="true"></b><strong>USSD *801# · SMS 8448</strong><small>Africa's Talking gateway</small></li>
+            <li><b class="bi bi-database" aria-hidden="true"></b><strong>Central database</strong><small>PostgreSQL / PostGIS</small></li>
+            <li><b class="bi bi-speedometer2" aria-hidden="true"></b><strong>Planner dashboard</strong><small>Verify outcomes · detect bottlenecks</small></li>
+            <li><b class="bi bi-chat-dots" aria-hidden="true"></b><strong>SMS back to citizens</strong><small>Tips · advice · closing the loop</small></li>
+          </ol>
+          <div class="content-grid">
+            <section class="panel channels-panel">
+              <div class="panel-heading compact">
+                <div><h2>Latest messages from the field</h2><p class="subtle">Inbound USSD and SMS, outgoing SMS and airtime rewards, newest first.</p></div>
+                <div class="chip-row" role="group" aria-label="Filter messages">
+                  <button type="button" class="chip active" data-feed-filter="all">All</button>
+                  <button type="button" class="chip" data-feed-filter="ussd">USSD</button>
+                  <button type="button" class="chip" data-feed-filter="sms">SMS in</button>
+                  <button type="button" class="chip" data-feed-filter="out">SMS out</button>
+                  <button type="button" class="chip" data-feed-filter="reward">Airtime</button>
+                </div>
+              </div>
+              <ul id="channel-feed" class="channel-feed" aria-live="polite"></ul>
+            </section>
+            <div class="side-stack">
+              <section class="panel" data-planner-only>
+                <div class="panel-heading compact"><div><h2>Log an asset report</h2><p class="subtle">For staff in the field: record a pump or canal condition without the phone simulator.</p></div></div>
+                <form id="phone-demo-form" class="stack-form">
+                  <label>Asset <input name="infrastructure_name" required maxlength="120" placeholder="e.g. PADAB Pumping Station 1" /></label>
+                  <label>Condition <select name="operational_status"><option value="offline">Offline</option><option value="faulty">Faulty</option><option value="operational">Operational</option></select></label>
+                  <button class="primary-button" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Save report</button>
+                </form>
+                <p id="phone-demo-message" class="dialog-note" role="status"></p>
+              </section>
+              <section class="panel channel-codes">
+                <div class="panel-heading compact"><div><h2>Codes farmers use</h2><p class="subtle">Kinyarwanda first, numbered choices, at most three steps.</p></div></div>
+                <ul class="code-list">
+                  <li><code>*801#</code><span>Menu: harvest, pests, rain, pumps, grievances, nutrition</span></li>
+                  <li><code>IMVURA 12</code><span>Rainfall today in mm (airtime every 3 reports)</span></li>
+                  <li><code>NZANA 4</code><span>Fall armyworm, severity 1–5</span></li>
+                  <li><code>UMUSARURO IBIGORI 2.5</code><span>Expected harvest in tons</span></li>
+                  <li><code>IKIBAZO …</code><span>Anonymous grievance</span></li>
+                </ul>
+              </section>
+            </div>
+          </div>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

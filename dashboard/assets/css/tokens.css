@@ -1,0 +1,22 @@
+/* CS-IRCFS design tokens for the legacy HTML pages. Mirror of frontend/src/styles/tokens.css:
+   change both together. Hex values here; the React app uses RGB channels for Tailwind. */
+:root {
+  --cs-forest: #064e3b;
+  --cs-primary: #087f5b;
+  --cs-primary-strong: #065f46;
+  --cs-fresh: #42b883;
+  --cs-mint: #dff4e7;
+  --cs-canvas: #f8fbf8;
+  --cs-surface: #ffffff;
+  --cs-ink: #17352c;
+  --cs-muted: #5c7066;
+  --cs-line: #dfe8e1;
+  --cs-amber: #925e08;
+  --cs-amber-soft: #fcf2dc;
+  --cs-critical: #be3a34;
+  --cs-critical-soft: #fce9e7;
+  --cs-water: #1a688e;
+  --cs-water-soft: #e2f1f9;
+  --cs-radius-card: 16px;
+  --cs-radius-control: 10px;
+}

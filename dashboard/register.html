@@ -1,7 +1,159 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS-IRCFS | Create account</title><style>body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#183c72,#4f63e8);padding:30px 16px;color:#10233d}.card{max-width:650px;margin:auto;background:#fff;border-radius:10px;padding:40px;box-shadow:0 12px 35px #071d5c66}h1{margin:20px 0 8px}.sub{color:#65728a}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:block;font-weight:700;margin:16px 0}.field input,.field select{display:block;width:100%;height:48px;margin-top:8px;padding:0 12px;border:1px solid #cbd0dc;border-radius:7px;font-size:16px}.wide{grid-column:1/-1}.button{width:100%;height:52px;background:#0b7055;color:#fff;border:0;border-radius:8px;font-size:17px;font-weight:700;margin-top:14px}.note{background:#eef7f2;padding:14px;border-radius:7px;color:#265d49}.links{margin-top:22px}.links a{color:#2754d8;font-weight:700}@media(max-width:560px){.card{padding:25px}.grid{display:block}}</style></head><body><main class="card"><strong style="color:#0c6b50;letter-spacing:1px">CS-IRCFS · BUGESERA AGRICULTURE DATA CENTRE</strong><h1>Create your account</h1><p class="sub">Request access to monitoring, cooperative, and district planning tools.</p><form><div class="grid" style="display:block"><label class="field">First name<input required name="first_name" autocomplete="given-name"></label><label class="field">Middle name<input name="middle_name" autocomplete="additional-name"></label><label class="field">Surname<input required name="surname" autocomplete="family-name"></label><label class="field wide">Phone number<input required name="phone_number" type="tel" placeholder="+250788123456"></label><label class="field wide">Email address<input required name="email" type="email" placeholder="you@example.com"></label><label class="field wide">Password<input required name="password" id="password" type="password" minlength="8"><small>Use at least 8 characters, one uppercase letter, one lowercase letter, one number, and one symbol such as # or !.</small></label><label class="field wide">Confirm password<input required name="confirm_password" id="confirm-password" type="password"></label></div><p class="note" role="status">New accounts start as Citizen Science Monitors. An administrator gives District Planners and officers their role in Platform Management → Accounts.</p><button class="button" type="submit">Create account</button></form><p class="links">Already have an account? <a href="login.html">Sign in</a></p></main><script>
-const form=document.querySelector("form"),note=document.querySelector(".note"),password=document.querySelector("#password"),confirmPassword=document.querySelector("#confirm-password");
-const req=document.createElement("div"); req.style="font-size:13px;line-height:1.7;margin-top:6px"; password.parentElement.append(req);
-function check(){const v=password.value,c=confirmPassword.value,items=[[/[A-Z]/,"Uppercase letter"],[/[a-z]/,"Lowercase letter"],[/\d/,"Number"],[/[^A-Za-z0-9]/,"Symbol"],[/.{8,}/,"8+ characters"]];req.innerHTML=items.map(([r,t])=>`<div style="color:${r.test(v)?"#16834f":"#c62828"}">${r.test(v)?"✓":"✗"} ${t}</div>`).join("")+`<div style="color:${c&&c===v?"#16834f":"#c62828"}">${c&&c===v?"✓":"✗"} Passwords match</div>`}
-password.addEventListener("input",check);confirmPassword.addEventListener("input",check);
-form.addEventListener("submit",async e=>{e.preventDefault();check();if(password.value!==confirmPassword.value){note.textContent="Passwords do not match.";return}if(!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}/.test(password.value)){note.textContent="Complete all password requirements first.";return}const f=new FormData(form);try{const r=await fetch("/api/v1/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({first_name:f.get("first_name"),surname:f.get("surname"),middle_name:f.get("middle_name"),email:f.get("email"),password:f.get("password")})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||"Registration failed");note.innerHTML='Account created. <a href="login.html">Sign in now →</a>';form.reset();check()}catch(err){note.textContent=err.message}});
-</script></body></html>
+<!doctype html>
+<html lang="en" data-ui="bootstrap">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CS-IRCFS | Create account</title>
+  <meta name="description" content="Create a CS-IRCFS account to follow live field reports from Bugesera.">
+  <meta name="theme-color" content="#073e2b" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/fonts.css" />
+  <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
+  <link rel="stylesheet" href="assets/css/auth.css?v=20261008">
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row auth-shell">
+    <aside class="col-lg-5 order-lg-2 auth-story d-none d-lg-flex flex-column justify-content-between">
+      <div>
+        <span class="eyebrow">Join the network</span>
+        <h2>Follow the field, <em>sector by sector.</em></h2>
+        <p class="lead">New accounts start as Citizen Science Monitors with read-only access to the live picture.</p>
+        <ul class="story-points">
+          <li><i class="bi bi-map" aria-hidden="true"></i><div><strong>Maps and trends</strong><span>Pests, rainfall and nutrition across the 15 sectors of Bugesera.</span></div></li>
+          <li><i class="bi bi-cloud-rain" aria-hidden="true"></i><div><strong>Irrigation advice</strong><span>Seven-day rain-gauge totals turned into weekly advice.</span></div></li>
+          <li><i class="bi bi-person-badge" aria-hidden="true"></i><div><strong>Roles by request</strong><span>An administrator gives District Planners and officers their role.</span></div></li>
+        </ul>
+      </div>
+      <div class="story-bottom"><blockquote class="story-quote mb-0">“Empowering communities for a food secure and climate resilient Rwanda.”</blockquote><p class="story-foot mb-0">Farmers do not need an account: dial <b>*801#</b> or text <b>8448</b>.</p></div>
+    </aside>
+
+    <main class="col-lg-7 order-lg-1 auth-main d-flex align-items-center justify-content-center">
+      <div class="auth-card wide">
+        <a class="brand form-brand mb-4" href="index.html"><img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="56" height="56"><span>CS-IRCFS<small>Citizen Science for Irrigation Resilience and Food Security</small></span></a>
+        <h1>Create your account</h1>
+        <p class="sub">Request access to monitoring, cooperative, and district planning tools.</p>
+
+        <form id="register-form" novalidate>
+          <div class="row g-3">
+            <div class="col-sm-4">
+              <label class="form-label" for="first-name">First name</label>
+              <input class="form-control" id="first-name" name="first_name" autocomplete="given-name" required>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label" for="middle-name">Middle name <span class="fw-normal text-secondary">(optional)</span></label>
+              <input class="form-control" id="middle-name" name="middle_name" autocomplete="additional-name">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label" for="surname">Surname</label>
+              <input class="form-control" id="surname" name="surname" autocomplete="family-name" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="email">Email address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                <input class="form-control" id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="password">Password</label>
+              <div class="input-group">
+                <input class="form-control" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-rules">
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-toggle-password="password" aria-label="Show password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="confirm-password">Confirm password</label>
+              <div class="input-group">
+                <input class="form-control" id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" required>
+                <button class="btn btn-outline-secondary toggle-password" type="button" data-toggle-password="confirm-password" aria-label="Show password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="col-12">
+              <ul class="requirements" id="password-rules" aria-live="polite"></ul>
+            </div>
+          </div>
+
+          <div class="alert alert-success alert-icon mt-4 mb-0 note" role="status">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span>New accounts start as Citizen Science Monitors and wait for approval. A district administrator approves accounts and gives planners and officers their role in Platform Management → Accounts.</span>
+          </div>
+          <button class="btn btn-primary btn-submit w-100 mt-4" type="submit">Create account</button>
+        </form>
+
+        <div class="auth-links mt-4">
+          <p class="mb-2">Already have an account? <a href="login.html">Sign in</a></p>
+          <p class="mb-0"><a href="index.html"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Return to CS-IRCFS home</a></p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/shared.js?v=20261010"></script>
+<script>
+const form = document.querySelector("#register-form");
+const note = document.querySelector(".note");
+const password = document.querySelector("#password");
+const confirmPassword = document.querySelector("#confirm-password");
+const rules = document.querySelector("#password-rules");
+const RULES = [[/[A-Z]/, "Uppercase letter"], [/[a-z]/, "Lowercase letter"], [/\d/, "Number"], [/[^A-Za-z0-9]/, "Symbol such as # or !"], [/.{8,}/, "8+ characters"]];
+
+function setNote(kind, html) {
+  note.className = `alert alert-${kind} alert-icon mt-4 mb-0 note`;
+  const icon = { success: "check-circle", danger: "exclamation-circle", warning: "exclamation-triangle" }[kind] || "info-circle";
+  note.innerHTML = `<i class="bi bi-${icon}" aria-hidden="true"></i><span>${html}</span>`;
+}
+
+function check() {
+  const value = password.value, confirmValue = confirmPassword.value;
+  const items = RULES.map(([pattern, label]) => [pattern.test(value), label]);
+  items.push([Boolean(confirmValue) && confirmValue === value, "Passwords match"]);
+  rules.innerHTML = items.map(([ok, label]) => `<li class="${value || confirmValue ? (ok ? "met" : "unmet") : ""}"><i class="bi bi-${ok ? "check-circle-fill" : "circle"}" aria-hidden="true"></i>${label}</li>`).join("");
+}
+
+document.querySelectorAll("[data-toggle-password]").forEach((button) => button.addEventListener("click", () => {
+  const input = document.getElementById(button.dataset.togglePassword);
+  const show = input.type === "password";
+  input.type = show ? "text" : "password";
+  button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  button.querySelector("i").className = show ? "bi bi-eye-slash" : "bi bi-eye";
+}));
+
+password.addEventListener("input", check);
+confirmPassword.addEventListener("input", check);
+check();
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  check();
+  if (!form.checkValidity()) { form.classList.add("was-validated"); setNote("warning", "Fill in the highlighted fields first."); return; }
+  if (password.value !== confirmPassword.value) { setNote("danger", "Passwords do not match."); return; }
+  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}/.test(password.value)) { setNote("danger", "Complete all password requirements first."); return; }
+  const data = new FormData(form), button = form.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Creating account…';
+  try {
+    await CS.apiJson("auth/register", { method: "POST", body: {
+      first_name: data.get("first_name"), middle_name: data.get("middle_name") || null, surname: data.get("surname"),
+      email: data.get("email"), password: data.get("password") } });
+    setNote("success", "Account created. A district administrator will approve it; you can sign in once it is approved.");
+    form.reset();
+    form.classList.remove("was-validated");
+    check();
+  } catch (error) {
+    setNote("danger", CS.escapeHtml(error.message || "Registration failed"));
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create account";
+  }
+});
+</script>
+</body>
+</html>

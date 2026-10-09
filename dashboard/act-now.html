@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS Act Now: prioritised infrastructure, crop-risk and grievance cases." />
+    <title>CS-IRCFS | Act Now</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="act-now">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="actnow.eyebrow">PRIORITISED WORK QUEUE</p>
+              <h1 data-i18n="actnow.title">Act now</h1>
+              <p>Reports needing district attention, ranked by urgency. Open a case to assign it, record the action and notify the community.</p>
+              <div class="app-hero-stats"><div><b data-mirror="[data-queue-count='all']">–</b><span>open items</span></div><div><b data-mirror="[data-queue-count='infrastructure']">–</b><span>infrastructure</span></div><div><b data-mirror="[data-queue-count='pest_or_disease']">–</b><span>pests &amp; disease</span></div><div><b data-mirror="[data-queue-count='community_feedback']">–</b><span>grievances</span></div></div>
+            </div>
+            <div class="header-actions"><div id="scheme-control" class="scheme-control"><label class="scheme-select"><span data-i18n="top.scheme">Scheme</span> <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label><a id="scheme-filter-help" class="scheme-empty-help" href="schemes.html" hidden>Add a scheme to use this filter</a></div></div>
+          </header>
+
+          <section class="panel act-now-panel">
+            <div class="panel-heading">
+              <div><h2>Work queue</h2><p class="subtle">Critical items first. Severe pests and offline pumps arrive here automatically.</p></div>
+              <button id="refresh-queue" class="secondary-button" type="button"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> <span data-i18n="btn.refresh">Refresh</span></button>
+            </div>
+            <div class="chip-row" role="group" aria-label="Filter the queue">
+              <button type="button" class="chip active" data-queue-filter="all"><span data-i18n="filter.all">All</span> <b data-queue-count="all">0</b></button>
+              <button type="button" class="chip" data-queue-filter="infrastructure"><span data-i18n="filter.infrastructure">Infrastructure</span> <b data-queue-count="infrastructure">0</b></button>
+              <button type="button" class="chip" data-queue-filter="pest_or_disease"><span data-i18n="filter.pests">Pests &amp; disease</span> <b data-queue-count="pest_or_disease">0</b></button>
+              <button type="button" class="chip" data-queue-filter="community_feedback"><span data-i18n="filter.feedback">Feedback</span> <b data-queue-count="community_feedback">0</b></button>
+            </div>
+            <div id="act-now-list" class="act-now-list" aria-live="polite"></div>
+          </section>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+    <dialog id="case-dialog" class="cs-dialog"><form id="case-form">
+      <p class="eyebrow" id="case-kind">PLANNER CASE</p>
+      <h2 id="case-title">Planner case</h2><p id="case-summary" class="dialog-note"></p>
+      <label>Status <select name="status"><option value="triaged">Triaged</option><option value="assigned">Assigned</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+      <label><span id="owner-label">Owner (account ID)</span> <input name="owner_id" type="number" min="1" /></label>
+      <label>Action taken <textarea name="action_taken" rows="3" maxlength="3000" placeholder="Required to resolve, e.g. Technician replaced the pump motor"></textarea></label>
+      <label>Deadline <input name="due_at" type="datetime-local" /></label>
+      <div id="case-history-wrap" hidden><p class="dialog-note"><strong>History</strong></p><ul id="case-history" class="history-list"></ul></div>
+      <div id="notify-box" hidden>
+        <p class="dialog-note"><strong>Closing-the-loop SMS</strong> · <span id="notify-meta"></span></p>
+        <div id="notify-preview" class="sms-preview"></div>
+      </div>
+      <p id="case-message" role="status" class="dialog-note"></p>
+      <div class="dialog-actions">
+        <button type="button" id="case-cancel" data-i18n="case.cancel">Close</button>
+        <button type="button" id="case-notify" class="accent"><i class="bi bi-megaphone" aria-hidden="true"></i> <span data-i18n="case.notify">Notify the community by SMS</span></button>
+        <button type="submit" class="primary" data-i18n="case.save">Save</button>
+      </div>
+    </form></dialog>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

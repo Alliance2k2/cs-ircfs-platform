@@ -1,482 +1,385 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-ui="bootstrap">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CS-IRCFS | Bugesera Citizen Science &amp; Irrigation</title>
-<meta name="description" content="Farmers and Citizen Science Monitors in Bugesera report by USSD *801# and SMS 8448. District Planners use the evidence to verify irrigation outcomes and act.">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<style>
-:root{--deep:#072b25;--green:#0b6b52;--mint:#e7f4ec;--lime:#b9e27a;--gold:#f2b544;--cream:#f7faf6;--ink:#14332b;--muted:#5d736b;--line:#dce9e1;--red:#d0574b;--amber:#e09a2c;--blue:#3d8bb0}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;font-family:Inter,"Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5}
-a{color:inherit;text-decoration:none}
-.wrap{width:min(1180px,100% - 40px);margin:0 auto}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:10px;font-weight:700;font-size:15px;transition:transform .15s,box-shadow .15s}
-.btn:hover{transform:translateY(-2px)}
-.btn.gold{background:var(--gold);color:#1b3027;box-shadow:0 8px 22px #f2b54440}
-.btn.line{border:1.5px solid #ffffff70;color:#fff}
-.btn.dark{background:var(--deep);color:#fff}
-.btn.soft{background:var(--mint);color:var(--green)}
-
-/* Navigation */
-.nav{position:sticky;top:0;z-index:20;background:#072b25f2;backdrop-filter:blur(10px);color:#fff}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}
-.mark{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:var(--gold);color:var(--deep);font-size:21px;font-weight:900}
-.brand small{display:block;font-weight:500;font-size:12px;color:#a9cbbd}
-.links{display:flex;align-items:center;gap:26px;font-size:15px;font-weight:600}
-.links a:not(.btn){color:#d6ebe1}.links a:not(.btn):hover{color:#fff}
-.links .btn{padding:9px 18px}
-
-/* Hero */
-.hero{position:relative;color:#fff;background:linear-gradient(115deg,#072b25 0%,#072b25ee 42%,#0b4f40bb 100%),url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80") center/cover;overflow:hidden}
-.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:72px 0 84px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--lime);font-weight:800;letter-spacing:2.5px;font-size:12px;text-transform:uppercase}
-.hero h1{font-size:clamp(38px,5.4vw,66px);line-height:1.02;letter-spacing:-1.8px;margin:16px 0 20px}
-.hero h1 em{font-style:normal;color:var(--gold)}
-.hero p.lead{font-size:18.5px;color:#d3e9de;max-width:560px;margin:0}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
-.codes{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.code{background:#ffffff14;border:1px solid #ffffff2a;border-radius:999px;padding:7px 14px;font-size:14px;color:#e5f3eb}
-.code b{color:#fff;font-family:Consolas,monospace;font-size:15px}
-
-/* Live card */
-.live{background:#fff;color:var(--ink);border-radius:20px;padding:22px;box-shadow:0 30px 60px #0000004d}
-.live-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.live-head h2{font-size:17px;margin:0;display:flex;align-items:center;gap:9px}
-.pulse{width:10px;height:10px;border-radius:50%;background:#2fb36f;box-shadow:0 0 0 0 #2fb36f88;animation:pulse 1.8s infinite}
-.pulse.off{background:#b9c4bf;animation:none}
-@keyframes pulse{70%{box-shadow:0 0 0 10px #2fb36f00}100%{box-shadow:0 0 0 0 #2fb36f00}}
-.live-head small{color:var(--muted);font-size:12px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.stat b{display:block;font-size:28px;line-height:1.1;color:var(--green);font-variant-numeric:tabular-nums}
-.stat span{font-size:12.5px;color:var(--muted)}
-.feed{list-style:none;margin:16px 0 0;padding:0;border-top:1px solid var(--line)}
-.feed li{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line);font-size:13.5px;animation:rise .4s ease}
-.feed li i{width:10px;height:10px;border-radius:50%;background:var(--green)}
-.feed li i.pest,.feed li i.fault{background:var(--red)}.feed li i.rain{background:var(--blue)}.feed li i.harvest{background:var(--amber)}
-.feed li small{color:var(--muted);white-space:nowrap}
-.feed li em{font-style:normal;color:var(--muted)}
-.feed .empty{grid-column:1/-1;display:block;color:var(--muted);text-align:center;padding:14px 8px;line-height:1.5}
-.forecast{display:flex;align-items:center;gap:12px;margin-top:10px;padding:11px 14px;border-radius:12px;background:#eaf3fb;color:#1f4f6e;font-size:13.5px}
-.forecast b{font-size:16px;color:#173f59;white-space:nowrap}
-.forecast span:first-child{font-size:20px;line-height:1}
-.forecast a{margin-left:auto;font-weight:700;color:#2a6f9e;white-space:nowrap}
-@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.live-note{font-size:11.5px;color:var(--muted);margin:10px 0 0}
-
-/* Sections */
-section{padding:80px 0}
-.head{max-width:720px;margin:0 0 36px}
-.head .eyebrow{color:var(--green)}
-.head h2{font-size:clamp(28px,3.4vw,42px);line-height:1.1;letter-spacing:-.8px;margin:10px 0 10px}
-.head p{color:var(--muted);font-size:17px;margin:0}
-
-/* Roles */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.role{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column;box-shadow:0 10px 30px #1644330d;transition:transform .2s,box-shadow .2s}
-.role:hover{transform:translateY(-5px);box-shadow:0 18px 40px #16443320}
-.role.feature{border:2px solid var(--green)}
-.icon{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:23px;background:var(--mint);margin-bottom:16px}
-.role h3{font-size:21px;margin:0 0 4px}
-.role .who{font-size:13px;font-weight:700;color:var(--green);margin:0 0 12px;text-transform:uppercase;letter-spacing:1px}
-.role ul{margin:0 0 22px;padding:0;list-style:none;color:#3f564e;font-size:15px;flex:1}
-.role li{padding:5px 0 5px 24px;position:relative}
-.role li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
-.role code{font-family:Consolas,monospace;background:var(--mint);padding:1px 6px;border-radius:5px;font-size:13.5px}
-.role .row{display:flex;gap:10px;flex-wrap:wrap}
-.role .fine{font-size:12.5px;color:var(--muted);margin:12px 0 0}
-
-/* Steps */
-.how{background:var(--deep);color:#fff}
-.how .head .eyebrow{color:var(--lime)}.how .head p{color:#b9d6c9}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;list-style:none;margin:0;padding:0;counter-reset:step}
-.steps li{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:16px;padding:22px;counter-increment:step}
-.steps li:before{content:counter(step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--deep);font-weight:900;margin-bottom:14px}
-.steps h3{margin:0 0 6px;font-size:17px}.steps p{margin:0;color:#c3dbd0;font-size:14.5px}
-
-/* Modules */
-.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.module{border-radius:18px;overflow:hidden;background:#fff;border:1px solid var(--line)}
-.module img{width:100%;height:170px;object-fit:cover;display:block;background:var(--mint)}
-.module div{padding:20px 22px}
-.module h3{margin:0 0 8px;font-size:19px}.module p{margin:0;color:var(--muted);font-size:15px}
-
-/* Live map */
-.map-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:stretch}
-.map-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;min-height:440px;box-shadow:0 10px 30px #1644330d}
-#public-map{position:absolute;inset:0;background:#eef3ef}
-.legend{position:absolute;left:12px;bottom:12px;z-index:500;background:#fffffff2;border-radius:10px;padding:8px 12px;font-size:12.5px;display:flex;gap:12px;flex-wrap:wrap;box-shadow:0 4px 14px #0000001a;margin-right:12px}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
-.advice-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 10px 30px #1644330d;display:flex;flex-direction:column}
-.advice-card h3{margin:0 0 4px;font-size:19px}.advice-card>p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
-.advice{list-style:none;margin:0;padding:0;overflow:auto;max-height:360px}
-.advice li{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
-.advice li b{grid-column:2}.advice li span{grid-column:2;color:var(--muted);font-size:13px}
-.advice li i{grid-row:span 2;width:12px;height:12px;border-radius:50%;margin-top:5px}
-.advice li.more{display:block;color:var(--muted);font-size:13px}
-.lvl-irrigate_more{background:#d9822b}.lvl-normal{background:#2f9e6e}.lvl-reduce{background:#3d8bb0}.lvl-no_data{background:#a9b5b0}
-.soft-tiles{filter:saturate(.35) brightness(1.06)}
-section[id]{scroll-margin-top:72px}
-.leaflet-tooltip.sector-tip{font-size:13px;border-radius:8px;padding:7px 10px}
-
-/* Phone demo */
-.how-grid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:center}
-.how-grid .steps{grid-template-columns:1fr 1fr}
-.phone{width:280px;margin:0 auto;background:#1c2421;border-radius:38px;padding:18px 16px 22px;box-shadow:0 30px 60px #0007,inset 0 0 0 2px #3a4642}
-.phone-screen{background:#c9e4b4;border-radius:14px;height:250px;padding:14px;font-family:Consolas,"Courier New",monospace;color:#16261c;font-size:13px;line-height:1.45;display:flex;flex-direction:column;justify-content:space-between}
-.ussd{white-space:pre-line;transition:opacity .25s}.ussd.fade{opacity:0}
-.ussd.dial{font-size:28px;text-align:center;margin-top:60px;letter-spacing:2px}
-.ussd-caption{font-family:Inter,"Segoe UI",sans-serif;font-size:11.5px;background:#ffffffa6;border-radius:7px;padding:5px 8px;color:#21412f}
-.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
-.keys span{background:#2d3834;color:#e9f2ee;border-radius:10px;text-align:center;padding:8px 0;font-weight:700;transition:background .15s,transform .15s}
-.keys span.press{background:var(--gold);color:var(--deep);transform:scale(.94)}
-
-/* FAQ */
-.faq{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;align-items:start}
-.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px}
-.faq summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:12px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary:after{content:"+";color:var(--green);font-size:20px;line-height:1}
-.faq details[open] summary:after{content:"\2013"}
-.faq p{margin:10px 0 0;color:var(--muted);font-size:15px}
-
-.cta{background:linear-gradient(120deg,var(--green),#0d4e3e);color:#fff;border-radius:22px;padding:42px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
-.cta h2{margin:0;font-size:clamp(24px,3vw,34px)}.cta p{margin:6px 0 0;color:#cfe6da}
-footer{padding:28px 0 40px;color:var(--muted);font-size:14px}
-footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-
-@media (max-width:960px){
-  .hero .wrap{grid-template-columns:1fr;padding:48px 0 56px}
-  .roles,.modules,.map-grid,.how-grid,.faq{grid-template-columns:1fr}
-  .map-card{min-height:360px}
-  .steps{grid-template-columns:1fr 1fr}
-  .links a:not(.btn){display:none}
-}
-@media (max-width:560px){
-  .wrap{width:calc(100% - 32px)}
-  .steps,.how-grid .steps{grid-template-columns:1fr}
-  .stat b{font-size:24px}
-  section{padding:56px 0}
-  .cta{padding:28px}
-}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CS-IRCFS | Every Voice. Every Harvest. A Stronger Future.</title>
+  <meta name="description" content="CS-IRCFS connects citizen science, irrigation resilience and food security in Bugesera, Rwanda. Farmers report by USSD *801# and SMS 8448; district planners verify irrigation outcomes and act.">
+  <meta name="theme-color" content="#073e2b">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261010k">
 </head>
 <body>
-<header class="nav">
-  <div class="wrap">
-    <a class="brand" href="#top"><span class="mark">C</span><span>CS-IRCFS<small>Bugesera citizen science &amp; irrigation</small></span></a>
-    <nav class="links">
-      <a href="#live-map">Live map</a>
-      <a href="#roles">Who it's for</a>
-      <a href="#how">How it works</a>
-      <a href="#faq">FAQ</a>
-      <a class="btn gold" id="nav-cta" href="login.html">Sign in</a>
-    </nav>
+<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+<div class="topline">
+  <span class="ticker" aria-live="polite"><span class="live-dot"></span><b>LIVE</b><span id="ticker-text">Citizen-powered resilience in Bugesera, Rwanda</span></span>
+  <span>Citizen Science for Irrigation Resilience and Climate-smart Food Security · AIMS Rwanda — KTT Office</span>
+</div>
+
+<header class="site-header" id="header">
+  <a class="brand" href="#home" aria-label="CS-IRCFS home">
+    <img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="53" height="53">
+    <span><strong>CS-IRCFS</strong><small>People • Water • Food • Future</small></span>
+  </a>
+  <nav class="site-links" id="site-links" aria-label="Main navigation">
+    <a href="#about" data-nav>Our mission</a>
+    <a href="#solutions" data-nav>Solutions</a>
+    <a href="#how" data-nav>How it works</a>
+    <a href="#projects" data-nav>Pilot projects</a>
+    <a href="#faq" data-nav>FAQs</a>
+    <a class="mobile-only" id="mobile-cta" href="login.html">Sign in</a>
+  </nav>
+  <div class="nav-right">
+    <button class="lang-btn" id="langBtn" type="button" aria-label="Switch menu language"><i class="bi bi-globe2" aria-hidden="true"></i><span id="langLabel">EN</span></button>
+    <a class="button button-outline header-cta" id="nav-cta" href="login.html">Sign in <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open navigation" aria-controls="site-links" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<main id="top">
-  <section class="hero" style="padding:0">
-    <div class="wrap">
-      <div>
-        <span class="eyebrow">Bugesera District · Rwanda</span>
-        <h1>Every farmer's phone is a <em>field sensor.</em></h1>
-        <p class="lead">Farmers and Citizen Science Monitors report harvests, pests, rainfall, pump faults and concerns from any phone. District Planners use that evidence to check whether the PADAB and APEFA Solar irrigation schemes deliver, and to act where they fall short.</p>
-        <div class="actions">
-          <a class="btn gold" id="hero-cta" href="login.html">Sign in to live data →</a>
-          <a class="btn line" href="simulator.html">☏ Try the farmer's phone</a>
-        </div>
-        <div class="codes">
-          <span class="code">USSD <b>*801#</b></span>
-          <span class="code">SMS <b>8448</b></span>
-          <span class="code">Kinyarwanda · no internet needed</span>
-        </div>
-      </div>
-
-      <aside class="live" aria-live="polite">
-        <div class="live-head">
-          <h2><span id="live-dot" class="pulse off"></span> Live from the field</h2>
-          <small id="live-time">connecting…</small>
-        </div>
-        <div class="stats">
-          <div class="stat"><b data-stat="reports">–</b><span>reports received</span></div>
-          <div class="stat"><b data-stat="field_messages">–</b><span>USSD &amp; SMS messages</span></div>
-          <div class="stat"><b data-stat="sectors">–</b><span>sectors reporting (30 days)</span></div>
-          <div class="stat"><b data-stat="farmers">–</b><span>farmers registered</span></div>
-        </div>
-        <div class="forecast" id="forecast" hidden><span aria-hidden="true">☂</span><span>Rain forecast, next 7 days<br><b id="forecast-range"></b></span><a href="#live-map">By sector →</a></div>
-        <ul class="feed" id="feed"><li><span class="empty">Waiting for the latest reports…</span></li></ul>
-        <p class="live-note">Counts and sectors only. Names, phone numbers and grievances are never shown publicly.</p>
-      </aside>
+<main>
+  <section class="hero" id="home">
+    <div class="hero-art" aria-hidden="true">
+      <span class="hero-photo"></span>
+      <span class="hero-shade"></span>
+      <span class="hero-dots"></span>
+      <span class="hero-glow glow-sun"></span>
+      <span class="hero-glow glow-one"></span>
+      <span class="hero-glow glow-two"></span>
+      <svg class="hero-rows" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path d="M0 250 C 380 150, 760 300, 1440 90"/>
+        <path d="M0 280 C 400 190, 780 330, 1440 140"/>
+        <path d="M0 310 C 420 230, 800 360, 1440 190"/>
+        <path d="M0 340 C 440 270, 820 390, 1440 240"/>
+      </svg>
+      <span class="hero-grain"></span>
     </div>
-  </section>
-
-  <section id="live-map">
-    <div class="wrap">
-      <div class="head">
-        <span class="eyebrow">Live across Bugesera</span>
-        <h2>Where reports come from, and this week's irrigation advice.</h2>
-        <p>Circles grow with the reports sent from each sector in the last 30 days. Their colour shows the advice from citizen rain gauges.</p>
-      </div>
-      <div class="map-grid">
-        <div class="map-card">
-          <div id="public-map" role="img" aria-label="Map of Bugesera sectors with report activity and irrigation advice"></div>
-          <div class="legend"><span><i class="lvl-irrigate_more"></i>Dry: irrigate more</span><span><i class="lvl-normal"></i>Normal</span><span><i class="lvl-reduce"></i>Wet: irrigate less</span><span><i class="lvl-no_data"></i>No rain data</span></div>
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="hero-badge"><span class="badge-pulse"></span>Bugesera District, Rwanda</div>
+        <h1>
+          <span>Better harvests,</span>
+          <em>backed by evidence.<svg class="swash" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 70 3, 150 3, 297 9"/></svg></em>
+        </h1>
+        <p>Farmers report from any phone. District teams use that evidence to verify irrigation schemes and act on problems.</p>
+        <div class="hero-actions">
+          <a class="button button-lime" id="hero-cta" href="login.html">Sign in <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+          <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>How it works</span></a>
         </div>
-        <aside class="advice-card">
-          <h3>This week's irrigation advice</h3>
-          <p>Seven-day rainfall from citizen rain gauges, plus the rain forecast for the week ahead.</p>
-          <ul class="advice" id="advice"><li><span>Loading…</span></li></ul>
+        <div class="dial-card" aria-label="Report from any phone, in Kinyarwanda, without internet">
+          <div class="dial"><span class="dial-icon"><i class="bi bi-hash" aria-hidden="true"></i></span><div><small>USSD</small><b>*801#</b></div></div>
+          <div class="dial"><span class="dial-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><div><small>SMS</small><b>8448</b></div></div>
+          <div class="dial dial-note"><span class="dial-icon"><i class="bi bi-wifi-off" aria-hidden="true"></i></span><div><small>Kinyarwanda</small><b class="plain">No internet</b></div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-stage" aria-hidden="true">
+          <div class="orbit orbit-one">
+            <span class="orbit-chip chip-rain" style="--a:-35deg"><span><i class="bi bi-cloud-rain"></i></span></span>
+            <span class="orbit-chip chip-pest" style="--a:55deg"><span><i class="bi bi-bug"></i></span></span>
+            <span class="orbit-chip chip-harvest" style="--a:145deg"><span><i class="bi bi-basket"></i></span></span>
+            <span class="orbit-chip chip-pump" style="--a:235deg"><span><i class="bi bi-droplet-half"></i></span></span>
+          </div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-emblem"><img src="assets/img/logo-512.png" alt="" width="380" height="380"></div>
+          <div class="float-card card-top">
+            <span class="status-icon"><i class="bi bi-graph-up-arrow"></i></span>
+            <div><b id="hero-reports">– farmer reports</b><small id="hero-reports-note">Community voices matter</small></div>
+            <span class="green-mini off" data-live-badge>…</span>
+          </div>
+        </div>
+        <aside class="hero-feed" aria-live="polite" aria-label="Latest public reports">
+          <div class="hf-head"><span class="hf-title"><span class="hf-dot off" id="hf-dot"></span>Live from the field</span><small id="hf-time">connecting…</small></div>
+          <ul class="hf-list" id="hero-feed"><li class="hf-empty">Waiting for the latest reports…</li></ul>
+          <div class="hf-foot">
+            <div class="hf-sectors"><span><b data-stat="sectors">–</b> sectors reporting</span><small>last 30 days</small></div>
+            <div class="hf-track"><i id="sector-progress"></i></div>
+          </div>
         </aside>
       </div>
     </div>
+    <div class="hero-bottom">
+      <div class="wrap bottom-inner">
+        <span><i class="bi bi-people" aria-hidden="true"></i><b>01</b> Citizen participation</span><span class="sep"></span>
+        <span><i class="bi bi-water" aria-hidden="true"></i><b>02</b> Irrigation intelligence</span><span class="sep"></span>
+        <span><i class="bi bi-basket" aria-hidden="true"></i><b>03</b> Food security insights</span>
+        <a href="#about" aria-label="Scroll to introduction">Explore <i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+      </div>
+    </div>
   </section>
 
-  <section id="roles">
+  <section class="context-strip" aria-label="What the platform is built around">
+    <div class="wrap context-inner">
+      <span class="context-label">Built around</span>
+      <span class="context-item"><i class="bi bi-water" aria-hidden="true"></i>PADAB · Mwesa Valley</span>
+      <span class="context-item"><i class="bi bi-sun" aria-hidden="true"></i>APEFA Solar · Ngeruka &amp; Mareba</span>
+      <span class="context-item"><i class="bi bi-geo-alt" aria-hidden="true"></i>Bugesera District · 15 sectors</span>
+      <span class="context-item"><i class="bi bi-broadcast" aria-hidden="true"></i>Africa's Talking USSD &amp; SMS</span>
+      <span class="context-item"><i class="bi bi-mortarboard" aria-hidden="true"></i>AIMS Rwanda — KTT Office</span>
+    </div>
+  </section>
+
+  <section class="intro-section section" id="about">
+    <div class="wrap intro-layout">
+      <div class="intro-left reveal">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> THE BIGGER PICTURE</div>
+        <h2>Real change begins<br>with <span class="serif-green">the people</span><br>closest to it.</h2>
+        <p>Farmers know their land. Communities see what works. We turn their everyday observations into a clearer picture of crops, water and local needs, so district teams can respond with better information.</p>
+        <a class="text-link" href="#how">How our platform works <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="intro-right reveal">
+        <div class="photo-card"><div class="photo-overlay"></div><div class="photo-label"><span class="tiny-leaf"><i class="bi bi-flower1" aria-hidden="true"></i></span><span>Community knowledge<br><strong>into meaningful action</strong></span></div></div>
+        <div class="vertical-caption">ROOTED IN LOCAL KNOWLEDGE <span>•</span> DESIGNED FOR IMPACT</div>
+        <div class="green-stamp">GROW<br><b>TOGETHER</b><small><i class="bi bi-arrow-up-right" aria-hidden="true"></i></small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="solutions-section section" id="solutions">
     <div class="wrap">
-      <div class="head">
-        <span class="eyebrow">Who it's for</span>
-        <h2>Choose how you take part.</h2>
+      <div class="section-header reveal">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> ONE CONNECTED PLATFORM</div>
+          <h2>Big challenges deserve<br><span class="serif-green">connected solutions.</span></h2>
+        </div>
+        <p>Crops, water and community feedback arrive through the same channels and are reviewed side by side.</p>
+      </div>
+      <div class="solutions-grid">
+        <article class="pillar pillar-crops reveal">
+          <div class="pillar-media"><span class="pillar-num">01</span><span class="pillar-icon"><i class="bi bi-flower2" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Citizen science</span>
+            <h3>Listen to the land.</h3>
+            <p>Crop reports, pest alerts and household nutrition surveys show where help is needed first.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Crop monitoring</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Pest alerts with a heat map</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Stunting risk by cell</li>
+            </ul>
+          </div>
+        </article>
+        <article class="pillar pillar-water reveal">
+          <div class="pillar-media"><span class="pillar-num">02</span><span class="pillar-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Water resilience</span>
+            <h3>Every drop, put to better use.</h3>
+            <p>Pump and canal faults, citizen rain gauges and weekly irrigation advice by SMS.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Pump and canal health</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Citizen rain gauges</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Irrigation advice</li>
+            </ul>
+          </div>
+        </article>
+        <article class="pillar pillar-voice reveal">
+          <div class="pillar-media"><span class="pillar-num">03</span><span class="pillar-icon"><i class="bi bi-people" aria-hidden="true"></i></span></div>
+          <div class="pillar-body">
+            <span class="pillar-tag">Community voice</span>
+            <h3>Every voice is heard.</h3>
+            <p>Anonymous concerns are tracked as cases, and each cell is told by SMS when a problem is solved.</p>
+            <ul class="pillar-list">
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Anonymous feedback</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Case tracking</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i>Closing-the-loop SMS</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-section section" id="how">
+    <div class="wrap feature-layout">
+      <div class="feature-visual reveal" aria-hidden="true">
+        <div class="fv-rings"></div>
+        <div class="phone">
+          <div class="phone-top"><span></span></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span><i class="bi bi-reception-4"></i> MTN RW</span><span><i class="bi bi-battery-half"></i></span></div>
+            <div class="ussd dial" id="ussd">*801#</div>
+            <div class="ussd-caption" id="ussd-caption">Dial *801#</div>
+          </div>
+          <div class="phone-nav"><span></span><span></span><span></span></div>
+          <div class="keys" id="keys"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+        </div>
+        <div class="fv-chip chip-a"><i class="bi bi-reception-4"></i><div><b>No smartphone needed</b><small>Any feature phone</small></div></div>
+        <div class="fv-chip chip-b"><i class="bi bi-translate"></i><div><b>Kinyarwanda</b><small>Numbered choices</small></div></div>
+        <div class="fv-chip chip-c"><i class="bi bi-hand-index-thumb"></i><div><b>4 key presses</b><small>for a pest report</small></div></div>
+      </div>
+      <div class="feature-copy reveal">
+        <div class="eyebrow light"><span class="eyebrow-dot"></span> HOW IT WORKS</div>
+        <h2>Simple for farmers.<br><span class="serif-green">Powerful for planners.</span></h2>
+        <p class="feature-lead">Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
+        <ol class="flow">
+          <li><span class="flow-icon"><i class="bi bi-phone" aria-hidden="true"></i></span><div><small>Step 01</small><h4>Farmers report</h4><p>Dial *801# or text 8448 in Kinyarwanda: harvests, pests, rain, pump faults and concerns.</p></div></li>
+          <li><span class="flow-icon"><i class="bi bi-database-check" aria-hidden="true"></i></span><div><small>Step 02</small><h4>Reports become evidence</h4><p>Harvests are compared with scheme targets. Severe pests and broken pumps open cases automatically.</p></div></li>
+          <li><span class="flow-icon"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span><div><small>Step 03</small><h4>Teams act and reply</h4><p>Advice, airtime and resolution messages go back to the community by SMS.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="roles-section section" id="roles">
+    <div class="wrap">
+      <div class="section-header reveal">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> WHO IT'S FOR</div>
+          <h2>Choose how<br><span class="serif-green">you take part.</span></h2>
+        </div>
         <p>Three groups use the platform. Each one sees what it needs, and nothing more.</p>
       </div>
-      <div class="roles">
-        <article class="role">
-          <div class="icon">🌾</div>
+      <div class="roles-grid">
+        <article class="role-card reveal">
+          <div class="role-icon"><i class="bi bi-flower1" aria-hidden="true"></i></div>
           <p class="who">Farmers &amp; cooperatives</p>
           <h3>Report from any phone</h3>
           <ul>
-            <li>Dial <code>*801#</code>: harvest, pests, rain, pumps, concerns</li>
-            <li>Or text <code>8448</code>, e.g. <code>IMVURA 12</code></li>
-            <li>Get irrigation tips and airtime rewards back</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Dial <code>*801#</code>: harvest, pests, rain, pumps, concerns</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Or text <code>8448</code>, e.g. <code>IMVURA 12</code></li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Get irrigation tips and airtime rewards back</li>
           </ul>
-          <div class="row"><a class="btn soft" href="simulator.html">Try it on screen</a></div>
+          <div class="button-row"><a class="button button-soft" href="simulator.html">Try it on screen</a></div>
           <p class="fine">No account and no internet needed.</p>
         </article>
-
-        <article class="role feature">
-          <div class="icon">📡</div>
+        <article class="role-card feature reveal">
+          <div class="role-icon"><i class="bi bi-broadcast-pin" aria-hidden="true"></i></div>
           <p class="who">Citizen Science Monitors</p>
           <h3>Follow the live picture</h3>
           <ul>
-            <li>Live field reports from USSD and SMS</li>
-            <li>Scheme progress against yield targets</li>
-            <li>Rainfall, irrigation advice and nutrition by sector</li>
-            <li>Pest, rainfall and nutrition maps</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Live field reports from USSD and SMS</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Scheme progress against yield targets</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Rainfall, irrigation advice and nutrition by sector</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Pest, rainfall and nutrition maps</li>
           </ul>
-          <div class="row"><a class="btn dark" href="register.html">Create account</a><a class="btn soft" href="login.html">Sign in</a></div>
+          <div class="button-row"><a class="button button-dark" href="register.html">Create account</a><a class="button button-soft" href="login.html">Sign in</a></div>
           <p class="fine">New accounts start as Citizen Science Monitor, with read-only access.</p>
         </article>
-
-        <article class="role">
-          <div class="icon">🏛️</div>
+        <article class="role-card reveal">
+          <div class="role-icon"><i class="bi bi-bank" aria-hidden="true"></i></div>
           <p class="who">District Planners</p>
           <h3>Verify and act</h3>
           <ul>
-            <li>Everything monitors see, plus the Act Now queue</li>
-            <li>Assign and resolve cases with a full history</li>
-            <li>Send irrigation advice to cooperatives by SMS</li>
-            <li>Tell each cell what was done (closing the loop)</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Everything monitors see, plus the Act Now queue</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Assign and resolve cases with a full history</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Send irrigation advice to cooperatives by SMS</li>
+            <li><i class="bi bi-check-lg" aria-hidden="true"></i>Tell each cell what was done (closing the loop)</li>
           </ul>
-          <div class="row"><a class="btn dark" href="login.html">Sign in</a></div>
+          <div class="button-row"><a class="button button-dark" href="login.html">Sign in</a></div>
           <p class="fine">The district administrator gives the planner role.</p>
         </article>
       </div>
     </div>
   </section>
 
-  <section id="how" class="how">
-    <div class="wrap">
-      <div class="how-grid">
-      <div class="phone" aria-hidden="true">
-        <div class="phone-screen"><div class="ussd" id="ussd"></div><div class="ussd-caption" id="ussd-caption"></div></div>
-        <div class="keys" id="keys"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+  <section class="story-section" id="impact">
+    <div class="wrap story-layout">
+      <div class="story-copy reveal">
+        <div class="eyebrow light"><span class="eyebrow-dot"></span> AN EVIDENCE-LED APPROACH</div>
+        <h2>From local observations<br>to <em>lasting impact.</em></h2>
+        <p>Rather than looking only at what was built, the platform asks what changed for the people it was meant to serve.</p>
+        <div class="story-points">
+          <div><span><i class="bi bi-check-lg" aria-hidden="true"></i></span> Compare crop outcomes with verified project targets</div>
+          <div><span><i class="bi bi-check-lg" aria-hidden="true"></i></span> Identify technical, social, institutional and environmental bottlenecks</div>
+          <div><span><i class="bi bi-check-lg" aria-hidden="true"></i></span> Bring community feedback into planning decisions</div>
+        </div>
+        <a class="button button-lime" href="#projects">See the pilot investments <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
       </div>
-      <div>
-      <div class="head">
-        <span class="eyebrow">How it works</span>
-        <h2>From a feature phone to a district decision.</h2>
-        <p>A pest report takes four key presses. Every report is linked to its sector, cell and irrigation scheme, so the evidence lands where it is needed.</p>
-      </div>
-      <ol class="steps">
-        <li><h3>Report</h3><p>Citizens dial *801# or text 8448 in Kinyarwanda.</p></li>
-        <li><h3>Store</h3><p>Africa's Talking forwards each report to one central database.</p></li>
-        <li><h3>Verify</h3><p>Harvests are compared with scheme targets. Severe pests and broken pumps become cases automatically.</p></li>
-        <li><h3>Reply</h3><p>Advice, tips, airtime and closing-the-loop messages go back by SMS.</p></li>
-      </ol>
-      </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <div class="head">
-        <span class="eyebrow">What it covers</span>
-        <h2>One place for the whole picture.</h2>
-      </div>
-      <div class="modules">
-        <article class="module"><img alt="" src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80"><div><h3>Food security</h3><p>Harvest forecasts, SMS pest alerts with a heatmap, and household stunting risk.</p></div></article>
-        <article class="module"><img alt="" src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80"><div><h3>Irrigation &amp; climate</h3><p>Pump and canal faults by bottleneck, a citizen rain-gauge network, and irrigation advice.</p></div></article>
-        <article class="module"><img alt="" src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80"><div><h3>Community feedback</h3><p>An anonymous grievance log, and an SMS to each cell saying what action was taken.</p></div></article>
+      <div class="story-graphics reveal" aria-hidden="true">
+        <div class="insight-card">
+          <div class="insight-head"><div><small>PROJECT EVALUATION</small><strong>Signals that matter</strong></div><span><i class="bi bi-graph-up-arrow"></i></span></div>
+          <div class="line-bars"><i style="height:33%"></i><i style="height:55%"></i><i style="height:43%"></i><i style="height:70%"></i><i style="height:61%"></i><i style="height:86%"></i><i style="height:94%"></i></div>
+          <div class="axis"><span>Community reports</span><b>→ Actionable insights</b></div>
+        </div>
+        <div class="insight-sm"><i class="bi bi-asterisk"></i><div><b>Made for meaningful action</b><small>Evidence • Transparency • Learning</small></div></div>
       </div>
     </div>
   </section>
 
-  <section id="faq" style="padding-top:0">
+  <section class="projects-section section" id="projects">
     <div class="wrap">
-      <div class="head">
-        <span class="eyebrow">Questions</span>
-        <h2>Good to know.</h2>
+      <div class="section-header reveal">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> GROUNDED IN BUGESERA</div>
+          <h2>Starting where change<br><span class="serif-green">can be measured.</span></h2>
+        </div>
+        <p>The pilot centres on two existing irrigation investments, bringing infrastructure data and community experience into the same view.</p>
       </div>
-      <div class="faq">
-        <details><summary>Do I need a smartphone or internet?</summary><p>No. Any mobile phone works. Dial *801# or send an SMS to 8448.</p></details>
-        <details><summary>Which language does it use?</summary><p>The phone menus are in Kinyarwanda, with numbered choices and no more than three steps. The website has an English and Kinyarwanda switch.</p></details>
-        <details><summary>What do I get back for reporting?</summary><p>An SMS with irrigation advice for your sector after each harvest or rain report, and 100 RWF airtime for every third weather or infrastructure report.</p></details>
-        <details><summary>Who can see my information?</summary><p>District staff see reports so they can act on them. Grievances are anonymous: only the cell is kept, never who sent it. This public page shows counts and sectors only.</p></details>
-        <details><summary>What happens after I report a problem?</summary><p>Severe pests and broken pumps become cases for District Planners straight away. When a problem is solved, everyone registered in that cell gets an SMS saying what was done.</p></details>
-        <details><summary>How do I become a Citizen Science Monitor?</summary><p>Create an account on this site. Cooperatives can also nominate Data Champions, who report rainfall and field conditions regularly.</p></details>
+      <div class="projects-grid">
+        <article class="project-card reveal">
+          <div class="project-visual project-padab"><span class="project-pill">PROJECT 01</span><div class="project-visual-symbol"><i class="bi bi-water" aria-hidden="true"></i></div></div>
+          <div class="project-body">
+            <div class="project-label">PADAB · MWESA VALLEY</div>
+            <h3>Building on existing irrigation infrastructure.</h3>
+            <p>Assessing irrigation outcomes and bottlenecks across a scheme with pumping stations and a large canal network.</p>
+            <div class="project-tags"><span>650 hectares</span><span>2 pumping stations</span><span>65.5 km canals</span></div>
+          </div>
+        </article>
+        <article class="project-card reveal">
+          <div class="project-visual project-apefa"><span class="project-pill">PROJECT 02</span><div class="project-visual-symbol"><i class="bi bi-sun" aria-hidden="true"></i></div></div>
+          <div class="project-body">
+            <div class="project-label">APEFA · NGERUKA &amp; MAREBA</div>
+            <h3>Making solar-powered irrigation more resilient.</h3>
+            <p>Connecting farmer feedback and local observations with the operational performance of solar-powered irrigation.</p>
+            <div class="project-tags"><span>Solar irrigation</span><span>Ngeruka</span><span>Mareba</span></div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section style="padding-top:0">
-    <div class="wrap">
-      <div class="cta">
-        <div><h2>See what the field is reporting today.</h2><p>Sign in as a Citizen Science Monitor or District Planner.</p></div>
-        <div class="actions" style="margin:0"><a class="btn gold" id="cta-main" href="login.html">Sign in</a><a class="btn line" href="register.html">Create account</a></div>
+  <section class="faq-section section" id="faq">
+    <div class="wrap faq-layout">
+      <div class="reveal">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> GOOD QUESTIONS</div>
+        <h2>Curious about<br><span class="serif-green">how it works?</span></h2>
+        <p>Answers about reporting, privacy and what happens after a report.</p>
+        <div class="faq-deco"><i class="bi bi-asterisk" aria-hidden="true"></i></div>
+      </div>
+      <div class="faq-list reveal">
+        <details open><summary>What is CS-IRCFS?<span>+</span></summary><p>Citizen Science for Irrigation Resilience and Climate-smart Food Security: a platform that connects community reporting from Bugesera with the evaluation of local irrigation investments.</p></details>
+        <details><summary>Do I need a smartphone or internet?<span>+</span></summary><p>No. Any mobile phone works. Dial *801# or send an SMS to 8448.</p></details>
+        <details><summary>Which language does it use?<span>+</span></summary><p>The phone menus are in Kinyarwanda, with numbered choices and no more than three steps. The dashboard has an English and Kinyarwanda switch.</p></details>
+        <details><summary>What do I get back for reporting?<span>+</span></summary><p>An SMS with irrigation advice for your sector after each harvest or rain report, and 100 RWF airtime for every third weather or infrastructure report.</p></details>
+        <details><summary>Who can see my information?<span>+</span></summary><p>District staff see reports so they can act on them. Grievances are anonymous: only the cell is kept, never who sent it. This public page shows counts and sectors only.</p></details>
+        <details><summary>What happens after I report a problem?<span>+</span></summary><p>Severe pests and broken pumps become cases for District Planners straight away. When a problem is solved, everyone registered in that cell gets an SMS saying what was done.</p></details>
+        <details><summary>Where does the pilot take place?<span>+</span></summary><p>In Bugesera District: PADAB in the Mwesa Valley and APEFA solar-powered irrigation in Ngeruka and Mareba.</p></details>
+        <details><summary>How do I become a Citizen Science Monitor?<span>+</span></summary><p>Create an account on this site. Cooperatives can also nominate Data Champions, who report rainfall and field conditions regularly.</p></details>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
-  <div class="wrap"><strong>CS-IRCFS · Bugesera District</strong><span>Citizen Science for Irrigation Resilience and Climate-smart Food Security</span></div>
+<footer class="footer">
+  <div class="wrap footer-top">
+    <div class="footer-brand">
+      <a class="brand" href="#home"><img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="53" height="53"><span><strong>CS-IRCFS</strong><small>People • Water • Food • Future</small></span></a>
+      <p>Turning community knowledge into better decisions for irrigation resilience and food security.</p>
+    </div>
+    <div><b>Explore</b><a href="#about">Our mission</a><a href="#how">How it works</a><a href="#faq">Questions</a></div>
+    <div><b>Platform</b><a href="login.html">Sign in</a><a href="register.html">Create account</a><a href="simulator.html">Phone simulator</a><a href="report.html">Monthly report</a></div>
+    <div><b>Report from the field</b><p>USSD <b>*801#</b><br>SMS <b>8448</b>, e.g. IMVURA 12<br>Kinyarwanda, any phone</p><p>Bugesera District, Rwanda<br>AIMS Rwanda — KTT Office</p></div>
+  </div>
+  <div class="wrap footer-status">
+    <span class="footer-live" data-footer-status><i></i><span>Checking the platform…</span></span>
+    <span class="footer-channels"><span><i class="bi bi-hash" aria-hidden="true"></i>USSD *801#</span><span><i class="bi bi-chat-dots" aria-hidden="true"></i>SMS 8448</span><span><i class="bi bi-translate" aria-hidden="true"></i>Kinyarwanda first</span></span>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© <span id="year"></span> CS-IRCFS · Bugesera District</span>
+    <span>Counts and sectors only on this page. Personal data stays with district staff.</span>
+    <a href="#about">Our mission <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+  </div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="shared.js?v=20261007"></script>
-<script>
-(() => {
-  const { API, escapeHtml, session } = window.CS;
-  const fmt = (n) => Number(n || 0).toLocaleString();
+<a class="to-top" id="to-top" href="#home" aria-label="Back to top"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
 
-  // Signed-in people go straight to the dashboard.
-  if (session.account()) {
-    ["#nav-cta", "#hero-cta", "#cta-main"].forEach((id) => {
-      const link = document.querySelector(id);
-      link.href = "planner.html";
-      link.textContent = id === "#hero-cta" ? "Open live dashboard →" : "Open dashboard";
-    });
-  }
-
-  function ago(value) {
-    const seconds = Math.max(0, (Date.now() - new Date(String(value).endsWith("Z") || String(value).includes("+") ? value : `${value}Z`)) / 1000);
-    if (seconds < 60) return "just now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} h ago`;
-    return `${Math.floor(seconds / 86400)} d ago`;
-  }
-
-  // ---------- Live map of sectors ----------
-  const LEVEL = { irrigate_more: ["#d9822b", "Dry: irrigate more", 0], reduce: ["#3d8bb0", "Wet: irrigate less", 1], normal: ["#2f9e6e", "Normal", 2], no_data: ["#a9b5b0", "No rain data", 3] };
-  let map = null, sectorLayer = null;
-  function ensureMap() {
-    if (map || !window.L) return;
-    map = L.map("public-map", { scrollWheelZoom: false }).setView([-2.22, 30.15], 10);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 18, className: "soft-tiles" }).addTo(map);
-    sectorLayer = L.layerGroup().addTo(map);
-    fetch("bugesera-boundary.geojson").then((r) => r.json()).then((geo) => {
-      const outline = L.geoJSON(geo, { style: { color: "#0b6b52", weight: 2, fillColor: "#0b6b52", fillOpacity: 0.05 }, interactive: false }).addTo(map);
-      map.fitBounds(outline.getBounds(), { padding: [16, 16] });
-    }).catch(() => {});
-  }
-  function renderSectors(sectors) {
-    ensureMap();
-    if (sectorLayer) {
-      sectorLayer.clearLayers();
-      sectors.filter((s) => s.latitude && s.longitude).forEach((s) => {
-        const [color, label] = LEVEL[s.advice_level] || LEVEL.no_data;
-        const rain = (s.rainfall_mm_7d == null ? "no rain-gauge readings yet" : `${s.rainfall_mm_7d} mm rain in 7 days`)
-          + (s.forecast_mm_7d == null ? "" : `<br>Forecast: ${s.forecast_mm_7d} mm in the next 7 days`);
-        L.circleMarker([s.latitude, s.longitude], { radius: 7 + Math.sqrt(s.reports_30d) * 4, color: "#fff", weight: 2, fillColor: color, fillOpacity: 0.85 })
-          .bindTooltip(`<b>${escapeHtml(s.name)}</b><br>${s.reports_30d} report${s.reports_30d === 1 ? "" : "s"} in 30 days<br>${escapeHtml(label)} · ${rain}`, { className: "sector-tip", direction: "top" })
-          .addTo(sectorLayer);
-      });
-    }
-    const withData = sectors.filter((s) => s.advice_level !== "no_data").sort((a, b) => (LEVEL[a.advice_level]?.[2] ?? 9) - (LEVEL[b.advice_level]?.[2] ?? 9));
-    const missing = sectors.length - withData.length;
-    const forecasts = sectors.filter((s) => s.advice_level === "no_data" && s.forecast_mm_7d != null).map((s) => s.forecast_mm_7d);
-    const range = forecasts.length ? ` Forecast: ${Math.round(Math.min(...forecasts))}–${Math.round(Math.max(...forecasts))} mm of rain in the next 7 days.` : "";
-    document.querySelector("#advice").innerHTML = (withData.length
-      ? withData.map((s) => `<li><i class="lvl-${escapeHtml(s.advice_level)}"></i><b>${escapeHtml(s.name)} · ${s.rainfall_mm_7d} mm</b><span>${escapeHtml(s.advice_en)}</span></li>`).join("")
-      : `<li><span>No rain-gauge readings this week yet. Monitors report rain with *801# option 3, or by SMS: IMVURA 12.${range}</span></li>`)
-      + (missing && withData.length ? `<li class="more">${missing} more sector${missing === 1 ? "" : "s"} without rain data this week.${range}</li>` : "");
-  }
-
-  async function refresh() {
-    const dot = document.querySelector("#live-dot"), time = document.querySelector("#live-time");
-    try {
-      const response = await fetch(`${API}/public/overview`);
-      if (!response.ok) throw new Error(response.status);
-      const data = await response.json();
-      const values = { reports: fmt(data.reports), field_messages: fmt(data.field_messages), farmers: fmt(data.farmers),
-                       sectors: `${data.sectors_reporting}${data.sectors_total ? ` / ${data.sectors_total}` : ""}` };
-      document.querySelectorAll("[data-stat]").forEach((el) => { el.textContent = values[el.dataset.stat]; });
-      document.querySelector("#feed").innerHTML = data.recent.length
-        ? data.recent.slice(0, 5).map((item) => `<li><i class="${escapeHtml(item.kind)}"></i><span>${escapeHtml(item.label)}${item.sector ? ` <em>· ${escapeHtml(item.sector)}</em>` : ""}</span><small>${ago(item.created_at)}</small></li>`).join("")
-        : `<li><span class="empty">The pilot is starting. Reports appear here live as soon as farmers dial *801# or text 8448.</span></li>`;
-      const forecasts = (data.sectors || []).map((s) => s.forecast_mm_7d).filter((v) => v !== null && v !== undefined);
-      document.querySelector("#forecast").hidden = !forecasts.length;
-      if (forecasts.length) {
-        const low = Math.round(Math.min(...forecasts)), high = Math.round(Math.max(...forecasts));
-        document.querySelector("#forecast-range").textContent = low === high ? `${low} mm across Bugesera` : `${low}–${high} mm across Bugesera`;
-      }
-      renderSectors(data.sectors || []);
-      dot.classList.remove("off");
-      time.textContent = `updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-    } catch (_) {
-      dot.classList.add("off");
-      time.textContent = "offline";
-      document.querySelector("#feed").innerHTML = `<li><span class="empty">Live figures appear when the platform is running.</span></li>`;
-    }
-  }
-  // ---------- Phone demo: the real *801# screens for a pest report ----------
-  const SCREENS = [
-    { text: "*801#", key: "#", caption: "Dial *801#", dial: true },
-    { text: "Kaze kuri CS-IRCFS. Hitamo:\n1. Rapora umusaruro\n2. Indwara/udukoko\n3. Rapora imvura\n4. Ibikorwa remezo byo kuhira\n5. Tanga ikibazo/igitekerezo\n6. Imirire y'urugo", key: "2", caption: "Main menu · press 2 for pests & disease" },
-    { text: "Igihingwa cyafashwe:\n1. Umuceri\n2. Ibigori\n3. Ibishyimbo\n4. Imyumbati\n5. Imboga", key: "2", caption: "Which crop? 2 = maize" },
-    { text: "Hitamo ikibazo:\n1. Nzana\n2. Indwara y'ibibabi\n3. Indwara y'imizi\n4. Ibindi byonnyi", key: "1", caption: "Which problem? 1 = fall armyworm" },
-    { text: "Ubukana bw'ikibazo:\n1. Buke\n2. Buringaniye\n3. Bukabije\n4. Bukabije cyane\n5. Byangiritse byose", key: "5", caption: "How severe? 5 = everything damaged" },
-    { text: "Murakoze! Raporo #1 ya Nzana yakiriwe.\nAbashinzwe ubuhinzi bamenyeshejwe.", key: null, caption: "Saved. Planners see a critical case straight away." }
-  ];
-  let step = 0;
-  const ussd = document.querySelector("#ussd"), caption = document.querySelector("#ussd-caption"), keys = [...document.querySelectorAll("#keys span")];
-  function showScreen() {
-    const screen = SCREENS[step];
-    ussd.classList.add("fade");
-    window.setTimeout(() => {
-      ussd.textContent = screen.text;
-      ussd.classList.toggle("dial", Boolean(screen.dial));
-      caption.textContent = screen.caption;
-      ussd.classList.remove("fade");
-    }, 250);
-    if (screen.key) {
-      const key = keys.find((k) => k.textContent === screen.key);
-      window.setTimeout(() => { key?.classList.add("press"); window.setTimeout(() => key?.classList.remove("press"), 350); }, 2300);
-    }
-    step = (step + 1) % SCREENS.length;
-  }
-  showScreen();
-  window.setInterval(() => { if (!document.hidden) showScreen(); }, 2900);
-
-  refresh();
-  window.setInterval(() => { if (!document.hidden) refresh(); }, 20000);
-})();
-</script>
+<script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/shared.js?v=20261010"></script>
+<script src="assets/js/landing.js?v=20261010c"></script>
 </body>
 </html>

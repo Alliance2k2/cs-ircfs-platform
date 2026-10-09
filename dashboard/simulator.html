@@ -5,29 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Try the CS-IRCFS USSD *801# menu and SMS 8448 keywords from a simulated feature phone." />
     <title>CS-IRCFS | Field Phone Simulator</title>
-    <link rel="stylesheet" href="shared.css?v=20261006" />
-    <link rel="stylesheet" href="simulator.css?v=20261006" />
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/simulator.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/brand.css" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
   </head>
-  <body>
-    <header class="sim-header">
-      <a class="sim-brand" href="index.html"><span>C</span><strong>CS-IRCFS</strong><small>Bugesera District</small></a>
-      <nav class="sim-nav" aria-label="Main navigation">
-        <a href="index.html" data-i18n="nav.home">Home</a>
-        <a href="planner.html" data-i18n="nav.dashboard">Planner dashboard</a>
-        <a href="simulator.html" aria-current="page" data-i18n="nav.simulator">Phone simulator</a>
-        <a href="management.html" data-i18n="nav.management">Platform management</a>
-      </nav>
-      <div class="header-controls" data-header-controls></div>
-    </header>
-
-    <main class="sim-main">
-      <section class="sim-intro">
-        <p class="eyebrow">NO INTERNET · ANY FEATURE PHONE</p>
+  <body data-page="simulator">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow">NO INTERNET · ANY FEATURE PHONE</p>
         <h1 data-i18n="sim.title">Field phone simulator</h1>
-        <p>This works exactly like a farmer's phone. Every keypress goes to the same <code>/api/v1/ussd</code> and <code>/api/v1/sms/inbound</code> endpoints that Africa's Talking calls in the field. Reports are saved to the database and appear on the planner dashboard straight away.</p>
-      </section>
-
-      <div class="sim-grid">
+        <p>This works exactly like a farmer's phone. Every keypress runs the same USSD menu and SMS keywords that Africa's Talking reaches in the field. Reports are saved and marked as simulator data, so they never count as field evidence, and no SMS or airtime is ever sent from here.</p>
+            </div>
+            <div class="header-actions"><a class="app-hero-link" href="channels.html"><i class="bi bi-broadcast" aria-hidden="true"></i> Field channels, live</a></div>
+          </header>
+          <div class="sim-grid">
         <section class="phone-column" aria-label="Simulated phone">
           <div class="caller-bar">
             <label>Calling as
@@ -83,6 +89,7 @@
             <button type="button" data-sms="NYAMATA NZANA 5">NYAMATA NZANA 5</button>
             <button type="button" data-sms="IMVURA 12">IMVURA 12</button>
             <button type="button" data-sms="UMUSARURO IBIGORI 2.5">UMUSARURO IBIGORI 2.5</button>
+            <button type="button" data-sms="UMUSARURO IBIGORI 2.5 IBUZI IBYATUNGANYE UKWEZI 3">UMUSARURO … UKWEZI 3</button>
             <button type="button" data-sms="INDWARA IBISHYIMBO">INDWARA IBISHYIMBO</button>
             <button type="button" data-sms="IKIBAZO Amazi ntageze ku mirima yacu">IKIBAZO …</button>
             <button type="button" data-sms="UBUFASHA">UBUFASHA (help)</button>
@@ -96,7 +103,7 @@
           </article>
 
           <article class="trace-card">
-            <div class="trace-head"><div><p class="eyebrow">LIVE · ALL PHONES</p><h2>Recent field activity</h2></div><a href="planner.html#channels" class="ghost-button">Open dashboard →</a></div>
+            <div class="trace-head"><div><p class="eyebrow">LIVE · ALL PHONES</p><h2>Recent field activity</h2></div><a href="channels.html" class="ghost-button">Open dashboard →</a></div>
             <ul id="activity" class="activity"><li class="trace-empty">Loading…</li></ul>
           </article>
 
@@ -114,8 +121,14 @@
           </details>
         </section>
       </div>
-    </main>
-    <script src="shared.js?v=20261006"></script>
-    <script src="simulator.js?v=20261006"></script>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/simulator.js?v=20261008-bs"></script>
   </body>
 </html>

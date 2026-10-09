@@ -18,13 +18,13 @@ def upgrade() -> None:
     for table in ("sectors", "cells", "irrigation_schemes"):
         if "boundary" not in {column["name"] for column in inspector.get_columns(table)}:
             op.add_column(table, sa.Column("boundary", Geometry("MULTIPOLYGON", srid=4326) if bind.dialect.name == "postgresql" else sa.Text(), nullable=True))
-    if "location" not in {column["name"] for column in inspector.get_columns("users")}:
-        op.add_column("users", sa.Column("location", Geometry("POINT", srid=4326) if bind.dialect.name == "postgresql" else sa.Text(), nullable=True))
+    if "location" not in {column["name"] for column in inspector.get_columns("field_users")}:
+        op.add_column("field_users", sa.Column("location", Geometry("POINT", srid=4326) if bind.dialect.name == "postgresql" else sa.Text(), nullable=True))
     if "farms" not in inspector.get_table_names():
         op.create_table(
         "farms",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("farmer_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False, index=True),
+        sa.Column("farmer_id", sa.Integer(), sa.ForeignKey("field_users.id"), nullable=False, index=True),
         sa.Column("name", sa.String(length=120), nullable=False),
         sa.Column("boundary", Geometry("MULTIPOLYGON", srid=4326) if bind.dialect.name == "postgresql" else sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),

@@ -9,18 +9,26 @@ Examples a farmer can text:
 Anything else receives a short help message.
 """
 from dataclasses import dataclass
+from datetime import date
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.db.models import Cell, CommunityFeedback, Sector, User
+from app.db.models import Cell, CommunityFeedback, FieldUser, Sector
 from app.services.advisory import local_tip, maybe_reward
-from app.services.reporting import create_crop_report, create_irrigation_report, scheme_for_cell
+from app.services.reporting import add_months, create_crop_report, create_irrigation_report, scheme_for_cell
+from app.services.ussd import varieties_for
 
 CROP_WORDS = {"UMUCERI": "Rice", "IBIGORI": "Maize", "IBISHYIMBO": "Beans", "IMYUMBATI": "Cassava", "IMBOGA": "Vegetables",
               "RICE": "Rice", "MAIZE": "Maize", "BEANS": "Beans", "CASSAVA": "Cassava", "VEGETABLES": "Vegetables"}
-HELP = ("CS-IRCFS: Andika NZANA <ubukana 1-5>, INDWARA <igihingwa>, IMVURA <mm>, UMUSARURO <igihingwa> <toni>, "
-        "cyangwa IKIBAZO <ubutumwa>. Cyangwa kanda *801#.")
+HELP = ("CS-IRCFS: NZANA <ubukana 1-5>, INDWARA <igihingwa>, IMVURA <mm>, UMUSARURO <igihingwa> <toni> [UKWEZI <n>], "
+        "IKIBAZO <ubutumwa>. Kanda *801#.")
+# Optional yield-forecaster tokens on UMUSARURO (WP1): variety, months until harvest,
+# months since planting. Old messages without them keep working.
+# RW: needs field review
+HARVEST_TOKENS = {"UKWEZI": "harvest_months", "HARVEST": "harvest_months", "MONTHS": "harvest_months",
+                  "IMBERE": "planted_months", "PLANTED": "planted_months"}
+VARIETY_TOKENS = {"IBUZI", "VARIETY"}
 
 
 @dataclass
@@ -37,6 +45,37 @@ def _number(token: str) -> float | None:
         return None
 
 
+def _harvest_fields(args: list[str]) -> tuple[float | None, str | None, int | None, int | None]:
+    """Parse optional yield-forecaster tokens: (tons, variety, harvest months, planted months).
+
+    The first bare number stays the expected tons, so ``UMUSARURO IBIGORI 2.5 UKWEZI 3``
+    records 2.5 t with harvest in 3 months, while the original two-word form is unchanged.
+    """
+    tons: float | None = None
+    variety: str | None = None
+    harvest_months: int | None = None
+    planted_months: int | None = None
+    index = 0
+    while index < len(args):
+        token, following = args[index], args[index + 1] if index + 1 < len(args) else None
+        if token in VARIETY_TOKENS and following:
+            variety, index = following, index + 2
+            continue
+        if token in HARVEST_TOKENS and following is not None:
+            value = _number(following)
+            if value is not None and 0 <= value <= 36:
+                if HARVEST_TOKENS[token] == "harvest_months":
+                    harvest_months = int(value)
+                else:
+                    planted_months = min(int(value), 24)
+                index += 2
+                continue
+        if tons is None and (value := _number(token)) is not None and 0 <= value <= 999:
+            tons = value
+        index += 1
+    return tons, variety, harvest_months, planted_months
+
+
 def _sector_location(db: Session, words: list[str]) -> tuple[int | None, float | None, float | None, list[str]]:
     """Find a sector name anywhere in the message, e.g. 'Nyamata Nzana'."""
     sectors = {name.upper(): (sector_id, lat, lng) for sector_id, name, lat, lng in db.execute(select(Sector.id, Sector.name, Sector.latitude, Sector.longitude))}
@@ -47,7 +86,7 @@ def _sector_location(db: Session, words: list[str]) -> tuple[int | None, float |
     return None, None, None, words
 
 
-def handle(db: Session, user: User, text: str) -> SmsResult:
+def handle(db: Session, user: FieldUser, text: str) -> SmsResult:
     """Parse one inbound SMS and create the matching record. The caller commits."""
     words = (text or "").upper().replace(",", " ").split()
     sector_id, latitude, longitude, words = _sector_location(db, words)
@@ -90,12 +129,28 @@ def handle(db: Session, user: User, text: str) -> SmsResult:
 
     if keyword in {"UMUSARURO", "HARVEST"}:
         crop = next((CROP_WORDS[w] for w in args if w in CROP_WORDS), None)
-        tons = next((n for n in map(_number, args) if n is not None and 0 <= n <= 999), None)
+        tons, variety, harvest_months, planted_months = _harvest_fields(args)
         if not crop or tons is None:
-            return SmsResult("Andika: UMUSARURO <igihingwa> <toni>, urugero: UMUSARURO IBIGORI 2.5")
+            return SmsResult("Andika: UMUSARURO <igihingwa> <toni>, urugero: UMUSARURO IBIGORI 2.5. Cyangwa ongeza UKWEZI <n>.")
+        # Resolve the variety token against the crop's list; an unknown word is kept as typed
+        # so a real variety name from the field is not thrown away.
+        variety_rw = variety_en = None
+        if variety:
+            match = next(((rw, english) for rw, english in varieties_for(crop)
+                          if variety in {rw.upper(), english.upper().split()[0], english.upper()}), None)
+            variety_rw, variety_en = match if match else (variety, variety)
         report = create_crop_report(db, reporter_id=user.id, scheme_id=scheme_for_cell(db, cell_id), crop_type=crop,
+                                    crop_variety=variety_en,
+                                    planting_date=add_months(date(date.today().year, date.today().month, 1), -planted_months) if planted_months is not None else None,
+                                    expected_harvest_month=add_months(date.today(), harvest_months) if harvest_months is not None else None,
                                     expected_harvest_tons=tons, notes=f"SMS: {text.strip()}", **location)
-        return SmsResult(f"Murakoze! Umusaruro #{report.id} wanditswe. {local_tip(db, user)}", "crop_report", report.id)
+        extra = []
+        if variety_rw:
+            extra.append(f"ibyiciro {variety_rw}")
+        if harvest_months is not None:
+            extra.append(f"isarura {add_months(date.today(), harvest_months).isoformat()}")
+        detail = f" ({', '.join(extra)})" if extra else ""
+        return SmsResult(f"Murakoze! Umusaruro #{report.id} wanditswe{detail}. {local_tip(db, user)}", "crop_report", report.id)
 
     if keyword in {"IKIBAZO", "IGITEKEREZO", "COMPLAINT"}:
         original = text.split()

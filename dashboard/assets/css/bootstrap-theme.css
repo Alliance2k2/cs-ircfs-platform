@@ -1,0 +1,372 @@
+/* CS-IRCFS theme for Bootstrap 5.3.
+   Load order on every page: vendor bootstrap.min.css -> bootstrap-icons.min.css -> this file -> page styles.
+   Page styles load last, so the original CS-IRCFS design always wins over Bootstrap defaults. */
+
+:root,
+[data-bs-theme="light"] {
+  --cs-deep: #072b25;
+  --cs-green: #0b6b52;
+  --cs-green-hover: #095a45;
+  --cs-green-active: #084e3c;
+  --cs-mint: #e7f4ec;
+  --cs-lime: #b9e27a;
+  --cs-gold: #f2b544;
+  --cs-gold-hover: #f5c362;
+  --cs-cream: #f7faf6;
+  --cs-ink: #14332b;
+  --cs-muted: #5d736b;
+  --cs-line: #dce9e1;
+  --cs-red: #d0574b;
+  --cs-amber: #e09a2c;
+  --cs-blue: #3d8bb0;
+
+  --bs-primary: var(--cs-green);
+  --bs-primary-rgb: 11, 107, 82;
+  --bs-secondary: var(--cs-muted);
+  --bs-secondary-rgb: 93, 115, 107;
+  --bs-success: #2f9e6b;
+  --bs-success-rgb: 47, 158, 107;
+  --bs-info: var(--cs-blue);
+  --bs-info-rgb: 61, 139, 176;
+  --bs-warning: var(--cs-gold);
+  --bs-warning-rgb: 242, 181, 68;
+  --bs-danger: var(--cs-red);
+  --bs-danger-rgb: 208, 87, 75;
+  --bs-dark: var(--cs-deep);
+  --bs-dark-rgb: 7, 43, 37;
+  --bs-light: var(--cs-cream);
+  --bs-light-rgb: 247, 250, 246;
+
+  --bs-primary-text-emphasis: #05392b;
+  --bs-primary-bg-subtle: var(--cs-mint);
+  --bs-primary-border-subtle: #b7dcc8;
+  --bs-warning-text-emphasis: #6b4a08;
+  --bs-warning-bg-subtle: #fdf1d9;
+  --bs-warning-border-subtle: #f6d89b;
+  --bs-danger-text-emphasis: #6e231c;
+  --bs-danger-bg-subtle: #fbe7e5;
+  --bs-danger-border-subtle: #f0b9b3;
+  --bs-success-bg-subtle: #e3f4ea;
+  --bs-info-bg-subtle: #e6f1f7;
+
+  --bs-body-font-family: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --bs-body-color: var(--cs-ink);
+  --bs-body-color-rgb: 20, 51, 43;
+  --bs-body-bg: var(--cs-cream);
+  --bs-body-bg-rgb: 247, 250, 246;
+  --bs-emphasis-color: var(--cs-deep);
+  --bs-secondary-color: var(--cs-muted);
+  --bs-heading-color: inherit;
+  --bs-link-color: var(--cs-green);
+  --bs-link-color-rgb: 11, 107, 82;
+  --bs-link-hover-color: var(--cs-deep);
+  --bs-link-hover-color-rgb: 7, 43, 37;
+  --bs-border-color: var(--cs-line);
+  --bs-border-radius: 0.625rem;
+  --bs-border-radius-sm: 0.5rem;
+  --bs-border-radius-lg: 0.875rem;
+  --bs-border-radius-xl: 1.125rem;
+  --bs-border-radius-xxl: 1.5rem;
+  --bs-focus-ring-color: rgba(11, 107, 82, 0.25);
+  --bs-box-shadow: 0 10px 30px rgba(22, 68, 51, 0.08);
+  --bs-box-shadow-lg: 0 24px 60px rgba(7, 43, 37, 0.18);
+}
+
+/* Keep the original look on dashboard pages.
+   Bootstrap's reboot changes browser defaults (heading sizes, paragraph and list margins,
+   form-control fonts, link and code colours). The dashboard pages were designed on browser
+   defaults, so here every reboot property returns to that default. Pages built on Bootstrap
+   from the start set <html data-ui="bootstrap"> and keep the full reboot.
+   :where() keeps these selectors at element specificity, so page styles still win. */
+:where(html:not([data-ui="bootstrap"])) body {
+  font-family: revert;
+  font-size: revert;
+  font-weight: revert;
+  line-height: revert;
+  color: revert;
+  text-align: revert;
+  background-color: revert;
+  -webkit-tap-highlight-color: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: revert;
+  margin-bottom: revert;
+  font-size: revert;
+  font-weight: revert;
+  line-height: revert;
+  color: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(p, ol, ul, dl, blockquote, figure, address, pre, dd) {
+  margin-top: revert;
+  margin-bottom: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(ol, ul) {
+  padding-left: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(ol ol, ol ul, ul ol, ul ul) {
+  margin-bottom: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) dd {
+  margin-left: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(address, pre) {
+  font-style: revert;
+  line-height: revert;
+  overflow: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(small, sub, sup, code, kbd, pre, samp) {
+  font-size: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(code, kbd, pre, samp) {
+  font-family: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(code, kbd, mark) {
+  color: revert;
+  background-color: revert;
+  padding: revert;
+  border-radius: revert;
+  word-wrap: revert;
+  word-break: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(pre code, kbd kbd) {
+  font-size: revert;
+  color: revert;
+  word-break: revert;
+  padding: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(sub, sup) {
+  position: revert;
+  line-height: revert;
+  vertical-align: revert;
+  top: revert;
+  bottom: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) a {
+  color: revert;
+  text-decoration: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(img, svg, progress) {
+  vertical-align: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(table, caption, th) {
+  caption-side: revert;
+  border-collapse: revert;
+  padding-top: revert;
+  padding-bottom: revert;
+  color: revert;
+  text-align: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(tbody, td, tfoot, th, thead, tr) {
+  border-color: revert;
+  border-style: revert;
+  border-width: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(label, output) {
+  display: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(button, input, optgroup, select, textarea) {
+  margin: revert;
+  font-family: revert;
+  font-size: revert;
+  line-height: revert;
+  text-transform: revert;
+  border-radius: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) select {
+  word-wrap: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) textarea {
+  resize: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) :is(fieldset, legend) {
+  min-width: revert;
+  padding: revert;
+  margin: revert;
+  border: revert;
+  float: revert;
+  width: revert;
+  font-size: revert;
+  line-height: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) legend + * {
+  clear: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) hr {
+  margin: revert;
+  color: revert;
+  border: revert;
+  opacity: revert;
+}
+
+:where(html:not([data-ui="bootstrap"])) iframe {
+  border: revert;
+}
+
+/* Buttons in the CS-IRCFS palette. */
+.btn-primary {
+  --bs-btn-bg: var(--cs-green);
+  --bs-btn-border-color: var(--cs-green);
+  --bs-btn-hover-bg: var(--cs-green-hover);
+  --bs-btn-hover-border-color: var(--cs-green-hover);
+  --bs-btn-active-bg: var(--cs-green-active);
+  --bs-btn-active-border-color: var(--cs-green-active);
+  --bs-btn-disabled-bg: var(--cs-green);
+  --bs-btn-disabled-border-color: var(--cs-green);
+  --bs-btn-focus-shadow-rgb: 11, 107, 82;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--cs-green);
+  --bs-btn-border-color: var(--cs-green);
+  --bs-btn-hover-bg: var(--cs-green);
+  --bs-btn-hover-border-color: var(--cs-green);
+  --bs-btn-active-bg: var(--cs-green-active);
+  --bs-btn-active-border-color: var(--cs-green-active);
+  --bs-btn-disabled-color: var(--cs-green);
+  --bs-btn-disabled-border-color: var(--cs-green);
+  --bs-btn-focus-shadow-rgb: 11, 107, 82;
+}
+
+.btn-gold {
+  --bs-btn-color: #1b3027;
+  --bs-btn-bg: var(--cs-gold);
+  --bs-btn-border-color: var(--cs-gold);
+  --bs-btn-hover-color: #1b3027;
+  --bs-btn-hover-bg: var(--cs-gold-hover);
+  --bs-btn-hover-border-color: var(--cs-gold-hover);
+  --bs-btn-active-color: #1b3027;
+  --bs-btn-active-bg: #e3a32f;
+  --bs-btn-active-border-color: #e3a32f;
+  --bs-btn-disabled-color: #1b3027;
+  --bs-btn-disabled-bg: var(--cs-gold);
+  --bs-btn-disabled-border-color: var(--cs-gold);
+  --bs-btn-focus-shadow-rgb: 242, 181, 68;
+  box-shadow: 0 8px 22px rgba(242, 181, 68, 0.25);
+}
+
+.btn-deep {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--cs-deep);
+  --bs-btn-border-color: var(--cs-deep);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #0d4236;
+  --bs-btn-hover-border-color: #0d4236;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #05211c;
+  --bs-btn-active-border-color: #05211c;
+  --bs-btn-focus-shadow-rgb: 7, 43, 37;
+}
+
+.btn-soft {
+  --bs-btn-color: var(--cs-green);
+  --bs-btn-bg: var(--cs-mint);
+  --bs-btn-border-color: var(--cs-mint);
+  --bs-btn-hover-color: var(--cs-deep);
+  --bs-btn-hover-bg: #d4ecdd;
+  --bs-btn-hover-border-color: #d4ecdd;
+  --bs-btn-active-color: var(--cs-deep);
+  --bs-btn-active-bg: #c4e4d1;
+  --bs-btn-active-border-color: #c4e4d1;
+  --bs-btn-focus-shadow-rgb: 11, 107, 82;
+}
+
+.btn-glass {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: rgba(255, 255, 255, 0.04);
+  --bs-btn-border-color: rgba(255, 255, 255, 0.45);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(255, 255, 255, 0.14);
+  --bs-btn-hover-border-color: rgba(255, 255, 255, 0.7);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: rgba(255, 255, 255, 0.2);
+  --bs-btn-active-border-color: #fff;
+  --bs-btn-focus-shadow-rgb: 255, 255, 255;
+}
+
+/* Form controls, accordions, pills, dropdowns and progress bars in brand green. */
+.form-control:focus,
+.form-select:focus {
+  border-color: #7fbfa6;
+  box-shadow: 0 0 0 0.25rem rgba(11, 107, 82, 0.16);
+}
+
+.form-check-input:checked {
+  background-color: var(--cs-green);
+  border-color: var(--cs-green);
+}
+
+.form-check-input:focus {
+  border-color: #7fbfa6;
+  box-shadow: 0 0 0 0.25rem rgba(11, 107, 82, 0.16);
+}
+
+.accordion {
+  --bs-accordion-border-color: var(--cs-line);
+  --bs-accordion-active-color: var(--cs-green);
+  --bs-accordion-active-bg: var(--cs-mint);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(11, 107, 82, 0.16);
+  --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%230b6b52' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M2 5L8 11L14 5'/%3e%3c/svg%3e");
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--cs-green);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--cs-green);
+}
+
+.progress,
+.progress-stacked {
+  --bs-progress-bar-bg: var(--cs-green);
+}
+
+.list-group {
+  --bs-list-group-active-bg: var(--cs-green);
+  --bs-list-group-active-border-color: var(--cs-green);
+}
+
+.tooltip {
+  --bs-tooltip-bg: var(--cs-deep);
+}
+
+/* Bootstrap Icons placed inside the original sidebar icon slots. */
+.nav-link > .bi,
+.module-link > .bi {
+  line-height: 1;
+}
+
+.bi::before {
+  vertical-align: -0.125em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .accordion-button,
+  .collapse,
+  .collapsing {
+    transition: none !important;
+  }
+}

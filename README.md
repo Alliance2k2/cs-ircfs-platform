@@ -64,7 +64,7 @@ District dashboard: outcome verification · Act Now cases · trends · monthly r
 
 ## Getting started
 
-Requirements: Python 3.11 or later. PostgreSQL 16 with PostGIS for real use; SQLite works for evaluation.
+Requirements: Python 3.11 or later, and Node.js 22 for the React dashboard (the classic pages work without it). PostgreSQL 16 with PostGIS for real use; SQLite works for evaluation.
 
 ```powershell
 python -m pip install -r backend/requirements.txt
@@ -87,6 +87,7 @@ For Docker and hosted deployment, see [docs/deployment.md](docs/deployment.md).
 | Address | Page |
 | --- | --- |
 | `/` | Public home page with live field activity |
+| `/app/` | District Planning Dashboard (React): executive overview with documented, source-labelled figures |
 | `/planner.html` | District dashboard |
 | `/report.html` | Monthly district report |
 | `/management.html` | Platform management: people, schemes, reports, accounts and areas |
@@ -100,7 +101,8 @@ All settings are environment variables, documented in [`.env.example`](.env.exam
 | Setting | Purpose |
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL (production) or SQLite (evaluation) |
-| `ENVIRONMENT`, `REQUIRE_API_KEY` | `production` with `REQUIRE_API_KEY=true` enforces sign-in |
+| `ENVIRONMENT`, `REQUIRE_API_KEY` | `production` with `REQUIRE_API_KEY=true` enforces sign-in; production also requires `COOKIE_SECURE=true` and `GATEWAY_CALLBACK_TOKEN` |
+| `GATEWAY_CALLBACK_TOKEN`, `GATEWAY_ALLOWED_IPS` | Shared secret in the Africa's Talking callback URLs, and an optional address allow-list |
 | `SMS_PROVIDER`, `AIRTIME_PROVIDER`, `AFRICAS_TALKING_*` | Live delivery through Africa's Talking; `dry_run` records messages without sending |
 | `ALERT_PHONE_NUMBERS`, `ALERT_MIN_PRIORITY` | Staff phones alerted by SMS when urgent cases open |
 | `DRY_SPELL_THRESHOLD_MM`, `WET_SPELL_THRESHOLD_MM` | Irrigation advice thresholds (7-day rainfall) |
@@ -116,7 +118,8 @@ cs-ircfs-platform/
 │   ├── migrations/       Alembic database migrations
 │   ├── scripts/          Location import, administrator setup, health checks
 │   └── tests/            Automated tests (in-memory database)
-├── dashboard/          Web interface served by the API
+├── frontend/           React + TypeScript dashboard (Vite, Tailwind), served at /app/
+├── dashboard/          Public website and classic dashboard pages served by the API
 ├── ussd-sms/           USSD menu map, SMS keywords and gateway setup
 ├── infrastructure/     Docker Compose stack (PostgreSQL/PostGIS + platform)
 ├── data/               Bugesera sector and cell boundaries (GeoPackage)
@@ -137,6 +140,9 @@ cs-ircfs-platform/
 | [Field channels](ussd-sms/README.md) | USSD menu, SMS keywords, Africa's Talking setup |
 | [Operations](infrastructure/README.md) | Running and maintaining the Docker stack |
 | [Roadmap](docs/roadmap.md) | Project status, known limitations and next steps |
+| [Security](docs/security.md) | Threats, controls, settings and open items |
+| [Design system](docs/design-system.md) | Colour tokens, components and data states |
+| [Audit, October 2026](docs/audit-2026-10.md) · [Remaining work](docs/remaining-work.md) | Baseline audit and the register of implemented, blocked and field-validation work |
 
 ## Tests
 
@@ -147,10 +153,20 @@ python -m pytest -q -p no:cacheprovider
 
 Tests always run on an in-memory database and make no network calls.
 
+```powershell
+cd frontend
+npm ci
+npm run typecheck; npm run lint; npm test; npm run build
+```
+
+GitHub Actions runs both suites, the migrations on PostGIS and a Docker build on every pull request (`.github/workflows/ci.yml`).
+
 ## Security and privacy
 
 - Passwords are hashed with PBKDF2-SHA256; sign-in tokens are stored only as hashes and expire.
-- Self-registration cannot choose a role; only administrators assign roles and areas.
+- Self-registered accounts wait for an administrator's approval and cannot choose a role; only administrators assign roles and areas.
+- Gateway callbacks require a shared secret; the phone simulator never reaches a telecom provider and its records never count as evidence.
+- Monitors see masked phone numbers; household nutrition records are for district staff only. Details in [docs/security.md](docs/security.md).
 - Grievances are anonymous, and public pages show aggregates only.
 - Never commit `.env` or `infrastructure/stack.env`. See the production checklist in [docs/deployment.md](docs/deployment.md).
 

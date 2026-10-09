@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS map of Bugesera: schemes, reports, rainfall, nutrition risk and farmers." />
+    <title>CS-IRCFS | Map & observations</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="map">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="map.eyebrow">SPATIAL INTELLIGENCE</p>
+              <h1 data-i18n="map.title">Map &amp; live observations</h1>
+              <p>Schemes, infrastructure, crop reports, rainfall, nutrition risk and farmers across Bugesera District.</p>
+              <div class="app-hero-stats"><div><b id="stat-mapped">–</b><span>mapped locations</span></div></div>
+            </div>
+            <div class="header-actions"><div id="scheme-control" class="scheme-control"><label class="scheme-select"><span data-i18n="top.scheme">Scheme</span> <select id="scheme-filter" aria-describedby="scheme-filter-help"><option value="all">All schemes</option></select></label><a id="scheme-filter-help" class="scheme-empty-help" href="schemes.html" hidden>Add a scheme to use this filter</a></div><button id="map-reset-view" type="button" class="app-hero-link ghost"><i class="bi bi-fullscreen-exit" aria-hidden="true"></i> <span data-i18n="map.reset">Reset Bugesera view</span></button></div>
+          </header>
+
+          <section class="panel map-panel">
+            <div class="layer-chips" role="group" aria-label="Map layers">
+              <label class="layer-chip"><input type="checkbox" data-layer="schemes" checked /><i class="swatch scheme"></i><span data-i18n="layer.schemes">Schemes</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="infrastructure" checked /><i class="swatch offline"></i><span data-i18n="layer.infrastructure">Infrastructure</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="crops" checked /><i class="swatch pest"></i><span data-i18n="layer.crops">Crop reports</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="heat" /><i class="swatch heat"></i><span data-i18n="layer.heat">Pest heatmap</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="rain" /><i class="swatch rain"></i><span data-i18n="layer.rain">Rainfall &amp; drought</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="food" /><i class="swatch food"></i><span data-i18n="layer.food">Nutrition risk</span></label>
+              <label class="layer-chip"><input type="checkbox" data-layer="farmers" /><i class="swatch farmer"></i><span data-i18n="layer.farmers">Farmers</span></label>
+            </div>
+            <div id="map-canvas" class="map-canvas map-canvas-tall" role="application" aria-label="Interactive map centered on Bugesera District"></div>
+            <p id="map-status" class="map-status" role="status"></p>
+          </section>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

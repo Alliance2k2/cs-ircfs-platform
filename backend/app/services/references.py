@@ -1,7 +1,8 @@
+"""Validate foreign keys supplied in request bodies before any write."""
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Cell, IrrigationScheme, User
+from app.db.models import Cell, FieldUser, IrrigationScheme
 
 
 def require_if_provided(db: Session, model, value: int | None, field_name: str) -> None:
@@ -13,6 +14,6 @@ def require_if_provided(db: Session, model, value: int | None, field_name: str) 
 
 
 def validate_report_references(db: Session, reporter_id: int | None, scheme_id: int | None, cell_id: int | None) -> None:
-    require_if_provided(db, User, reporter_id, "reporter_id")
-    require_if_provided(db, IrrigationScheme, scheme_id, "scheme_id")
+    require_if_provided(db, FieldUser, reporter_id, "reporter_id")
     require_if_provided(db, Cell, cell_id, "cell_id")
+    require_if_provided(db, IrrigationScheme, scheme_id, "scheme_id")

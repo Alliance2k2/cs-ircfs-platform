@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS cooperatives: participation ranking, Data Champions and training progress for Bugesera District." />
+    <title>CS-IRCFS | Cooperatives</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+    <style>
+      /* Print for the Inteko z'Abaturage meeting: the shell hides itself (app-shell.css);
+         only the ranking, pilot list and training progress print. */
+      @media print {
+        .no-print, .header-actions { display: none !important; }
+        .content-grid { display: block; }
+        .panel { box-shadow: none; border: 1px solid #bbb; break-inside: avoid; }
+        .coop-table { font-size: 12px; }
+      }
+    </style>
+  </head>
+  <body data-page="cooperatives">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow">COOPERATIVES · DATA CHAMPIONS · PILOT</p>
+              <h1 id="page-title">Cooperatives</h1>
+              <p>Participation ranking for the Inteko z'Abaturage meetings, the Data Champion network, and progress towards the trained-monitor target. Every figure comes from real field reports.</p>
+              <div class="app-hero-stats">
+                <div><b id="stat-coops">–</b><span>cooperatives</span></div>
+                <div><b id="stat-coop-members">–</b><span>members</span></div>
+                <div><b id="stat-coop-reports">–</b><span>reports (30 days)</span></div>
+                <div><b id="stat-champions">–</b><span>Data Champions</span></div>
+                <div><b id="stat-trained">–</b><span>monitors trained</span></div>
+              </div>
+            </div>
+            <div class="header-actions no-print">
+              <button id="print-coops" type="button" class="app-hero-link"><i class="bi bi-printer" aria-hidden="true"></i> <span>Print for Inteko z'Abaturage</span></button>
+            </div>
+          </header>
+
+          <section class="panel">
+            <div class="panel-heading compact">
+              <div><h2>Cooperative participation ranking</h2><p class="subtle">Last 30 days and month to date, most active cooperative first. Reports filed by members over USSD *801# and SMS 8448.</p></div>
+            </div>
+            <div class="table-wrap">
+              <table class="coop-table">
+                <thead><tr><th>#</th><th>Cooperative</th><th>Sector</th><th>Members</th><th>Data Champions</th><th>Reports 30d</th><th>Month to date</th><th>Active reporters</th><th>Last report</th></tr></thead>
+                <tbody id="coop-ranking"><tr><td colspan="9" class="empty-row">Connecting to the platform…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="content-grid">
+            <section class="panel">
+              <div class="panel-heading compact"><div><h2>Reports per cooperative (30 days)</h2><p class="subtle">Bar chart for the monthly meeting; crop, rainfall/infrastructure and nutrition reports together.</p></div></div>
+              <div id="coop-chart" class="harvest-calendar"></div>
+            </section>
+            <div>
+              <section class="panel">
+                <div class="panel-heading compact"><div><h2>Pilot cooperatives</h2><p class="subtle" id="pilot-note">Loading…</p></div></div>
+                <div id="pilot-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading compact"><div><h2>Trained monitors</h2><p class="subtle" id="training-note">Loading…</p></div></div>
+                <div class="bar-label"><span>Citizen Science Monitors trained</span></div>
+                <div class="track big" role="img" aria-label="Training progress towards the monitor target"><div id="training-fill" class="fill" style="width:0%"></div></div>
+                <p class="data-note">Training is recorded against each monitor in Platform Management → Users. The target comes from MONITOR_TRAINING_TARGET in the platform settings.</p>
+              </section>
+            </div>
+          </div>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

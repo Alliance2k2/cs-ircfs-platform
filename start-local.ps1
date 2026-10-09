@@ -33,12 +33,15 @@ try {
 
     if ($Demo -or $ResetDemo) {
         $DemoDatabase = Join-Path $BackendRoot "demo.db"
-        if ($ResetDemo -and (Test-Path $DemoDatabase)) { Remove-Item $DemoDatabase -Confirm:$false }
+        # Always delete the demo database so migrations start clean.
+        # The demo database holds invented data only — nothing is lost.
+        if (Test-Path $DemoDatabase) { Remove-Item $DemoDatabase -Confirm:$false }
         # Environment variables override .env for this window only.
         $env:DATABASE_URL = "sqlite:///" + ($DemoDatabase -replace "\\", "/")
         $env:ENVIRONMENT = "development"
         $env:REQUIRE_API_KEY = "false"
-        python -c "from app.db.base import Base; from app.db.session import engine; import app.db.models; Base.metadata.create_all(engine)"
+        python -m alembic upgrade head
+        if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         python scripts/seed_demo_data.py
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         Write-Host "DEMONSTRATION MODE: invented data in backend/demo.db. Everyone has full access; do not use for real records." -ForegroundColor Magenta
@@ -53,8 +56,27 @@ try {
         }
     }
 
+    # The React dashboard (/app/) is built once; rebuild after changing frontend/ (or use `npm run dev` there).
+    $FrontendRoot = Join-Path $ProjectRoot "frontend"
+    if (-not (Test-Path (Join-Path $FrontendRoot "dist\index.html"))) {
+        if (Get-Command npm -ErrorAction SilentlyContinue) {
+            Write-Host "Building the React dashboard (first run only)..." -ForegroundColor Cyan
+            Push-Location $FrontendRoot
+            try {
+                if (-not (Test-Path "node_modules")) { npm ci --no-audit --no-fund }
+                npm run build
+                if ($LASTEXITCODE -ne 0) { Write-Host "React build failed; the classic dashboard still works." -ForegroundColor Yellow }
+            }
+            finally { Pop-Location }
+        }
+        else {
+            Write-Host "Node.js is not installed, so the new dashboard (/app/) is not built. The classic pages work." -ForegroundColor Yellow
+        }
+    }
+
     Write-Host "CS-IRCFS is starting locally..." -ForegroundColor Green
     Write-Host "Platform:        http://127.0.0.1:$Port"
+    Write-Host "Executive view:  http://127.0.0.1:$Port/app/"
     Write-Host "Planner:         http://127.0.0.1:$Port/planner.html"
     Write-Host "Phone simulator: http://127.0.0.1:$Port/simulator.html"
     Write-Host "API docs:        http://127.0.0.1:$Port/docs"

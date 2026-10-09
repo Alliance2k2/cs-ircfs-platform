@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS community feedback: grievances and closing the loop." />
+    <title>CS-IRCFS | Community feedback</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="feedback">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="health.eyebrow">COMMUNITY ACCOUNTABILITY</p>
+              <h1>Community feedback</h1>
+              <p>Anonymous grievances from USSD option 5 and SMS IKIBAZO. Only the cell is kept, so the community can be told what was done.</p>
+              <div class="app-hero-stats"><div><b id="stat-open-feedback">–</b><span>open complaints</span></div><div><b id="stat-resolution">–</b><span>resolved</span></div><div><b id="stat-median">–</b><span>median days to resolve</span></div><div><b id="stat-loop">–</b><span>loop-closing SMS</span></div></div>
+            </div>
+            <div class="header-actions"></div>
+          </header>
+
+          <div class="content-grid">
+            <section class="panel feedback-list-panel">
+              <div class="panel-heading compact">
+                <div><h2>Grievances</h2><p class="subtle">Open one to assign an owner, record the action taken and notify the cell.</p></div>
+              </div>
+              <div class="feedback-tools">
+                <div class="chip-row" role="group" aria-label="Filter grievances by status">
+                  <button type="button" class="chip active" data-feedback-filter="open">Open <b data-feedback-count="open">0</b></button>
+                  <button type="button" class="chip" data-feedback-filter="resolved">Resolved <b data-feedback-count="resolved">0</b></button>
+                  <button type="button" class="chip" data-feedback-filter="all">All <b data-feedback-count="all">0</b></button>
+                </div>
+                <input id="feedback-search" class="feedback-search" type="search" placeholder="Search category or message…" aria-label="Search grievances">
+              </div>
+              <div id="feedback-list" class="feedback-list" aria-live="polite"></div>
+            </section>
+            <section class="panel response-panel">
+              <div class="panel-heading compact"><div><h2 data-i18n="health.title">Response health</h2><p class="subtle">How quickly grievances and cases are closed.</p></div></div>
+              <div id="response-health"></div>
+            </section>
+          </div>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+    <dialog id="case-dialog" class="cs-dialog"><form id="case-form">
+      <p class="eyebrow" id="case-kind">PLANNER CASE</p>
+      <h2 id="case-title">Planner case</h2><p id="case-summary" class="dialog-note"></p>
+      <label>Status <select name="status"><option value="triaged">Triaged</option><option value="assigned">Assigned</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+      <label><span id="owner-label">Owner (account ID)</span> <input name="owner_id" type="number" min="1" /></label>
+      <label>Action taken <textarea name="action_taken" rows="3" maxlength="3000" placeholder="Required to resolve, e.g. Technician replaced the pump motor"></textarea></label>
+      <label>Deadline <input name="due_at" type="datetime-local" /></label>
+      <div id="case-history-wrap" hidden><p class="dialog-note"><strong>History</strong></p><ul id="case-history" class="history-list"></ul></div>
+      <div id="notify-box" hidden>
+        <p class="dialog-note"><strong>Closing-the-loop SMS</strong> · <span id="notify-meta"></span></p>
+        <div id="notify-preview" class="sms-preview"></div>
+      </div>
+      <p id="case-message" role="status" class="dialog-note"></p>
+      <div class="dialog-actions">
+        <button type="button" id="case-cancel" data-i18n="case.cancel">Close</button>
+        <button type="button" id="case-notify" class="accent"><i class="bi bi-megaphone" aria-hidden="true"></i> <span data-i18n="case.notify">Notify the community by SMS</span></button>
+        <button type="submit" class="primary" data-i18n="case.save">Save</button>
+      </div>
+    </form></dialog>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

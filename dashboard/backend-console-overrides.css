@@ -1,8 +1,0 @@
-/* Complete module grid for wide screens, with a compact responsive fallback. */
-@media (min-width: 1051px) {
-  .endpoint-grid { grid-template-columns: repeat(4, 1fr); }
-}
-
-.endpoint-card.scheme-card { background: #fff7e7; border-color: #ecd099; }
-
-.method.post{background:#fcf0d9;color:#a46d13}.console-back{margin-left:auto;margin-right:16px;color:inherit;font-weight:700;text-decoration:none;font-size:13px}

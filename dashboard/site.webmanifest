@@ -1,0 +1,12 @@
+{
+  "name": "CS-IRCFS · Bugesera citizen science & irrigation",
+  "short_name": "CS-IRCFS",
+  "icons": [
+    { "src": "assets/img/logo-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/logo-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f4f8f5",
+  "theme_color": "#073e2b"
+}

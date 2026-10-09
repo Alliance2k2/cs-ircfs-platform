@@ -1,0 +1,26 @@
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.schemas
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.tables
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.types
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.constraints
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.defaults
+INFO:alembic.runtime.plugins:setup plugin alembic.autogenerate.comments
+INFO:alembic.runtime.plugins:setup plugin alembic.ext.checkconstraint_byname
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 20260911_01, Initial CS-IRCFS schema.
+INFO  [alembic.runtime.migration] Running upgrade 20260911_01 -> 20260914_02, Add verified map coordinates to geographic reference records.
+INFO  [alembic.runtime.migration] Running upgrade 20260914_02 -> 20260914_03, Add PostGIS geometry storage for farmers, boundaries, and farms.
+INFO  [alembic.runtime.migration] Running upgrade 20260914_03 -> 20260914_04, Track actionable crop and infrastructure reports as cases.
+INFO  [alembic.runtime.migration] Running upgrade 20260914_04 -> 20260929_05, create platform accounts
+Revision ID: 20260929_05
+INFO  [alembic.runtime.migration] Running upgrade 20260929_05 -> 20261005_06, create advisory message log
+Revision ID: 20261005_06
+INFO  [alembic.runtime.migration] Running upgrade 20261005_06 -> 20261006_07, Add optional password hash column to agricultural users.
+INFO  [alembic.runtime.migration] Running upgrade 20261006_07 -> 20261006_08, Field channels, persistent sessions, nutrition tracker, and airtime incentives.
+INFO  [alembic.runtime.migration] Running upgrade 20261006_08 -> 20261007_09, Index inbound messages by gateway message ID.
+INFO  [alembic.runtime.migration] Running upgrade 20261007_09 -> 20261008_10, Area-level access: link platform accounts to the sectors they work in.
+INFO  [alembic.runtime.migration] Running upgrade 20261008_10 -> 20261008_11, Split the two people systems: USSD/SMS callers become ``field_users``.
+INFO  [alembic.runtime.migration] Running upgrade 20261008_11 -> 20261009_12, Yield forecaster inputs: crop variety and expected harvest month (WP1).
+INFO  [alembic.runtime.migration] Running upgrade 20261009_12 -> 20261009_13, Weekly automatic advice runs (WP2).
+INFO  [alembic.runtime.migration] Running upgrade 20261009_13 -> 20261009_14, Cooperatives, Data Champions and training records (WP5).
+INFO  [alembic.runtime.migration] Running upgrade 20261009_14 -> 20261009_15, Calibration tables for Section 9 (WP7).

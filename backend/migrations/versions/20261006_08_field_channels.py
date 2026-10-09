@@ -28,8 +28,9 @@ def upgrade() -> None:
     op.create_index("ix_auth_sessions_token_hash", "auth_sessions", ["token_hash"], unique=True)
     op.create_index("ix_auth_sessions_account_id", "auth_sessions", ["account_id"])
 
-    op.add_column("advisory_messages", sa.Column("purpose", sa.String(30), nullable=True))
-    op.add_column("advisory_messages", sa.Column("cell_id", sa.Integer(), sa.ForeignKey("cells.id"), nullable=True))
+    with op.batch_alter_table("advisory_messages") as batch:
+        batch.add_column(sa.Column("purpose", sa.String(30), nullable=True))
+        batch.add_column(sa.Column("cell_id", sa.Integer(), sa.ForeignKey("cells.id", name="fk_advisory_messages_cell"), nullable=True))
     op.create_index("ix_advisory_messages_purpose", "advisory_messages", ["purpose"])
 
     op.create_table(
@@ -49,7 +50,7 @@ def upgrade() -> None:
     op.create_table(
         "nutrition_surveys",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("reporter_id", sa.Integer(), sa.ForeignKey("users.id")),
+        sa.Column("reporter_id", sa.Integer(), sa.ForeignKey("field_users.id")),
         sa.Column("cell_id", sa.Integer(), sa.ForeignKey("cells.id")),
         sa.Column("meals_per_day", sa.Integer(), nullable=False),
         sa.Column("ate_protein_or_vegetables", sa.Boolean(), nullable=False),
@@ -64,7 +65,7 @@ def upgrade() -> None:
     op.create_table(
         "incentive_rewards",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),
+        sa.Column("user_id", sa.Integer(), sa.ForeignKey("field_users.id"), nullable=False),
         sa.Column("phone_number", sa.String(20), nullable=False),
         sa.Column("amount_rwf", sa.Integer(), nullable=False),
         sa.Column("reason", sa.String(120), nullable=False),
@@ -84,8 +85,9 @@ def downgrade() -> None:
     op.drop_index("ix_inbound_messages_phone_number", table_name="inbound_messages")
     op.drop_table("inbound_messages")
     op.drop_index("ix_advisory_messages_purpose", table_name="advisory_messages")
-    op.drop_column("advisory_messages", "cell_id")
-    op.drop_column("advisory_messages", "purpose")
+    with op.batch_alter_table("advisory_messages") as batch:
+        batch.drop_column("cell_id")
+        batch.drop_column("purpose")
     op.drop_index("ix_auth_sessions_account_id", table_name="auth_sessions")
     op.drop_index("ix_auth_sessions_token_hash", table_name="auth_sessions")
     op.drop_table("auth_sessions")

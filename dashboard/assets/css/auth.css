@@ -1,0 +1,348 @@
+/* Sign-in and registration pages (login.html, register.html).
+   Built on Bootstrap 5.3 (vendor/) and bootstrap-theme.css, which supplies the --cs-* palette. */
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--cs-cream);
+  color: var(--cs-ink);
+}
+
+.auth-shell {
+  min-height: 100vh;
+}
+
+/* Left: field photo with the platform story. */
+.auth-story {
+  position: relative;
+  color: #fff;
+  background:
+    linear-gradient(160deg, rgba(7, 43, 37, 0.9) 0%, rgba(7, 43, 37, 0.62) 50%, rgba(11, 79, 64, 0.82) 100%),
+    url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80") center / cover,
+    var(--cs-deep);
+  padding: 48px 56px;
+}
+
+.auth-story a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.25;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand small {
+  display: block;
+  font-weight: 500;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--cs-gold);
+  color: var(--cs-deep);
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.auth-story .eyebrow {
+  color: var(--cs-lime);
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.auth-story h2 {
+  font-size: clamp(30px, 3.2vw, 44px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  margin: 14px 0 16px;
+  text-wrap: balance;
+}
+
+.auth-story h2 em {
+  font-style: normal;
+  color: var(--cs-gold);
+}
+
+.auth-story .lead {
+  font-size: 17px;
+  font-weight: 400;
+  color: #d3e9de;
+  max-width: 520px;
+}
+
+.story-points {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0 0;
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+}
+
+.story-points li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.story-points .bi {
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--cs-gold);
+  font-size: 18px;
+}
+
+.story-points strong {
+  display: block;
+}
+
+.story-points span {
+  color: #b9d6c9;
+  font-size: 14px;
+}
+
+.story-foot {
+  color: #a9cbbd;
+  font-size: 13px;
+}
+
+.story-foot b {
+  color: #fff;
+  font-family: Consolas, "Cascadia Code", monospace;
+}
+
+/* Right: the form. */
+.auth-main {
+  padding: 40px 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+}
+
+.auth-card.wide {
+  max-width: 560px;
+}
+
+.auth-card .mobile-brand {
+  color: var(--cs-deep);
+}
+
+.auth-card h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin: 0 0 6px;
+}
+
+.auth-card .sub {
+  color: var(--cs-muted);
+  margin: 0 0 26px;
+}
+
+.auth-card .form-label {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.auth-card .form-control,
+.auth-card .input-group-text,
+.auth-card .btn-outline-secondary {
+  border-color: #cbd8d0;
+}
+
+.auth-card .form-control {
+  padding: 0.7rem 0.9rem;
+  font-size: 16px;
+}
+
+.auth-card .input-group-text {
+  background: #fff;
+  color: var(--cs-muted);
+}
+
+.auth-card .input-group .form-control:not(:last-child) {
+  border-right: 0;
+}
+
+.toggle-password {
+  --bs-btn-color: var(--cs-muted);
+  --bs-btn-hover-color: var(--cs-green);
+  --bs-btn-hover-bg: var(--cs-mint);
+  --bs-btn-hover-border-color: #cbd8d0;
+  --bs-btn-active-bg: var(--cs-mint);
+  --bs-btn-active-color: var(--cs-green);
+  --bs-btn-active-border-color: #cbd8d0;
+  background: #fff;
+}
+
+.btn-submit {
+  padding: 0.8rem 1rem;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.btn-google {
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #cbd8d0;
+  --bs-btn-hover-bg: #f5f8f6;
+  --bs-btn-hover-border-color: #b3c5ba;
+  --bs-btn-color: var(--cs-ink);
+  --bs-btn-hover-color: var(--cs-ink);
+  --bs-btn-active-bg: #eef3ef;
+  --bs-btn-active-border-color: #b3c5ba;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.google-mark {
+  font: 700 20px Arial, sans-serif;
+  color: #4285f4;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 22px 0;
+  color: var(--cs-muted);
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  background: var(--cs-line);
+  flex: 1;
+}
+
+.auth-links {
+  color: var(--cs-muted);
+  font-size: 15px;
+}
+
+.auth-links a {
+  font-weight: 700;
+}
+
+.requirements {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+  font-size: 13px;
+}
+
+.requirements li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cs-muted);
+}
+
+.requirements li.met {
+  color: #16834f;
+}
+
+.requirements li.unmet {
+  color: #b23b30;
+}
+
+@media (max-width: 575.98px) {
+  .requirements {
+    grid-template-columns: 1fr;
+  }
+}
+
+.alert-icon {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+/* Template typography and the logo above the form. */
+body {
+  font-family: "DM Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+
+.auth-card h1,
+.auth-story h2 {
+  font-family: Manrope, "DM Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+.form-brand {
+  color: var(--cs-deep);
+  font-family: Manrope, "DM Sans", system-ui, sans-serif;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.form-brand:hover {
+  color: var(--cs-deep);
+}
+
+.form-brand img {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+}
+
+.form-brand small {
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--cs-muted);
+  opacity: 1;
+  max-width: 260px;
+  white-space: normal;
+}
+
+.story-bottom {
+  display: grid;
+  gap: 18px;
+}
+
+.story-quote {
+  font-family: Manrope, "DM Sans", system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+  color: #fff;
+  max-width: 460px;
+  padding-top: 18px;
+  border-top: 2px solid var(--cs-lime);
+}

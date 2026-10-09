@@ -15,8 +15,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("users", sa.Column("password_hash", sa.String(length=256), nullable=True))
+    op.add_column("field_users", sa.Column("password_hash", sa.String(length=256), nullable=True))
 
 
 def downgrade() -> None:
-    op.drop_column("users", "password_hash")
+    op.drop_column("field_users", "password_hash")

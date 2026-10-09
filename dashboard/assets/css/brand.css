@@ -1,0 +1,41 @@
+/* CS-IRCFS brand typography and logo for pages without the full dashboard theme
+   (report.html, simulator.html, backend-console.html). */
+body {
+  font-family: "DM Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+
+/* These pages set Georgia through font shorthands on many selectors; the brand heading face wins here. */
+h1,
+h2,
+h3 {
+  font-family: Manrope, "DM Sans", "Segoe UI", system-ui, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+
+.console-brand .brand-logo {
+  grid-row: span 2;
+  width: 38px;
+  height: 38px;
+}
+
+.report-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-home .brand-logo {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+}
