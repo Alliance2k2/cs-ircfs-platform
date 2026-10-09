@@ -48,7 +48,7 @@ function showEnglish(text) {
 /* ---------- USSD ---------- */
 async function ussdRequest() {
   const text = steps.join("*");
-  const response = await apiFetch("ussd?explain=true", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId, serviceCode: "*801#", phoneNumber: caller(), text }) });
+  const response = await apiFetch("simulator/ussd", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId, serviceCode: "*801#", phoneNumber: caller(), text }) });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.detail || `The USSD service answered ${response.status}`);
   return data;
@@ -119,7 +119,7 @@ async function sendSms(text) {
   bubble(text, "out");
   $("#sms-input").value = "";
   try {
-    const response = await apiFetch("sms/inbound", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: caller(), to: "8448", text }) });
+    const response = await apiFetch("simulator/sms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: caller(), to: "8448", text }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `The SMS service answered ${response.status}`);
     window.setTimeout(() => bubble(data.reply, "in"), 450);

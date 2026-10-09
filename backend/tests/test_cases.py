@@ -68,6 +68,7 @@ def test_area_scoped_principal_only_sees_cases_in_their_cells(client, district, 
     with session_factory() as session:
         account = session.scalar(select(PlatformAccount).where(PlatformAccount.email == "o@example.org"))
         account.role = UserRole.district_officer
+        account.status = "active"  # self-registered accounts wait for approval
         account.sectors = [session.get(Sector, district["sector_id"])]
         session.commit()
     token = client.post("/api/v1/auth/login", json={"email": "o@example.org", "password": "Str0ng!pass"}).json()["access_token"]

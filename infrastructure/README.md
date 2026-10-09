@@ -28,8 +28,8 @@ On every start, the platform container runs `alembic upgrade head` and then adds
 
 See [../ussd-sms/README.md](../ussd-sms/README.md). In short:
 
-- point the USSD service code at `https://<server>/api/v1/ussd`
-- point the SMS short code at `https://<server>/api/v1/sms/inbound`
+- point the USSD service code at `https://<server>/api/v1/ussd?token=<GATEWAY_CALLBACK_TOKEN>`
+- point the SMS short code at `https://<server>/api/v1/sms/inbound?token=<GATEWAY_CALLBACK_TOKEN>`
 - set `SMS_PROVIDER=africas_talking` (and `AIRTIME_PROVIDER` for rewards) with the account credentials
 
 Both callbacks need a public HTTPS address. Put the platform behind the district's reverse proxy, for example nginx or Caddy with a TLS certificate.

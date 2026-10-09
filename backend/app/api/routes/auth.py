@@ -43,6 +43,17 @@ def verify_password(password: str, encoded: str) -> bool:
         return False
 
 
+PENDING = "pending"
+
+
+def refuse_inactive(account: PlatformAccount) -> None:
+    """Stop a pending or suspended account from signing in, saying which it is."""
+    if account.status == PENDING:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Your account is waiting for approval by a district administrator")
+    if account.status != "active":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This account is suspended")
+
+
 def account_payload(account: PlatformAccount) -> dict:
     district_wide = account.role == UserRole.administrator or not account.sectors
     return {"id": account.id, "email": account.email, "full_name": account.full_name, "role": account.role, "status": account.status,
@@ -90,10 +101,12 @@ def register(payload: AccountRegister, db: Session = Depends(get_db)):
     if db.scalar(select(PlatformAccount).where(PlatformAccount.email == email)):
         raise HTTPException(409, "An account with this email already exists")
     full_name = " ".join(part for part in (payload.first_name, payload.middle_name, payload.surname) if part)
-    # Self-registration always starts with the least-privileged web role. An administrator
-    # promotes planners and officers from Platform Management > Accounts.
+    # Self-registration starts with the least-privileged web role and waits for approval:
+    # monitors can read field records, so an open sign-up must not grant access by itself.
+    # An administrator activates the account and promotes planners and officers from
+    # Platform Management > Accounts.
     account = PlatformAccount(email=email, password_hash=hash_password(payload.password), full_name=full_name,
-                              role=UserRole.citizen_science_monitor, status="active")
+                              role=UserRole.citizen_science_monitor, status=PENDING)
     db.add(account)
     db.commit()
     db.refresh(account)
@@ -104,8 +117,10 @@ def register(payload: AccountRegister, db: Session = Depends(get_db)):
 @limiter.limit("10/minute")
 def login(payload: AccountLogin, request: Request, response: Response, db: Session = Depends(get_db)):
     account = db.scalar(select(PlatformAccount).where(PlatformAccount.email == payload.email.strip().lower()))
-    if not account or account.status != "active" or not verify_password(payload.password, account.password_hash):
+    if not account or not verify_password(payload.password, account.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
+    # The status is only revealed to someone who knows the password.
+    refuse_inactive(account)
     session = start_session(db, account)
     set_session_cookie(response, session["access_token"])
     return session
@@ -131,12 +146,11 @@ def google_login(payload: GoogleLogin, response: Response, db: Session = Depends
     account = db.scalar(select(PlatformAccount).where(PlatformAccount.email == email))
     if not account:
         account = PlatformAccount(email=email, password_hash=hash_password(secrets.token_urlsafe(32)), full_name=claims.get("name") or email.split("@")[0],
-                                  role=UserRole.citizen_science_monitor, status="active")
+                                  role=UserRole.citizen_science_monitor, status=PENDING)
         db.add(account)
         db.commit()
         db.refresh(account)
-    if account.status != "active":
-        raise HTTPException(403, "This account is not active")
+    refuse_inactive(account)
     session = start_session(db, account)
     set_session_cookie(response, session["access_token"])
     return session

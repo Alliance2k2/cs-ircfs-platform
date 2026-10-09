@@ -16,6 +16,17 @@ services:
           property: connectionString
       - key: API_KEY_ROLES
         sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      # The dashboard is served by this service (same origin), so no cross-origin access.
+      - key: CORS_ORIGINS
+        value: ""
+      # Africa's Talking callback secret: https://<service>.onrender.com/api/v1/ussd?token=<value>
+      - key: GATEWAY_CALLBACK_TOKEN
+        generateValue: true
+      # Render's load balancer sets X-Forwarded-For; trust it so rate limits see real client addresses.
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
       # Field channels stay in dry-run (logged, not delivered) until Africa's Talking is configured.
       - key: SMS_PROVIDER
         value: dry_run

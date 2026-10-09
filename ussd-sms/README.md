@@ -12,6 +12,12 @@ A first-time caller is registered automatically as a farmer, keyed by phone numb
 
 Retried SMS deliveries (same Africa's Talking message `id`) are ignored, so a retry never creates a second report or reply.
 
+**Callback security.** Africa's Talking does not sign its callbacks, so each callback URL carries a shared secret: `?token=<GATEWAY_CALLBACK_TOKEN>`. Requests without it are refused with 403, and production refuses to start without one. `GATEWAY_ALLOWED_IPS` can additionally limit callbacks to the provider's addresses. Each phone number is limited to 30 messages a minute, counted in the database, so one runaway client cannot slow down everyone else.
+
+**Grievances stay anonymous in the logs too.** When a USSD session ends in a grievance, the phone number is removed from every logged step of that session; an `IKIBAZO` SMS and its reply are logged without the number.
+
+**Phone simulator.** The on-screen phone uses its own signed-in endpoints (`POST /api/v1/simulator/ussd` and `/simulator/sms`). Its records are marked `data_origin = simulator`, are left out of every figure, and nothing it does reaches a telecom provider, whatever `SMS_PROVIDER` and `AIRTIME_PROVIDER` say.
+
 ## USSD menu (Kinyarwanda first)
 
 The menu follows the design rules in Section 8.4:
@@ -49,8 +55,8 @@ Every report gets an immediate reply in Kinyarwanda. Rain and harvest reports al
 ## Africa's Talking setup
 
 1. Create an app at africastalking.com. Use the **sandbox** first: it is free and has a phone simulator.
-2. **USSD:** create a service code (sandbox: `*384*xxxx#`; production: request `*801#`). Set its callback URL to `https://<your-host>/api/v1/ussd`.
-3. **SMS:** create a short code or alphanumeric sender. Set the incoming-messages callback to `https://<your-host>/api/v1/sms/inbound`.
+2. **USSD:** create a service code (sandbox: `*384*xxxx#`; production: request `*801#`). Set its callback URL to `https://<your-host>/api/v1/ussd?token=<GATEWAY_CALLBACK_TOKEN>`.
+3. **SMS:** create a short code or alphanumeric sender. Set the incoming-messages callback to `https://<your-host>/api/v1/sms/inbound?token=<GATEWAY_CALLBACK_TOKEN>`.
 4. In `.env` (or `infrastructure/stack.env`) set:
    ```env
    SMS_PROVIDER=africas_talking

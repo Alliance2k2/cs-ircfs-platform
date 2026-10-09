@@ -64,6 +64,13 @@ class Settings(BaseSettings):
     bottleneck_category_min_counts: str = ""
     alert_phone_numbers: str = ""
     alert_min_priority: str = "critical"
+    # Gateway callbacks (USSD/SMS) are public URLs. Africa's Talking does not sign its
+    # callbacks, so the callback URLs carry a shared secret: configure them in the
+    # Africa's Talking dashboard as https://<host>/api/v1/ussd?token=<GATEWAY_CALLBACK_TOKEN>.
+    # Required in production. GATEWAY_ALLOWED_IPS optionally adds a comma-separated
+    # allow-list of the provider's callback addresses.
+    gateway_callback_token: str = ""
+    gateway_allowed_ips: str = ""
 
     # The project-root .env, found from this file so scripts work from any folder.
     model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore")
@@ -80,8 +87,7 @@ class Settings(BaseSettings):
     def guard_runtime(self) -> None:
         """Refuse to start a deployment that is misconfigured as a local development server.
 
-        Raises RuntimeError for the two combinations that must never reach production:
-        an unauthenticated API and a file-based database.
+        Raises RuntimeError for every combination that must never reach production.
         """
         if self.environment != "production":
             return
@@ -89,6 +95,13 @@ class Settings(BaseSettings):
             raise RuntimeError("ENVIRONMENT=production requires REQUIRE_API_KEY=true")
         if self.database_url.startswith("sqlite"):
             raise RuntimeError("ENVIRONMENT=production requires a PostgreSQL DATABASE_URL, not SQLite")
+        if not self.cookie_secure:
+            raise RuntimeError("ENVIRONMENT=production requires COOKIE_SECURE=true (sessions must only travel over HTTPS)")
+        local = [origin for origin in self.allowed_origins if "localhost" in origin or "127.0.0.1" in origin]
+        if local:
+            raise RuntimeError(f"ENVIRONMENT=production must not allow local CORS origins: {', '.join(local)}")
+        if len(self.gateway_callback_token.strip()) < 24:
+            raise RuntimeError("ENVIRONMENT=production requires GATEWAY_CALLBACK_TOKEN (at least 24 characters)")
 
     @property
     def dev_auth_bypass(self) -> bool:
@@ -104,6 +117,10 @@ class Settings(BaseSettings):
             if separator and category.strip() and value.strip().isdigit():
                 counts[category.strip()] = int(value)
         return counts
+
+    @property
+    def gateway_ips(self) -> set[str]:
+        return {item.strip() for item in self.gateway_allowed_ips.split(",") if item.strip()}
 
     @property
     def incentive_types(self) -> set[str]:

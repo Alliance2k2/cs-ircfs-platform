@@ -1,6 +1,8 @@
 """Outbound SMS and airtime through Africa's Talking, with a safe dry-run default."""
 import logging
 import re
+from contextlib import contextmanager
+from contextvars import ContextVar
 
 import httpx
 from sqlalchemy.orm import Session
@@ -10,6 +12,25 @@ from app.db.models import AdvisoryMessage
 
 logger = logging.getLogger(__name__)
 PHONE_PATTERN = re.compile(r"^\+?\d{9,15}$")
+WITHHELD = "withheld"  # same value as app.core.privacy.WITHHELD
+
+# Set while the phone simulator runs: nothing reaches a telecom provider, whatever the
+# SMS_PROVIDER and AIRTIME_PROVIDER settings say (staff alerts and rewards included).
+_simulating: ContextVar[bool] = ContextVar("simulating", default=False)
+
+
+@contextmanager
+def simulation():
+    """Run a block with all SMS and airtime forced to dry-run."""
+    token = _simulating.set(True)
+    try:
+        yield
+    finally:
+        _simulating.reset(token)
+
+
+def live(provider: str) -> bool:
+    return provider == "africas_talking" and not _simulating.get()
 
 
 def normalise_phone(value: str) -> str:
@@ -36,7 +57,7 @@ def api_base() -> str:
 def send_sms(phone_number: str, message: str) -> dict:
     """Send one SMS. Never raises: provider errors come back as status 'failed'."""
     settings = get_settings()
-    if settings.sms_provider != "africas_talking":
+    if not live(settings.sms_provider):
         return {"status": "dry_run", "detail": "SMS provider is not configured"}
     data = {"username": settings.africas_talking_username.strip(), "to": phone_number, "message": message}
     # Only send a sender ID once Africa's Talking has approved it; an unregistered one is rejected.
@@ -62,11 +83,16 @@ def send_sms(phone_number: str, message: str) -> dict:
         return {"status": "failed", "detail": "SMS provider rejected or did not answer the request"}
 
 
-def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id: int | None = None) -> AdvisoryMessage:
-    """Send an SMS and log it in advisory_messages. The caller commits."""
+def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id: int | None = None,
+            anonymous: bool = False) -> AdvisoryMessage:
+    """Send an SMS and log it in advisory_messages. The caller commits.
+
+    ``anonymous`` logs the message without the recipient's number, for replies that
+    would otherwise tie a phone to an anonymous grievance.
+    """
     result = send_sms(phone_number, message)
     record = AdvisoryMessage(
-        phone_number=phone_number, message=message, status=result["status"],
+        phone_number=WITHHELD if anonymous else phone_number, message=message, status=result["status"],
         provider_id=result.get("provider_id"), purpose=purpose, cell_id=cell_id,
     )
     db.add(record)
@@ -76,7 +102,7 @@ def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id:
 def send_airtime(phone_number: str, amount_rwf: int) -> dict:
     """Send an airtime top-up. Never raises: provider errors come back as status 'failed'."""
     settings = get_settings()
-    if settings.airtime_provider != "africas_talking":
+    if not live(settings.airtime_provider):
         return {"status": "dry_run", "detail": "Airtime provider is not configured"}
     try:
         response = httpx.post(

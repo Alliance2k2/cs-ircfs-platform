@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # make the `app` p
 from sqlalchemy import func, select  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
-from app.db.models import (Cell, CommunityFeedback, FeedbackStatusEvent, IncidentCase, IncidentEvent, InboundMessage,  # noqa: E402
+from app.db.models import (ORIGIN_DEMO, Cell, CommunityFeedback, FeedbackStatusEvent, IncidentCase, IncidentEvent, InboundMessage,  # noqa: E402
                            IrrigationScheme, NutritionSurvey, ReportStatus, Sector, FieldUser, UserRole)
 from app.db.session import SessionLocal  # noqa: E402
 from app.services.advisory import maybe_reward, nutrition_risk_score  # noqa: E402
@@ -83,6 +83,8 @@ def seed(db: Session) -> str:
 
     def stamp(record, days):
         record.created_at = ago(days)
+        if hasattr(record, "data_origin"):
+            record.data_origin = ORIGIN_DEMO  # labelled as demonstration data on every screen
         return record
 
     # Module 1: harvest forecasts, reported harvests, and pest/disease alerts.

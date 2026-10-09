@@ -79,6 +79,18 @@ SOURCE_INFRASTRUCTURE = "infrastructure"
 SOURCE_TYPES = (SOURCE_CROP, SOURCE_INFRASTRUCTURE)
 PRIORITIES = ("critical", "high", "medium")
 
+# Where a field record came from (migration 20261010_16). Dashboards count "field" and
+# "import" as evidence, label "demo" as demonstration data and leave "simulator" out.
+ORIGIN_FIELD = "field"
+ORIGIN_SIMULATOR = "simulator"
+ORIGIN_DEMO = "demo"
+ORIGIN_IMPORT = "import"
+DATA_ORIGINS = (ORIGIN_FIELD, ORIGIN_SIMULATOR, ORIGIN_DEMO, ORIGIN_IMPORT)
+
+
+def data_origin_column() -> Mapped[str]:
+    return mapped_column(String(12), default=ORIGIN_FIELD, server_default=ORIGIN_FIELD, index=True)
+
 
 class Sector(Base):
     __tablename__ = "sectors"
@@ -314,6 +326,7 @@ class InboundMessage(Base):
     reply: Mapped[str | None] = mapped_column(Text)
     record_type: Mapped[str | None] = mapped_column(String(40))
     record_id: Mapped[int | None] = mapped_column(Integer)
+    data_origin: Mapped[str] = data_origin_column()
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -328,6 +341,7 @@ class NutritionSurvey(Base):
     ate_protein_or_vegetables: Mapped[bool] = mapped_column(Boolean)
     food_sufficient: Mapped[bool] = mapped_column(Boolean)
     stunting_risk_score: Mapped[int] = mapped_column(Integer)
+    data_origin: Mapped[str] = data_origin_column()
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -362,6 +376,7 @@ class CitizenScienceLog(Base):
     pest_or_disease: Mapped[str | None] = mapped_column(String(120))
     severity: Mapped[int | None] = mapped_column(Integer)
     notes: Mapped[str | None] = mapped_column(Text)
+    data_origin: Mapped[str] = data_origin_column()
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -380,6 +395,7 @@ class IrrigationClimateLog(Base):
     bottleneck_category: Mapped[str | None] = mapped_column(String(30))
     fault_description: Mapped[str | None] = mapped_column(Text)
     rainfall_mm: Mapped[float | None] = mapped_column(Float)
+    data_origin: Mapped[str] = data_origin_column()
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -401,6 +417,7 @@ class CommunityFeedback(Base):
     assigned_to_field_user_id: Mapped[int | None] = mapped_column(ForeignKey("field_users.id"), index=True)
     due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     action_taken: Mapped[str | None] = mapped_column(Text)
+    data_origin: Mapped[str] = data_origin_column()
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

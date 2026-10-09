@@ -80,8 +80,8 @@ def test_grievance_reporter_is_never_stored(client, session_factory):
 
 def test_retry_with_same_session_records_once(client):
     payload = {"sessionId": "retry-1", "phoneNumber": "+250788000001", "text": "3*12"}
-    first = client.post("/api/v1/ussd?explain=true", json=payload).json()
-    retry = client.post("/api/v1/ussd?explain=true", json=payload).json()
+    first = client.post("/api/v1/simulator/ussd", json=payload).json()
+    retry = client.post("/api/v1/simulator/ussd", json=payload).json()
     assert retry["reply_status"] == "duplicate"
     assert retry["record_id"] == first["record_id"]
     assert len(client.get("/api/v1/irrigation-reports").json()) == 1

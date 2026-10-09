@@ -96,6 +96,7 @@ def auth(monkeypatch, client, session_factory):
         with session_factory() as session:
             account = session.scalar(select(PlatformAccount).where(PlatformAccount.email == email))
             account.role = role
+            account.status = "active"  # self-registered accounts wait for approval
             session.commit()
         token = client.post("/api/v1/auth/login", json={"email": email, "password": password}).json()["access_token"]
         return {"Authorization": f"Bearer {token}"}

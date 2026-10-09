@@ -108,6 +108,25 @@ async def request_logging(request: Request, call_next):
     return response
 
 
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+}
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Baseline browser protections on every response (see docs/security.md)."""
+    response = await call_next(request)
+    for header, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(header, value)
+    if settings.environment == "production":
+        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    return response
+
+
 @app.exception_handler(SQLAlchemyError)
 async def database_error_handler(_: Request, error: SQLAlchemyError):
     logger.exception("Database error", exc_info=error)

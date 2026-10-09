@@ -22,6 +22,9 @@ from app.services.references import validate_report_references
 router = APIRouter(prefix="/api/v1", tags=["reports"])
 reporter = Depends(require_roles(UserRole.farmer, UserRole.citizen_science_monitor, UserRole.cooperative_leader, UserRole.administrator))
 reader = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.cooperative_leader, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
+# Household nutrition answers are personal data: district staff only. Monitors use the
+# anonymised aggregate in /analytics/nutrition-summary.
+household_reader = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
 
 
 @router.post("/citizen-reports", response_model=CropReportRead, status_code=status.HTTP_201_CREATED)
@@ -69,6 +72,6 @@ def create_nutrition_survey(payload: NutritionSurveyCreate, db: Session = Depend
 
 
 @router.get("/nutrition-surveys", response_model=list[NutritionSurveyRead])
-def list_nutrition_surveys(db: Session = Depends(get_db), principal: Principal = reader) -> list[NutritionSurvey]:
+def list_nutrition_surveys(db: Session = Depends(get_db), principal: Principal = household_reader) -> list[NutritionSurvey]:
     cells = allowed_cells(db, principal)
     return list(db.scalars(select(NutritionSurvey).where(cell_filter(NutritionSurvey.cell_id, cells)).order_by(NutritionSurvey.id.desc())))

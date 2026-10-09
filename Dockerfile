@@ -13,4 +13,6 @@ COPY backend/scripts /app/backend/scripts
 COPY dashboard /app/dashboard
 
 WORKDIR /app/backend
-CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_reference_schemes.py && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# --proxy-headers: behind a load balancer, rate limits must see the real client address.
+# FORWARDED_ALLOW_IPS names the trusted proxy ("*" on Render, where only its proxy can reach the container).
+CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_reference_schemes.py && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-127.0.0.1}"]

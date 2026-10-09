@@ -10,14 +10,38 @@ def register(client, email="x@example.org", password="Str0ng!pass"):
     return client.post("/api/v1/auth/register", json={"email": email, "password": password, "first_name": "A", "surname": "B"})
 
 
+def activate(session_factory, email="x@example.org"):
+    with session_factory() as session:
+        session.scalar(select(PlatformAccount).where(PlatformAccount.email == email)).status = "active"
+        session.commit()
+
+
 def test_register_always_creates_citizen_science_monitor(client):
     response = register(client)
     assert response.status_code == 201
     assert response.json()["role"] == "citizen_science_monitor"
 
 
-def test_login_returns_token_and_sets_httponly_cookie(client):
+def test_registered_account_waits_for_approval(client, session_factory):
+    assert register(client).json()["status"] == "pending"
+    refused = client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"})
+    assert refused.status_code == 403
+    assert "approval" in refused.json()["detail"]
+    assert "set-cookie" not in refused.headers
+    activate(session_factory)
+    assert client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"}).status_code == 200
+
+
+def test_pending_status_is_not_revealed_without_the_password(client):
     register(client)
+    response = client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "wrong-password"})
+    assert response.status_code == 401
+    assert "approval" not in response.json()["detail"]
+
+
+def test_login_returns_token_and_sets_httponly_cookie(client, session_factory):
+    register(client)
+    activate(session_factory)
     response = client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"})
     assert response.status_code == 200
     assert response.json()["access_token"]

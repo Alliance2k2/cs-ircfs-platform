@@ -1,6 +1,6 @@
 # Data model
 
-The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261009_15`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
+The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261010_16`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
 
 ## Tables
 
@@ -20,12 +20,23 @@ The schema is created and changed **only** through Alembic migrations in `backen
 | `community_feedback_events` | feedback_id, previous/new status, action_taken | Feedback audit trail |
 | `incident_cases`, `incident_events` | source_type/source_id (crop or infrastructure), priority, status, assigned_to_account_id, deadline, action, reporter_notified_at | Act Now cases from severe pests and faulty or offline assets |
 | `nutrition_surveys` | reporter_id, cell_id, meals_per_day, ate_protein_or_vegetables, food_sufficient, **stunting_risk_score 1–5** | Household Nutrition Tracker |
-| `inbound_messages` | phone_number, channel (ussd/sms), session_id, text, reply, record_type, record_id | Every USSD step and SMS received, and what it created |
-| `advisory_messages` | phone_number, message, status (sent/dry_run/failed), **purpose** (auto_reply, advisory, irrigation_schedule, close_loop), cell_id | Every SMS sent to citizens |
+| `inbound_messages` | phone_number (`withheld` for grievance sessions), channel (ussd/sms), session_id, text, reply, record_type, record_id (empty for grievances) | Every USSD step and SMS received, and what it created |
+| `advisory_messages` | phone_number (`withheld` for grievance acknowledgements), message, status (sent/dry_run/failed), **purpose** (auto_reply, advisory, irrigation_schedule, close_loop), cell_id | Every SMS sent to citizens |
 | `incentive_rewards` | field_user_id, amount_rwf, reason, status | Airtime micro-bonuses |
 | `platform_accounts`, `auth_sessions` | email, role, status; SHA-256 token hash and expiry | Web sign-in for staff (never field users) |
 | `account_sectors` | account_id, sector_id | Area-level access: the sectors an account works in (none = whole district) |
 | `advice_runs` | week_key (Monday of week, Africa/Kigali), sector_id, recipients, status (sent/partial/dry_run/failed/queued) | Weekly automatic irrigation advice: one row per sector per week, guarantees idempotency |
+
+### Data origin
+
+`citizen_science_logs`, `irrigation_climate_logs`, `nutrition_surveys`, `community_feedback` and `inbound_messages` carry **`data_origin`** (migration `20261010_16`):
+
+| Value | Written by | Counted as evidence |
+| --- | --- | --- |
+| `field` | USSD/SMS gateway callbacks and staff API calls (default) | Yes |
+| `import` | Historical-data import scripts (reserved) | Yes, labelled as imported |
+| `demo` | `scripts/seed_demo_data.py` | Shown, with a "Demonstration data" label (`demo_mode` in the API) |
+| `simulator` | The on-screen phone simulator | No: left out of public and executive figures |
 
 ## Relationships
 
@@ -45,7 +56,7 @@ platform_accounts ↔ sectors (account_sectors)
 
 - Severity 4 creates a **high** case and severity 5 a **critical** case.
 - An `offline` asset creates a critical case and a `faulty` asset a high case.
-- An anonymous grievance stores the cell (so closing-the-loop SMS can reach the community) but never the reporter.
+- An anonymous grievance stores the cell (so closing-the-loop SMS can reach the community) but never the reporter. The message logs keep the grievance's USSD session and SMS acknowledgement without the phone number.
 - Stunting risk: 1 + 2 (one meal a day) or 1 (two meals) + 1 (no protein or vegetables) + 1 (not enough food), capped at 5.
 - Rainfall per sector: each gauge's 7-day total, averaged across the gauges in the sector.
 - A yield target cannot be saved without its source.
