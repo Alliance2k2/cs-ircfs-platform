@@ -9,10 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        forest: token("forest"),
+        forest: { DEFAULT: token("forest"), light: token("forest-light"), deep: token("forest-deep") },
         primary: { DEFAULT: token("primary"), strong: token("primary-strong") },
         fresh: token("fresh"),
         mint: token("mint"),
+        lime: token("lime"),
         canvas: token("canvas"),
         surface: token("surface"),
         ink: token("ink"),
@@ -21,6 +22,8 @@ export default {
         amber: { DEFAULT: token("amber"), soft: token("amber-soft") },
         critical: { DEFAULT: token("critical"), soft: token("critical-soft") },
         water: { DEFAULT: token("water"), soft: token("water-soft") },
+        violet: { DEFAULT: token("violet"), soft: token("violet-soft") },
+        teal: { DEFAULT: token("teal"), soft: token("teal-soft") },
       },
       fontFamily: {
         sans: ["DM Sans", "Segoe UI", "system-ui", "sans-serif"],

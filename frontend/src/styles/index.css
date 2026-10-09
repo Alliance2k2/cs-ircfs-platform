@@ -77,3 +77,24 @@
 .leaflet-tooltip.cs-tip {
   @apply rounded-control border-line px-3 py-2 text-xs text-ink shadow-raised;
 }
+
+/* Outside @layer on purpose: these names are built at runtime (tile-${accent}), so Tailwind
+   cannot see them in the source and would drop layered classes. */
+/* Gradient icon tiles, one per accent. Built from tokens only. */
+.tile {
+  @apply grid shrink-0 place-items-center rounded-[14px] text-white;
+}
+.tile-green { background: linear-gradient(135deg, rgb(var(--fresh)), rgb(var(--primary))); box-shadow: 0 8px 18px rgb(var(--primary) / 0.25); }
+.tile-blue { background: linear-gradient(135deg, rgb(var(--water) / 0.7), rgb(var(--water))); box-shadow: 0 8px 18px rgb(var(--water) / 0.25); }
+.tile-gold { background: linear-gradient(135deg, rgb(var(--amber-bright)), rgb(var(--amber))); box-shadow: 0 8px 18px rgb(var(--amber) / 0.25); }
+.tile-coral { background: linear-gradient(135deg, rgb(var(--critical-bright)), rgb(var(--critical))); box-shadow: 0 8px 18px rgb(var(--critical) / 0.25); }
+.tile-violet { background: linear-gradient(135deg, rgb(var(--violet) / 0.7), rgb(var(--violet))); box-shadow: 0 8px 18px rgb(var(--violet) / 0.25); }
+.tile-teal { background: linear-gradient(135deg, rgb(var(--teal) / 0.7), rgb(var(--teal))); box-shadow: 0 8px 18px rgb(var(--teal) / 0.25); }
+
+/* A soft wash in the card corner matching its tile. */
+.wash-green { background-image: radial-gradient(circle at 100% 100%, rgb(var(--mint)) 0, transparent 45%); }
+.wash-blue { background-image: radial-gradient(circle at 100% 100%, rgb(var(--water-soft)) 0, transparent 45%); }
+.wash-gold { background-image: radial-gradient(circle at 100% 100%, rgb(var(--amber-soft)) 0, transparent 45%); }
+.wash-coral { background-image: radial-gradient(circle at 100% 100%, rgb(var(--critical-soft)) 0, transparent 45%); }
+.wash-violet { background-image: radial-gradient(circle at 100% 100%, rgb(var(--violet-soft)) 0, transparent 45%); }
+.wash-teal { background-image: radial-gradient(circle at 100% 100%, rgb(var(--teal-soft)) 0, transparent 45%); }

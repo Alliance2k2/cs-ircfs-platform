@@ -2,6 +2,7 @@ import { Wrench } from "lucide-react";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useSession } from "@/app/providers/SessionProvider";
+import { AppFooter } from "@/components/navigation/AppFooter";
 import { Sidebar } from "@/components/navigation/Sidebar";
 import { TopBar } from "@/components/navigation/TopBar";
 import { useI18n } from "@/i18n";
@@ -25,9 +26,10 @@ export function AppLayout() {
             {t("banner.local")}
           </p>
         )}
-        <main id="main" className="mx-auto max-w-[1400px] px-4 pb-16 pt-6 sm:px-6">
+        <main id="main" className="mx-auto max-w-[1400px] px-4 pb-10 pt-6 sm:px-6">
           <Outlet />
         </main>
+        <AppFooter />
       </div>
     </div>
   );

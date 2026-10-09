@@ -7,10 +7,13 @@
 :root {
   /* Brand */
   --forest: 6 78 59;          /* #064E3B deep forest: navigation, headings on light */
+  --forest-light: 6 70 47;    /* sidebar gradient, top */
+  --forest-deep: 3 42 29;     /* sidebar gradient, bottom */
   --primary: 8 127 91;        /* #087F5B primary actions */
   --primary-strong: 6 95 70;  /* hover / pressed */
   --fresh: 66 184 131;        /* #42B883 positive accents */
   --mint: 223 244 231;        /* #DFF4E7 soft fills */
+  --lime: 215 245 110;        /* highlight on dark green only (matches the public website) */
 
   /* Surfaces and text */
   --canvas: 248 251 248;      /* #F8FBF8 warm white page background */
@@ -26,6 +29,14 @@
   --critical-soft: 252 233 231;
   --water: 26 104 142;        /* water and rainfall: #278AB8 darkened to reach 5.3:1 on its soft fill */
   --water-soft: 226 241 249;
+
+  /* Accents for icon tiles only (never for text): one hue per kind of figure */
+  --amber-bright: 217 152 40;   /* the brief's #D99828 */
+  --critical-bright: 217 84 77; /* the brief's #D9544D */
+  --violet: 110 76 196;
+  --violet-soft: 240 234 253;
+  --teal: 19 128 117;
+  --teal-soft: 225 245 243;
 
   /* Shape and depth */
   --radius-card: 16px;

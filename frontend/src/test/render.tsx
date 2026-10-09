@@ -2,18 +2,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router-dom";
+import { SessionContext, type Session } from "@/app/providers/SessionProvider";
 import { ROUTER_FUTURE } from "@/app/routing/future";
 import { I18nProvider, type Language } from "@/i18n";
 
 /** Render inside the app's providers, with a fresh query cache and no retries. */
-export function renderWithProviders(ui: ReactElement, { lang = "en", route = "/" }: { lang?: Language; route?: string } = {}) {
+const PLANNER: Session = { account: null, role: "district_planner", development: false };
+
+export function renderWithProviders(
+  ui: ReactElement,
+  { lang = "en", route = "/", session = PLANNER }: { lang?: Language; route?: string; session?: Session } = {},
+) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchInterval: false } } });
   return render(
     <QueryClientProvider client={client}>
       <I18nProvider initial={lang}>
-        <MemoryRouter initialEntries={[route]} future={ROUTER_FUTURE}>
-          {ui}
-        </MemoryRouter>
+        <SessionContext.Provider value={session}>
+          <MemoryRouter initialEntries={[route]} future={ROUTER_FUTURE}>
+            {ui}
+          </MemoryRouter>
+        </SessionContext.Provider>
       </I18nProvider>
     </QueryClientProvider>,
   );
