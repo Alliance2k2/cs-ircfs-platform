@@ -1,11 +1,14 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
 .venv/
 .env
 
 # Local database and coverage
 *.db
+*.sqlite
+*.sqlite3
 .coverage
 htmlcov/
 
@@ -18,3 +21,6 @@ backend/pytest-cache-files-*/
 backend/.pytest-tmp/
 .openai/
 infrastructure/stack.env
+
+# macOS
+.DS_Store

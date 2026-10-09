@@ -1,3 +1,4 @@
+"""FastAPI application: middleware, rate limiting, router registration, and dashboard hosting."""
 import logging
 import time
 import uuid
@@ -8,13 +9,34 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.routes import advisory, analytics, auth, cases, channels, community, feedback, geography, map_data, public, reference_data, reports, system, users
+from app.api.routes import (
+    advisory,
+    analytics,
+    auth,
+    calibration,
+    cases,
+    channels,
+    cooperatives,
+    feedback,
+    field_users,
+    geography,
+    map_data,
+    public,
+    reference_data,
+    reports,
+    schemes,
+    system,
+)
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.ratelimit import limiter
 from app.db.base import Base
 from app.db.session import engine
+from app.services import advice_scheduler
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -23,19 +45,33 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """Create tables only for local development; deployed databases use Alembic migrations."""
-    if settings.environment != "development" and settings.database_url.startswith("sqlite"):
-        raise RuntimeError("Deployment requires PostgreSQL")
-    if settings.environment != "development" and not settings.configured_api_keys:
-        logger.warning("No API keys configured; protected API endpoints will return 401")
+    """Validate configuration and prepare the database for local development only."""
+    settings.guard_runtime()
+    if settings.dev_auth_bypass:
+        logger.warning(
+            "DEVELOPMENT AUTH BYPASS ACTIVE: every request is treated as an administrator. "
+            "Set REQUIRE_API_KEY=true to require sign-in."
+        )
     if settings.environment == "development":
         # Convenience for a throwaway local database. Every other environment is managed
         # by Alembic (`alembic upgrade head`), which start-local.ps1 and the Dockerfile run.
         Base.metadata.create_all(bind=engine)
-    yield
+    scheduler_task = advice_scheduler.start(settings)
+    if scheduler_task is not None:
+        logger.info(
+            "Weekly advice scheduler enabled: %s at %s (Africa/Kigali)",
+            settings.advice_schedule_weekday, settings.advice_schedule_time,
+        )
+    try:
+        yield
+    finally:
+        if scheduler_task is not None:
+            scheduler_task.cancel()
 
 
-app = FastAPI(title=settings.app_name, version="0.3.0", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, version="0.4.0", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
@@ -45,18 +81,30 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(_: Request, __: RateLimitExceeded) -> JSONResponse:
+    return JSONResponse(status_code=429, content={"detail": "Too many requests. Please slow down."})
+
+
 @app.middleware("http")
 async def request_logging(request: Request, call_next):
     request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
     started = time.perf_counter()
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
-    # Dashboard assets change during local development; prevent the browser
-    # from reusing an older JavaScript bundle at the plain management URL.
+    # Dashboard assets change during local development; Vite content hashes handle
+    # production caching, so avoid the browser reusing an older bundle locally.
     if request.url.path.endswith((".html", ".js", ".css")):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         response.headers["Pragma"] = "no-cache"
-    logger.info("request_id=%s method=%s path=%s status=%s duration_ms=%.1f", request_id, request.method, request.url.path, response.status_code, (time.perf_counter() - started) * 1000)
+    logger.info(
+        "request_id=%s method=%s path=%s status=%s duration_ms=%.1f",
+        request_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        (time.perf_counter() - started) * 1000,
+    )
     return response
 
 
@@ -66,10 +114,30 @@ async def database_error_handler(_: Request, error: SQLAlchemyError):
     return JSONResponse(status_code=500, content={"detail": "Database operation failed"})
 
 
-for api_router in (system.router, auth.router, channels.router, advisory.router, users.router, reference_data.router, reports.router, community.router, cases.router, feedback.router, analytics.router, map_data.router, geography.router, public.router):
+for api_router in (
+    system.router,
+    auth.router,
+    channels.router,
+    advisory.router,
+    calibration.router,
+    cooperatives.router,
+    field_users.router,
+    schemes.router,
+    reference_data.router,
+    reports.router,
+    feedback.router,
+    cases.router,
+    analytics.router,
+    map_data.router,
+    geography.router,
+    public.router,
+):
     app.include_router(api_router)
 
 
-dashboard_dir = Path(__file__).resolve().parents[2] / "dashboard"
+# Production serves the built dashboard (dist); local development serves the source tree.
+_dashboard_source = Path(__file__).resolve().parents[2] / "dashboard"
+_dashboard_build = _dashboard_source / "dist"
+dashboard_dir = _dashboard_build if _dashboard_build.is_dir() else _dashboard_source
 if dashboard_dir.is_dir():
     app.mount("/", StaticFiles(directory=dashboard_dir, html=True), name="dashboard")

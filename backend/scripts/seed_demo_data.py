@@ -17,7 +17,7 @@ from sqlalchemy import func, select  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from app.db.models import (Cell, CommunityFeedback, FeedbackStatusEvent, IncidentCase, IncidentEvent, InboundMessage,  # noqa: E402
-                           IrrigationScheme, NutritionSurvey, ReportStatus, Sector, User, UserRole)
+                           IrrigationScheme, NutritionSurvey, ReportStatus, Sector, FieldUser, UserRole)
 from app.db.session import SessionLocal  # noqa: E402
 from app.services.advisory import maybe_reward, nutrition_risk_score  # noqa: E402
 from app.services.reporting import create_crop_report, create_irrigation_report  # noqa: E402
@@ -54,7 +54,7 @@ def ago(days: float) -> datetime:
 
 
 def seed(db: Session) -> str:
-    if db.scalar(select(func.count()).select_from(User).where(User.phone_number.like(f"{DEMO_PREFIX}%"))):
+    if db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.phone_number.like(f"{DEMO_PREFIX}%"))):
         return "Demonstration data already present; nothing added."
     rng = random.Random(2026)
     if not db.scalar(select(func.count()).select_from(Cell)):
@@ -68,17 +68,17 @@ def seed(db: Session) -> str:
             scheme.baseline_yield_target_tons, scheme.baseline_source = target, DEMO_TARGET_SOURCE
     db.flush()
 
-    users: list[tuple[User, str]] = []
+    users: list[tuple[FieldUser, str]] = []
     names = iter(NAMES)
     for coop_index, (coop, sector_name, scheme_prefix, _) in enumerate(COOPERATIVES):
         cells = list(db.scalars(select(Cell).join(Sector).where(Sector.name == sector_name).order_by(Cell.name)))
         for member in range(8):
             role = UserRole.cooperative_leader if member == 0 else UserRole.citizen_science_monitor if member in (1, 2) else UserRole.farmer
-            user = User(phone_number=f"{DEMO_PREFIX}{coop_index}{member}", full_name=next(names), role=role, cooperative_name=coop,
+            user = FieldUser(phone_number=f"{DEMO_PREFIX}{coop_index}{member}", full_name=next(names), role=role, cooperative_name=coop,
                         cell_id=cells[member % len(cells)].id if cells else None, created_at=ago(40 - member))
             db.add(user)
             users.append((user, scheme_prefix))
-    db.add(User(phone_number=f"{DEMO_PREFIX}99", full_name="Demo District Planner", role=UserRole.district_planner))
+    db.add(FieldUser(phone_number=f"{DEMO_PREFIX}99", full_name="Demo District Planner", role=UserRole.district_planner))
     db.flush()
 
     def stamp(record, days):

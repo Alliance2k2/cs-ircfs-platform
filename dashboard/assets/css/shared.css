@@ -13,9 +13,9 @@
 .user-signin { background: #123d31; color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 99px; font-size: 12px; font-weight: 800; }
 
 .toast-host { position: fixed; right: 18px; bottom: 18px; z-index: 3000; display: grid; gap: 8px; max-width: min(380px, calc(100vw - 32px)); }
-.toast { background: #123d31; color: #fff; padding: 12px 15px; border-radius: 10px; box-shadow: 0 12px 30px rgba(18, 61, 49, .25); font-size: 13px; animation: toast-in .25s ease-out; transition: opacity .4s, transform .4s; }
-.toast.success { background: #167052; } .toast.error { background: #a83f36; } .toast.warn { background: #9b6713; }
-.toast.leaving { opacity: 0; transform: translateY(8px); }
+.cs-toast { background: #123d31; color: #fff; padding: 12px 15px; border-radius: 10px; box-shadow: 0 12px 30px rgba(18, 61, 49, .25); font-size: 13px; animation: toast-in .25s ease-out; transition: opacity .4s, transform .4s; }
+.cs-toast.success { background: #167052; } .cs-toast.error { background: #a83f36; } .cs-toast.warn { background: #9b6713; }
+.cs-toast.leaving { opacity: 0; transform: translateY(8px); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
 
 /* Shared dialog look */
@@ -35,5 +35,5 @@ dialog.cs-dialog::backdrop { background: #102c27a8; }
 .history-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 150px; overflow: auto; }
 .history-list li { font-size: 12px; color: #4c635a; border-left: 3px solid #cfe3d7; padding: 3px 0 3px 9px; }
 
-@media (prefers-reduced-motion: reduce) { .toast { transition: none; animation: none; } }
+@media (prefers-reduced-motion: reduce) { .cs-toast { transition: none; animation: none; } }
 @media (max-width: 620px) { .user-meta { display: none; } }

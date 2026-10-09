@@ -4,6 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CS-IRCFS | Monthly report</title>
+<meta name="theme-color" content="#073e2b" />
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+<link rel="manifest" href="site.webmanifest" />
+<link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+<link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="assets/css/fonts.css" />
+<link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+<link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+<link rel="stylesheet" href="assets/css/brand.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
 <style>
 :root{--deep:#072b25;--green:#0b6b52;--bar:#2f8f6d;--ink:#17302a;--muted:#5d736b;--line:#dbe6df;--soft:#f3f7f4;--warn:#fff6e3}
 *{box-sizing:border-box}
@@ -57,20 +69,33 @@ footer.report{margin-top:28px;padding-top:10px;border-top:1px solid var(--line);
 }
 </style>
 </head>
-<body>
-<div class="toolbar">
-  <a href="index.html">⌂ Home</a>
-  <a href="planner.html">← Dashboard</a>
-  <span class="spacer"></span>
-  <label>Month <input type="month" id="month"></label>
-  <button type="button" id="print">Print / Save as PDF</button>
+<body data-page="report">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow">BUGESERA DISTRICT · MONTHLY FIELD REPORT</p>
+              <h1>Monthly field report</h1>
+              <p>Every report received by USSD *801#, SMS 8448 and the web, summarised for district meetings. Counts only, no personal data.</p>
+            </div>
+            <div class="header-actions toolbar"><label>Month <input type="month" id="month"></label>
+  <button type="button" id="print">Print / Save as PDF</button></div>
+          </header>
+          <div class="page">
+  <div id="report"><p class="status">Loading the report…</p></div>
 </div>
 
-<main class="page">
-  <div id="report"><p class="status">Loading the report…</p></div>
-</main>
-
-<script src="shared.js?v=20261007"></script>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+<script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/shared.js?v=20261010"></script>
+<script src="assets/js/app-shell.js?v=20261011"></script>
 <script>
 (() => {
   const { apiJson, escapeHtml } = window.CS;
@@ -146,6 +171,13 @@ footer.report{margin-top:28px;padding-top:10px;border-top:1px solid var(--line);
         r.schemes.map((s) => [[`<b>${escapeHtml(s.name)}</b>${s.is_active ? "" : " <small>(reference)</small>"}${s.target_tons ? `<br><small>Target ${fmt(s.target_tons, 1)} t</small>` : ""}`],
           [fmt(s.crop_reports), "num"], [fmt(s.expected_tons, 1), "num"], [fmt(s.reported_tons, 1), "num"], [fmt(s.severe_pest_reports), "num"], [fmt(s.asset_faults), "num"],
           [Object.entries(s.bottlenecks).map(([c, n]) => `<span class="chip">${escapeHtml(c)} ${n}</span>`).join("") || "–"], [fmt(s.grievances), "num"]]))}
+
+      <h2>Cooperative participation</h2>
+      ${table([["Cooperative"], ["Sector"], ["Members", "num"], ["Data Champions", "num"], ["Reports", "num"], ["Active reporters", "num"], ["Last report"]],
+        (r.cooperatives || []).map((c) => [[`<b>${escapeHtml(c.name)}</b>${c.is_pilot ? ' <span class="chip">pilot</span>' : ""}`], [escapeHtml(c.sector || "–")],
+          [fmt(c.members), "num"], [fmt(c.data_champions), "num"], [fmt(c.reports_total), "num"], [fmt(c.active_reporters), "num"],
+          [c.last_report_at ? new Date(c.last_report_at).toLocaleDateString("en-GB") : "never"]]))}
+      ${(r.cooperatives || []).length ? `<p class="meta">Ranked by reports this month for the Inteko z'Abaturage meeting. Reports come from members' USSD and SMS records.</p>` : ""}
 
       <div class="two">
         <section>

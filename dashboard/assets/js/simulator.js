@@ -2,7 +2,7 @@
 const { apiFetch, apiJson, escapeHtml, toast } = window.CS;
 const $ = (selector) => document.querySelector(selector);
 const RECORD_LABEL = { crop_report: "Crop report", irrigation_report: "Water / infrastructure report", community_feedback: "Anonymous grievance", nutrition_survey: "Nutrition survey", location: "Caller location" };
-const RECORD_LINK = { crop_report: "planner.html#act-now", irrigation_report: "planner.html#advice", community_feedback: "planner.html#feedback", nutrition_survey: "planner.html#food" };
+const RECORD_LINK = { crop_report: "act-now.html", irrigation_report: "advice.html", community_feedback: "feedback.html", nutrition_survey: "nutrition.html" };
 
 let channel = "ussd";
 let sessionId = null;
@@ -17,7 +17,7 @@ function tickClock() {
 
 async function loadCallers() {
   try {
-    const users = await apiJson("users");
+    const users = await apiJson("field-users");
     const select = $("#caller-select");
     const priority = { citizen_science_monitor: 0, cooperative_leader: 1, farmer: 2 };
     const callers = users.filter((user) => user.is_active).sort((a, b) => (priority[a.role] ?? 9) - (priority[b.role] ?? 9) || Number(!a.cell_id) - Number(!b.cell_id));

@@ -1,15 +1,21 @@
+"""Authentication for web dashboard staff (platform accounts).
+
+Sign-in sets an httpOnly session cookie for browsers and also returns the bearer token
+for API clients. Logout clears the cookie and deletes the stored session.
+"""
 import hashlib
 import hmac
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.security import account_for_token, hash_token, require_roles
+from app.core.ratelimit import limiter
+from app.core.security import SESSION_COOKIE, account_for_token, hash_token, require_roles
 from app.db.models import AuthSession, PlatformAccount, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import AccountLogin, AccountRead, AccountRegister, AccountUpdate
@@ -51,8 +57,25 @@ def start_session(db: Session, account: PlatformAccount) -> dict:
     return {"access_token": token, "token_type": "bearer", "expires_at": expires_at, "account": account_payload(account)}
 
 
+def set_session_cookie(response: Response, token: str) -> None:
+    settings = get_settings()
+    response.set_cookie(
+        SESSION_COOKIE,
+        token,
+        max_age=settings.session_hours * 3600,
+        httponly=True,
+        samesite="lax",
+        secure=settings.cookie_secure,
+        path="/",
+    )
+
+
 def bearer(authorization: str | None) -> str:
     return authorization[7:].strip() if authorization and authorization.lower().startswith("bearer ") else ""
+
+
+def request_token(authorization: str | None, cookie: str | None) -> str:
+    return bearer(authorization) or (cookie or "")
 
 
 @router.get("/config")
@@ -71,20 +94,25 @@ def register(payload: AccountRegister, db: Session = Depends(get_db)):
     # promotes planners and officers from Platform Management > Accounts.
     account = PlatformAccount(email=email, password_hash=hash_password(payload.password), full_name=full_name,
                               role=UserRole.citizen_science_monitor, status="active")
-    db.add(account); db.commit(); db.refresh(account)
+    db.add(account)
+    db.commit()
+    db.refresh(account)
     return {"id": account.id, "email": account.email, "status": account.status, "role": account.role}
 
 
 @router.post("/login")
-def login(payload: AccountLogin, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(payload: AccountLogin, request: Request, response: Response, db: Session = Depends(get_db)):
     account = db.scalar(select(PlatformAccount).where(PlatformAccount.email == payload.email.strip().lower()))
     if not account or account.status != "active" or not verify_password(payload.password, account.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
-    return start_session(db, account)
+    session = start_session(db, account)
+    set_session_cookie(response, session["access_token"])
+    return session
 
 
 @router.post("/google")
-def google_login(payload: GoogleLogin, db: Session = Depends(get_db)):
+def google_login(payload: GoogleLogin, response: Response, db: Session = Depends(get_db)):
     client_id = get_settings().google_client_id.strip()
     if not client_id:
         raise HTTPException(503, "Google sign-in is not configured")
@@ -104,26 +132,33 @@ def google_login(payload: GoogleLogin, db: Session = Depends(get_db)):
     if not account:
         account = PlatformAccount(email=email, password_hash=hash_password(secrets.token_urlsafe(32)), full_name=claims.get("name") or email.split("@")[0],
                                   role=UserRole.citizen_science_monitor, status="active")
-        db.add(account); db.commit(); db.refresh(account)
+        db.add(account)
+        db.commit()
+        db.refresh(account)
     if account.status != "active":
         raise HTTPException(403, "This account is not active")
-    return start_session(db, account)
+    session = start_session(db, account)
+    set_session_cookie(response, session["access_token"])
+    return session
 
 
 @router.get("/me")
-def me(authorization: str | None = Header(default=None), db: Session = Depends(get_db)):
-    account = account_for_token(db, bearer(authorization))
+def me(authorization: str | None = Header(default=None), session_cookie: str | None = Cookie(default=None, alias=SESSION_COOKIE), db: Session = Depends(get_db)):
+    account = account_for_token(db, request_token(authorization, session_cookie))
     if not account:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Sign in required")
+    if account.status != "active":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This account is suspended")
     return account_payload(account)
 
 
 @router.post("/logout")
-def logout(authorization: str | None = Header(default=None), db: Session = Depends(get_db)):
-    token = bearer(authorization)
+def logout(response: Response, authorization: str | None = Header(default=None), session_cookie: str | None = Cookie(default=None, alias=SESSION_COOKIE), db: Session = Depends(get_db)):
+    token = request_token(authorization, session_cookie)
     if token:
         db.execute(delete(AuthSession).where(AuthSession.token_hash == hash_token(token)))
         db.commit()
+    response.delete_cookie(SESSION_COOKIE, path="/")
     return {"ok": True}
 
 
@@ -148,5 +183,6 @@ def update_account(account_id: int, payload: AccountUpdate, db: Session = Depend
         if len(sectors) != len(set(payload.sector_ids)):
             raise HTTPException(422, "Unknown sector")
         account.sectors = sectors
-    db.commit(); db.refresh(account)
+    db.commit()
+    db.refresh(account)
     return account

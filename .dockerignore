@@ -8,3 +8,5 @@
 backend/test-temp-local
 backend/pytest-cache-files-*
 dashboard/*preview.png
+dashboard/node_modules
+dashboard/dist

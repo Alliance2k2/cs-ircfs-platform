@@ -20,7 +20,7 @@ flowchart TD
 | --- | --- | --- |
 | USSD / SMS gateway | Africa's Talking-format callbacks; Kinyarwanda menu; keyword parser; dry-run until credentials are set | `services/ussd.py`, `services/sms_keywords.py`, `routes/channels.py` |
 | Central database | PostgreSQL/PostGIS, Alembic migrations 01–08 | `db/models.py`, `migrations/` |
-| Web dashboard with Leaflet | Planner dashboard with switchable map layers | `dashboard/planner.html`, `app.js` |
+| Web dashboard with Leaflet | Planner dashboard with switchable map layers | `dashboard/planner.html`, `dashboard/assets/js/app.js` |
 | **Module 1** Crowdsourced Yield Forecaster | USSD option 1 / `UMUSARURO`; scheme performance compares reported (or forecast) harvest with the scheme's yield target | `analytics/scheme-performance` |
 | SMS Pest/Disease Alert | `NZANA` / `INDWARA` keywords, USSD option 2; pest **heatmap** layer; severity 4–5 creates an Act Now case | `analytics/pest-heatmap` |
 | Household Nutrition Tracker | USSD option 6 (3 questions) gives a stunting-risk score of 1–5, by cell | `nutrition_surveys`, `analytics/nutrition-summary` |
@@ -31,9 +31,9 @@ flowchart TD
 | Closing-the-Loop SMS | After resolution: preview, then SMS to every registered person in the affected cell | `feedback/{id}/notify-cell`, `cases/{id}/notify-cell` |
 | Objective 2 bottleneck auto-flag | A category recurring 3 or more times in 90 days is flagged per scheme | `analytics/scheme-performance` |
 | §8.1 Zero-cost and airtime incentive | 100 RWF airtime on every 3rd weather/infrastructure report (configurable); reverse-billing is an aggregator setting | `services/advisory.py` (`maybe_reward`) |
-| §8.2 Cooperative Data Champions | Roles `cooperative_leader` and `citizen_science_monitor`; cooperative name on every user | `users` |
+| §8.2 Cooperative Data Champions | Roles `cooperative_leader` and `citizen_science_monitor`; cooperative name on every field user | `field_users` |
 | §8.3 Local Insights broadcasts | Every harvest or rain report is answered with that sector's irrigation tip | `local_tip()` |
-| §8.4 Kinyarwanda first, numeric, ≤3 levels | Every USSD screen in Kinyarwanda; numeric choices; dashboard EN/RW switch | `ussd.py`, `shared.js` |
+| §8.4 Kinyarwanda first, numeric, ≤3 levels | Every USSD screen in Kinyarwanda; numeric choices; dashboard EN/RW switch | `ussd.py`, `dashboard/assets/js/shared.js` |
 | §5 Docker handover | Dockerfile; `infrastructure/docker-compose.yml` with PostGIS; operations guide | `infrastructure/` |
 | §9.1 Yield benchmarking | `irrigation_schemes.baseline_yield_target_tons` plus its source, editable in Management | Management → Irrigation schemes |
 | §9.2 Calibrated thresholds | `DRY_SPELL_THRESHOLD_MM`, `WET_SPELL_THRESHOLD_MM` settings, to calibrate from PADAB/APEFA records | `.env` |

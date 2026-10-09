@@ -65,7 +65,7 @@
     "nav.map": ["Map & observations", "Ikarita n'ibyagaragaye"], "nav.feedback": ["Community feedback", "Ibitekerezo by'abaturage"],
     "nav.simulator": ["Phone simulator", "Igerageza rya telefoni"], "nav.management": ["Platform management", "Gucunga urubuga"],
     "nav.dashboard": ["Planner dashboard", "Imbonerahamwe y'igenamigambi"], "nav.console": ["Technical console", "Ibya tekiniki"],
-    "data.source": ["Data source", "Inkomoko y'amakuru"], "data.demo": ["DEMONSTRATION DATA", "AMAKURU Y'IGERAGEZA"],
+    "data.source": ["Data source", "Inkomoko y'amakuru"], "data.offline": ["NOT CONNECTED", "NTIHUJWE"], "data.signin": ["SIGN IN REQUIRED", "INJIRA MBERE"],
     "data.live": ["LIVE DATABASE", "AMAKURU NYAYO"], "data.connect": ["Connect live data", "Huza n'amakuru nyayo"],
     "greet.morning": ["Good morning", "Mwaramutse"], "greet.afternoon": ["Good afternoon", "Mwiriwe"], "greet.evening": ["Good evening", "Mwiriwe"],
     "greet.planner": ["Planner", "Mugenamigambi"],
@@ -120,7 +120,7 @@
     let host = document.querySelector(".toast-host");
     if (!host) { host = document.createElement("div"); host.className = "toast-host"; host.setAttribute("aria-live", "polite"); document.body.append(host); }
     const item = document.createElement("div");
-    item.className = `toast ${kind}`;
+    item.className = `cs-toast ${kind}`;
     item.textContent = message;
     host.append(item);
     window.setTimeout(() => item.classList.add("leaving"), 4200);

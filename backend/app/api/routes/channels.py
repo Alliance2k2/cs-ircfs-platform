@@ -4,20 +4,22 @@ Configure in the Africa's Talking dashboard (sandbox or live):
     USSD callback URL:   https://<host>/api/v1/ussd
     SMS callback URL:    https://<host>/api/v1/sms/inbound
 
-The callbacks are public because the telecom aggregator calls them directly.
+The callbacks are public because the telecom aggregator calls them directly, so they
+carry a per-IP rate limit.
 """
 import json
 from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse
-from sqlalchemy import select, true
+from sqlalchemy import true, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.core.ratelimit import limiter
 from app.core.scope import allowed_cells, cell_filter
 from app.core.security import Principal, require_roles
-from app.db.models import AdvisoryMessage, IncentiveReward, InboundMessage, User, UserRole
+from app.db.models import AdvisoryMessage, FieldUser, IncentiveReward, InboundMessage, UserRole
 from app.db.session import get_db
 from app.services import sms_keywords, ussd
 from app.services.reporting import find_or_register_user
@@ -47,6 +49,7 @@ def caller(fields: dict[str, str], key: str) -> str:
 
 
 @router.post("/ussd")
+@limiter.limit("30/minute")
 async def ussd_callback(request: Request, explain: bool = Query(default=False), db: Session = Depends(get_db)):
     """One USSD keypress. Returns plain text 'CON …' or 'END …' as Africa's Talking expects.
 
@@ -56,9 +59,20 @@ async def ussd_callback(request: Request, explain: bool = Query(default=False), 
     fields = await read_fields(request)
     phone = caller(fields, "phoneNumber")
     text = fields.get("text", "")
+    session_id = fields.get("sessionId")
+    # A gateway retry repeats the same sessionId and text. Replay the stored reply instead
+    # of recording the report a second time.
+    if session_id:
+        earlier = db.scalar(select(InboundMessage).where(
+            InboundMessage.channel == "ussd", InboundMessage.session_id == session_id, InboundMessage.text == (text or "(dial)")).limit(1))
+        if earlier is not None:
+            if explain:
+                return {"response": earlier.reply, "english": "", "record_type": earlier.record_type, "record_id": earlier.record_id,
+                        "service_code": get_settings().ussd_service_code, "reply_status": "duplicate"}
+            return PlainTextResponse(earlier.reply or "")
     user = find_or_register_user(db, phone)
     result = ussd.handle(db, user, text)
-    db.add(InboundMessage(phone_number=phone, channel="ussd", session_id=fields.get("sessionId"), text=text or "(dial)",
+    db.add(InboundMessage(phone_number=phone, channel="ussd", session_id=session_id, text=text or "(dial)",
                           reply=result.response, record_type=result.record_type, record_id=result.record_id))
     db.commit()
     if explain:
@@ -68,6 +82,7 @@ async def ussd_callback(request: Request, explain: bool = Query(default=False), 
 
 
 @router.post("/sms/inbound")
+@limiter.limit("30/minute")
 async def sms_callback(request: Request, db: Session = Depends(get_db)):
     """An SMS sent by a citizen to the keyword short code. The reply is sent back by SMS."""
     fields = await read_fields(request)
@@ -94,7 +109,7 @@ def channel_activity(limit: int = Query(default=30, ge=1, le=200), db: Session =
     """Latest inbound USSD/SMS, outbound SMS, and airtime rewards, for the live feed."""
     area = allowed_cells(db, principal)
     # Inbound messages carry no cell: an area-limited person sees messages from phones registered in their area.
-    phones = select(User.phone_number).where(User.cell_id.in_(area)) if area is not None else None
+    phones = select(FieldUser.phone_number).where(FieldUser.cell_id.in_(area)) if area is not None else None
     inbound = db.scalars(select(InboundMessage).where(InboundMessage.phone_number.in_(phones) if phones is not None else true())
                          .order_by(InboundMessage.id.desc()).limit(limit))
     outbound = db.scalars(select(AdvisoryMessage).where(cell_filter(AdvisoryMessage.cell_id, area)).order_by(AdvisoryMessage.id.desc()).limit(limit))

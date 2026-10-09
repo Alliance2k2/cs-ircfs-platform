@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CS-IRCFS irrigation scheduling assistant: rain-gauge advice by sector." />
+    <title>CS-IRCFS | Irrigation advice</title>
+    <meta name="theme-color" content="#073e2b" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/overrides.css?v=20261006" />
+    <link rel="stylesheet" href="assets/css/shared.css?v=20261008-bs" />
+    <link rel="stylesheet" href="assets/css/planner-extra.css?v=20261012" />
+    <link rel="stylesheet" href="assets/css/dashboard-theme.css?v=20261011" />
+    <link rel="stylesheet" href="assets/css/app-shell.css?v=20261011" />
+  </head>
+  <body data-page="advice">
+    <div class="app-layout">
+      <aside class="app-sidebar" data-app-sidebar></aside>
+      <div class="app-main">
+        <header class="app-topbar" data-app-topbar></header>
+        <main class="app-content">
+          <div id="connection-notice" class="connection-notice" role="status" hidden></div>
+          <header class="app-hero compact">
+            <div class="app-hero-copy">
+              <p class="eyebrow" data-i18n="advice.eyebrow">IRRIGATION SCHEDULING ASSISTANT</p>
+              <h1 data-i18n="advice.title">Irrigation advice by sector</h1>
+              <p data-i18n="advice.sub">Seven-day rain-gauge totals become SMS advice for cooperatives.</p>
+              <div class="app-hero-stats"><div><b id="stat-dry">–</b><span>irrigate more</span></div><div><b id="stat-normal">–</b><span>normal schedule</span></div><div><b id="stat-wet">–</b><span>reduce irrigation</span></div><div><b id="stat-nodata">–</b><span>no readings</span></div></div>
+            </div>
+            <div class="header-actions"><button id="send-advice" type="button" data-planner-only class="app-hero-link"><i class="bi bi-send" aria-hidden="true"></i> <span data-i18n="advice.send">Send advice to cooperatives</span></button></div>
+          </header>
+
+          <div class="content-grid">
+            <section class="panel advice-panel">
+              <div class="panel-heading compact"><div><h2>This week's advice</h2><p class="subtle">Driest sectors first. Each row is the SMS cooperatives in that sector receive.</p></div></div>
+              <p id="weekly-advice-status" class="data-note">Automatic send: checking…</p>
+              <div id="advice-list" class="advice-list"></div>
+            </section>
+            <section class="panel advice-rules">
+              <div class="panel-heading compact"><div><h2>How advice is decided</h2><p class="subtle">Seven-day rainfall per sector, averaged across its rain gauges.</p></div></div>
+              <ul class="rule-list">
+                <li class="dry"><b>Irrigate more</b><span>Below the dry-spell threshold: increase irrigation cycles.</span></li>
+                <li class="normal"><b>Normal schedule</b><span>Between the thresholds: keep the usual schedule.</span></li>
+                <li class="wet"><b>Reduce irrigation</b><span>Above the wet-spell threshold: save water and pumping costs.</span></li>
+                <li class="none"><b>No readings</b><span>No gauge reported this week. Monitors text <code>IMVURA &lt;mm&gt;</code> or use *801# option 3.</span></li>
+              </ul>
+              <p class="data-note">Thresholds are set by the district in the platform settings (DRY_SPELL_THRESHOLD_MM and WET_SPELL_THRESHOLD_MM).</p>
+            </section>
+          </div>
+        </main>
+        <footer class="app-footer" data-app-footer></footer>
+      </div>
+    </div>
+    <div class="app-backdrop" data-app-backdrop hidden></div>
+    <dialog id="advice-dialog" class="cs-dialog"><div class="dialog-body">
+      <p class="eyebrow">IRRIGATION SCHEDULING ASSISTANT</p>
+      <h2>Send irrigation advice</h2>
+      <div id="advice-preview"></div>
+      <p id="advice-message" class="dialog-note" role="status"></p>
+      <div class="dialog-actions"><button type="button" id="advice-cancel">Cancel</button><button type="button" id="advice-confirm" class="primary">Send SMS now</button></div>
+    </div></dialog>
+
+    <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/shared.js?v=20261010"></script>
+    <script src="assets/js/app-shell.js?v=20261011"></script>
+    <script src="assets/js/app.js?v=20261011"></script>
+  </body>
+</html>

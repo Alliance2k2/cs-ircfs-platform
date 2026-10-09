@@ -33,12 +33,15 @@ try {
 
     if ($Demo -or $ResetDemo) {
         $DemoDatabase = Join-Path $BackendRoot "demo.db"
-        if ($ResetDemo -and (Test-Path $DemoDatabase)) { Remove-Item $DemoDatabase -Confirm:$false }
+        # Always delete the demo database so migrations start clean.
+        # The demo database holds invented data only — nothing is lost.
+        if (Test-Path $DemoDatabase) { Remove-Item $DemoDatabase -Confirm:$false }
         # Environment variables override .env for this window only.
         $env:DATABASE_URL = "sqlite:///" + ($DemoDatabase -replace "\\", "/")
         $env:ENVIRONMENT = "development"
         $env:REQUIRE_API_KEY = "false"
-        python -c "from app.db.base import Base; from app.db.session import engine; import app.db.models; Base.metadata.create_all(engine)"
+        python -m alembic upgrade head
+        if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         python scripts/seed_demo_data.py
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         Write-Host "DEMONSTRATION MODE: invented data in backend/demo.db. Everyone has full access; do not use for real records." -ForegroundColor Magenta

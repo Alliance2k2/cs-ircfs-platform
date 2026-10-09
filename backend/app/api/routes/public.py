@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.db.models import Cell, CitizenScienceLog, InboundMessage, IrrigationClimateLog, IrrigationScheme, Sector, User, UserRole
+from app.db.models import Cell, CitizenScienceLog, FieldUser, InboundMessage, IrrigationClimateLog, IrrigationScheme, Sector, UserRole
 from app.db.session import get_db
 from app.services.advisory import sector_schedule
 
@@ -54,8 +54,8 @@ def public_overview(db: Session = Depends(get_db)) -> dict:
     return {
         "reports": count(select(func.count()).select_from(CitizenScienceLog)) + count(select(func.count()).select_from(IrrigationClimateLog)),
         "field_messages": count(select(func.count()).select_from(InboundMessage)),
-        "farmers": count(select(func.count()).select_from(User).where(User.role == UserRole.farmer)),
-        "monitors": count(select(func.count()).select_from(User).where(User.role == UserRole.citizen_science_monitor)),
+        "farmers": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer)),
+        "monitors": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.citizen_science_monitor)),
         "active_schemes": count(select(func.count()).select_from(IrrigationScheme).where(IrrigationScheme.is_active.is_(True))),
         "sectors_reporting": count(select(func.count()).select_from(crop_sectors.union(water_sectors).subquery())),
         "sectors_total": count(select(func.count()).select_from(Sector)),

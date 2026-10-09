@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     sms_sender_id: str = ""  # only set once Africa's Talking approves the sender ID
     google_client_id: str = ""
     session_hours: int = 12
+    # Local HTTP development sets COOKIE_SECURE=false; every deployed environment must use HTTPS.
+    cookie_secure: bool = False
     # Field channels (architecture Section 4): USSD short code and SMS keyword number.
     ussd_service_code: str = "*801#"
     sms_shortcode: str = "8448"
@@ -28,6 +30,11 @@ class Settings(BaseSettings):
     airtime_provider: str = "dry_run"
     incentive_amount_rwf: int = 100
     incentive_every_n_reports: int = 3
+    # Which field reports count towards the reward (comma-separated: rainfall, infrastructure,
+    # nutrition). Nutrition surveys are incentivised per the concept (Module 1) but are capped
+    # at INCENTIVE_NUTRITION_PER_MONTH rewards per household per month to prevent abuse.
+    incentive_report_types: str = "rainfall,infrastructure,nutrition"
+    incentive_nutrition_per_month: int = 1
     # Irrigation Scheduling Assistant thresholds (7-day rainfall, mm). Calibrate these against
     # PADAB (Mwesa Valley) and APEFA (Ngeruka/Mareba) historical records — Section 9.2.
     dry_spell_threshold_mm: float = 10.0
@@ -36,6 +43,25 @@ class Settings(BaseSettings):
     # above ALERT_MIN_PRIORITY ("critical" or "high"). Empty means no alerts.
     # Add the Open-Meteo 7-day rainfall forecast to irrigation advice (needs internet; free, no key).
     weather_forecast_enabled: bool = True
+    # In-process weekly advice scheduler (WP2): off by default. scripts/send_weekly_advice.py
+    # covers cron/Task Scheduler; this flag additionally runs the same idempotent send from
+    # the API process at ADVICE_SCHEDULE_TIME on ADVICE_SCHEDULE_WEEKDAY (Africa/Kigali).
+    advice_schedule_enabled: bool = False
+    advice_schedule_weekday: str = "mon"  # mon..sun
+    advice_schedule_time: str = "06:00"   # HH:MM, 24h, Africa/Kigali
+    # Cooperative pilot and Data Champion training targets (WP5, Section 8). The
+    # concept sets these two figures; change them here if the pilot plan changes.
+    monitor_training_target: int = 200
+    pilot_cooperative_target: int = 3
+    # Recurring-bottleneck rule (WP7, Section 9.3): a category is auto-flagged on a
+    # scheme when it reaches MIN_COUNT reports within WINDOW_DAYS, optionally also
+    # holding at least MIN_SHARE of that scheme's reports (0 disables the share check),
+    # and — when an AfDB baseline was imported — only above the historical baseline.
+    # CATEGORY_MIN_COUNTS overrides per category, e.g. "technical:4,social:2".
+    bottleneck_window_days: int = 90
+    bottleneck_min_count: int = 3
+    bottleneck_min_share: float = 0.0
+    bottleneck_category_min_counts: str = ""
     alert_phone_numbers: str = ""
     alert_min_priority: str = "critical"
 
@@ -50,6 +76,39 @@ class Settings(BaseSettings):
         if value.startswith("postgresql://"):
             return value.replace("postgresql://", "postgresql+psycopg://", 1)
         return value
+
+    def guard_runtime(self) -> None:
+        """Refuse to start a deployment that is misconfigured as a local development server.
+
+        Raises RuntimeError for the two combinations that must never reach production:
+        an unauthenticated API and a file-based database.
+        """
+        if self.environment != "production":
+            return
+        if not self.require_api_key:
+            raise RuntimeError("ENVIRONMENT=production requires REQUIRE_API_KEY=true")
+        if self.database_url.startswith("sqlite"):
+            raise RuntimeError("ENVIRONMENT=production requires a PostgreSQL DATABASE_URL, not SQLite")
+
+    @property
+    def dev_auth_bypass(self) -> bool:
+        """True when local development skips sign-in entirely."""
+        return self.environment == "development" and not self.require_api_key
+
+    @property
+    def bottleneck_category_counts(self) -> dict[str, int]:
+        """Per-category minimum counts, e.g. "technical:4,social:2"."""
+        counts: dict[str, int] = {}
+        for item in self.bottleneck_category_min_counts.split(","):
+            category, separator, value = item.strip().partition(":")
+            if separator and category.strip() and value.strip().isdigit():
+                counts[category.strip()] = int(value)
+        return counts
+
+    @property
+    def incentive_types(self) -> set[str]:
+        """The report types that count towards an airtime reward."""
+        return {item.strip().lower() for item in self.incentive_report_types.split(",") if item.strip()}
 
     @property
     def allowed_origins(self) -> list[str]:

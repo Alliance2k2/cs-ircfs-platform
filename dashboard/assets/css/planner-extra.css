@@ -80,6 +80,11 @@
 .perf-stats { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 12px; color: var(--muted); }
 .perf-stats b { color: var(--ink); }
 .bn-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 24px; gap: 8px; align-items: center; font-size: 12px; margin-bottom: 5px; }
+/* WP1: expected harvest by month, from farmer-reported planting and weeks-to-harvest. */
+.harvest-calendar { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(11, 11, 11, 0.1); }
+.harvest-calendar .bn-row { grid-template-columns: 92px minmax(0, 1fr) 52px; }
+.harvest-calendar .bn-row i { background: #f5c877; }
+.harvest-calendar .data-note { margin: 6px 0 0; }
 .bn-row i { height: 7px; border-radius: 99px; background: #aac9bb; }
 .bn-row.flagged { color: #a83f36; font-weight: 700; }
 .bn-row.flagged i { background: var(--coral); }

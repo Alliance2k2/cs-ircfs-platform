@@ -1,32 +1,134 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS-IRCFS | Sign in</title><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(90deg,#0b4036dd,#0b403677),url('https://images.unsplash.com/photo-1500382017468-9049fed3f6c7?auto=format&fit=crop&w=2200&q=85') center/cover fixed;min-height:100vh;padding:34px 16px;color:#10233d}.card{max-width:640px;margin:auto;background:#fff;border-radius:9px;padding:42px 40px;box-shadow:0 12px 35px #071d5c66}.brand{color:#0c6b50;font-weight:800;letter-spacing:1px;font-size:14px}.brand span{color:#e5aa35}h1{font-size:32px;margin:28px 0}.social{display:grid;grid-template-columns:1fr 1fr;gap:14px}.social button,.field input{height:52px;border:1px solid #cbd0dc;border-radius:8px;background:#fff;font-size:17px}.social button{font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px}.google-mark{font:700 21px Arial;color:#4285f4;text-shadow:1px 0 #ea4335,0 1px #fbbc05,-1px 0 #34a853}.divider{display:flex;align-items:center;gap:18px;margin:28px 0;color:#444}.divider:before,.divider:after{content:"";height:1px;background:#d6d9e0;flex:1}.field{display:block;font-weight:700;margin:18px 0}.field input{display:block;width:100%;margin-top:9px;padding:0 15px;font-size:16px}.primary{width:100%;height:52px;background:#0b7055;border:0;border-radius:8px;color:white;font-size:17px;font-weight:700;margin-top:18px;cursor:pointer}.links{margin-top:28px;color:#64708a}.links a{color:#2754d8;font-weight:700;text-decoration:none}.signed-in{background:#eef7f2;color:#265d49;padding:12px 14px;border-radius:8px;margin:0 0 18px}.signed-in a{color:#0b7055;font-weight:700}.notice{display:none;padding:13px;background:#fff0f0;color:#bf2020;border-radius:8px;margin-top:14px}@media(max-width:560px){.card{padding:30px 22px}.social{grid-template-columns:1fr}}
-</style></head><body><main class="card"><div class="brand">CS-IRCFS <span>·</span> BUGESERA AGRICULTURE DATA CENTRE</div><h1>Welcome back</h1><p id="signed-in" class="signed-in" hidden></p><div class="social" id="google-block" hidden><button type="button"><span class="google-mark">G</span> Continue with Google</button></div><div class="divider" id="google-divider" hidden>or</div><form id="login-form"><label class="field">Email address<input name="email" type="email" placeholder="you@example.com" required></label><label class="field">Password<input name="password" type="password" placeholder="Enter your password" required></label><p id="notice" class="notice" role="alert">We could not sign you in with those details.</p><button class="primary" type="submit">Sign in</button></form><div class="links"><p>Don't have an account yet? <a href="register.html">Create an account</a></p><p>Need help? <a href="index.html">Return to CS-IRCFS home</a></p></div></main><script src="https://accounts.google.com/gsi/client" async defer></script><script src="shared.js?v=20261006"></script><script>
+<!doctype html>
+<html lang="en" data-ui="bootstrap">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CS-IRCFS | Sign in</title>
+  <meta name="description" content="Sign in to the CS-IRCFS Bugesera agriculture data centre.">
+  <meta name="theme-color" content="#073e2b" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/fonts.css" />
+  <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
+  <link rel="stylesheet" href="assets/css/auth.css?v=20261008">
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row auth-shell">
+    <aside class="col-lg-6 col-xl-7 order-lg-2 auth-story d-none d-lg-flex flex-column justify-content-between">
+      <div>
+        <span class="eyebrow">Bugesera District · Rwanda</span>
+        <h2>Evidence from the field, <em>ready to act on.</em></h2>
+        <p class="lead">Farmers and Citizen Science Monitors report from any phone. Sign in to see what they report and to follow up.</p>
+        <ul class="story-points">
+          <li><i class="bi bi-broadcast-pin" aria-hidden="true"></i><div><strong>Live field reports</strong><span>Harvests, pests, rainfall and pump faults from USSD and SMS.</span></div></li>
+          <li><i class="bi bi-droplet-half" aria-hidden="true"></i><div><strong>Irrigation outcomes</strong><span>PADAB and APEFA Solar progress against their yield targets.</span></div></li>
+          <li><i class="bi bi-lightning-charge" aria-hidden="true"></i><div><strong>Act Now queue</strong><span>District Planners assign, resolve and tell each cell what was done.</span></div></li>
+        </ul>
+      </div>
+      <div class="story-bottom"><blockquote class="story-quote mb-0">“Empowering communities for a food secure and climate resilient Rwanda.”</blockquote><p class="story-foot mb-0">Farmers report without an account: dial <b>*801#</b> or text <b>8448</b>.</p></div>
+    </aside>
+
+    <main class="col-lg-6 col-xl-5 order-lg-1 auth-main d-flex align-items-center justify-content-center">
+      <div class="auth-card">
+        <a class="brand form-brand mb-4" href="index.html"><img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="56" height="56"><span>CS-IRCFS<small>Citizen Science for Irrigation Resilience and Food Security</small></span></a>
+        <h1>Welcome back</h1>
+        <p class="sub">Sign in as a Citizen Science Monitor, officer or District Planner.</p>
+
+        <div id="signed-in" class="alert alert-success alert-icon" role="status" hidden></div>
+
+        <div id="google-block" hidden>
+          <button type="button" class="btn btn-google w-100 d-flex align-items-center justify-content-center gap-2"><span class="google-mark">G</span>Continue with Google</button>
+        </div>
+        <div class="divider" id="google-divider" hidden>or</div>
+
+        <form id="login-form" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="email">Email address</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+              <input class="form-control" id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
+              <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+              <button class="btn btn-outline-secondary toggle-password" type="button" data-toggle-password="password" aria-label="Show password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+            </div>
+          </div>
+          <div id="notice" class="alert alert-danger alert-icon mt-3 mb-0" role="alert" hidden></div>
+          <button class="btn btn-primary btn-submit w-100 mt-4" type="submit">Sign in</button>
+        </form>
+
+        <div class="auth-links mt-4">
+          <p class="mb-2">Don't have an account yet? <a href="register.html">Create an account</a></p>
+          <p class="mb-0"><a href="index.html"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Return to CS-IRCFS home</a></p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/shared.js?v=20261010"></script>
+<script>
 const next = new URLSearchParams(location.search).get("next") || "planner.html";
 const goNext = () => { location.href = /^[a-z-]+\.html(#[a-z-]+)?$/.test(next) ? next : "planner.html"; };
 function finish(result) { CS.session.start(result); goNext(); }
+
+const notice = document.querySelector("#notice");
+function showNotice(message) {
+  notice.innerHTML = `<i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>${CS.escapeHtml(message)}</span>`;
+  notice.hidden = false;
+}
+
+document.querySelectorAll("[data-toggle-password]").forEach((button) => button.addEventListener("click", () => {
+  const input = document.getElementById(button.dataset.togglePassword);
+  const show = input.type === "password";
+  input.type = show ? "text" : "password";
+  button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  button.querySelector("i").className = show ? "bi bi-eye-slash" : "bi bi-eye";
+}));
+
 const account = CS.session.account();
-if (account) { const box = document.querySelector("#signed-in"); box.hidden = false; box.innerHTML = `You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a href="planner.html">Continue to the dashboard →</a>`; }
+if (account) {
+  const box = document.querySelector("#signed-in");
+  box.hidden = false;
+  box.innerHTML = `<i class="bi bi-person-check" aria-hidden="true"></i><span>You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a class="alert-link" href="planner.html">Continue to the dashboard →</a></span>`;
+}
+
 CS.apiJson("auth/config").then(({ google_client_id }) => {
   if (!google_client_id) return;
   document.querySelector("#google-block").hidden = false;
   document.querySelector("#google-divider").hidden = false;
-  document.querySelector(".social button").addEventListener("click", () => {
-    if (!window.google) { alert("Google sign-in is still loading. Please try again."); return; }
+  document.querySelector("#google-block button").addEventListener("click", () => {
+    if (!window.google) { showNotice("Google sign-in is still loading. Please try again."); return; }
     google.accounts.id.initialize({ client_id: google_client_id, callback: async ({ credential }) => {
-      try { finish(await CS.apiJson("auth/google", { method: "POST", body: { credential } })); } catch (error) { alert(error.message || "Google sign-in failed"); }
+      try { finish(await CS.apiJson("auth/google", { method: "POST", body: { credential } })); } catch (error) { showNotice(error.message || "Google sign-in failed"); }
     } });
     google.accounts.id.prompt();
   });
 }).catch(() => {});
+
 document.querySelector("#login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = new FormData(event.currentTarget), notice = document.querySelector("#notice"), button = event.currentTarget.querySelector("button[type=submit]");
-  notice.style.display = "none"; button.disabled = true; button.textContent = "Signing in…";
+  const formElement = event.currentTarget;
+  if (!formElement.checkValidity()) { formElement.classList.add("was-validated"); return; }
+  const form = new FormData(formElement), button = formElement.querySelector("button[type=submit]");
+  notice.hidden = true;
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Signing in…';
   try { finish(await CS.apiJson("auth/login", { method: "POST", body: { email: form.get("email"), password: form.get("password") } })); }
-  catch (error) { notice.textContent = error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message; notice.style.display = "block"; }
+  catch (error) { showNotice(error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message); }
   finally { button.disabled = false; button.textContent = "Sign in"; }
 });
-</script></body></html>
-
-
-
-
+</script>
+</body>
+</html>
