@@ -92,6 +92,20 @@ def data_origin_column() -> Mapped[str]:
     return mapped_column(String(12), default=ORIGIN_FIELD, server_default=ORIGIN_FIELD, index=True)
 
 
+# Report verification by district staff (migration 20261011_18). Citizen reports start
+# unverified; an officer marks them verified or rejected, with a note and an audit entry.
+VERIFICATION_STATES = ("unverified", "verified", "rejected")
+
+
+class VerifiedReport:
+    """Verification columns shared by crop and infrastructure reports."""
+
+    verification_status: Mapped[str] = mapped_column(String(12), default="unverified", server_default="unverified", index=True)
+    verified_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    verification_note: Mapped[str | None] = mapped_column(Text)
+
+
 class Sector(Base):
     __tablename__ = "sectors"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -360,7 +374,7 @@ class IncentiveReward(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class CitizenScienceLog(Base):
+class CitizenScienceLog(VerifiedReport, Base):
     """Crop harvest and pest/disease reports."""
 
     __tablename__ = "citizen_science_logs"
@@ -383,7 +397,7 @@ class CitizenScienceLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class IrrigationClimateLog(Base):
+class IrrigationClimateLog(VerifiedReport, Base):
     """Infrastructure health and rainfall reports."""
 
     __tablename__ = "irrigation_climate_logs"
@@ -458,6 +472,21 @@ class IncidentCase(Base):
     reporter_notified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AuditEvent(Base):
+    """Who changed what: account roles and status, case and grievance updates, report
+    verification, scheme edits and advice sends. Append-only (migration 20261011_18)."""
+
+    __tablename__ = "audit_events"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    actor_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"), index=True)
+    actor_label: Mapped[str] = mapped_column(String(254))
+    action: Mapped[str] = mapped_column(String(60), index=True)
+    entity: Mapped[str] = mapped_column(String(40), index=True)
+    entity_id: Mapped[int | None] = mapped_column(Integer)
+    detail: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
 
 class IncidentEvent(Base):

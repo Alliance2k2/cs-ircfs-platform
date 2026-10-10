@@ -267,8 +267,17 @@ def latest_asset_status(db: Session, cells: set[int] | None = None, scheme_id: i
             for report in sorted(latest.values(), key=lambda item: (item.operational_status not in DOWN, item.infrastructure_name))]
 
 
+# Privacy: a cell's figures are shown only when at least this many households answered,
+# so no single household's answers can be read from a small group.
+MIN_HOUSEHOLDS_PER_GROUP = 5
+
+
 def nutrition_summary(db: Session) -> dict:
-    """Household Nutrition Tracker: stunting-risk drivers by cell."""
+    """Household Nutrition Tracker: stunting-risk drivers by cell.
+
+    Screening scores, not diagnoses. Cells with fewer than MIN_HOUSEHOLDS_PER_GROUP
+    households show their count only (``suppressed``); district totals include them.
+    """
     surveys = list(db.scalars(select(NutritionSurvey)))
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}
     by_cell: dict[int | None, list[NutritionSurvey]] = {}
@@ -277,10 +286,11 @@ def nutrition_summary(db: Session) -> dict:
     rows = []
     for cell_id, items in by_cell.items():
         cell = cells.get(cell_id)
+        suppressed = len(items) < MIN_HOUSEHOLDS_PER_GROUP
         rows.append({"cell_id": cell_id, "cell": cell.name if cell else "Unknown cell", "latitude": cell.latitude if cell else None,
-                     "longitude": cell.longitude if cell else None, "households": len(items),
-                     "average_risk": round(sum(s.stunting_risk_score for s in items) / len(items), 1),
-                     "high_risk": sum(1 for s in items if s.stunting_risk_score >= 4)})
+                     "longitude": cell.longitude if cell else None, "households": len(items), "suppressed": suppressed,
+                     "average_risk": None if suppressed else round(sum(s.stunting_risk_score for s in items) / len(items), 1),
+                     "high_risk": None if suppressed else sum(1 for s in items if s.stunting_risk_score >= 4)})
     total = len(surveys)
     return {
         "households": total,
@@ -288,5 +298,6 @@ def nutrition_summary(db: Session) -> dict:
         "high_risk_households": sum(1 for s in surveys if s.stunting_risk_score >= 4),
         "one_meal_households": sum(1 for s in surveys if s.meals_per_day == 1),
         "food_insufficient": sum(1 for s in surveys if not s.food_sufficient),
-        "by_cell": sorted(rows, key=lambda row: -row["average_risk"]),
+        "by_cell": sorted(rows, key=lambda row: (row["suppressed"], -(row["average_risk"] or 0))),
+        "min_households_per_group": MIN_HOUSEHOLDS_PER_GROUP,
     }

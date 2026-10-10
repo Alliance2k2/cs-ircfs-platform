@@ -8,6 +8,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import CommunityFeedback, FeedbackStatusEvent, FieldUser, ReportStatus, UserRole
 from app.db.session import get_db
 from app.schemas import CellNotification, FeedbackCreate, FeedbackEventRead, FeedbackRead, FeedbackUpdate
+from app.services.audit import record
 from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided, validate_report_references
 
@@ -62,6 +63,8 @@ def update_feedback(
     feedback.assigned_to_field_user_id = payload.assigned_to_field_user_id
     feedback.due_at = payload.due_at
     db.add(event)
+    record(db, principal, "grievance.update", "community_feedback", feedback.id, status=payload.status.value,
+           assigned_to_field_user_id=payload.assigned_to_field_user_id, due_at=payload.due_at)
     db.commit()
     db.refresh(feedback)
     return feedback
@@ -87,5 +90,7 @@ def notify_feedback_cell(feedback_id: int, payload: CellNotification, db: Sessio
         raise HTTPException(status_code=422, detail="Resolve the feedback case before notifying the community")
     message = payload.message or resolution_message(f"Ikibazo FB-{feedback.id:03d}", feedback.category, feedback.action_taken)
     result = notify_cell(db, feedback.cell_id, message, payload.preview)
+    if not payload.preview:
+        record(db, principal, "grievance.notify_cell", "community_feedback", feedback.id, recipients=result.get("recipients"))
     db.commit()
     return result

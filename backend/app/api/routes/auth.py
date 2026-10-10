@@ -15,9 +15,10 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.ratelimit import limiter
-from app.core.security import SESSION_COOKIE, account_for_token, hash_token, require_roles
+from app.core.security import SESSION_COOKIE, Principal, account_for_token, hash_token, require_roles
 from app.db.models import AuthSession, PlatformAccount, Sector, UserRole
 from app.db.session import get_db
+from app.services.audit import record
 from app.schemas import AccountLogin, AccountRead, AccountRegister, AccountUpdate
 
 router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])
@@ -187,7 +188,7 @@ def list_accounts(db: Session = Depends(get_db), _: object = admin):
 
 
 @router.patch("/accounts/{account_id}", response_model=AccountRead)
-def update_account(account_id: int, payload: AccountUpdate, db: Session = Depends(get_db), _: object = admin):
+def update_account(account_id: int, payload: AccountUpdate, db: Session = Depends(get_db), principal: Principal = admin):
     account = db.get(PlatformAccount, account_id)
     if not account:
         raise HTTPException(404, "Account not found")
@@ -202,6 +203,8 @@ def update_account(account_id: int, payload: AccountUpdate, db: Session = Depend
         if len(sectors) != len(set(payload.sector_ids)):
             raise HTTPException(422, "Unknown sector")
         account.sectors = sectors
+    record(db, principal, "account.update", "platform_account", account.id, email=account.email,
+           role=payload.role.value if payload.role is not None else None, status=payload.status, sector_ids=payload.sector_ids)
     db.commit()
     db.refresh(account)
     return account

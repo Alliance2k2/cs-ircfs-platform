@@ -468,7 +468,9 @@ function renderFood(data) {
       <div class="food-stats"><span><b>${number(data.households)}</b> households</span><span class="warn"><b>${number(data.high_risk_households)}</b> high risk (4–5)</span><span><b>${number(data.one_meal_households)}</b> ate once a day</span><span><b>${number(data.food_insufficient)}</b> short of food until harvest</span></div>
     </div>
     <p class="mini-title">Cells needing attention</p>
-    ${data.by_cell.slice(0, 15).map((row) => `<div class="cell-risk"><span>${escapeHtml(row.cell)}</span><i style="width:${(row.average_risk / 5) * 100}%" class="${row.average_risk >= 3.5 ? "high" : row.average_risk >= 2.5 ? "medium" : "low"}"></i><b>${row.average_risk}</b><small>${row.households} hh</small></div>`).join("")}`;
+    ${data.by_cell.slice(0, 15).map((row) => row.suppressed
+      ? `<div class="cell-risk"><span>${escapeHtml(row.cell)}</span><i style="width:0"></i><b>–</b><small>${row.households} hh · too few to show</small></div>`
+      : `<div class="cell-risk"><span>${escapeHtml(row.cell)}</span><i style="width:${(row.average_risk / 5) * 100}%" class="${row.average_risk >= 3.5 ? "high" : row.average_risk >= 2.5 ? "medium" : "low"}"></i><b>${row.average_risk}</b><small>${row.households} hh</small></div>`).join("")}`;
 }
 
 /* ---------- Field channel feed ---------- */
@@ -773,7 +775,8 @@ function renderAnalysisLayers({ heat = [], rain = [], food = [] }) {
     colour: RAIN_COLOUR[cell.level] || RAIN_COLOUR.no_data, r10: 900 / METRES_PER_PIXEL_Z10,
     popup: `<strong>${escapeHtml(cell.cell)}</strong><br />${escapeHtml(cell.rainfall_mm)} mm in 7 days (${escapeHtml(cell.readings)} readings)<br /><small>${cell.level === "irrigate_more" ? "Dry spell warning" : escapeHtml(humanize(cell.level))}</small>`,
   })) });
-  setSourceData("food", { type: "FeatureCollection", features: food.filter((row) => row.latitude !== null && row.latitude !== undefined).map((row) => point(row.latitude, row.longitude, {
+  // Cells with too few households are not drawn (privacy: see MIN_HOUSEHOLDS_PER_GROUP in analytics.py).
+  setSourceData("food", { type: "FeatureCollection", features: food.filter((row) => !row.suppressed && row.latitude !== null && row.latitude !== undefined).map((row) => point(row.latitude, row.longitude, {
     colour: row.average_risk >= 3.5 ? "#8e3b8a" : row.average_risk >= 2.5 ? "#b07cc6" : "#c9b6d6", r10: (500 + row.households * 120) / METRES_PER_PIXEL_Z10,
     popup: `<strong>${escapeHtml(row.cell)}</strong><br />Average stunting risk ${escapeHtml(row.average_risk)} / 5<br />${escapeHtml(row.households)} households, ${escapeHtml(row.high_risk)} high risk`,
   })) });

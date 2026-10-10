@@ -3,10 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.security import Principal, require_roles
 from app.db.models import IrrigationScheme, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import IrrigationSchemeCreate, IrrigationSchemeRead, IrrigationSchemeUpdate
+from app.services.audit import record
 from app.services.references import require_if_provided
 
 router = APIRouter(prefix="/api/v1/irrigation-schemes", tags=["irrigation schemes"])
@@ -15,12 +16,14 @@ admin = Depends(require_roles(UserRole.administrator))
 
 
 @router.post("", response_model=IrrigationSchemeRead, status_code=status.HTTP_201_CREATED)
-def create_irrigation_scheme(payload: IrrigationSchemeCreate, db: Session = Depends(get_db), _: object = admin) -> IrrigationScheme:
+def create_irrigation_scheme(payload: IrrigationSchemeCreate, db: Session = Depends(get_db), principal: Principal = admin) -> IrrigationScheme:
     if db.scalar(select(IrrigationScheme.id).where(IrrigationScheme.name == payload.name)) is not None:
         raise HTTPException(status_code=409, detail="An irrigation scheme with this name already exists")
     require_if_provided(db, Sector, payload.sector_id, "sector_id")
     scheme = IrrigationScheme(**payload.model_dump())
     db.add(scheme)
+    db.flush()
+    record(db, principal, "scheme.create", "irrigation_scheme", scheme.id, **payload.model_dump())
     db.commit()
     db.refresh(scheme)
     return scheme
@@ -32,7 +35,7 @@ def list_irrigation_schemes(db: Session = Depends(get_db), _: object = reader) -
 
 
 @router.patch("/{scheme_id}", response_model=IrrigationSchemeRead)
-def update_irrigation_scheme(scheme_id: int, payload: IrrigationSchemeUpdate, db: Session = Depends(get_db), _: object = admin) -> IrrigationScheme:
+def update_irrigation_scheme(scheme_id: int, payload: IrrigationSchemeUpdate, db: Session = Depends(get_db), principal: Principal = admin) -> IrrigationScheme:
     """Record verified scheme figures, e.g. the feasibility-study yield target used for outcome verification."""
     scheme = db.get(IrrigationScheme, scheme_id)
     if not scheme:
@@ -44,6 +47,7 @@ def update_irrigation_scheme(scheme_id: int, payload: IrrigationSchemeUpdate, db
         raise HTTPException(status_code=422, detail="Give the source of the yield target (e.g. feasibility study and year)")
     for field, value in changes.items():
         setattr(scheme, field, value)
+    record(db, principal, "scheme.update", "irrigation_scheme", scheme.id, **changes)
     db.commit()
     db.refresh(scheme)
     return scheme
