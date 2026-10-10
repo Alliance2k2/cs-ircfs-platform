@@ -10,7 +10,10 @@ import {
   MessageSquareText,
   TrendingUp,
 } from "lucide-react";
-import { isStaff, useSession } from "@/app/providers/SessionProvider";
+import { Link } from "react-router-dom";
+import { canAccess } from "@/app/access";
+import { useSession } from "@/app/providers/SessionProvider";
+import { ROUTES } from "@/components/navigation/nav";
 import type { Accent } from "@/components/ui/MetricCard";
 import { useI18n } from "@/i18n";
 import type { MessageKey } from "@/i18n/en";
@@ -32,32 +35,32 @@ const metricValue = (data: ExecutiveOverview, key: string) => data.metrics.find(
 
 const MODULES: Module[] = [
   {
-    href: "/act-now.html", title: "nav.actnow", description: "module.actnow", icon: AlertTriangle, accent: "coral", staffOnly: true,
+    href: "/actions", title: "nav.actnow", description: "module.actnow", icon: AlertTriangle, accent: "coral", staffOnly: true,
     count: (d) => ({ value: String(d.counts.open_cases + d.counts.open_grievances), label: "module.count.openItems" }),
   },
   {
-    href: "/channels.html", title: "nav.channels", description: "module.channels", icon: Activity, accent: "blue",
+    href: "/field-reports", title: "nav.channels", description: "module.channels", icon: Activity, accent: "blue",
     count: (d) => {
       const value = metricValue(d, "citizen_reports");
       return value === null ? null : { value: String(value), label: "module.count.reports" };
     },
   },
   {
-    href: "/schemes.html", title: "nav.schemes", description: "module.schemes", icon: BarChart3, accent: "green",
+    href: "/evaluation", title: "nav.schemes", description: "module.schemes", icon: BarChart3, accent: "green",
     count: (d) => ({ value: String(d.schemes.length), label: "module.count.schemes" }),
   },
-  { href: "/trends.html", title: "nav.trends", description: "module.trends", icon: TrendingUp, accent: "teal", count: () => ({ value: "12", label: "module.count.months" }) },
+  { href: "/trends", title: "nav.trends", description: "module.trends", icon: TrendingUp, accent: "teal", count: () => ({ value: "12", label: "module.count.months" }) },
   {
-    href: "/advice.html", title: "nav.advice", description: "module.advice", icon: CloudRain, accent: "gold",
+    href: "/climate", title: "nav.advice", description: "module.advice", icon: CloudRain, accent: "gold",
     count: (d) => ({ value: String(d.counts.sectors_with_rain), label: "module.count.rainSectors" }),
   },
-  { href: "/nutrition.html", title: "nav.food", description: "module.food", icon: HeartPulse, accent: "violet" },
+  { href: "/nutrition", title: "nav.food", description: "module.food", icon: HeartPulse, accent: "violet" },
   {
-    href: "/map.html", title: "nav.map", description: "module.map", icon: MapPin, accent: "green",
+    href: "/map", title: "nav.map", description: "module.map", icon: MapPin, accent: "green",
     count: (d) => ({ value: `${d.counts.sectors_reporting} / ${d.counts.sectors_total}`, label: "module.count.sectors" }),
   },
   {
-    href: "/feedback.html", title: "nav.feedback", description: "module.feedback", icon: MessageSquareText, accent: "coral",
+    href: "/grievances", title: "nav.feedback", description: "module.feedback", icon: MessageSquareText, accent: "coral", staffOnly: true,
     count: (d) => ({ value: String(d.counts.open_grievances), label: "module.count.grievances" }),
   },
 ];
@@ -70,11 +73,11 @@ const SOFT: Record<Accent, string> = {
   coral: "bg-critical-soft text-critical", violet: "bg-violet-soft text-violet", teal: "bg-teal-soft text-teal",
 };
 
-/** Shortcuts to every workspace, each with one live count. Classic pages until they are rebuilt. */
+/** Shortcuts to the main workspaces, each with one live count. */
 export function ModuleGrid({ data }: { data: ExecutiveOverview }) {
   const { t, lang } = useI18n();
   const { role } = useSession();
-  const modules = MODULES.filter((module) => !module.staffOnly || isStaff(role));
+  const modules = MODULES.filter((module) => canAccess(role, ROUTES.find((route) => route.to === module.href)?.access));
 
   return (
     <section aria-labelledby="modules-title">
@@ -93,8 +96,8 @@ export function ModuleGrid({ data }: { data: ExecutiveOverview }) {
           const count = module.count?.(data) ?? null;
           return (
             <li key={module.href}>
-              <a
-                href={module.href}
+              <Link
+                to={module.href}
                 className="group flex h-full min-h-[11rem] flex-col rounded-[20px] border border-line bg-surface p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-raised"
               >
                 <div className="flex items-start gap-3.5">
@@ -119,7 +122,7 @@ export function ModuleGrid({ data }: { data: ExecutiveOverview }) {
                     <span className="text-sm font-semibold text-primary">{t("module.count.none")} →</span>
                   )}
                 </span>
-              </a>
+              </Link>
             </li>
           );
         })}

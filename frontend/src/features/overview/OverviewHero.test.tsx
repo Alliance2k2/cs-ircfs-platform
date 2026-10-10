@@ -9,7 +9,7 @@ describe("OverviewHero", () => {
     renderWithProviders(<OverviewHero data={overview()} />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Good (morning|afternoon|evening), Planner/);
     expect(screen.getByText("126")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Open Act Now/ })).toHaveAttribute("href", "/act-now.html");
+    expect(screen.getByRole("link", { name: /Open Act Now/ })).toHaveAttribute("href", "/actions");
   });
 
   it("hides the Act Now shortcut from monitors", () => {

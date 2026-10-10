@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Map as MapIcon, MapPin, Radio, Zap } from "lucide-react";
 import { isStaff, useSession } from "@/app/providers/SessionProvider";
 import { useI18n } from "@/i18n";
@@ -66,18 +67,18 @@ export function OverviewHero({ data }: { data: ExecutiveOverview | undefined }) 
 
           <div className="mt-6 flex flex-wrap gap-3">
             {isStaff(role) && (
-              <a
-                href="/act-now.html"
+              <Link
+                to="/actions"
                 className="inline-flex items-center gap-2 rounded-xl bg-lime px-4 py-2.5 text-sm font-bold text-forest shadow-[0_10px_26px_rgb(var(--lime)/0.25)] hover:brightness-95"
               >
                 <Zap aria-hidden className="h-4 w-4" />
                 {t("hero.openActNow")}
-              </a>
+              </Link>
             )}
-            <a href="/map.html" className="inline-flex items-center gap-2 rounded-xl border border-white/35 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10">
+            <Link to="/map" className="inline-flex items-center gap-2 rounded-xl border border-white/35 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10">
               <MapIcon aria-hidden className="h-4 w-4" />
               {t("hero.map")}
-            </a>
+            </Link>
           </div>
         </div>
 
