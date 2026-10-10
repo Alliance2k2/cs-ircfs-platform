@@ -270,10 +270,11 @@ class PlatformAccount(Base):
 
     __tablename__ = "platform_accounts"
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
+    email: Mapped[str] = mapped_column(String(254), unique=True)  # the unique constraint is the index
     full_name: Mapped[str] = mapped_column(String(160))
     password_hash: Mapped[str] = mapped_column(String(256))
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.citizen_science_monitor)
+    # Stored as VARCHAR(40), as migration 20260929_05 created it (not a database enum type).
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole, native_enum=False, length=40), default=UserRole.citizen_science_monitor)
     status: Mapped[str] = mapped_column(String(20), default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     sectors: Mapped[list["Sector"]] = relationship(secondary=account_sectors, order_by="Sector.name")
