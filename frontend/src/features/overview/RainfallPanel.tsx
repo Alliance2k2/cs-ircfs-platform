@@ -28,7 +28,7 @@ export function RainfallPanel({ rows }: { rows: RainfallRow[] }) {
   return (
     <Card className="flex flex-col" aria-labelledby="rain-title">
       <CardHeader id="rain-title" title={t("section.map")} note={t("section.mapNote")} />
-      <div className="h-72 p-3">
+      <div className="h-[22rem] p-3">
         {mapConfig.isPending ? (
           <Skeleton className="h-full w-full" />
         ) : token ? (

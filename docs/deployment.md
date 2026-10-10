@@ -31,6 +31,8 @@ The copy takes every platform table in one transaction and checks each row count
 
 Every map (the executive overview and the classic Map page) is drawn with Mapbox GL. Create a **public** token (it starts with `pk.`) at account.mapbox.com, restrict it there to the site's URLs, and set `MAPBOX_ACCESS_TOKEN` (optionally `MAPBOX_STYLE`). The browser receives it from `/api/v1/public/map-config`; a secret `sk.` token is refused. Without a token each map says what to configure, and the lists next to it still work.
 
+Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYLE` style), **Satellite** (`satellite-streets-v12`) and **Terrain** (`outdoors-v12`), and a **3D** button that tilts the view and adds Mapbox terrain elevation (exaggerated 1.8× because Bugesera's relief is gentle). The platform's layers are redrawn after every switch, and the choice is remembered in the browser (`cs_ircfs_map_view`), shared by both maps.
+
 ## Render hosted preview
 
 1. Push this folder to GitHub, keeping `.env` out of Git.
