@@ -13,7 +13,7 @@ const FALLBACK: Record<string, string> = {
 
 /**
  * A design token as a colour string for libraries that write SVG attributes
- * (Recharts, Leaflet), where CSS variables do not resolve.
+ * (Recharts, Mapbox GL), where CSS variables do not resolve.
  */
 export function tokenColor(name: keyof typeof FALLBACK | string, alpha = 1): string {
   let channels = "";
@@ -22,6 +22,7 @@ export function tokenColor(name: keyof typeof FALLBACK | string, alpha = 1): str
   } catch {
     channels = "";
   }
-  const value = channels || FALLBACK[name] || FALLBACK.muted;
-  return alpha === 1 ? `rgb(${value})` : `rgb(${value} / ${alpha})`;
+  // Comma syntax on purpose: Mapbox GL rejects the space-separated rgb() form.
+  const [r, g, b] = (channels || FALLBACK[name] || FALLBACK.muted!).split(/\s+/);
+  return alpha === 1 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }

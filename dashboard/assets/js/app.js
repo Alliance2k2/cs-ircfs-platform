@@ -14,8 +14,6 @@ const SCHEME_KEY = "cs_ircfs_scheme";
 let mode = "connecting";
 let refreshTimer = null;
 let liveMap;
-let bugeseraBoundaryLayer;
-let heatLayer = null;
 let currentMapData = null;
 let queueFilter = "all";
 let feedbackFilter = "open";
@@ -28,7 +26,6 @@ const signedIn = CS.session.account();
 const readOnly = Boolean(signedIn) && !PLANNER_ROLES.includes(signedIn.role);
 // Adding and editing schemes is for administrators (local development without sign-in also acts as one).
 const canAdminister = !signedIn || signedIn.role === "administrator";
-const layers = {};
 
 // What each page needs from the API. The summary and the Act Now queue feed the sidebar badge on every page.
 const NEEDS = {
@@ -509,58 +506,143 @@ document.addEventListener("cs:trends", (event) => {
   setText("#stat-trend-harvest", number(total("reported_tons"), 1));
 });
 
-/* ---------- Map ---------- */
-function markerStyle(feature) {
-  if (feature.feature_type === "scheme") return { color: "#ffffff", fillColor: "#167052" };
-  if (feature.feature_type === "farmer") return { color: "#ffffff", fillColor: "#6b5ca5" };
-  if (feature.feature_type === "crop") return { color: "#ffffff", fillColor: feature.status === "pest alert" ? "#c75248" : "#d59223" };
-  if (feature.feature_type === "rainfall") return { color: "#ffffff", fillColor: "#2878a9" };
-  return { color: "#ffffff", fillColor: feature.status === "offline" ? "#c75248" : feature.status === "faulty" ? "#e08a2c" : "#2f9e6e" };
-}
+/* ---------- Map (Mapbox GL) ---------- */
+// The Mapbox token comes from MAPBOX_ACCESS_TOKEN through /public/map-config (public pk. tokens only).
 const FEATURE_LAYER = { scheme: "schemes", irrigation: "infrastructure", crop: "crops", rainfall: "rain", farmer: "farmers" };
+// Map layer ids behind each layer chip on map.html.
+const MAP_GROUPS = {
+  schemes: ["points-schemes"], infrastructure: ["points-infrastructure"], crops: ["points-crops"],
+  rain: ["points-rain", "rain-cells"], food: ["food-cells"], farmers: ["points-farmers"], heat: ["pest-heat"],
+};
+const RAIN_COLOUR = { irrigate_more: "#c75248", normal: "#2878a9", reduce: "#1f5f8b", no_data: "#9aa7a1" };
+const METRES_PER_PIXEL_Z10 = 150; // at Bugesera's latitude, Mapbox zoom 10
+const emptyCollection = () => ({ type: "FeatureCollection", features: [] });
+let mapInit = null;
+let boundaryBounds = null;
+let pendingAnalysis = null;
 
-function ensureMap(center = BUGESERA_VIEW.center, zoom = BUGESERA_VIEW.zoom) {
-  if (liveMap || !window.L || !$("#map-canvas")) return;
-  liveMap = L.map("map-canvas", { zoomControl: false, scrollWheelZoom: false }).setView(center, zoom);
-  L.control.zoom({ position: "topright" }).addTo(liveMap);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 19 }).addTo(liveMap);
-  ["schemes", "infrastructure", "crops", "rain", "food", "farmers"].forEach((name) => { layers[name] = L.layerGroup(); });
-  syncLayerVisibility();
-  loadBugeseraBoundary();
+function pointColour(feature) {
+  if (feature.feature_type === "scheme") return "#167052";
+  if (feature.feature_type === "farmer") return "#6b5ca5";
+  if (feature.feature_type === "crop") return feature.status === "pest alert" ? "#c75248" : "#d59223";
+  if (feature.feature_type === "rainfall") return "#2878a9";
+  return feature.status === "offline" ? "#c75248" : feature.status === "faulty" ? "#e08a2c" : "#2f9e6e";
 }
 
-async function loadBugeseraBoundary() {
-  if (!liveMap || bugeseraBoundaryLayer) return;
+// A circle of a real-world size: its pixel radius at zoom 10 ("r10"), doubled per zoom level.
+// Mapbox only accepts ["zoom"] as the input of a top-level interpolate, and base-2
+// exponential interpolation between these two stops is exactly r10 * 2^(zoom - 10).
+const metresRadius = ["interpolate", ["exponential", 2], ["zoom"], 5, ["*", ["get", "r10"], 1 / 32], 18, ["*", ["get", "r10"], 256]];
+const point = (lat, lng, properties) => ({ type: "Feature", geometry: { type: "Point", coordinates: [lng, lat] }, properties });
+
+function boundsOf(geo) {
+  let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+  const visit = (value) => {
+    if (Array.isArray(value) && typeof value[0] === "number") {
+      west = Math.min(west, value[0]); south = Math.min(south, value[1]); east = Math.max(east, value[0]); north = Math.max(north, value[1]);
+    } else if (Array.isArray(value)) value.forEach(visit);
+  };
+  (geo.features || [geo]).forEach((feature) => feature.geometry && visit(feature.geometry.coordinates));
+  return Number.isFinite(west) ? [[west, south], [east, north]] : null;
+}
+
+function mapMessage(text) {
+  const status = $("#map-status");
+  if (status) { status.textContent = text; status.classList.add("empty"); }
+}
+
+/** Create the map once. Resolves to the map when it is ready, or null when it cannot be shown. */
+function ensureMap() {
+  if (mapInit) return mapInit;
+  if (!$("#map-canvas")) return Promise.resolve(null);
+  mapInit = (async () => {
+    if (!window.mapboxgl) { mapMessage("The map library could not load. Check the internet connection, then reload."); return null; }
+    const config = await apiJson("public/map-config").catch(() => ({ mapbox_token: null }));
+    if (!config.mapbox_token) { mapMessage("The map appears once a Mapbox public token is added: MAPBOX_ACCESS_TOKEN in .env, then restart the platform."); return null; }
+    mapboxgl.accessToken = config.mapbox_token;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    liveMap = new mapboxgl.Map({
+      container: "map-canvas", style: config.style || "mapbox://styles/mapbox/light-v11",
+      center: [BUGESERA_VIEW.center[1], BUGESERA_VIEW.center[0]], zoom: 9.2, cooperativeGestures: true,
+    });
+    liveMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+    await new Promise((resolve) => liveMap.on("load", resolve));
+    addMapLayers();
+    loadBugeseraBoundary(reduceMotion);
+    return liveMap;
+  })();
+  return mapInit;
+}
+
+function addMapLayers() {
+  ["boundary", "sectors-geo", "cells-geo", "district-label", "food", "rain", "heat", "points"].forEach((id) => liveMap.addSource(id, { type: "geojson", data: emptyCollection() }));
+  liveMap.addLayer({ id: "boundary-fill", type: "fill", source: "boundary", paint: { "fill-color": "#3a9b72", "fill-opacity": 0.08 } });
+  liveMap.addLayer({ id: "cells-line", type: "line", source: "cells-geo", paint: { "line-color": "#4d8aa3", "line-width": 0.5 } });
+  liveMap.addLayer({ id: "sectors-fill", type: "fill", source: "sectors-geo", paint: { "fill-color": "#167052", "fill-opacity": 0.02 } });
+  liveMap.addLayer({ id: "sectors-line", type: "line", source: "sectors-geo", paint: { "line-color": "#167052", "line-width": 1 } });
+  liveMap.addLayer({ id: "boundary-line", type: "line", source: "boundary", paint: { "line-color": "#0d6b4f", "line-width": 3 } });
+  liveMap.addLayer({ id: "food-cells", type: "circle", source: "food", paint: { "circle-radius": metresRadius, "circle-color": ["get", "colour"], "circle-opacity": 0.35, "circle-stroke-color": ["get", "colour"], "circle-stroke-width": 1 } });
+  liveMap.addLayer({ id: "rain-cells", type: "circle", source: "rain", paint: { "circle-radius": metresRadius, "circle-color": ["get", "colour"], "circle-opacity": 0.18, "circle-stroke-color": ["get", "colour"], "circle-stroke-width": 2 } });
+  liveMap.addLayer({ id: "pest-heat", type: "heatmap", source: "heat", paint: {
+    "heatmap-weight": ["get", "weight"],
+    "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 8, 14, 13, 40],
+    "heatmap-opacity": 0.75,
+    "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(243, 211, 107, 0)", 0.3, "#f3d36b", 0.6, "#e08a2c", 0.9, "#c0392b"],
+  } });
+  [["points-schemes", "schemes"], ["points-infrastructure", "infrastructure"], ["points-crops", "crops"], ["points-rain", "rain"], ["points-farmers", "farmers"]].forEach(([id, group]) => {
+    liveMap.addLayer({ id, type: "circle", source: "points", filter: ["==", ["get", "group"], group],
+      paint: { "circle-radius": ["get", "radius"], "circle-color": ["get", "colour"], "circle-opacity": 0.9, "circle-stroke-color": "#ffffff", "circle-stroke-width": 2 } });
+  });
+  liveMap.addLayer({ id: "district-label", type: "symbol", source: "district-label",
+    layout: { "text-field": "Bugesera District", "text-size": 13, "text-font": ["DIN Pro Bold", "Arial Unicode MS Bold"] },
+    paint: { "text-color": "#0d4e3b", "text-halo-color": "#ffffff", "text-halo-width": 2 } });
+
+  // Click a point or circle for its details (popup text is escaped when the feature is built).
+  ["points-schemes", "points-infrastructure", "points-crops", "points-rain", "points-farmers", "rain-cells", "food-cells"].forEach((id) => {
+    liveMap.on("click", id, (event) => {
+      const feature = event.features && event.features[0];
+      if (feature) new mapboxgl.Popup({ offset: 10 }).setLngLat(feature.geometry.coordinates).setHTML(feature.properties.popup).addTo(liveMap);
+    });
+    liveMap.on("mouseenter", id, () => { liveMap.getCanvas().style.cursor = "pointer"; });
+    liveMap.on("mouseleave", id, () => { liveMap.getCanvas().style.cursor = ""; });
+  });
+  // Hover a sector for its name.
+  const hover = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+  liveMap.on("mousemove", "sectors-fill", (event) => {
+    const feature = event.features && event.features[0];
+    if (feature) hover.setLngLat(event.lngLat).setText(feature.properties.name).addTo(liveMap);
+  });
+  liveMap.on("mouseleave", "sectors-fill", () => hover.remove());
+  syncLayerVisibility();
+}
+
+async function loadBugeseraBoundary(reduceMotion) {
   try {
     const boundary = await fetch("assets/data/bugesera-boundary.geojson").then((response) => { if (!response.ok) throw new Error("Boundary unavailable"); return response.json(); });
-    bugeseraBoundaryLayer = L.geoJSON(boundary, { style: { color: "#0d6b4f", weight: 3, opacity: 1, fillColor: "#3a9b72", fillOpacity: 0.08 } })
-      .bindTooltip("Bugesera District", { permanent: true, direction: "center", className: "district-label" }).addTo(liveMap);
-    try {
-      const [sectorResponse, cellResponse] = await Promise.all([apiFetch("geography/sectors"), apiFetch("geography/cells")]);
-      if (sectorResponse.ok) {
-        const sectors = await sectorResponse.json();
-        L.geoJSON(sectors.map((item) => ({ type: "Feature", properties: { name: item.name }, geometry: item.geometry })), { style: { color: "#167052", weight: 1, fillOpacity: 0.02 } }).bindTooltip((layer) => layer.feature.properties.name).addTo(liveMap);
-      }
-      if (cellResponse.ok) {
-        const cells = await cellResponse.json();
-        L.geoJSON(cells.map((item) => ({ type: "Feature", properties: { name: item.name }, geometry: item.geometry })), { style: { color: "#4d8aa3", weight: 0.5, fillOpacity: 0 } }).bindTooltip((layer) => layer.feature.properties.name).addTo(liveMap);
-      }
-    } catch (_) { /* sector and cell overlays need PostGIS; the district outline is enough without it */ }
-    resetBugeseraView();
-  } catch (_) {
-    liveMap.setView([-2.20, 30.10], 10);
-  }
+    liveMap.getSource("boundary").setData(boundary);
+    boundaryBounds = boundsOf(boundary);
+    if (boundaryBounds) {
+      const [[west, south], [east, north]] = boundaryBounds;
+      liveMap.getSource("district-label").setData({ type: "FeatureCollection", features: [point((south + north) / 2, (west + east) / 2, {})] });
+    }
+    resetBugeseraView(reduceMotion);
+  } catch (_) { /* the base map still shows Bugesera */ }
+  try {
+    const [sectorResponse, cellResponse] = await Promise.all([apiFetch("geography/sectors"), apiFetch("geography/cells")]);
+    const asCollection = (items) => ({ type: "FeatureCollection", features: items.filter((item) => item.geometry).map((item) => ({ type: "Feature", properties: { name: item.name }, geometry: item.geometry })) });
+    if (sectorResponse.ok) liveMap.getSource("sectors-geo").setData(asCollection(await sectorResponse.json()));
+    if (cellResponse.ok) liveMap.getSource("cells-geo").setData(asCollection(await cellResponse.json()));
+  } catch (_) { /* sector and cell outlines need PostGIS; the district outline is enough without it */ }
 }
 
-function resetBugeseraView() {
+function resetBugeseraView(reduceMotion = false) {
   if (!liveMap) return;
-  if (bugeseraBoundaryLayer) liveMap.fitBounds(bugeseraBoundaryLayer.getBounds(), { padding: [18, 18] });
-  else liveMap.setView([-2.20, 30.10], 10);
+  if (boundaryBounds) liveMap.fitBounds(boundaryBounds, { padding: 18, animate: reduceMotion !== true });
+  else liveMap.jumpTo({ center: [30.10, -2.20], zoom: 9.2 });
 }
 
 function renderMap(data) {
   currentMapData = data;
-  ensureMap(data.center, data.zoom);
   const scheme = schemeFilterValue();
   const visible = data.features.filter((feature) => scheme === "all" || feature.feature_type === "farmer" || String(feature.scheme_id) === scheme);
   setText("#stat-mapped", mode === "live" ? number(visible.length) : "–");
@@ -571,44 +653,43 @@ function renderMap(data) {
       ? (mode === "live" ? "No mapped locations yet. Reports appear once they are linked to a cell or have coordinates." : "Connect to the platform to show schemes, reports and farmers. The base map shows Bugesera.")
       : `${visible.length} mapped location${visible.length === 1 ? "" : "s"}${scheme === "all" ? " across Bugesera" : " for this scheme"}. Use the layer chips to compare pests, rainfall, and nutrition risk.`;
   }
-  if (!liveMap) return;
-  ["schemes", "infrastructure", "crops", "farmers"].forEach((name) => layers[name].clearLayers());
-  layers.rain.eachLayer((layer) => { if (layer.options.gauge) layers.rain.removeLayer(layer); });
-  visible.forEach((feature) => {
-    const group = layers[FEATURE_LAYER[feature.feature_type] || "infrastructure"];
-    const radius = feature.feature_type === "scheme" ? 10 : feature.feature_type === "rainfall" ? 4 : 7;
-    L.circleMarker([feature.latitude, feature.longitude], { radius, weight: 2, fillOpacity: 0.9, gauge: feature.feature_type === "rainfall", ...markerStyle(feature) })
-      .bindPopup(`<strong>${escapeHtml(feature.name)}</strong>${feature.status ? `<br />${escapeHtml(feature.status)}` : ""}${feature.details ? `<br /><small>${escapeHtml(feature.details)}</small>` : ""}`)
-      .addTo(group);
+  ensureMap().then((map) => {
+    if (!map) return;
+    map.getSource("points").setData({ type: "FeatureCollection", features: visible.map((feature) => point(feature.latitude, feature.longitude, {
+      group: FEATURE_LAYER[feature.feature_type] || "infrastructure",
+      colour: pointColour(feature),
+      radius: feature.feature_type === "scheme" ? 10 : feature.feature_type === "rainfall" ? 4 : 7,
+      popup: `<strong>${escapeHtml(feature.name)}</strong>${feature.status ? `<br />${escapeHtml(feature.status)}` : ""}${feature.details ? `<br /><small>${escapeHtml(feature.details)}</small>` : ""}`,
+    })) });
+    if (pendingAnalysis) { applyAnalysisLayers(map, pendingAnalysis); pendingAnalysis = null; }
+    map.resize();
   });
-  window.setTimeout(() => liveMap.invalidateSize(), 0);
 }
 
-function renderAnalysisLayers({ heat = [], rain = [], food = [] }) {
-  if (!liveMap) return;
-  if (heatLayer) liveMap.removeLayer(heatLayer);
-  heatLayer = null;
-  if (window.L.heatLayer && heat.length) {
-    heatLayer = L.heatLayer(heat.map((p) => [p.latitude, p.longitude, p.weight]), { radius: 30, blur: 22, maxZoom: 13, minOpacity: 0.35, gradient: { 0.3: "#f3d36b", 0.6: "#e08a2c", 0.9: "#c0392b" } });
-  } else if (heat.length) {
-    heatLayer = L.layerGroup(heat.map((p) => L.circle([p.latitude, p.longitude], { radius: 600 + p.weight * 900, color: "#c0392b", weight: 0, fillOpacity: 0.25 })));
-  }
-  layers.rain.eachLayer((layer) => { if (!layer.options.gauge) layers.rain.removeLayer(layer); });
-  const rainColour = { irrigate_more: "#c75248", normal: "#2878a9", reduce: "#1f5f8b", no_data: "#9aa7a1" };
-  rain.forEach((cell) => L.circle([cell.latitude, cell.longitude], { radius: 900, color: rainColour[cell.level], weight: 2, fillOpacity: 0.18 })
-    .bindPopup(`<strong>${escapeHtml(cell.cell)}</strong><br />${cell.rainfall_mm} mm in 7 days (${cell.readings} readings)<br /><small>${cell.level === "irrigate_more" ? "Dry spell warning" : humanize(cell.level)}</small>`).addTo(layers.rain));
-  layers.food.clearLayers();
-  food.filter((row) => row.latitude !== null && row.latitude !== undefined).forEach((row) => L.circle([row.latitude, row.longitude], { radius: 500 + row.households * 120, color: row.average_risk >= 3.5 ? "#8e3b8a" : row.average_risk >= 2.5 ? "#b07cc6" : "#c9b6d6", weight: 1, fillOpacity: 0.35 })
-    .bindPopup(`<strong>${escapeHtml(row.cell)}</strong><br />Average stunting risk ${row.average_risk} / 5<br />${row.households} households, ${row.high_risk} high risk`).addTo(layers.food));
+function applyAnalysisLayers(map, { heat = [], rain = [], food = [] }) {
+  map.getSource("heat").setData({ type: "FeatureCollection", features: heat.map((p) => point(p.latitude, p.longitude, { weight: p.weight })) });
+  map.getSource("rain").setData({ type: "FeatureCollection", features: rain.map((cell) => point(cell.latitude, cell.longitude, {
+    colour: RAIN_COLOUR[cell.level] || RAIN_COLOUR.no_data, r10: 900 / METRES_PER_PIXEL_Z10,
+    popup: `<strong>${escapeHtml(cell.cell)}</strong><br />${escapeHtml(cell.rainfall_mm)} mm in 7 days (${escapeHtml(cell.readings)} readings)<br /><small>${cell.level === "irrigate_more" ? "Dry spell warning" : escapeHtml(humanize(cell.level))}</small>`,
+  })) });
+  map.getSource("food").setData({ type: "FeatureCollection", features: food.filter((row) => row.latitude !== null && row.latitude !== undefined).map((row) => point(row.latitude, row.longitude, {
+    colour: row.average_risk >= 3.5 ? "#8e3b8a" : row.average_risk >= 2.5 ? "#b07cc6" : "#c9b6d6", r10: (500 + row.households * 120) / METRES_PER_PIXEL_Z10,
+    popup: `<strong>${escapeHtml(row.cell)}</strong><br />Average stunting risk ${escapeHtml(row.average_risk)} / 5<br />${escapeHtml(row.households)} households, ${escapeHtml(row.high_risk)} high risk`,
+  })) });
   syncLayerVisibility();
 }
 
+function renderAnalysisLayers(analysis) {
+  if (liveMap && liveMap.getSource("heat")) applyAnalysisLayers(liveMap, analysis);
+  else pendingAnalysis = analysis; // applied as soon as the map is ready
+}
+
 function syncLayerVisibility() {
-  if (!liveMap) return;
+  if (!liveMap || !liveMap.getLayer("pest-heat")) return;
   document.querySelectorAll("[data-layer]").forEach((input) => {
-    const layer = input.dataset.layer === "heat" ? heatLayer : layers[input.dataset.layer];
-    if (!layer) return;
-    if (input.checked) layer.addTo(liveMap); else liveMap.removeLayer(layer);
+    (MAP_GROUPS[input.dataset.layer] || []).forEach((id) => {
+      if (liveMap.getLayer(id)) liveMap.setLayoutProperty(id, "visibility", input.checked ? "visible" : "none");
+    });
   });
 }
 
@@ -617,8 +698,8 @@ async function loadMap() {
   if (mode !== "live") { renderMap(BUGESERA_VIEW); return; }
   try {
     const [mapData, heat, rain] = await Promise.all([apiJson("map-data"), apiJson("analytics/pest-heatmap"), apiJson("analytics/rainfall-map")]);
-    renderMap(mapData);
     renderAnalysisLayers({ heat, rain, food: cache.nutrition?.by_cell || [] });
+    renderMap(mapData);
   } catch (_) {
     renderMap(BUGESERA_VIEW);
     setText("#map-status", "Map data is unavailable right now. The base map shows Bugesera only.");

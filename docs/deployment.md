@@ -29,7 +29,7 @@ The copy takes every platform table in one transaction and checks each row count
 
 ## Maps (Mapbox)
 
-The React dashboard draws its map with Mapbox GL. Create a **public** token (it starts with `pk.`) at account.mapbox.com, restrict it there to the site's URLs, and set `MAPBOX_ACCESS_TOKEN` (optionally `MAPBOX_STYLE`). The browser receives it from `/api/v1/public/map-config`; a secret `sk.` token is refused. Without a token the panel says so and the sector list still works. The classic pages still use Leaflet with OpenStreetMap until they are rebuilt.
+Every map (the executive overview and the classic Map page) is drawn with Mapbox GL. Create a **public** token (it starts with `pk.`) at account.mapbox.com, restrict it there to the site's URLs, and set `MAPBOX_ACCESS_TOKEN` (optionally `MAPBOX_STYLE`). The browser receives it from `/api/v1/public/map-config`; a secret `sk.` token is refused. Without a token each map says what to configure, and the lists next to it still work.
 
 ## Render hosted preview
 

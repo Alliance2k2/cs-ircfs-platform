@@ -3,7 +3,7 @@ import { overview } from "@/test/fixtures";
 import { renderWithProviders, stubApi } from "@/test/render";
 import { OverviewPage } from "./OverviewPage";
 
-// Leaflet and Recharts need a real browser; they are checked by the build and screenshots.
+// Mapbox GL and Recharts need a real browser; they are checked by the build and screenshots.
 vi.mock("@/components/maps/SectorMap", () => ({ default: () => <div>mapbox map</div> }));
 vi.mock("@/components/charts/SchemeChart", () => ({ default: () => <div>chart</div> }));
 

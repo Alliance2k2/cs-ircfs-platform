@@ -52,7 +52,7 @@ No trend arrows or growth percentages are shown until there is a validated basel
 | DataState | `frontend/src/components/feedback/DataState.tsx` |
 | Sidebar, TopBar | `frontend/src/components/navigation/` |
 | SchemeChart (Recharts, with a hidden data table) | `frontend/src/components/charts/SchemeChart.tsx` |
-| SectorMap (Leaflet) | `frontend/src/components/maps/SectorMap.tsx` |
+| SectorMap (Mapbox GL) | `frontend/src/components/maps/SectorMap.tsx` |
 
 ## Accessibility rules
 
@@ -62,7 +62,7 @@ No trend arrows or growth percentages are shown until there is a validated basel
 - Visible focus ring on every interactive element; a "skip to main content" link.
 - The closed mobile menu is removed from the tab order.
 - `prefers-reduced-motion` turns animations off.
-- Heavy libraries (Leaflet, Recharts) load only when their card renders, for low-bandwidth connections; built assets are cached for a year by file hash.
+- Heavy libraries (Mapbox GL, Recharts) load only when their card renders, for low-bandwidth connections; built assets are cached for a year by file hash.
 
 ## Language
 
