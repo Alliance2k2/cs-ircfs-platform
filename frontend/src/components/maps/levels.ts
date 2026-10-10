@@ -4,6 +4,6 @@ import type { AdviceLevel } from "@/services/api/schemas";
 export const LEVEL_TOKEN: Record<AdviceLevel, string> = {
   irrigate_more: "amber",
   normal: "primary",
-  reduce: "water",
+  irrigate_less: "water",
   no_data: "muted",
 };

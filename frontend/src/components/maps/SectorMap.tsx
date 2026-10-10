@@ -33,7 +33,7 @@ function sectorFeatures(rows: RainfallRow[]): FeatureCollection<Point> {
 }
 
 /** The bounding box of any GeoJSON, to frame Bugesera without hard-coding it. */
-function bounds(geo: FeatureCollection<Geometry>): mapboxgl.LngLatBoundsLike | null {
+export function bounds(geo: FeatureCollection<Geometry>): mapboxgl.LngLatBoundsLike | null {
   let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
   const visit = (value: unknown) => {
     if (Array.isArray(value) && typeof value[0] === "number") {
@@ -136,7 +136,7 @@ export default function SectorMap({ rows, token, style }: SectorMapProps) {
             "circle-color": [
               "match", ["get", "level"],
               "irrigate_more", tokenColor(LEVEL_TOKEN.irrigate_more),
-              "reduce", tokenColor(LEVEL_TOKEN.reduce),
+              "irrigate_less", tokenColor(LEVEL_TOKEN.irrigate_less),
               "normal", tokenColor(LEVEL_TOKEN.normal),
               tokenColor(LEVEL_TOKEN.no_data),
             ],

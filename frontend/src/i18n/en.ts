@@ -1,5 +1,8 @@
 /** English interface text: the source of every translation key. */
+import { workspaces } from "./en.workspaces";
+
 export const en = {
+  ...workspaces,
   "app.name": "CS-IRCFS",
   "app.tagline": "People • Water • Food • Future",
   "app.skip": "Skip to main content",
@@ -129,7 +132,7 @@ export const en = {
   "action.due": "Due {date}",
   "advice.irrigate_more": "Dry: irrigate more",
   "advice.normal": "Normal",
-  "advice.reduce": "Wet: irrigate less",
+  "advice.irrigate_less": "Wet: irrigate less",
   "advice.no_data": "No rain data",
   "advice.forecast": "Forecast next 7 days: {mm} mm",
   "advice.unvalidated": "Advice thresholds are starting values until calibrated with an agronomist.",

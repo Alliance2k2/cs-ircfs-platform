@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { SessionProvider } from "@/app/providers/SessionProvider";
 import { AppRoutes } from "@/app/routing/AppRoutes";
 import { ROUTER_FUTURE } from "@/app/routing/future";
+import { ToastProvider } from "@/components/ui/Toast";
 import { I18nProvider } from "@/i18n";
 import { ApiError } from "@/services/api/client";
 import "@/styles/index.css";
@@ -29,7 +30,9 @@ createRoot(root).render(
       <I18nProvider>
         <BrowserRouter basename="/app" future={ROUTER_FUTURE}>
           <SessionProvider>
-            <AppRoutes />
+            <ToastProvider>
+              <AppRoutes />
+            </ToastProvider>
           </SessionProvider>
         </BrowserRouter>
       </I18nProvider>

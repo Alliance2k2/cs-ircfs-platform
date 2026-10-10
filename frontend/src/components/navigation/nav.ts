@@ -1,33 +1,43 @@
 import {
-  Activity,
   AlertTriangle,
-  BarChart3,
+  BookOpenCheck,
+  ClipboardList,
   CloudRain,
   FileBarChart,
   Globe,
   HeartPulse,
   LayoutDashboard,
   type LucideIcon,
-  MapPin,
+  Map,
   MessageSquareText,
+  Radio,
   Settings,
   Smartphone,
+  Sprout,
   TrendingUp,
   Users,
+  Wrench,
 } from "lucide-react";
 import type { MessageKey } from "@/i18n/en";
 
 /**
- * The sidebar, mirroring the legacy shell (dashboard/assets/js/app-shell.js GROUPS).
- * ``to`` is a page already rebuilt in React; ``href`` is a classic page that keeps
- * working until it is migrated. ``staffOnly`` hides links a monitor cannot use.
+ * The whole application menu. ``to`` is a React route; ``href`` a page outside the app.
+ * ``access`` hides links a role cannot use; it mirrors the backend's role checks:
+ * - all: every signed-in role
+ * - field: Citizen Science Monitors, cooperative leaders and district staff
+ * - analyst: Citizen Science Monitors and district staff (the analytics endpoints)
+ * - staff: district officers, planners and administrators
+ * - planner: district planners and administrators (sending advice, editing cooperatives)
+ * - admin: administrators
  */
+export type Access = "all" | "field" | "analyst" | "staff" | "planner" | "admin";
+
 export interface NavItem {
   label: MessageKey;
   icon: LucideIcon;
   to?: string;
   href?: string;
-  staffOnly?: boolean;
+  access?: Access;
 }
 
 export interface NavGroup {
@@ -39,30 +49,59 @@ export const NAV: NavGroup[] = [
   {
     label: "nav.group.dashboard",
     items: [
-      { label: "nav.overview", icon: LayoutDashboard, to: "/" },
-      { label: "nav.actnow", icon: AlertTriangle, href: "/act-now.html", staffOnly: true },
-      { label: "nav.channels", icon: Activity, href: "/channels.html" },
-      { label: "nav.schemes", icon: BarChart3, href: "/schemes.html" },
-      { label: "nav.trends", icon: TrendingUp, href: "/trends.html" },
+      { label: "nav.overview", icon: LayoutDashboard, to: "/", access: "analyst" },
+      { label: "nav.actions", icon: AlertTriangle, to: "/actions", access: "staff" },
     ],
   },
   {
-    label: "nav.group.field",
+    label: "nav.group.field2",
     items: [
-      { label: "nav.advice", icon: CloudRain, href: "/advice.html" },
-      { label: "nav.food", icon: HeartPulse, href: "/nutrition.html" },
-      { label: "nav.map", icon: MapPin, href: "/map.html" },
-      { label: "nav.feedback", icon: MessageSquareText, href: "/feedback.html" },
-      { label: "nav.cooperatives", icon: Users, href: "/cooperatives.html" },
+      { label: "nav.fieldReports", icon: ClipboardList, to: "/field-reports", access: "field" },
+      { label: "nav.crops", icon: Sprout, to: "/crops", access: "analyst" },
+      { label: "nav.nutrition", icon: HeartPulse, to: "/nutrition", access: "analyst" },
     ],
   },
   {
-    label: "nav.group.platform",
+    label: "nav.group.water",
     items: [
-      { label: "nav.management", icon: Settings, href: "/management.html", staffOnly: true },
-      { label: "nav.report", icon: FileBarChart, href: "/report.html" },
-      { label: "nav.simulator", icon: Smartphone, href: "/simulator.html" },
+      { label: "nav.irrigation", icon: Wrench, to: "/irrigation", access: "field" },
+      { label: "nav.climate", icon: CloudRain, to: "/climate", access: "analyst" },
+      { label: "nav.districtMap", icon: Map, to: "/map" },
+    ],
+  },
+  {
+    label: "nav.group.evaluation",
+    items: [{ label: "nav.evaluation", icon: BookOpenCheck, to: "/evaluation", access: "analyst" }],
+  },
+  {
+    label: "nav.group.community",
+    items: [
+      { label: "nav.grievances", icon: MessageSquareText, to: "/grievances", access: "staff" },
+      { label: "nav.cooperatives", icon: Users, to: "/cooperatives", access: "staff" },
+    ],
+  },
+  {
+    label: "nav.group.comms",
+    items: [
+      { label: "nav.channels2", icon: Radio, to: "/channels", access: "field" },
+      { label: "nav.simulator", icon: Smartphone, to: "/simulator", access: "field" },
+    ],
+  },
+  {
+    label: "nav.group.reports",
+    items: [
+      { label: "nav.trends", icon: TrendingUp, to: "/trends", access: "analyst" },
+      { label: "nav.monthly", icon: FileBarChart, to: "/monthly-report", access: "analyst" },
+    ],
+  },
+  {
+    label: "nav.group.admin",
+    items: [
+      { label: "nav.admin", icon: Settings, to: "/admin", access: "admin" },
       { label: "nav.home", icon: Globe, href: "/" },
     ],
   },
 ];
+
+/** Every route with its group, for breadcrumbs and the search palette. */
+export const ROUTES = NAV.flatMap((group) => group.items.filter((item) => item.to).map((item) => ({ ...item, group: group.label })));

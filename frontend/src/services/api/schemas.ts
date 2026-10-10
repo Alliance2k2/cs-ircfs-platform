@@ -47,7 +47,7 @@ export const assetSchema = z.object({
 });
 export type Asset = z.infer<typeof assetSchema>;
 
-export const adviceLevel = z.enum(["irrigate_more", "normal", "reduce", "no_data"]);
+export const adviceLevel = z.enum(["irrigate_more", "normal", "irrigate_less", "no_data"]);
 export type AdviceLevel = z.infer<typeof adviceLevel>;
 
 export const rainfallRowSchema = z.object({

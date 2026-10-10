@@ -40,7 +40,7 @@ export const rw: Partial<Record<MessageKey, string>> = {
   "section.map": "Imvura n'inama zo kuhira",
   "advice.irrigate_more": "Izuba: uhire cyane",
   "advice.normal": "Bisanzwe",
-  "advice.reduce": "Imvura: uhire gake",
+  "advice.irrigate_less": "Imvura: uhire gake",
   "advice.no_data": "Nta makuru y'imvura",
   "map.reset": "Garura Bugesera yose", // existing
   "state.loading": "Biratangira…",

@@ -12,7 +12,7 @@ import { mapConfigSchema, type AdviceLevel, type RainfallRow } from "@/services/
 
 // Mapbox GL is the heaviest dependency: load it only when a token exists and this panel renders.
 const SectorMap = lazy(() => import("@/components/maps/SectorMap"));
-const ORDER: AdviceLevel[] = ["irrigate_more", "reduce", "normal", "no_data"];
+const ORDER: AdviceLevel[] = ["irrigate_more", "irrigate_less", "normal", "no_data"];
 
 export function RainfallPanel({ rows }: { rows: RainfallRow[] }) {
   const { t, lang } = useI18n();
