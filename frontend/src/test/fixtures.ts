@@ -21,6 +21,7 @@ export const overview = (overrides: Partial<ExecutiveOverview> = {}): ExecutiveO
     metric(),
     metric({ key: "rainfall_7d", label: "Rainfall, 7 days", value: null, unit: "mm", source: "missing", note: "No rain-gauge readings in the last 7 days" }),
   ],
+  counts: { open_cases: 7, open_grievances: 4, critical: 2, sectors_with_rain: 3, sectors_reporting: 3, sectors_total: 15 },
   schemes: [
     {
       scheme_id: 1,

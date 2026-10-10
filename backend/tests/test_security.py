@@ -163,3 +163,16 @@ def test_responses_carry_security_headers(client):
     assert headers["X-Content-Type-Options"] == "nosniff"
     assert headers["X-Frame-Options"] == "DENY"
     assert "Referrer-Policy" in headers and "Permissions-Policy" in headers
+
+
+# --- Map configuration ---------------------------------------------------------------
+
+def test_map_config_returns_only_public_mapbox_tokens(client, monkeypatch):
+    import app.api.routes.public as public
+
+    monkeypatch.setattr(public, "get_settings", lambda: Settings(_env_file=None, mapbox_access_token="pk.abc123"))
+    assert client.get("/api/v1/public/map-config").json()["mapbox_token"] == "pk.abc123"
+    monkeypatch.setattr(public, "get_settings", lambda: Settings(_env_file=None, mapbox_access_token="sk.secret"))
+    assert client.get("/api/v1/public/map-config").json()["mapbox_token"] is None
+    monkeypatch.setattr(public, "get_settings", lambda: Settings(_env_file=None, mapbox_access_token=""))
+    assert client.get("/api/v1/public/map-config").json() == {"mapbox_token": None, "style": "mapbox://styles/mapbox/light-v11"}

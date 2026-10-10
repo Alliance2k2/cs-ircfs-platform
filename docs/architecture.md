@@ -20,7 +20,7 @@ flowchart TD
 | --- | --- | --- |
 | USSD / SMS gateway | Africa's Talking-format callbacks; Kinyarwanda menu; keyword parser; dry-run until credentials are set | `services/ussd.py`, `services/sms_keywords.py`, `routes/channels.py` |
 | Central database | PostgreSQL/PostGIS, Alembic migrations 01–08 | `db/models.py`, `migrations/` |
-| Web dashboard with Leaflet | Planner dashboard with switchable map layers | `dashboard/planner.html`, `dashboard/assets/js/app.js` |
+| Web dashboard with maps | Mapbox GL maps: switchable layers on the Map page (schemes, assets, crop reports, pest heatmap, rainfall, nutrition, farmers) and the sector advice map on the executive overview | `dashboard/map.html`, `dashboard/assets/js/app.js`, `frontend/src/components/maps/SectorMap.tsx` |
 | **Module 1** Crowdsourced Yield Forecaster | USSD option 1 / `UMUSARURO`; scheme performance compares reported (or forecast) harvest with the scheme's yield target | `analytics/scheme-performance` |
 | SMS Pest/Disease Alert | `NZANA` / `INDWARA` keywords, USSD option 2; pest **heatmap** layer; severity 4–5 creates an Act Now case | `analytics/pest-heatmap` |
 | Household Nutrition Tracker | USSD option 6 (3 questions) gives a stunting-risk score of 1–5, by cell | `nutrition_surveys`, `analytics/nutrition-summary` |

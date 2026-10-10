@@ -10,6 +10,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import IncidentCase, IncidentEvent, PlatformAccount, ReportStatus, UserRole
 from app.db.session import get_db
 from app.schemas import CellNotification, IncidentCaseRead, IncidentEventRead, IncidentUpdate
+from app.services.audit import record
 from app.services.cases import case_source, change_status, require_case_source, source_cell
 from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided
@@ -50,6 +51,8 @@ def update_case(case_id: int, payload: IncidentUpdate, db: Session = Depends(get
         case.assigned_to_account_id = payload.assigned_to_account_id
     if payload.due_at is not None:
         case.due_at = payload.due_at
+    record(db, principal, "case.update", "incident_case", case.id, status=payload.status.value,
+           assigned_to_account_id=payload.assigned_to_account_id, due_at=payload.due_at)
     db.commit()
     db.refresh(case)
     return case
@@ -86,5 +89,6 @@ def notify_case_cell(case_id: int, payload: CellNotification, db: Session = Depe
     result = notify_cell(db, report.cell_id, message, payload.preview)
     if not payload.preview:
         case.reporter_notified_at = datetime.now(timezone.utc)
+        record(db, principal, "case.notify_cell", "incident_case", case.id, recipients=result.get("recipients"))
     db.commit()
     return result

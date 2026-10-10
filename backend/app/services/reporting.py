@@ -34,8 +34,10 @@ from app.db.models import (
 )
 from app.services.cases import auto_create_case
 from app.services.cooperatives import participation as cooperative_participation
+from app.services.evidence import counted
 
 KIGALI = timezone(timedelta(hours=2))
+MIN_HOUSEHOLDS_PER_GROUP = 5  # matches services/analytics.py
 CLOSED = [ReportStatus.resolved, ReportStatus.closed]
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
@@ -120,9 +122,14 @@ def change(current: int | float, previous: int | float) -> float | None:
     return round((current - previous) / previous * 100) if previous else None
 
 
+def evidence(model) -> tuple:
+    """Simulator tests are never counted in reports (only tables with a data origin have them)."""
+    return (counted(model),) if hasattr(model, "data_origin") else ()
+
+
 def headline(db: Session, start: datetime, end: datetime) -> dict:
     def count(model, *conditions):
-        return db.scalar(select(func.count()).select_from(model).where(model.created_at >= start, model.created_at < end, *conditions)) or 0
+        return db.scalar(select(func.count()).select_from(model).where(model.created_at >= start, model.created_at < end, *evidence(model), *conditions)) or 0
 
     crop = count(CitizenScienceLog)
     water = count(IrrigationClimateLog)
@@ -136,7 +143,7 @@ def headline(db: Session, start: datetime, end: datetime) -> dict:
         "nutrition_surveys": count(NutritionSurvey),
         "ussd_sessions": db.scalar(
             select(func.count(func.distinct(InboundMessage.session_id))).where(
-                InboundMessage.channel == "ussd", InboundMessage.created_at >= start, InboundMessage.created_at < end
+                InboundMessage.channel == "ussd", InboundMessage.created_at >= start, InboundMessage.created_at < end, counted(InboundMessage)
             )
         )
         or 0,
@@ -149,7 +156,7 @@ def headline(db: Session, start: datetime, end: datetime) -> dict:
 def build_monthly_report(db: Session, month: str | None = None) -> dict:
     start, end, key = month_window(month)
     previous_start, _, previous_key = month_window((start.astimezone(KIGALI) - timedelta(days=1)).strftime("%Y-%m"))
-    in_month = lambda column: (column >= start, column < end)  # noqa: E731
+    in_month = lambda column: (column >= start, column < end, *evidence(column.class_))  # noqa: E731
 
     now_figures = headline(db, start, end)
     before = headline(db, previous_start, start)
@@ -229,7 +236,7 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
     for survey in surveys:
         risk_by_cell.setdefault(survey.cell_id, []).append(survey.stunting_risk_score)
     risk_cells = sorted(({"cell": cell_sector.get(cell_id, ("Location not set",))[0], "sector": sector_of(cell_id), "households": len(scores),
-                          "average_risk": round(sum(scores) / len(scores), 1)} for cell_id, scores in risk_by_cell.items()),
+                          "average_risk": round(sum(scores) / len(scores), 1)} for cell_id, scores in risk_by_cell.items() if len(scores) >= MIN_HOUSEHOLDS_PER_GROUP),
                         key=lambda row: -row["average_risk"])
 
     sms_out: dict[str, int] = {}
@@ -263,7 +270,9 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
         "pests": sorted(({**entry, "sectors": sorted(entry["sectors"])} for entry in pests.values()), key=lambda row: (-row["severe"], -row["reports"])),
         "rainfall": rainfall,
         "nutrition": {"households": len(surveys), "average_risk": round(sum(s.stunting_risk_score for s in surveys) / len(surveys), 1) if surveys else None,
-                      "high_risk_households": sum(1 for s in surveys if s.stunting_risk_score >= 4), "cells": risk_cells[:8]},
+                      "high_risk_households": sum(1 for s in surveys if s.stunting_risk_score >= 4), "cells": risk_cells[:8],
+                      "cells_hidden": sum(1 for scores in risk_by_cell.values() if len(scores) < MIN_HOUSEHOLDS_PER_GROUP),
+                      "min_households_per_group": MIN_HOUSEHOLDS_PER_GROUP},
         "messages": {"sms_sent_by_purpose": dict(sorted(sms_out.items(), key=lambda pair: -pair[1])), "delivery": delivery,
                      "airtime_rewards": rewards[0], "airtime_rwf": int(rewards[1])},
     }
@@ -291,7 +300,7 @@ def build_trends(db: Session, months: int = 12) -> dict:
     for created, severity, expected, reported, planted in db.execute(select(CitizenScienceLog.created_at, CitizenScienceLog.severity,
                                                                    CitizenScienceLog.expected_harvest_tons, CitizenScienceLog.reported_harvest_tons,
                                                                    CitizenScienceLog.planting_date)
-                                                            .where(CitizenScienceLog.created_at >= start)):
+                                                            .where(CitizenScienceLog.created_at >= start, counted(CitizenScienceLog))):
         row = bucket(created)
         if row:
             row["reports"] += 1
@@ -303,7 +312,7 @@ def build_trends(db: Session, months: int = 12) -> dict:
     gauges: dict[str, dict] = {}
     for created, status, mm, reporter_id, cell_id in db.execute(select(IrrigationClimateLog.created_at, IrrigationClimateLog.operational_status,
                                                                        IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id)
-                                                       .where(IrrigationClimateLog.created_at >= start)):
+                                                       .where(IrrigationClimateLog.created_at >= start, counted(IrrigationClimateLog))):
         row = bucket(created)
         if not row:
             continue
@@ -316,7 +325,7 @@ def build_trends(db: Session, months: int = 12) -> dict:
             gauges[row["month"]][gauge] += float(mm)
     for key, totals in gauges.items():
         rows[key]["rainfall_mm"] = round(sum(totals.values()) / len(totals), 1)
-    for (created,) in db.execute(select(CommunityFeedback.created_at).where(CommunityFeedback.created_at >= start)):
+    for (created,) in db.execute(select(CommunityFeedback.created_at).where(CommunityFeedback.created_at >= start, counted(CommunityFeedback))):
         if row := bucket(created):
             row["grievances"] += 1
     for (created,) in db.execute(select(IncidentCase.created_at).where(IncidentCase.created_at >= start)):
@@ -327,12 +336,13 @@ def build_trends(db: Session, months: int = 12) -> dict:
         if row := bucket(closed):
             row["cases_resolved"] += 1
     risks: dict[str, list[int]] = {}
-    for created, score in db.execute(select(NutritionSurvey.created_at, NutritionSurvey.stunting_risk_score).where(NutritionSurvey.created_at >= start)):
+    for created, score in db.execute(select(NutritionSurvey.created_at, NutritionSurvey.stunting_risk_score).where(NutritionSurvey.created_at >= start, counted(NutritionSurvey))):
         if row := bucket(created):
             row["households"] += 1
             risks.setdefault(row["month"], []).append(score)
     for key, scores in risks.items():
-        rows[key]["average_risk"] = round(sum(scores) / len(scores), 1)
+        # Same small-group rule as the nutrition summary: too few households, no score.
+        rows[key]["average_risk"] = round(sum(scores) / len(scores), 1) if len(scores) >= MIN_HOUSEHOLDS_PER_GROUP else None
     for row in rows.values():
         row["expected_tons"] = round(row["expected_tons"], 1)
         row["reported_tons"] = round(row["reported_tons"], 1)

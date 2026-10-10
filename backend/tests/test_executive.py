@@ -111,3 +111,8 @@ def test_invented_demo_targets_are_never_called_documented(client, district, ses
         session.commit()
     padab = next(row for row in client.get(OVERVIEW).json()["schemes"] if row["name"] == "PADAB")
     assert padab["yield_target"]["source"] == "demo"
+
+
+def test_counts_for_navigation_badges(client, district):
+    counts = client.get(OVERVIEW).json()["counts"]
+    assert counts == {"open_cases": 0, "open_grievances": 0, "critical": 0, "sectors_with_rain": 0, "sectors_reporting": 0, "sectors_total": 1}

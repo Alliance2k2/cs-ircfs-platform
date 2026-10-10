@@ -25,6 +25,14 @@ export const rw: Partial<Record<MessageKey, string>> = {
   "lang.label": "Ururimi", // existing
   "account.signout": "Sohoka", // existing
   "overview.title": "Ibibera i Bugesera",
+  "greet.morning": "Mwaramutse", // existing
+  "greet.afternoon": "Mwiriwe", // existing
+  "greet.evening": "Mwiriwe", // existing
+  "greet.planner": "Mugenamigambi", // existing
+  "hero.subtitle": "Ishusho isobanutse y'imikorere yo kuhira, ibyago ku bihingwa n'ibikorwa by'abaturage.", // existing
+  "hero.openActNow": "Fungura Ibyihutirwa",
+  "hero.map": "Ikarita y'akarere",
+  "modules.title": "Fungura igice",
   "filter.scheme": "Umushinga", // existing
   "filter.allSchemes": "Imishinga yose", // existing
   "filter.refresh": "Vugurura", // existing
@@ -32,7 +40,7 @@ export const rw: Partial<Record<MessageKey, string>> = {
   "section.map": "Imvura n'inama zo kuhira",
   "advice.irrigate_more": "Izuba: uhire cyane",
   "advice.normal": "Bisanzwe",
-  "advice.reduce": "Imvura: uhire gake",
+  "advice.irrigate_less": "Imvura: uhire gake",
   "advice.no_data": "Nta makuru y'imvura",
   "map.reset": "Garura Bugesera yose", // existing
   "state.loading": "Biratangira…",

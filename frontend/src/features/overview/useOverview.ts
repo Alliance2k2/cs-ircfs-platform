@@ -38,8 +38,9 @@ export function useOverviewFilters(): [OverviewFilters, (next: Partial<OverviewF
   return [filters, update];
 }
 
-export function useOverview(filters: OverviewFilters) {
+export function useOverview(filters: OverviewFilters, enabled = true) {
   return useQuery({
+    enabled,
     queryKey: ["executive-overview", filters],
     queryFn: ({ signal }) =>
       apiGet(

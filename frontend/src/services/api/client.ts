@@ -60,3 +60,27 @@ export function query(params: Record<string, string | number | null | undefined>
   const text = search.toString();
   return text ? `?${text}` : "";
 }
+
+/**
+ * Send a change (POST, PATCH, DELETE) and validate the answer when a schema is given.
+ * Errors carry the server's message, ready to show in a toast or next to a form.
+ */
+export async function apiSend<T = unknown>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, schema?: z.ZodType<T, z.ZodTypeDef, unknown>): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/${path}`, {
+      method,
+      credentials: "same-origin",
+      headers: { Accept: "application/json", ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    throw new ApiError("The platform could not be reached.", 0);
+  }
+  const data: unknown = response.status === 204 ? null : await response.json().catch(() => null);
+  if (!response.ok) throw new ApiError(detailMessage(data, response.status), response.status);
+  if (!schema) return data as T;
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) throw new ApiError("The platform sent data in an unexpected format.", response.status);
+  return parsed.data;
+}

@@ -14,6 +14,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.routes import (
+    admin,
     advisory,
     analytics,
     auth,
@@ -21,9 +22,12 @@ from app.api.routes import (
     cases,
     channels,
     cooperatives,
+    evaluation,
     feedback,
+    field_reports,
     field_users,
     geography,
+    irrigation,
     map_data,
     public,
     reference_data,
@@ -153,6 +157,10 @@ for api_router in (
     map_data.router,
     geography.router,
     public.router,
+    field_reports.router,
+    irrigation.router,
+    evaluation.router,
+    admin.router,
 ):
     app.include_router(api_router)
 

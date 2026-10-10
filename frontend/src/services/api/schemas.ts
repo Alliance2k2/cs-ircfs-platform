@@ -47,7 +47,7 @@ export const assetSchema = z.object({
 });
 export type Asset = z.infer<typeof assetSchema>;
 
-export const adviceLevel = z.enum(["irrigate_more", "normal", "reduce", "no_data"]);
+export const adviceLevel = z.enum(["irrigate_more", "normal", "irrigate_less", "no_data"]);
 export type AdviceLevel = z.infer<typeof adviceLevel>;
 
 export const rainfallRowSchema = z.object({
@@ -93,6 +93,14 @@ export const executiveOverviewSchema = z.object({
   filters: z.object({ scheme_id: z.number().nullable(), sector_id: z.number().nullable() }),
   demo_mode: z.boolean(),
   metrics: z.array(metricSchema),
+  counts: z.object({
+    open_cases: z.number(),
+    open_grievances: z.number(),
+    critical: z.number(),
+    sectors_with_rain: z.number(),
+    sectors_reporting: z.number(),
+    sectors_total: z.number(),
+  }),
   schemes: z.array(schemeRowSchema),
   assets: z.array(assetSchema),
   rainfall: z.array(rainfallRowSchema),
@@ -126,6 +134,8 @@ export const authConfigSchema = z.object({
   google_client_id: z.string().nullable(),
   development_bypass: z.boolean().default(false),
 });
+
+export const mapConfigSchema = z.object({ mapbox_token: z.string().nullable(), style: z.string().nullable() });
 
 export const schemeSchema = z.object({ id: z.number(), name: z.string(), is_active: z.boolean() });
 export const sectorSchema = z.object({ id: z.number(), name: z.string() });

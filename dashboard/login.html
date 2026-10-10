@@ -79,10 +79,10 @@
 <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/shared.js?v=20261010"></script>
 <script>
-const next = new URLSearchParams(location.search).get("next") || "planner.html";
+const next = new URLSearchParams(location.search).get("next") || "/app/";
 // Only same-site pages: a classic page ("act-now.html") or a React dashboard path ("/app/…").
 const SAFE_NEXT = /^([a-z-]+\.html(#[a-z-]+)?|\/app\/[A-Za-z0-9\/_?=&%.-]*)$/;
-const goNext = () => { location.href = SAFE_NEXT.test(next) && !next.includes("..") ? next : "planner.html"; };
+const goNext = () => { location.href = SAFE_NEXT.test(next) && !next.includes("..") ? next : "/app/"; };
 function finish(result) { CS.session.start(result); goNext(); }
 
 const notice = document.querySelector("#notice");
@@ -103,7 +103,7 @@ const account = CS.session.account();
 if (account) {
   const box = document.querySelector("#signed-in");
   box.hidden = false;
-  box.innerHTML = `<i class="bi bi-person-check" aria-hidden="true"></i><span>You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a class="alert-link" href="planner.html">Continue to the dashboard →</a></span>`;
+  box.innerHTML = `<i class="bi bi-person-check" aria-hidden="true"></i><span>You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a class="alert-link" href="/app/">Continue to the dashboard →</a></span>`;
 }
 
 CS.apiJson("auth/config").then(({ google_client_id }) => {

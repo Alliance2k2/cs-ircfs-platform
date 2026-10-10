@@ -44,10 +44,11 @@ Every control above has an automated test in `backend/tests/test_security.py` or
 | `GATEWAY_CALLBACK_TOKEN` | a random secret of 24+ characters, also in the Africa's Talking callback URLs |
 | `GATEWAY_ALLOWED_IPS` | optional: Africa's Talking callback addresses |
 | `FORWARDED_ALLOW_IPS` | the address of the trusted proxy |
+| `MAPBOX_ACCESS_TOKEN` | a **public** Mapbox token (`pk.`), restricted to the site's URLs in Mapbox; it is visible to browsers by design, and secret `sk.` tokens are refused |
 
 ## Open items
 
-1. **Content Security Policy.** The legacy HTML pages use inline scripts and load Leaflet from unpkg, so a strict CSP would break them. Add one when the React app replaces them.
+1. **Content Security Policy.** The legacy HTML pages use inline scripts and load Mapbox GL from unpkg, so a strict CSP would break them. Add one when the React app replaces them.
 2. **Data protection impact assessment.** Rwanda's Law N° 058/2021 on the protection of personal data and privacy requires a lawful basis, purpose limitation and, for this kind of processing, registration with the National Cyber Security Authority. The district should complete the DPIA and registration before the pilot; this repository cannot do that.
 3. **Retention.** No automatic deletion of inbound messages or sessions yet. Decide retention periods with the district and add a scheduled clean-up.
 4. **Sign-in throttling per account.** The limit is per client address; add a per-email lockout if password guessing is seen.

@@ -142,6 +142,9 @@ def overview(db: Session, principal: Principal, days: int = 30, scheme_id: int |
         "filters": {"scheme_id": scheme_id, "sector_id": sector_id},
         "demo_mode": evidence == DEMO,
         "metrics": metrics,
+        # Plain counts for navigation badges (the module launcher and the alert bell).
+        "counts": {"open_cases": len(open_cases), "open_grievances": open_grievances, "critical": sum(1 for case in open_cases if case.priority == "critical"),
+                   "sectors_with_rain": len(gauged), "sectors_reporting": len(reporting_sectors), "sectors_total": total_sectors},
         "schemes": scheme_rows(db, scope, assets, scheme_id, evidence, period),
         "assets": assets,
         "rainfall": [{"sector_id": row["sector_id"], "sector": row["sector"], "rainfall_mm_7d": row["rainfall_mm_7d"] if row["readings"] else None,

@@ -13,6 +13,26 @@ There are three ways to run the platform. All three use the same code.
 
 The Docker image builds `frontend/` in a Node stage and serves the result at `/app/`; nothing extra is needed on the server. Locally, `start-local.ps1` builds it once. While changing the frontend, run the API and then `npm run dev` in `frontend/`: Vite serves the app on http://localhost:5173/app/ and forwards `/api` and the sign-in page to http://127.0.0.1:8000 (set `CS_IRCFS_API` to use another address).
 
+## Hosted PostgreSQL (Neon)
+
+The platform runs on any PostgreSQL with PostGIS, including Neon. Set `DATABASE_URL` to the connection string Neon gives (keep `?sslmode=require`); the platform adds the psycopg driver itself and re-checks pooled connections, which Neon closes when idle.
+
+To move existing data to a new database:
+
+```powershell
+cd backend
+$env:DATABASE_URL = "<new database URL>"; python -m alembic upgrade head; Remove-Item Env:DATABASE_URL
+python scripts/copy_database.py --target "<new database URL>"   # source = DATABASE_URL in .env
+```
+
+The copy takes every platform table in one transaction and checks each row count; it refuses to overwrite a target that already has rows unless `--replace` is given. Then point `DATABASE_URL` in `.env` at the new database.
+
+## Maps (Mapbox)
+
+Every map (the executive overview and the classic Map page) is drawn with Mapbox GL. Create a **public** token (it starts with `pk.`) at account.mapbox.com, restrict it there to the site's URLs, and set `MAPBOX_ACCESS_TOKEN` (optionally `MAPBOX_STYLE`). The browser receives it from `/api/v1/public/map-config`; a secret `sk.` token is refused. Without a token each map says what to configure, and the lists next to it still work.
+
+Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYLE` style), **Satellite** (`satellite-streets-v12`) and **Terrain** (`outdoors-v12`), and a **3D** button that tilts the view and adds Mapbox terrain elevation (exaggerated 1.8× because Bugesera's relief is gentle). The platform's layers are redrawn after every switch, and the choice is remembered in the browser (`cs_ircfs_map_view`), shared by both maps.
+
 ## Render hosted preview
 
 1. Push this folder to GitHub, keeping `.env` out of Git.

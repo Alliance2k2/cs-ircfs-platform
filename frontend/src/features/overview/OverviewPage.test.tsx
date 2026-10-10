@@ -3,8 +3,8 @@ import { overview } from "@/test/fixtures";
 import { renderWithProviders, stubApi } from "@/test/render";
 import { OverviewPage } from "./OverviewPage";
 
-// Leaflet and Recharts need a real browser; they are checked by the build and screenshots.
-vi.mock("@/components/maps/SectorMap", () => ({ default: () => <div>map</div> }));
+// Mapbox GL and Recharts need a real browser; they are checked by the build and screenshots.
+vi.mock("@/components/maps/SectorMap", () => ({ default: () => <div>mapbox map</div> }));
 vi.mock("@/components/charts/SchemeChart", () => ({ default: () => <div>chart</div> }));
 
 const OPTIONS = { "irrigation-schemes": [{ id: 1, name: "PADAB", is_active: true }], sectors: [{ id: 1, name: "Ngeruka" }] };
@@ -45,6 +45,18 @@ describe("OverviewPage", () => {
     renderWithProviders(<OverviewPage />, { route: "/?days=90&scheme=1" });
     await screen.findByRole("article", { name: "Citizen reports" });
     expect(fetchMock).toHaveBeenCalledWith("/api/v1/analytics/executive-overview?days=90&scheme_id=1", expect.anything());
+  });
+
+  it("asks for a Mapbox token instead of showing a broken map", async () => {
+    stubApi({ "analytics/executive-overview": overview(), "public/map-config": { mapbox_token: null, style: null }, ...OPTIONS });
+    renderWithProviders(<OverviewPage />);
+    expect(await screen.findByText(/MAPBOX_ACCESS_TOKEN/)).toBeInTheDocument();
+  });
+
+  it("shows the Mapbox map when a public token is configured", async () => {
+    stubApi({ "analytics/executive-overview": overview(), "public/map-config": { mapbox_token: "pk.test", style: null }, ...OPTIONS });
+    renderWithProviders(<OverviewPage />);
+    expect(await screen.findByText("mapbox map")).toBeInTheDocument();
   });
 
   it("offers a retry when the overview fails", async () => {

@@ -42,7 +42,7 @@
   if (session.account()) {
     $("#nav-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
     $("#hero-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
-    ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "planner.html"; });
+    ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "/app/"; });
     const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = "Open dashboard";
   }
 

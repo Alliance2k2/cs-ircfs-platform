@@ -6,6 +6,9 @@ import { useI18n } from "@/i18n";
 import { ApiError } from "@/services/api/client";
 import { AssetHealth } from "./AssetHealth";
 import { FilterBar } from "./FilterBar";
+import { METRIC_STYLE } from "./metricStyle";
+import { ModuleGrid } from "./ModuleGrid";
+import { OverviewHero } from "./OverviewHero";
 import { PriorityActions } from "./PriorityActions";
 import { RainfallPanel } from "./RainfallPanel";
 import { RecentReports } from "./RecentReports";
@@ -17,7 +20,7 @@ function LoadingGrid() {
     <div className="space-y-6" aria-hidden>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {Array.from({ length: 8 }, (_, index) => (
-          <Skeleton key={index} className="h-[9.5rem]" />
+          <Skeleton key={index} className="h-[11rem]" />
         ))}
       </div>
       <div className="grid gap-6 lg:grid-cols-12">
@@ -41,11 +44,12 @@ export function OverviewPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
-        <div className="max-w-2xl">
-          <p className="text-2xs font-bold uppercase tracking-[0.16em] text-primary">{t("overview.eyebrow")}</p>
-          <h1 className="mt-1.5 text-2xl font-extrabold sm:text-3xl">{t("overview.title")}</h1>
-          <p className="mt-1.5 text-sm text-muted">{t("overview.subtitle")}</p>
+      <OverviewHero data={data} />
+
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 rounded-[20px] border border-line bg-surface px-4 py-4 shadow-card sm:px-5">
+        <div className="max-w-xl">
+          <h2 className="text-lg font-extrabold">{t("overview.title")}</h2>
+          <p className="mt-0.5 text-sm text-muted">{t("overview.subtitle")}</p>
         </div>
         <FilterBar
           filters={filters}
@@ -75,29 +79,31 @@ export function OverviewPage() {
         <>
           <section aria-label={t("overview.title")} className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             {data.metrics.map((metric) => (
-              <MetricCard key={metric.key} metric={metric} />
+              <MetricCard key={metric.key} metric={metric} icon={METRIC_STYLE[metric.key]?.icon} accent={METRIC_STYLE[metric.key]?.accent} />
             ))}
           </section>
 
           <div className="grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+            <div className="min-w-0 lg:col-span-7">
               <PriorityActions actions={data.priority_actions} />
             </div>
-            <div className="lg:col-span-5">
+            <div className="min-w-0 lg:col-span-5">
               <AssetHealth assets={data.assets} schemes={data.schemes} />
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+            <div className="min-w-0 lg:col-span-7">
               <SchemeComparison schemes={data.schemes} />
             </div>
-            <div className="lg:col-span-5">
+            <div className="min-w-0 lg:col-span-5">
               <RainfallPanel rows={data.rainfall} />
             </div>
           </div>
 
           <RecentReports reports={data.recent_reports} />
+
+          <ModuleGrid data={data} />
         </>
       ) : null}
     </div>

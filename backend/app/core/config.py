@@ -71,6 +71,10 @@ class Settings(BaseSettings):
     # allow-list of the provider's callback addresses.
     gateway_callback_token: str = ""
     gateway_allowed_ips: str = ""
+    # Mapbox for the dashboard maps. Use a PUBLIC token (pk.…), restricted in the Mapbox
+    # account to this site's URLs; it is sent to browsers. A secret token (sk.…) is refused.
+    mapbox_access_token: str = ""
+    mapbox_style: str = "mapbox://styles/mapbox/light-v11"
 
     # The project-root .env, found from this file so scripts work from any folder.
     model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore")

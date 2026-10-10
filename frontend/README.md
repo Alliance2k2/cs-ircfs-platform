@@ -1,6 +1,6 @@
 # CS-IRCFS District Planning Dashboard (React)
 
-React 18 + TypeScript (strict) + Vite + Tailwind, with TanStack Query, React Router, Zod, Recharts and react-leaflet. FastAPI serves the build at `/app/`. Pages are migrated from the classic dashboard (`../dashboard/`) one at a time; the sidebar links to classic pages until their React version exists.
+React 18 + TypeScript (strict) + Vite + Tailwind, with TanStack Query, React Router, Zod, Recharts and Mapbox GL (token from `MAPBOX_ACCESS_TOKEN`). FastAPI serves the build at `/app/`. Pages are migrated from the classic dashboard (`../dashboard/`) one at a time; the sidebar links to classic pages until their React version exists.
 
 ## Commands
 

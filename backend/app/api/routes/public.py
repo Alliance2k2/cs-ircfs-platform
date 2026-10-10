@@ -1,15 +1,29 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.db.models import Cell, CitizenScienceLog, FieldUser, InboundMessage, IrrigationClimateLog, IrrigationScheme, Sector, UserRole
 from app.db.session import get_db
 from app.services.advisory import sector_schedule
 from app.services.evidence import counted, demo_mode
 
 router = APIRouter(prefix="/api/v1/public", tags=["public"])
+logger = logging.getLogger(__name__)
+
+
+@router.get("/map-config")
+def map_config() -> dict:
+    """Mapbox settings for the browser maps. Only a public token (pk.…) is ever returned."""
+    settings = get_settings()
+    token = settings.mapbox_access_token.strip()
+    if token and not token.startswith("pk."):
+        logger.warning("MAPBOX_ACCESS_TOKEN is not a public (pk.) token; maps stay off rather than expose it")
+        token = ""
+    return {"mapbox_token": token or None, "style": settings.mapbox_style.strip() or None}
 
 
 @router.get("/overview")

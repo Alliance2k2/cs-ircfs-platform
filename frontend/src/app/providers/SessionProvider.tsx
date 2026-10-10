@@ -14,7 +14,7 @@ export interface Session {
 const STAFF: Role[] = ["district_officer", "district_planner", "administrator"];
 export const isStaff = (role: Role) => STAFF.includes(role);
 
-const SessionContext = createContext<Session | null>(null);
+export const SessionContext = createContext<Session | null>(null);
 
 /** Send the browser to the legacy sign-in page, which returns here after sign-in. */
 export function redirectToSignIn() {

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ArrowUpRight, Bug, MessageSquareText, Wrench } from "lucide-react";
 import { DataState } from "@/components/feedback/DataState";
 import { Badge, type Tone } from "@/components/ui/Badge";
@@ -21,10 +22,10 @@ export function PriorityActions({ actions }: { actions: PriorityAction[] | null 
         note={t("section.actionsNote")}
         action={
           actions && actions.length > 0 ? (
-            <a href="/act-now.html" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-strong">
+            <Link to="/actions" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-strong">
               {t("section.actionsAll")}
               <ArrowUpRight aria-hidden className="h-4 w-4" />
-            </a>
+            </Link>
           ) : undefined
         }
       />
@@ -43,7 +44,7 @@ export function PriorityActions({ actions }: { actions: PriorityAction[] | null 
                   <Icon className="h-[18px] w-[18px]" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-ink">{action.title}</p>
+                  <Link to={`/actions?open=${action.item_type}-${action.item_id}`} className="block truncate text-sm font-semibold text-ink hover:text-primary hover:underline">{action.title}</Link>
                   <p className="mt-0.5 text-xs text-muted">
                     {[action.sector, relativeTime(action.created_at, lang), action.assigned ? t("action.assigned") : t("action.unassigned")]
                       .filter(Boolean)

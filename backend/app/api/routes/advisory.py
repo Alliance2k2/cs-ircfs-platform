@@ -8,6 +8,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import AdvisoryMessage, FieldUser, IncentiveReward, UserRole
 from app.db.session import get_db
 from app.schemas import AdvisorySmsCreate, ScheduleBroadcast
+from app.services.audit import record
 from app.services.advisory import broadcast_advice, sector_schedule, weekly_advice_status
 from app.services.sms import deliver, is_valid_phone, normalise_phone
 
@@ -66,5 +67,7 @@ def send_irrigation_schedule(payload: ScheduleBroadcast, db: Session = Depends(g
                 and (principal.sector_ids is None or row["sector_id"] in principal.sector_ids)]
     sent = broadcast_advice(db, schedule, preview=payload.preview)
     if not payload.preview:
+        record(db, principal, "advice.send", "advice", None, sectors=[item["sector"] for item in sent],
+               recipients=sum(item["recipients"] for item in sent))
         db.commit()
     return {"preview": payload.preview, "sectors": sent, "total_recipients": sum(item["recipients"] for item in sent)}

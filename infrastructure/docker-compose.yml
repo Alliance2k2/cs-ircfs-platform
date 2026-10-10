@@ -44,6 +44,7 @@ services:
       AFRICAS_TALKING_API_KEY: ${AFRICAS_TALKING_API_KEY:-}
       SMS_SENDER_ID: ${SMS_SENDER_ID:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
       interval: 30s

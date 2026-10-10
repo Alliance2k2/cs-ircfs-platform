@@ -29,28 +29,31 @@ export default function SchemeChart({ data, series, caption, schemeLabel }: Sche
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <table className="sr-only">
-        <thead>
-          <tr>
-            <th scope="col">{schemeLabel}</th>
-            {series.map((item) => (
-              <th key={item.key} scope="col">
-                {item.key}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row) => (
-            <tr key={row.name}>
-              <th scope="row">{row.name}</th>
+      {/* Tables ignore sr-only's 1px width, so the wrapper clips it instead. */}
+      <div className="sr-only">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{schemeLabel}</th>
               {series.map((item) => (
-                <td key={item.key}>{row[item.key]}</td>
+                <th key={item.key} scope="col">
+                  {item.key}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row) => (
+              <tr key={row.name}>
+                <th scope="row">{row.name}</th>
+                {series.map((item) => (
+                  <td key={item.key}>{row[item.key]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
