@@ -58,6 +58,7 @@ def test_verification_needs_staff_a_reason_to_reject_and_is_audited(auth, client
     assert client.patch(url, headers=officer, json={"status": "verified", "note": "Seen on the farm"}).json()["verification_status"] == "verified"
     detail = client.get(f"/api/v1/field-reports/crop/{report_id}", headers=officer).json()
     assert detail["verification_status"] == "verified" and detail["verification_history"][0]["action"] == "report.verified"
+    assert detail["verification_history"][0]["detail"] == "Seen on the farm"
     with session_factory() as session:
         assert session.get(CitizenScienceLog, report_id).verified_by_account_id is not None
 
@@ -140,3 +141,18 @@ def test_small_nutrition_groups_are_suppressed(client, district, session_factory
     assert body["households"] == 2  # district totals still count them
     with session_factory() as session:
         assert session.scalar(select(AuditEvent)) is None  # reading figures is not audited
+    # The monthly report and trends follow the same rule.
+    nutrition = client.get("/api/v1/analytics/monthly-report").json()["nutrition"]
+    assert nutrition["cells"] == [] and nutrition["cells_hidden"] == 1
+    assert client.get("/api/v1/analytics/trends").json()["months"][-1]["average_risk"] is None
+
+
+# --- Reports ------------------------------------------------------------------------
+
+def test_trends_and_monthly_report_leave_out_simulator_tests(client, district):
+    sms(client, "IMVURA 12")
+    client.post("/api/v1/simulator/sms", json={"from": "+250788000001", "text": "IMVURA 30"})
+    month = client.get("/api/v1/analytics/trends").json()["months"][-1]
+    assert month["rain_readings"] == 1 and month["rainfall_mm"] == 12
+    figures = client.get("/api/v1/analytics/monthly-report").json()["figures"]
+    assert figures["rain_readings"]["value"] == 1 and figures["sms_received"]["value"] == 1

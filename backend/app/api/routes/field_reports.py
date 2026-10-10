@@ -2,6 +2,7 @@
 verification by district staff, and a CSV export without personal data."""
 import csv
 import io
+import json
 from datetime import datetime, timezone
 from typing import Literal
 
@@ -77,6 +78,14 @@ def export_reports(params: dict = Depends(filters), db: Session = Depends(get_db
                              headers={"Content-Disposition": f'attachment; filename="cs-ircfs-field-reports-{stamp}.csv"'})
 
 
+def _note(detail: str | None) -> str | None:
+    """The note recorded with a verification decision, from the audit detail."""
+    try:
+        return json.loads(detail).get("note") if detail else None
+    except (ValueError, AttributeError):
+        return None
+
+
 @router.get("/{source}/{report_id}")
 def field_report(source: Source, report_id: int, db: Session = Depends(get_db), principal: Principal = viewer) -> dict:
     """One report with its linked case and verification history."""
@@ -89,7 +98,7 @@ def field_report(source: Source, report_id: int, db: Session = Depends(get_db), 
     detail["case"] = {"id": case.id, "priority": case.priority, "status": case.status.value} if case else None
     history = db.scalars(select(AuditEvent).where(AuditEvent.entity == f"{source}_report", AuditEvent.entity_id == report.id)
                          .order_by(AuditEvent.id.desc())) if personal else []
-    detail["verification_history"] = [{"action": event.action, "by": event.actor_label, "detail": event.detail, "at": event.created_at} for event in history]
+    detail["verification_history"] = [{"action": event.action, "by": event.actor_label, "detail": _note(event.detail), "at": event.created_at} for event in history]
     return detail
 
 
