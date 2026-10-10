@@ -349,17 +349,17 @@ function renderFeedbackList() {
 }
 
 /* ---------- Irrigation Scheduling Assistant ---------- */
-const ADVICE_LABEL = { irrigate_more: ["Irrigate more", "Ongera kuhira"], normal: ["Normal schedule", "Gahunda isanzwe"], reduce: ["Reduce irrigation", "Gabanya kuhira"], no_data: ["No readings", "Nta bipimo"] };
+const ADVICE_LABEL = { irrigate_more: ["Irrigate more", "Ongera kuhira"], normal: ["Normal schedule", "Gahunda isanzwe"], irrigate_less: ["Reduce irrigation", "Gabanya kuhira"], no_data: ["No readings", "Nta bipimo"] };
 
 function renderAdvice(rows) {
   cache.schedule = rows;
-  const order = { irrigate_more: 0, reduce: 1, normal: 2, no_data: 3 };
+  const order = { irrigate_more: 0, irrigate_less: 1, normal: 2, no_data: 3 };
   const withData = rows.filter((row) => row.level !== "no_data").sort((a, b) => order[a.level] - order[b.level]);
   const missing = rows.length - withData.length;
   setText("#mod-advice", number(withData.length));
   setText("#stat-dry", number(rows.filter((row) => row.level === "irrigate_more").length));
   setText("#stat-normal", number(rows.filter((row) => row.level === "normal").length));
-  setText("#stat-wet", number(rows.filter((row) => row.level === "reduce").length));
+  setText("#stat-wet", number(rows.filter((row) => row.level === "irrigate_less").length));
   setText("#stat-nodata", number(missing));
   const host = $("#advice-list");
   if (!host) return;
@@ -516,7 +516,7 @@ const MAP_GROUPS = {
   schemes: ["points-schemes"], infrastructure: ["points-infrastructure"], crops: ["points-crops"],
   rain: ["points-rain", "rain-cells"], food: ["food-cells"], farmers: ["points-farmers"], heat: ["pest-heat"],
 };
-const RAIN_COLOUR = { irrigate_more: "#c75248", normal: "#2878a9", reduce: "#1f5f8b", no_data: "#9aa7a1" };
+const RAIN_COLOUR = { irrigate_more: "#c75248", normal: "#2878a9", irrigate_less: "#1f5f8b", no_data: "#9aa7a1" };
 const METRES_PER_PIXEL_Z10 = 150; // at Bugesera's latitude, Mapbox zoom 10
 // Base maps. "map" uses MAPBOX_STYLE from the server; the others are Mapbox's own styles.
 const BASE_STYLES = { satellite: "mapbox://styles/mapbox/satellite-streets-v12", terrain: "mapbox://styles/mapbox/outdoors-v12" };

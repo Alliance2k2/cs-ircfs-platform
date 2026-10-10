@@ -67,7 +67,7 @@
 .perf-head small { color: var(--muted); font-size: 12px; }
 .status-chip, .level-chip { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; border-radius: 99px; padding: 4px 9px; white-space: nowrap; }
 .status-chip.on_track, .level-chip.normal { background: #dff0e8; color: #116047; }
-.status-chip.watch, .level-chip.reduce { background: #fff0d7; color: #9b6713; }
+.status-chip.watch, .level-chip.irrigate_less { background: #fff0d7; color: #9b6713; }
 .status-chip.below_target, .level-chip.irrigate_more { background: #fbe6e2; color: #a83f36; }
 .status-chip.no_target, .status-chip.no_data, .level-chip.no_data { background: #eef2ef; color: #5a6b63; }
 .track.big { height: 14px; overflow: visible; }
@@ -103,7 +103,7 @@
 .advice-row { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; border: 1px solid var(--line); border-left-width: 4px; border-radius: 10px; padding: 12px; }
 .advice-row.level-irrigate_more { border-left-color: var(--coral); }
 .advice-row.level-normal { border-left-color: var(--green); }
-.advice-row.level-reduce { border-left-color: var(--blue); }
+.advice-row.level-irrigate_less { border-left-color: var(--blue); }
 .advice-rain { text-align: center; background: #eef5fa; border-radius: 8px; padding: 8px 4px; }
 .advice-rain b { display: block; font: 600 20px Georgia, serif; color: #1f5f8b; }
 .advice-rain small { font-size: 10px; color: var(--muted); }
