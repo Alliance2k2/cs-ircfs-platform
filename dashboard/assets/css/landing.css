@@ -2406,3 +2406,11 @@ summary:focus-visible {
 .footer-bottom { border-top-color: rgba(255, 255, 255, 0.1); color: #8fb39c; }
 .footer-bottom a { color: #c7ef7c; }
 .footer a:focus-visible { outline: 2px solid #c7ef7c; outline-offset: 3px; border-radius: 4px; }
+
+/* Shorter page, same breathing room: tighter section spacing (was 118 px / 72 px on phones). */
+.section { padding: 88px 0; }
+.section-header { margin-bottom: 36px; }
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .section-header { gap: 14px; margin-bottom: 26px; }
+}

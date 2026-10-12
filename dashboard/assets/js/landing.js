@@ -24,8 +24,9 @@
   links.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
 
   const NAV = {
-    en: { label: "EN", items: ["Our mission", "Solutions", "How it works", "Pilot projects", "FAQs"] },
-    rw: { label: "RW", items: ["Intego yacu", "Ibisubizo", "Uko bikora", "Imishinga y'igerageza", "Ibibazo"] },
+    en: { label: "EN", items: ["What it does", "How it works", "Who it's for", "Pilot schemes", "FAQs"] },
+    // RW: needs field review
+    rw: { label: "RW", items: ["Icyo ikora", "Uko bikora", "Abo igenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
   let lang = "en";
   $("#langBtn").addEventListener("click", () => {
