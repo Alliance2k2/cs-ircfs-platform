@@ -66,13 +66,12 @@ jobs:
       - name: Upgrade a fresh database to head
         run: alembic upgrade head && alembic current
       - name: Compare the migrated schema with the models
-        # Advisory until its first green run on PostGIS; the SQLite equivalent is enforced in tests/test_migrations.py.
-        continue-on-error: true
         run: python scripts/check_schema.py
       - name: Downgrade one step and upgrade again
         run: alembic downgrade -1 && alembic upgrade head
       - name: Seed reference schemes and demonstration data
-        run: python scripts/seed_reference_schemes.py && python scripts/seed_demo_data.py
+        # --yes: on PostgreSQL the demo seed asks for confirmation, and CI has no one to answer.
+        run: python scripts/seed_reference_schemes.py && python scripts/seed_demo_data.py --yes
 
   frontend:
     name: Frontend checks and build

@@ -25,8 +25,8 @@ Status of the modernization brief. **Implemented** means code exists. **Tested**
 | Deterministic migrations (frozen baseline, explicit tables) | Yes | SQLite: fresh, upgrade-with-data, downgrade | `backend/tests/test_migrations.py` |
 | Case assignments point at platform accounts | Yes | Yes | Migration `20261011_17` |
 | Report verification and audit log | Yes | Yes | Migration `20261011_18` |
-| Schema-versus-model check | Yes | SQLite enforced | PostGIS step is advisory in CI until its first green run |
-| CI jobs: backend, PostGIS migrations, frontend, browser end-to-end, Docker | Yes | **Not yet run on GitHub** | CI runs on pull requests; open one from `feature/platform-modernization` |
+| Schema-versus-model check | Yes | SQLite and PostGIS, enforced in CI | Verified locally on a clean PostGIS 3.6 server: upgrade, 0 differences, downgrade/upgrade, seeds |
+| CI jobs: backend, PostGIS migrations, frontend, browser end-to-end, Docker | Yes | Backend, frontend and Docker green on GitHub | The first PostGIS and end-to-end runs failed (fixed in "Fix the PostGIS migrations and the CI end-to-end start"); awaiting the rerun |
 
 ### Phase B — UX foundation
 
@@ -98,7 +98,6 @@ All pages are described in [workspaces.md](workspaces.md).
 | Official PADAB/APEFA baselines | Feasibility-study documents entered with their sources (Administration → Scheme baselines) |
 | Calibrated irrigation thresholds | Historical rainfall records and an agronomist's approval |
 | Data protection impact assessment and registration | The district (Law N° 058/2021) |
-| First CI run, including PostGIS migrations and the Docker build | A pull request on GitHub |
 
 ## Needs field validation
 
@@ -112,5 +111,4 @@ All pages are described in [workspaces.md](workspaces.md).
 
 - **Fresh databases.** Grievance categories and the asset inventory are created by the demonstration seed only. A new production database needs them entered (classic Management page) or a reference seed script; until then USSD uses its built-in lists.
 - **Area-limited accounts** see their own sectors' records; district totals, trends and the monthly report stay district-wide. Decide which behaviour the district wants.
-- **The PostGIS schema check** is advisory in CI until it has passed once; then make it blocking.
 - Reads of personal data on screen are not audited (changes and exports are).

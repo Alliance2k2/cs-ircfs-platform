@@ -64,3 +64,20 @@ def test_the_latest_migration_downgrades_and_upgrades_again(database):
     command.downgrade(config, "-1")
     command.upgrade(config, "head")
     assert differences(url) == []
+
+
+def test_every_name_fits_postgresql(database):
+    """PostgreSQL rejects identifiers over 63 characters; SQLite does not, so check here."""
+    config, url = database
+    command.upgrade(config, "head")
+    engine = create_engine(url)
+    inspector = inspect(engine)
+    names = []
+    for table in inspector.get_table_names():
+        names.append(table)
+        names += [column["name"] for column in inspector.get_columns(table)]
+        names += [item["name"] for item in inspector.get_indexes(table) + inspector.get_foreign_keys(table) + inspector.get_unique_constraints(table)
+                  if item.get("name")]
+    engine.dispose()
+    assert [name for name in names if len(name) > 63] == []
+

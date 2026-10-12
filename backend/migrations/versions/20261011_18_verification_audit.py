@@ -21,6 +21,13 @@ depends_on = None
 REPORT_TABLES = ("citizen_science_logs", "irrigation_climate_logs")
 
 
+def fk_name(table: str) -> str:
+    """Within PostgreSQL's 63-character limit. Copies migrated before this fix used the
+    longer f"fk_{table}_verified_by_account_id_platform_accounts" (SQLite only, where
+    long names are allowed); downgrade() drops whichever the database has."""
+    return f"fk_{table}_verified_by"
+
+
 def upgrade() -> None:
     inspector = sa.inspect(op.get_bind())
     for table in REPORT_TABLES:
@@ -32,7 +39,7 @@ def upgrade() -> None:
             batch.add_column(sa.Column("verified_by_account_id", sa.Integer(), nullable=True))
             batch.add_column(sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True))
             batch.add_column(sa.Column("verification_note", sa.Text(), nullable=True))
-            batch.create_foreign_key(f"fk_{table}_verified_by_account_id_platform_accounts", "platform_accounts", ["verified_by_account_id"], ["id"])
+            batch.create_foreign_key(fk_name(table), "platform_accounts", ["verified_by_account_id"], ["id"])
         op.create_index(f"ix_{table}_verification_status", table, ["verification_status"])
 
     if "audit_events" not in inspector.get_table_names():
@@ -55,9 +62,12 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("audit_events")
+    inspector = sa.inspect(op.get_bind())
     for table in REPORT_TABLES:
         op.drop_index(f"ix_{table}_verification_status", table_name=table)
+        names = [fk["name"] for fk in inspector.get_foreign_keys(table) if fk["constrained_columns"] == ["verified_by_account_id"] and fk["name"]]
         with op.batch_alter_table(table) as batch:
-            batch.drop_constraint(f"fk_{table}_verified_by_account_id_platform_accounts", type_="foreignkey")
+            for name in names:
+                batch.drop_constraint(name, type_="foreignkey")
             for column in ("verification_note", "verified_at", "verified_by_account_id", "verification_status"):
                 batch.drop_column(column)

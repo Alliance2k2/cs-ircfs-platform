@@ -39,6 +39,8 @@ class SpatialGeometry(TypeDecorator):
         super().__init__()
 
     def load_dialect_impl(self, dialect):
+        if dialect is None:  # GeoAlchemy2's DDL hooks ask without a dialect
+            return Text()
         if dialect.name == "postgresql":
             return dialect.type_descriptor(Geometry(self.geometry_type, srid=self.srid, spatial_index=False))
         return dialect.type_descriptor(Text())

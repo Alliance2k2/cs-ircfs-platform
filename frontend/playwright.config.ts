@@ -10,8 +10,10 @@ import { defineConfig, devices } from "@playwright/test";
  * Locally the installed Chrome is used; CI installs Playwright's Chromium.
  */
 const PORT = 8770;
-// Absolute, quoted paths: Windows cmd does not run "../x" style commands.
-const python = process.env.PYTHON ? `"${resolve(process.env.PYTHON)}"` : "python";
+// A bare command name ("python" in CI) is looked up on PATH; a relative path such as
+// ../.venv/Scripts/python is made absolute and quoted, as Windows cmd cannot run "../x".
+const interpreter = process.env.PYTHON ?? "python";
+const python = /[\\/]/.test(interpreter) ? `"${resolve(interpreter)}"` : interpreter;
 const server = `"${resolve("../backend/scripts/run_e2e_server.py")}"`;
 
 export default defineConfig({
