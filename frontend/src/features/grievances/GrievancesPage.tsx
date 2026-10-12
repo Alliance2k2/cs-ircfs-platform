@@ -29,7 +29,6 @@ export function GrievancesPage() {
   const now = Date.now();
 
   const columns: Column<Feedback>[] = [
-    { key: "ref", header: t("grievances.reference"), render: (row) => <span className="font-mono text-xs">FB-{String(row.id).padStart(3, "0")}</span>, sortValue: (row) => row.id },
     {
       key: "category", header: t("grievances.category"), primary: true, sortValue: (row) => row.category,
       render: (row) => (
@@ -39,6 +38,7 @@ export function GrievancesPage() {
         </span>
       ),
     },
+    { key: "ref", header: t("grievances.reference"), render: (row) => <span className="font-mono text-xs">FB-{String(row.id).padStart(3, "0")}</span>, sortValue: (row) => row.id },
     { key: "status", header: t("label.status"), render: (row) => <StatusBadge status={row.status} />, sortValue: (row) => STATUSES.indexOf(row.status) },
     {
       key: "place", header: t("actions.place"),

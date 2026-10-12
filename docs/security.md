@@ -22,14 +22,17 @@ Area-level access (sector-limited accounts) applies to records; district totals 
 | One client flooding the callbacks | 30 messages a minute **per phone number**, counted in the database (shared by all workers). An IP limit would throttle all real traffic, which arrives from a few gateway addresses | `routes/channels.py` `throttle` |
 | Gateway retries creating duplicate reports | Retries with the same USSD `sessionId`+text or SMS `id` replay the stored reply | `routes/channels.py` |
 | Simulator tests polluting evidence or costing money | Simulator has its own signed-in endpoints; its records are `data_origin = simulator` and excluded from figures; SMS and airtime are forced to dry-run inside the simulator, whatever the provider settings | `routes/channels.py`, `services/sms.py` `simulation()` |
-| Anyone on the internet self-registering and reading field data | New accounts (email or Google) start **pending**; an administrator activates them in Platform Management → Accounts. The pending status is only revealed to someone who knows the password | `routes/auth.py` |
+| Anyone on the internet self-registering and reading field data | New accounts (email or Google) start **pending**; an administrator activates them in Administration → Accounts (`/app/admin`), after a confirmation, and the change is audited. The pending status is only revealed to someone who knows the password | `routes/auth.py` |
 | Password guessing | PBKDF2-SHA256 (210 000 rounds), 10 sign-in attempts a minute per client address | `routes/auth.py` |
 | Session theft | Random 256-bit tokens, only a SHA-256 hash stored, httpOnly + SameSite=Lax cookie, `Secure` required in production, sessions deleted on suspension and logout | `core/security.py`, `routes/auth.py` |
 | Rate limits defeated or shared behind a proxy | uvicorn runs with `--proxy-headers`; `FORWARDED_ALLOW_IPS` names the trusted proxy (`*` on Render, `127.0.0.1` by default) | `Dockerfile` |
 | Unsafe deployment settings | `ENVIRONMENT=production` refuses to start without `REQUIRE_API_KEY=true`, PostgreSQL, `COOKIE_SECURE=true`, a CORS list free of localhost, and a `GATEWAY_CALLBACK_TOKEN` of at least 24 characters | `core/config.py` `guard_runtime` |
 | Clickjacking, MIME sniffing, referrer leaks | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`; HSTS in production | `main.py` `security_headers` |
 | Development auth bypass reaching a server | The bypass only exists when `ENVIRONMENT=development` and `REQUIRE_API_KEY=false`, and logs a warning at startup | `core/security.py`, `main.py` |
-| Chargeable messages during tests | The test suite forces `SMS_PROVIDER=dry_run` and `AIRTIME_PROVIDER=dry_run` | `tests/conftest.py` |
+| Chargeable messages during tests | The test suite forces `SMS_PROVIDER=dry_run` and `AIRTIME_PROVIDER=dry_run`; the browser end-to-end server also clears provider credentials, staff alerts, the forecast and Mapbox, and seeds only its own temporary SQLite file | `tests/conftest.py`, `scripts/run_e2e_server.py` |
+| Untraceable staff changes | Account, case, grievance, verification, scheme, export and advice-send actions are written to the append-only `audit_events` table, readable in Administration → Audit log | `services/audit.py` |
+| Re-identifying households from small groups | Nutrition scores are hidden for any cell (and any month in trends) with fewer than five households; the map only draws cells above that size | `services/analytics.py`, `services/reporting.py` |
+| Pages showing data a role must not see | The dashboard hides pages by the same role rules the API enforces; the API is the protection | `frontend/src/app/access.tsx` |
 
 Every control above has an automated test in `backend/tests/test_security.py` or `test_auth.py`.
 
@@ -52,5 +55,5 @@ Every control above has an automated test in `backend/tests/test_security.py` or
 2. **Data protection impact assessment.** Rwanda's Law N° 058/2021 on the protection of personal data and privacy requires a lawful basis, purpose limitation and, for this kind of processing, registration with the National Cyber Security Authority. The district should complete the DPIA and registration before the pilot; this repository cannot do that.
 3. **Retention.** No automatic deletion of inbound messages or sessions yet. Decide retention periods with the district and add a scheduled clean-up.
 4. **Sign-in throttling per account.** The limit is per client address; add a per-email lockout if password guessing is seen.
-5. **Audit log of staff reads.** Case and grievance changes are audited; reads of personal data are not.
+5. **Audit log of staff reads.** Changes and CSV exports are audited; reads of personal data on screen are not.
 6. **Timing correlation.** A grievance's time can still be matched to the time a phone number was first registered. Only first-time callers are affected; a delayed registration timestamp would close this.

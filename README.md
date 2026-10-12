@@ -87,11 +87,8 @@ For Docker and hosted deployment, see [docs/deployment.md](docs/deployment.md).
 | Address | Page |
 | --- | --- |
 | `/` | Public home page with live field activity |
-| `/app/` | District Planning Dashboard (React): executive overview with documented, source-labelled figures |
-| `/planner.html` | District dashboard |
-| `/report.html` | Monthly district report |
-| `/management.html` | Platform management: people, schemes, reports, accounts and areas |
-| `/simulator.html` | On-screen feature phone for testing and training on `*801#` and `8448` |
+| `/app/` | District dashboard (React): overview, priority actions, field reports and verification, crops, nutrition, irrigation, climate advice, map, PADAB/APEFA evaluation, grievances, cooperatives, USSD/SMS operations, phone simulator, trends, monthly report, administration. See [docs/workspaces.md](docs/workspaces.md) |
+| `/planner.html`, `/report.html`, `/management.html`, `/simulator.html` | Classic pages on the same data, kept while the district moves to `/app/` |
 | `/docs` | Interactive API reference |
 
 ## Configuration
@@ -141,7 +138,9 @@ cs-ircfs-platform/
 | [Operations](infrastructure/README.md) | Running and maintaining the Docker stack |
 | [Roadmap](docs/roadmap.md) | Project status, known limitations and next steps |
 | [Security](docs/security.md) | Threats, controls, settings and open items |
-| [Design system](docs/design-system.md) | Colour tokens, components and data states |
+| [Workspaces](docs/workspaces.md) | Every page of the district dashboard: who can open it, what it does, which API it uses |
+| [Testing](docs/testing.md) | Backend, migration, unit and browser end-to-end tests |
+| [Design system](docs/design-system.md) | Colour tokens, components, patterns and data states |
 | [Audit, October 2026](docs/audit-2026-10.md) · [Remaining work](docs/remaining-work.md) | Baseline audit and the register of implemented, blocked and field-validation work |
 
 ## Tests
@@ -157,9 +156,10 @@ Tests always run on an in-memory database and make no network calls.
 cd frontend
 npm ci
 npm run typecheck; npm run lint; npm test; npm run build
+$env:PYTHON = "..\.venv\Scripts\python"; npm run e2e   # ten browser workflows, see docs/testing.md
 ```
 
-GitHub Actions runs both suites, the migrations on PostGIS and a Docker build on every pull request (`.github/workflows/ci.yml`).
+The end-to-end tests start their own throwaway server with SMS and airtime in dry-run. GitHub Actions runs every suite, the migrations on PostGIS and a Docker build on every pull request (`.github/workflows/ci.yml`).
 
 ## Security and privacy
 

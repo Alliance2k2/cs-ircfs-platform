@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessageSquareShare, Save } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { DetailRow, PriorityBadge, StatusBadge } from "@/components/data/badges";
 import { DataState } from "@/components/feedback/DataState";
@@ -59,12 +59,24 @@ export function WorkItemDrawer({ item, onClose }: { item: WorkItem | null; onClo
   const [errors, setErrors] = useState<Partial<Record<keyof Draft, string>>>({});
   const [preview, setPreview] = useState<z.infer<typeof notificationSchema> | null>(null);
 
+  // The form starts from the record once per opened item. Later refreshes (after a save, or
+  // the queue's auto-refresh) must not overwrite what the person is typing.
+  const itemKey = item ? `${item.kind}-${item.id}` : null;
+  const loadedKey = useRef<string | null>(null);
   useEffect(() => {
-    if (!current) return setDraft(null);
+    if (!current) {
+      if (!itemKey) loadedKey.current = null;
+      return;
+    }
+    if (loadedKey.current === itemKey) return;
+    loadedKey.current = itemKey;
     const assignee = "assigned_to_account_id" in current ? current.assigned_to_account_id : current.assigned_to_field_user_id;
     setDraft({ status: current.status, assignee: assignee ? String(assignee) : "", due: dateInput(current.due_at), action: current.action_taken ?? "" });
     setErrors({});
-  }, [current]);
+  }, [current, itemKey]);
+  useEffect(() => {
+    if (!itemKey) setDraft(null);
+  }, [itemKey]);
 
   const staffName = new Map((staff.data ?? []).map((person) => [person.id, person.full_name]));
   const base = item ? `${isCase ? "cases" : "feedback"}/${item.id}` : "";

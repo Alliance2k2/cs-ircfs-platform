@@ -50,9 +50,27 @@ No trend arrows or growth percentages are shown until there is a validated basel
 | Select (labelled native select) | `frontend/src/components/ui/Select.tsx` |
 | Skeleton | `frontend/src/components/ui/Skeleton.tsx` |
 | DataState | `frontend/src/components/feedback/DataState.tsx` |
-| Sidebar, TopBar | `frontend/src/components/navigation/` |
+| Button (variants, `loading` stops double submits) | `frontend/src/components/ui/Button.tsx` |
+| Drawer and Dialog (focus trap, Escape closes the top one, focus returns) | `frontend/src/components/ui/Overlay.tsx` |
+| Toast (success and error, announced to screen readers) | `frontend/src/components/ui/Toast.tsx` |
+| TextField, TextArea, SelectField (label, hint, error wired by id) | `frontend/src/components/ui/Field.tsx` |
+| DataTable (search, sort, pages; cards on phones) | `frontend/src/components/data/DataTable.tsx` |
+| Status, priority, verification, origin and check badges; DetailRow | `frontend/src/components/data/badges.tsx` |
+| BarList (ranked bars as a plain list) | `frontend/src/components/data/BarList.tsx` |
+| PageHeader (eyebrow, title, purpose, last update, actions) | `frontend/src/components/layout/PageHeader.tsx` |
+| Sidebar, TopBar, CommandPalette | `frontend/src/components/navigation/` |
+| TrendChart (twelve months, lazy Recharts, hidden data table) | `frontend/src/features/trends/TrendChart.tsx` |
+| DistrictMap (Mapbox GL layers) | `frontend/src/components/maps/DistrictMap.tsx` |
 | SchemeChart (Recharts, with a hidden data table) | `frontend/src/components/charts/SchemeChart.tsx` |
 | SectorMap (Mapbox GL) | `frontend/src/components/maps/SectorMap.tsx` |
+
+## Patterns
+
+- **One record, one drawer.** Lists open a side panel for details and actions; the list stays where it was.
+- **Confirm before anything leaves the platform or changes access.** SMS sends show a preview with the number of recipients; approving, suspending and role changes name the person and the effect. Reversible edits (status, verification) save directly and confirm with a toast.
+- **Errors say what to do**, next to the field ("Required to resolve or close"), and server refusals appear in a toast with the server's message.
+- **Forms keep what you typed** while data refreshes in the background.
+- **No horizontal scrolling on phones**: tables become cards, wide report tables scroll inside their card.
 
 ## Accessibility rules
 

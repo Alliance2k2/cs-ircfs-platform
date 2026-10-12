@@ -2,7 +2,7 @@ import { useI18n } from "@/i18n";
 
 const LINKS = [
   { href: "/", label: "footer.public" },
-  { href: "/report.html", label: "nav.report" },
+  { href: "/app/monthly-report", label: "nav.report" },
   { href: "/app/simulator", label: "nav.simulator" },
   { href: "/docs", label: "footer.api" },
 ] as const;

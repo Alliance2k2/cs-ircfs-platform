@@ -10,10 +10,14 @@ CS-IRCFS lets citizens of Bugesera report crop, water and community information 
 | Citizen Science Monitor / Data Champion | USSD, SMS | Same as farmers, plus daily rain-gauge readings |
 | Scheme operator | USSD option 4 | Report pump and canal faults by bottleneck category |
 | Cooperative leader | USSD, SMS; receives advice | Rainfall readings, and gets irrigation advice by SMS |
-| District Planner / officer | Web dashboard | Act on cases, verify scheme outcomes, send advice, close the loop |
-| Administrator | Web, Platform Management | Manage people, schemes, accounts and roles |
+| District Planner / officer | Web dashboard (`/app/`) | Act on cases, verify reports and scheme outcomes, send advice, close the loop |
+| Administrator | Web dashboard, Administration | Approve accounts, set roles and areas, record scheme baselines, read the audit log |
 
 ## The pages
+
+The district dashboard is at **`/app/`**: executive overview, priority actions, field reports, crops and pests, food and nutrition, irrigation command centre, climate and advice, district map, PADAB and APEFA evaluation, grievances, cooperatives, USSD and SMS operations, phone simulator, trends, monthly report and administration. [workspaces.md](workspaces.md) describes each page, who can open it and what it does. Signing in leads there.
+
+The classic pages below still work on the same data while the district moves to `/app/`:
 
 | Page | Address | Purpose |
 | --- | --- | --- |
@@ -49,12 +53,14 @@ Then open `http://127.0.0.1:8000`.
 
 - New registrations always start as **Citizen Science Monitor**. Nobody can register as a planner or administrator.
 - The first administrator is created on the server: `python backend/scripts/create_admin.py you@example.org`.
-- Administrators set roles in **Platform Management → Accounts**.
-- **Citizen Science Monitors** see the planner dashboard with live data, read-only: figures, field channels, scheme performance, irrigation advice, nutrition and the map.
-- **District Planners**, district officers and administrators also get the Act Now queue, case and feedback updates, SMS sending and Platform Management.
+- Administrators approve new accounts and set roles in **Administration → Accounts** (`/app/admin`); each change asks for confirmation and is recorded in the audit log.
+- **Citizen Science Monitors** read live figures, field reports (with masked phone numbers), crops, nutrition, irrigation, advice, the map, evaluation, trends and the monthly report.
+- **Cooperative leaders** see field reports, irrigation assets, USSD and SMS operations, the simulator and the map.
+- **District officers** also work priority actions and grievances, verify reports and export data.
+- **District Planners** also send irrigation advice and edit cooperatives; **administrators** also get Administration.
 - The home page (`/`) shows live totals and recent activity from `GET /api/v1/public/overview`. It needs no sign-in and never returns names, phone numbers, message text or grievances.
 - Sign-in sessions are stored in the database (only a hash of the token) and expire after 12 hours (`SESSION_HOURS`).
-- **Area-level access.** In **Platform Management → Accounts → Area**, tick the sectors an officer, planner or monitor works in. They then see cases, grievances, people, reports and messages from those sectors only, and can broadcast advice only to them. No ticks means the whole district. Administrators always see the whole district.
+- **Area-level access.** In **Administration → Accounts**, open an account and tick the sectors an officer, planner or monitor works in. They then see cases, grievances, people, reports and messages from those sectors only, and can broadcast advice only to them. No ticks means the whole district. Administrators always see the whole district.
 - Integrations can still use service API keys (`API_KEY_ROLES`).
 - In evaluation mode (`-Demo`, `ENVIRONMENT=development`) sign-in is turned off.
 
