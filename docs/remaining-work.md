@@ -109,6 +109,8 @@ All pages are described in [workspaces.md](workspaces.md).
 
 ## Known gaps
 
+- **Map data** (found while writing [api-guide.md](api-guide.md)): `/map-data` draws reports without GPS at a generated position near their cell centre; returns registered farmers' names and home locations, and crop-report notes, to every signed-in role; and includes simulator tests. `/geography/farmers` also returns farmer names and locations to every role. To fix before the pilot.
+- `/analytics/farmer-summary` returns fixed zeros for schemes, complaints and assets; only classic pages use the older summaries.
 - **Fresh databases.** Grievance categories and the asset inventory are created by the demonstration seed only. A new production database needs them entered (classic Management page) or a reference seed script; until then USSD uses its built-in lists.
 - **Area-limited accounts** see their own sectors' records; district totals, trends and the monthly report stay district-wide. Decide which behaviour the district wants.
 - Reads of personal data on screen are not audited (changes and exports are).
