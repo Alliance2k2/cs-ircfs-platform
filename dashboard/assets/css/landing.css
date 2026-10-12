@@ -2379,3 +2379,30 @@ summary:focus-visible {
 .aims-logo-sm { height: 44px; padding: 3px; border: 1px solid #dbe9df; }
 .aims-logo-footer { display: block; height: 96px; margin-top: 14px; padding: 6px; }
 .has-aims-logo .bi-mortarboard { display: none; }
+
+/* Dark footer: the same deep green as the top line, so the page opens and closes in one colour.
+   Text colours keep at least 4.5:1 contrast on #052e1f. */
+.footer {
+  background: radial-gradient(120% 90% at 85% 0%, #0b4a31 0%, rgba(11, 74, 49, 0) 55%), #052e1f;
+  color: #cfe3d6;
+}
+.footer .brand strong { color: #fff; }
+.footer .brand small { color: #9fc2ac; }
+.footer-brand > p,
+.footer-top > div > p,
+.footer-top > div > a:not(.brand) { color: #a9c8b4; }
+.footer-top > div > b { color: #fff; }
+.footer-top > div > p b { color: #e8f5ec; }
+.footer-top > div > a:not(.brand):hover { color: #c7ef7c; }
+.footer-status { border-top-color: rgba(255, 255, 255, 0.1); }
+.footer-live { color: #e3f1e8; }
+.footer-live i { background: #6f8f7c; }
+.footer-channels span {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e3f1e8;
+}
+.footer-channels .bi { color: #c7ef7c; }
+.footer-bottom { border-top-color: rgba(255, 255, 255, 0.1); color: #8fb39c; }
+.footer-bottom a { color: #c7ef7c; }
+.footer a:focus-visible { outline: 2px solid #c7ef7c; outline-offset: 3px; border-radius: 4px; }
