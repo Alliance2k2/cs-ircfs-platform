@@ -47,14 +47,14 @@ Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYL
 - [ ] `FORWARDED_ALLOW_IPS` set to the reverse proxy's address so rate limits see real clients.
 - [ ] HTTPS in front of the platform. The Africa's Talking callbacks need a public HTTPS URL.
 - [ ] Africa's Talking credentials set, callback URLs ending in `?token=<GATEWAY_CALLBACK_TOKEN>`, and `SMS_PROVIDER` / `AIRTIME_PROVIDER` switched from `dry_run`.
-- [ ] New staff accounts approved in Platform Management → Accounts (self-registered accounts start pending).
+- [ ] New staff accounts approved in Administration → Accounts at `/app/admin` (self-registered accounts start pending).
 - [ ] The data protection impact assessment and registration required by Law N° 058/2021 completed by the district.
 - [ ] The Kinyarwanda USSD screens reviewed with the field team and cooperative leaders.
 - [ ] PADAB and APEFA yield targets, hectares and assets entered from official documents, with their sources.
 - [ ] `DRY_SPELL_THRESHOLD_MM` / `WET_SPELL_THRESHOLD_MM` calibrated from Mwesa Valley and Ngeruka/Mareba rainfall records.
 - [ ] Daily database backups (`pg_dump`) stored off the server, and a restore that has been tested.
 - [ ] A consent message for first-time callers, and a data-retention policy agreed with the district.
-- [ ] For officers who should see only their own sectors, set each account's **Area** in Platform Management → Accounts.
+- [ ] For officers who should see only their own sectors, set each account's area in Administration → Accounts (open the account).
 
 ## Security notes
 

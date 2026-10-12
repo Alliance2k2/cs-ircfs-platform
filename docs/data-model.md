@@ -1,6 +1,6 @@
 # Data model
 
-The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261011_17`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
+The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261011_18`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
 
 ## Tables
 
@@ -31,6 +31,7 @@ The schema is created and changed **only** through Alembic migrations in `backen
 
 - `20260911_01` is frozen: it lists every baseline table explicitly instead of calling `create_all()` on the current models, so it can no longer change when the models change. `community_feedback_events` moved to `20260929_05`, after `platform_accounts`, which it references (a fresh PostgreSQL failed before).
 - `20261011_17` points case assignments (`incident_cases.assigned_to_account_id`, `incident_events.changed_by_account_id`) at `platform_accounts` instead of `field_users`, makes the older `created_at` columns NOT NULL and renames one index.
+- `20261011_18` adds report verification (`verification_status`, `verified_by_account_id`, `verified_at`, `verification_note`) to `citizen_science_logs` and `irrigation_climate_logs`, and the append-only `audit_events` table.
 - `tests/test_migrations.py` checks that a fresh database equals the models, that an existing database keeps its data through the upgrade, and that the newest revision downgrades and upgrades. `scripts/check_schema.py` runs the same comparison against any database; CI runs it on a clean PostGIS server.
 
 ### Data origin
