@@ -58,7 +58,7 @@ Seven-day rain-gauge totals per sector, the Open-Meteo forecast, the dry and wet
 
 ### District map — `/app/map` (all)
 
-Mapbox map of Bugesera with layers for infrastructure, crop reports, a pest heatmap and rainfall readings; analysts also get nutrition risk per cell (cells with five or more households only). Map, satellite and terrain bases and a 3D view are in the map's corner. Grievances and household surveys are never mapped. **Known issue:** reports without GPS are currently drawn at a generated position near their cell centre, and registered farmers' locations are visible to every role; see [remaining-work.md](remaining-work.md). Without `MAPBOX_ACCESS_TOKEN` the page explains how to add one.
+Mapbox map of Bugesera with layers for infrastructure, crop reports, a pest heatmap and rainfall readings; analysts also get nutrition risk per cell (cells with five or more households only). Map, satellite and terrain bases and a 3D view are in the map's corner. Only GPS points recorded with reports are drawn; no position is guessed, and the page says how many reports have no GPS point. Grievances and household surveys are never mapped; registered farmers' locations and report notes are for district staff only. Without `MAPBOX_ACCESS_TOKEN` the page explains how to add one.
 
 ## Evaluation
 

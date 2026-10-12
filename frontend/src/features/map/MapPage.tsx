@@ -27,6 +27,7 @@ const mapDataSchema = z.object({
     status: z.string().nullable(), scheme_id: z.number().nullable(), details: z.string().nullable(),
   })),
   spatial_available: z.boolean(),
+  unlocated_reports: z.number().default(0),
 });
 const heatSchema = z.array(z.object({ latitude: z.number(), longitude: z.number(), weight: z.number(), pest: z.string().nullable(), crop: z.string().nullable(), severity: z.number().nullable() }));
 
@@ -103,6 +104,9 @@ export function MapPage() {
             </ul>
           </fieldset>
           <p className="mt-3 text-xs text-muted">{t("map.privacy")}</p>
+          {data.data && data.data.unlocated_reports > 0 && (
+            <p className="mt-2 text-xs font-semibold text-ink">{t("map.unlocated", { n: data.data.unlocated_reports })}</p>
+          )}
           {data.data && !data.data.spatial_available && <p className="mt-2 text-xs text-muted">{t("map.pointsOnly")}</p>}
         </Card>
         <Card className="h-[34rem] p-2 lg:h-[40rem]">

@@ -205,11 +205,17 @@ Figures for the dashboards (`services/analytics.py`, `services/executive.py`, `s
 
 ## 14. map
 
-`GET /map-data` (all roles): points for the classic map and the new District map: schemes, asset and rain readings, crop reports and registered farmers, within the area of work. On SQLite it returns points only; boundaries need PostGIS.
+`GET /map-data` (all roles): points for the classic map and the new District map, within the area of work: schemes, asset and rain readings, and crop reports.
+
+- Only GPS points recorded with a report are drawn; a position is never generated. Reports without one (SMS reports, for example) are counted in `unlocated_reports`, and the map says how many are missing.
+- Simulator tests are left out.
+- Free-text notes and fault descriptions, and registered farmers' names and home locations, are returned to district staff only.
+
+On SQLite it returns points only; boundaries need PostGIS.
 
 ## 15. geography
 
-Boundaries as GeoJSON, PostGIS only (empty on SQLite): `GET /geography/sectors`, `GET /geography/cells` and `GET /geography/farmers` (registered farmers who have a location). All roles.
+Boundaries as GeoJSON, PostGIS only (empty on SQLite): `GET /geography/sectors` and `GET /geography/cells` for all roles, and `GET /geography/farmers` (registered farmers who have a location) for district staff only, within their area of work.
 
 ## 16. public
 
@@ -258,12 +264,13 @@ The PADAB and APEFA evaluation lab (`services/evaluation.py`).
 
 ---
 
-## Known issues found while writing this page
+## Issues found while writing this page
 
-These are in the code today and are recorded in [remaining-work.md](remaining-work.md):
+Writing this guide surfaced four problems in the map data, fixed in October 2026 and covered by tests in `backend/tests/test_workspaces.py`:
 
-1. **Generated map positions.** `/map-data` places a report that has no GPS point at its cell's centre plus a small fixed offset, so several reports from one cell can be clicked separately. Those positions are not recorded coordinates, but the maps draw them like real ones.
-2. **Farmer names and home locations for every role.** `/map-data` and `/geography/farmers` return registered farmers' names and locations to every signed-in role, including farmers and cooperative leaders.
-3. **Report notes on the map.** `/map-data` includes crop-report notes for every role, while `/field-reports` hides notes from monitors and leaders.
-4. **Simulator rows on the map.** `/map-data` does not leave out simulator tests.
-5. **`/analytics/farmer-summary`** returns fixed zeros for schemes, complaints and assets. Only the classic pages call these older summaries.
+1. Reports without GPS were drawn at a generated position near their cell centre. Now they are counted, not drawn.
+2. Registered farmers' names and home locations went to every signed-in role. Now district staff only (`/map-data` and `/geography/farmers`).
+3. Crop-report notes went to every role through the map. Now district staff only, as in Field reports.
+4. Simulator tests appeared on the map. Now left out.
+
+Still open: `/analytics/farmer-summary` returns fixed zeros for schemes, complaints and assets; only classic pages use the older summaries.

@@ -2,7 +2,7 @@
 the audit log, and nutrition small-group suppression."""
 from sqlalchemy import select
 
-from app.db.models import AuditEvent, CitizenScienceLog, IrrigationScheme, NutritionSurvey, UserRole
+from app.db.models import AuditEvent, CitizenScienceLog, FieldUser, IrrigationScheme, NutritionSurvey, UserRole
 
 
 def scheme_id(session_factory, name="PADAB"):
@@ -156,3 +156,41 @@ def test_trends_and_monthly_report_leave_out_simulator_tests(client, district):
     assert month["rain_readings"] == 1 and month["rainfall_mm"] == 12
     figures = client.get("/api/v1/analytics/monthly-report").json()["figures"]
     assert figures["rain_readings"]["value"] == 1 and figures["sms_received"]["value"] == 1
+
+
+# --- Map data -------------------------------------------------------------------------
+
+def test_map_draws_only_recorded_coordinates_and_counts_the_rest(client, district):
+    cell = district["cell_id"]
+    client.post("/api/v1/citizen-reports", json={"crop_type": "Maize", "cell_id": cell, "latitude": -2.341, "longitude": 30.161})
+    client.post("/api/v1/citizen-reports", json={"crop_type": "Beans", "cell_id": cell})  # no GPS
+    sms(client, "IMVURA 12")  # SMS carries no coordinates
+    client.post("/api/v1/simulator/sms", json={"from": "+250788000001", "text": "IMVURA 30"})
+    body = client.get("/api/v1/map-data").json()
+    crops = [f for f in body["features"] if f["feature_type"] == "crop"]
+    assert [(f["name"], f["latitude"], f["longitude"]) for f in crops] == [("Maize", -2.341, 30.161)]
+    assert not [f for f in body["features"] if f["feature_type"] == "rainfall"]
+    assert body["unlocated_reports"] == 2  # the beans report and the field SMS; the simulator test is not counted
+
+
+def test_map_keeps_notes_and_farmer_locations_for_staff(auth, client, district, session_factory):
+    with session_factory() as session:
+        session.add(FieldUser(phone_number="+250788000099", full_name="Farmer Home", role=UserRole.farmer,
+                              cell_id=district["cell_id"], location="POINT(30.16 -2.34)"))
+        session.commit()
+    client.post("/api/v1/citizen-reports", headers=auth("a@example.org", role=UserRole.administrator),
+                json={"crop_type": "Maize", "cell_id": district["cell_id"], "latitude": -2.341, "longitude": 30.161, "notes": "Next to Mukamana's house"})
+
+    monitor = client.get("/api/v1/map-data", headers=auth("m@example.org", role=UserRole.citizen_science_monitor)).json()
+    assert not [f for f in monitor["features"] if f["feature_type"] == "farmer"]
+    assert next(f for f in monitor["features"] if f["feature_type"] == "crop")["details"] is None
+
+    officer = client.get("/api/v1/map-data", headers=auth("o@example.org", role=UserRole.district_officer)).json()
+    assert [f["name"] for f in officer["features"] if f["feature_type"] == "farmer"] == ["Farmer Home"]
+    assert next(f for f in officer["features"] if f["feature_type"] == "crop")["details"] == "Next to Mukamana's house"
+
+
+def test_farmer_locations_are_for_staff_only(auth, client, district):
+    for role in (UserRole.farmer, UserRole.citizen_science_monitor, UserRole.cooperative_leader):
+        assert client.get("/api/v1/geography/farmers", headers=auth(f"{role.value}@example.org", role=role)).status_code == 403
+    assert client.get("/api/v1/geography/farmers", headers=auth("o@example.org", role=UserRole.district_officer)).status_code == 200

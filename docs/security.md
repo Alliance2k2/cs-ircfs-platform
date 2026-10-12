@@ -32,6 +32,7 @@ Area-level access (sector-limited accounts) applies to records; district totals 
 | Chargeable messages during tests | The test suite forces `SMS_PROVIDER=dry_run` and `AIRTIME_PROVIDER=dry_run`; the browser end-to-end server also clears provider credentials, staff alerts, the forecast and Mapbox, and seeds only its own temporary SQLite file | `tests/conftest.py`, `scripts/run_e2e_server.py` |
 | Untraceable staff changes | Account, case, grievance, verification, scheme, export and advice-send actions are written to the append-only `audit_events` table, readable in Administration → Audit log | `services/audit.py` |
 | Re-identifying households from small groups | Nutrition scores are hidden for any cell (and any month in trends) with fewer than five households; the map only draws cells above that size | `services/analytics.py`, `services/reporting.py` |
+| Locations and notes leaking through maps, or invented positions | `/map-data` draws only recorded GPS points and counts the rest; farmers' names and home locations, report notes and fault descriptions go to district staff only; `/geography/farmers` is staff-only; simulator tests are left out | `routes/map_data.py`, `routes/geography.py` |
 | Pages showing data a role must not see | The dashboard hides pages by the same role rules the API enforces; the API is the protection | `frontend/src/app/access.tsx` |
 
 Every control above has an automated test in `backend/tests/test_security.py` or `test_auth.py`.
