@@ -5,7 +5,7 @@ Four layers, all run by CI (`.github/workflows/ci.yml`) on every pull request an
 | Layer | Where | Command | What it proves |
 | --- | --- | --- | --- |
 | Backend | `backend/tests/` (pytest) | `cd backend && python -m pytest -q` | API rules, roles, privacy, metrics, USSD/SMS flows, migrations on SQLite |
-| Migrations on PostGIS | CI job "Migrations on PostGIS" | (CI only) | A fresh PostGIS database upgrades to head, matches the models, downgrades one step and upgrades again, and accepts the seed scripts |
+| Migrations on PostGIS | CI job "Migrations on PostGIS" | (CI only) | A fresh PostGIS database upgrades to head, matches the models (blocking), downgrades one step and upgrades again, and accepts the seed scripts. On SQLite, `test_every_name_fits_postgresql` catches identifiers longer than PostgreSQL's 63 characters |
 | Frontend unit | `frontend/src/**/*.test.tsx` (Vitest, Testing Library) | `cd frontend && npm test` | Components and pages against stubbed API answers: states, validation, access, privacy display |
 | Browser end-to-end | `frontend/e2e/` (Playwright) | `cd frontend && npm run build && npm run e2e` | Ten workflows in a real browser against a real server |
 
