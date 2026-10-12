@@ -30,3 +30,18 @@ leader("a cooperative leader starts on field reports, not on a refused overview"
   await expect(menu.getByRole("link", { name: "Crops & pests" })).toHaveCount(0);
   await expect(menu.getByRole("link", { name: "Irrigation command centre" })).toBeVisible();
 });
+
+const admin = asRole("admin");
+
+admin("an administrator sees Administration and Platform management without scrolling the menu", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/app/");
+  const menu = page.getByRole("navigation", { name: "Menu" });
+  await expect(menu.getByRole("link", { name: "Administration" })).toBeInViewport();
+  await expect(menu.getByRole("link", { name: "Platform management" })).toBeInViewport();
+
+  await page.getByRole("button", { name: "Account menu" }).click();
+  await page.getByRole("link", { name: "Platform management" }).last().click();
+  await expect(page).toHaveURL(/\/management\.html/);
+  await expect(page).not.toHaveURL(/login\.html/);
+});

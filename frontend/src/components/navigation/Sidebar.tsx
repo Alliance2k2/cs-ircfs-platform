@@ -19,7 +19,7 @@ function Item({ item, collapsed, onNavigate }: { item: NavItem; collapsed: boole
   const label = t(item.label);
   const body = (active: boolean) => (
     <>
-      <span aria-hidden className={cx("grid h-8 w-8 shrink-0 place-items-center rounded-lg", active ? "bg-white/20" : "bg-white/5 group-hover:bg-white/10")}>
+      <span aria-hidden className={cx("grid h-7 w-7 shrink-0 place-items-center rounded-lg", active ? "bg-white/20" : "bg-white/5 group-hover:bg-white/10")}>
         <Icon className="h-[18px] w-[18px]" />
       </span>
       <span className={cx("truncate", collapsed && "lg:sr-only")}>{label}</span>
@@ -28,7 +28,7 @@ function Item({ item, collapsed, onNavigate }: { item: NavItem; collapsed: boole
   );
   const base = (active: boolean) =>
     cx(
-      "group flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold transition",
+      "group flex items-center gap-3 rounded-xl px-2.5 py-1.5 text-sm font-semibold transition",
       collapsed && "lg:justify-center lg:px-0",
       active ? "bg-gradient-to-r from-fresh to-primary text-white shadow-[0_8px_20px_rgb(0_0_0/0.18)]" : "text-white/80 hover:bg-white/10 hover:text-white",
     );
@@ -51,7 +51,19 @@ function Item({ item, collapsed, onNavigate }: { item: NavItem; collapsed: boole
 export function Sidebar({ open, onClose, collapsed, onToggleCollapsed }: SidebarProps) {
   const { t } = useI18n();
   const { role } = useSession();
-  const groups = NAV.map((group) => ({ ...group, items: group.items.filter((item) => canAccess(role, item.access)) })).filter((group) => group.items.length);
+  const visible = NAV.map((group) => ({ ...group, items: group.items.filter((item) => canAccess(role, item.access)) })).filter((group) => group.items.length);
+  // Administration stays pinned under the scrolling list, so it is never out of sight on a laptop.
+  const groups = visible.filter((group) => group.label !== "nav.group.admin");
+  const pinned = visible.find((group) => group.label === "nav.group.admin");
+  const list = (items: NavItem[]) => (
+    <ul className="space-y-0.5">
+      {items.map((item) => (
+        <li key={item.label}>
+          <Item item={item} collapsed={collapsed} onNavigate={onClose} />
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <>
@@ -77,25 +89,23 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapsed }: Sidebar
           </button>
         </div>
 
-        <nav aria-label={t("nav.menu")} className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
-          {groups.map((group) => (
-            <div key={group.label}>
-              <p className={cx("flex items-center gap-2 px-2.5 pb-1.5 text-2xs font-bold uppercase tracking-[0.14em] text-white/45", collapsed && "lg:sr-only")}>
-                {t(group.label)}
-                <span aria-hidden className="h-px flex-1 bg-white/10" />
-              </p>
-              <ul className="space-y-0.5">
-                {group.items.map((item) => (
-                  <li key={item.label}>
-                    <Item item={item} collapsed={collapsed} onNavigate={onClose} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <nav aria-label={t("nav.menu")} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
+            {groups.map((group) => (
+              <div key={group.label}>
+                <p className={cx("flex items-center gap-2 px-2.5 pb-1 text-2xs font-bold uppercase tracking-[0.14em] text-white/45", collapsed && "lg:sr-only")}>
+                  {t(group.label)}
+                  <span aria-hidden className="h-px flex-1 bg-white/10" />
+                </p>
+                {list(group.items)}
+              </div>
+            ))}
+          </div>
+          {pinned && <div className="border-t border-white/10 px-3 py-2">{list(pinned.items)}</div>}
         </nav>
 
-        <div className={cx("m-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3", collapsed && "lg:hidden")}>
+        {/* Only on tall screens: on a laptop the menu needs the room, or Administration scrolls out of sight. */}
+        <div className={cx("m-3 hidden items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 [@media(min-height:1000px)]:flex", collapsed && "lg:!hidden")}>
           <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-lime text-forest">
             <Radio className="h-5 w-5" />
           </span>

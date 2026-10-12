@@ -20,6 +20,7 @@ export const workspaces = {
   "nav.channels2": "USSD & SMS operations",
   "nav.monthly": "Monthly report",
   "nav.admin": "Administration",
+  "nav.management": "Platform management",
   "nav.collapse": "Collapse menu",
   "nav.expand": "Expand menu",
   // Shell

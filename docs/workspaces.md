@@ -102,6 +102,8 @@ One month compared with the month before: headline figures with their change, sc
 - **Scheme baselines**: yield target, its source document, implementing partner and hectares developed. A target without a source is refused.
 - **Audit log**: who changed what, newest first, searchable.
 
+Administration and **Platform management** (the classic `/management.html`, which still holds field users, grievance categories, the asset inventory, nutrition surveys and the SMS log) stay pinned at the bottom of the sidebar for administrators, and are also in the account menu.
+
 ## The shell
 
 - **Search pages** (Ctrl+K): jump to any page the role can open.

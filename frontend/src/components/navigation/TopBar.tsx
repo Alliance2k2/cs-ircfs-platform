@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Bell, CalendarDays, ChevronDown, ChevronRight, Globe, LogOut, Menu, Search } from "lucide-react";
+import { Bell, CalendarDays, ChevronDown, ChevronRight, Globe, LogOut, Menu, Search, Settings, SlidersHorizontal } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isStaff, useSession } from "@/app/providers/SessionProvider";
@@ -101,7 +101,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
       </button>
 
       <nav aria-label={t("crumb.label")} className="hidden min-w-0 md:block">
-        <ol className="flex items-center gap-1.5 text-sm">
+        <ol className="flex items-center gap-1.5 whitespace-nowrap text-sm">
           <li className="text-muted">{t("crumb.root")}</li>
           <li aria-hidden><ChevronRight className="h-3.5 w-3.5 text-muted" /></li>
           <li className="text-muted">{t(route.group)}</li>
@@ -113,7 +113,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2.5">
         <button type="button" onClick={() => setPalette(true)} className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-forest">
           <Search aria-hidden className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">{t("shell.search")}</span>
+          <span className="hidden whitespace-nowrap xl:inline">{t("shell.search")}</span>
           <kbd className="hidden rounded border border-line px-1 text-2xs xl:inline">Ctrl K</kbd>
         </button>
         <span className="hidden items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-ink 2xl:inline-flex">
@@ -121,7 +121,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
           {today}
         </span>
         {online !== null && (
-          <span role="status" className={cx("hidden items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold lg:inline-flex",
+          <span role="status" className={cx("hidden items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold xl:inline-flex",
             online ? "border-fresh/40 bg-mint text-primary-strong" : "border-critical/30 bg-critical-soft text-critical")}>
             <span aria-hidden className={cx("h-2 w-2 rounded-full", online ? "bg-fresh" : "bg-critical")} />
             {online ? t("top.online") : t("top.offline")}
@@ -191,7 +191,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
             </span>
           }
         >
-          {() => (
+          {(close) => (
             <div className="space-y-1">
               <div className="rounded-control bg-canvas px-3 py-2.5 text-sm">
                 <p className="font-bold text-ink">{name}</p>
@@ -199,6 +199,18 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
                 <p className="mt-1 text-xs text-muted">{t("shell.role")}: {roleLabel}</p>
                 {account && <p className="text-xs text-muted">{t("shell.area")}: {account.area}</p>}
               </div>
+              {role === "administrator" && (
+                <>
+                  <Link to="/admin" onClick={close} className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">
+                    <Settings aria-hidden className="h-4 w-4 text-muted" />
+                    {t("nav.admin")}
+                  </Link>
+                  <a href="/management.html" className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">
+                    <SlidersHorizontal aria-hidden className="h-4 w-4 text-muted" />
+                    {t("nav.management")}
+                  </a>
+                </>
+              )}
               <a href="/" className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">
                 <Globe aria-hidden className="h-4 w-4 text-muted" />
                 {t("footer.public")}
