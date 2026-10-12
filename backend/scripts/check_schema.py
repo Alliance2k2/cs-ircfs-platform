@@ -10,7 +10,7 @@ from pathlib import Path
 
 from alembic.autogenerate import compare_metadata
 from alembic.migration import MigrationContext
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -21,13 +21,24 @@ import app.db.models  # noqa: E402,F401 - loads every table
 # PostGIS's own tables and views are not part of the platform schema.
 SYSTEM_TABLES = {"spatial_ref_sys", "geography_columns", "geometry_columns"}
 
+# Tables that belong to an installed extension. The postgis/postgis image used in CI also
+# installs postgis_topology and postgis_tiger_geocoder, whose schemas join the search path,
+# so their dozens of tables would otherwise look like tables missing from the models.
+EXTENSION_TABLES = text(
+    "SELECT c.relname FROM pg_class c JOIN pg_depend d ON d.objid = c.oid AND d.deptype = 'e' "
+    "WHERE c.relkind IN ('r', 'v', 'm', 'p', 'f')"
+)
+
 
 def differences(url: str) -> list:
     engine = create_engine(url)
     with engine.connect() as connection:
+        ignored = set(SYSTEM_TABLES)
+        if connection.dialect.name == "postgresql":
+            ignored |= set(connection.scalars(EXTENSION_TABLES))
         context = MigrationContext.configure(connection, opts={
             "compare_type": True,
-            "include_name": lambda name, kind, _parent: not (kind == "table" and name in SYSTEM_TABLES),
+            "include_name": lambda name, kind, _parent: not (kind == "table" and name in ignored),
         })
         return compare_metadata(context, Base.metadata)
 
