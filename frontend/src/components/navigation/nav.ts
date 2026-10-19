@@ -12,6 +12,7 @@ import {
   MessageSquareText,
   Radio,
   Settings,
+  SlidersHorizontal,
   Smartphone,
   Sprout,
   TrendingUp,
@@ -98,6 +99,9 @@ export const NAV: NavGroup[] = [
     label: "nav.group.admin",
     items: [
       { label: "nav.admin", icon: Settings, to: "/admin", access: "admin" },
+      // The classic page still holds field users, grievance categories, the asset
+      // inventory, nutrition surveys and the SMS log.
+      { label: "nav.management", icon: SlidersHorizontal, href: "/management.html", access: "admin" },
       { label: "nav.home", icon: Globe, href: "/" },
     ],
   },

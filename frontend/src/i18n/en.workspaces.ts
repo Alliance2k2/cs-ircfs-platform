@@ -20,6 +20,7 @@ export const workspaces = {
   "nav.channels2": "USSD & SMS operations",
   "nav.monthly": "Monthly report",
   "nav.admin": "Administration",
+  "nav.management": "Platform management",
   "nav.collapse": "Collapse menu",
   "nav.expand": "Expand menu",
   // Shell
@@ -280,7 +281,8 @@ export const workspaces = {
   "map.layer.heat": "Pest heatmap",
   "map.layer.rain": "Rainfall",
   "map.layer.food": "Nutrition risk (5+ households)",
-  "map.privacy": "Only places stored with reports are shown. Nutrition appears per cell with 5 or more households; grievances and households are never mapped.",
+  "map.privacy": "Only GPS points recorded with reports are drawn; no position is guessed. Nutrition appears per cell with 5 or more households. Grievances and households are never mapped.",
+  "map.unlocated": "{n} reports in your area have no GPS point (for example SMS reports) and are not on the map. They are in Field reports.",
   "map.pointsOnly": "Local database: points only. Sector and cell outlines need PostGIS.",
   // Grievances
   "grievances.eyebrow": "Community",

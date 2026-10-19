@@ -4,6 +4,14 @@
   const $ = (selector) => document.querySelector(selector);
   const fmt = (n) => Number(n || 0).toLocaleString();
 
+  // ---------- AIMS Rwanda logo: shown only when assets/img/aims-logo.png exists ----------
+  const aimsLogo = new Image();
+  aimsLogo.onload = () => document.querySelectorAll("[data-aims-logo]").forEach((img) => {
+    img.hidden = false;
+    img.closest("[data-aims]")?.classList.add("has-aims-logo");
+  });
+  aimsLogo.src = "assets/img/aims-logo.png";
+
   // ---------- Header: mobile menu, active section, language ----------
   const menuBtn = $("#menuBtn");
   const links = $("#site-links");
@@ -16,8 +24,9 @@
   links.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
 
   const NAV = {
-    en: { label: "EN", items: ["Our mission", "Solutions", "How it works", "Pilot projects", "FAQs"] },
-    rw: { label: "RW", items: ["Intego yacu", "Ibisubizo", "Uko bikora", "Imishinga y'igerageza", "Ibibazo"] },
+    en: { label: "EN", items: ["What it does", "How it works", "Who it's for", "Pilot schemes", "FAQs"] },
+    // RW: needs field review
+    rw: { label: "RW", items: ["Icyo ikora", "Uko bikora", "Abo igenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
   let lang = "en";
   $("#langBtn").addEventListener("click", () => {

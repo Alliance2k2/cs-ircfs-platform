@@ -58,7 +58,7 @@ Seven-day rain-gauge totals per sector, the Open-Meteo forecast, the dry and wet
 
 ### District map — `/app/map` (all)
 
-Mapbox map of Bugesera with layers for infrastructure, crop reports, a pest heatmap and rainfall readings; analysts also get nutrition risk per cell (cells with five or more households only). Map, satellite and terrain bases and a 3D view are in the map's corner. Only coordinates stored with records are drawn. Grievances and households are never mapped. Without `MAPBOX_ACCESS_TOKEN` the page explains how to add one.
+Mapbox map of Bugesera with layers for infrastructure, crop reports, a pest heatmap and rainfall readings; analysts also get nutrition risk per cell (cells with five or more households only). Map, satellite and terrain bases and a 3D view are in the map's corner. Only GPS points recorded with reports are drawn; no position is guessed, and the page says how many reports have no GPS point. Grievances and household surveys are never mapped; registered farmers' locations and report notes are for district staff only. Without `MAPBOX_ACCESS_TOKEN` the page explains how to add one.
 
 ## Evaluation
 
@@ -101,6 +101,8 @@ One month compared with the month before: headline figures with their change, sc
 - **Accounts**: approve new registrations, suspend and reactivate, change roles (each asks for confirmation) and set an account's area of work (sectors). Administrators cannot change their own role or status here.
 - **Scheme baselines**: yield target, its source document, implementing partner and hectares developed. A target without a source is refused.
 - **Audit log**: who changed what, newest first, searchable.
+
+Administration and **Platform management** (the classic `/management.html`, which still holds field users, grievance categories, the asset inventory, nutrition surveys and the SMS log) stay pinned at the bottom of the sidebar for administrators, and are also in the account menu.
 
 ## The shell
 

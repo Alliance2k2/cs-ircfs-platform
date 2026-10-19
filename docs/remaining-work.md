@@ -109,6 +109,7 @@ All pages are described in [workspaces.md](workspaces.md).
 
 ## Known gaps
 
+- `/analytics/farmer-summary` returns fixed zeros for schemes, complaints and assets; only classic pages use the older summaries.
 - **Fresh databases.** Grievance categories and the asset inventory are created by the demonstration seed only. A new production database needs them entered (classic Management page) or a reference seed script; until then USSD uses its built-in lists.
 - **Area-limited accounts** see their own sectors' records; district totals, trends and the monthly report stay district-wide. Decide which behaviour the district wants.
 - Reads of personal data on screen are not audited (changes and exports are).

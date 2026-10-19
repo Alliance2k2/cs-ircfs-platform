@@ -138,6 +138,7 @@ cs-ircfs-platform/
 | [Operations](infrastructure/README.md) | Running and maintaining the Docker stack |
 | [Roadmap](docs/roadmap.md) | Project status, known limitations and next steps |
 | [Security](docs/security.md) | Threats, controls, settings and open items |
+| [How the backend works](docs/api-guide.md) | Every API group and endpoint: who may use it, what it does, the rules behind it |
 | [Workspaces](docs/workspaces.md) | Every page of the district dashboard: who can open it, what it does, which API it uses |
 | [Testing](docs/testing.md) | Backend, migration, unit and browser end-to-end tests |
 | [Design system](docs/design-system.md) | Colour tokens, components, patterns and data states |

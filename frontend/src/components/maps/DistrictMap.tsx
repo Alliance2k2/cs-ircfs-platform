@@ -33,8 +33,9 @@ interface DistrictMapProps {
 }
 
 /**
- * Every mapped layer of the platform on one Mapbox map. Points come only from coordinates
- * stored with records; household and grievance locations are never sent to the browser.
+ * Every mapped layer of the platform on one Mapbox map. Points come only from GPS coordinates
+ * recorded with reports (the API never generates positions); household and grievance
+ * locations are never sent to the browser.
  */
 export default function DistrictMap({ token, style, layers, visible, label }: DistrictMapProps) {
   const container = useRef<HTMLDivElement>(null);

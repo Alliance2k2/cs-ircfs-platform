@@ -10,7 +10,8 @@ from geoalchemy2.functions import ST_AsGeoJSON
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.scope import allowed_cells, cell_filter
+from app.core.security import Principal, require_roles
 from app.db.models import Cell, FieldUser, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import GeometryRead
@@ -44,9 +45,15 @@ def list_cell_boundaries(db: Session = Depends(get_db), _: object = reader) -> l
     return _geojson(rows)
 
 
+# Farmers' names and home locations are personal data: district staff only.
+staff = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
+
+
 @router.get("/farmers")
-def list_farmer_locations(db: Session = Depends(get_db), _: object = reader) -> list[dict]:
+def list_farmer_locations(db: Session = Depends(get_db), principal: Principal = staff) -> list[dict]:
     if not _spatial(db):
         return []
-    rows = db.execute(select(FieldUser.id, FieldUser.full_name, ST_AsGeoJSON(FieldUser.location)).where(FieldUser.role == UserRole.farmer, FieldUser.location.is_not(None))).all()
+    rows = db.execute(select(FieldUser.id, FieldUser.full_name, ST_AsGeoJSON(FieldUser.location))
+                      .where(FieldUser.role == UserRole.farmer, FieldUser.location.is_not(None),
+                             cell_filter(FieldUser.cell_id, allowed_cells(db, principal)))).all()
     return [{"id": row.id, "name": row.full_name or "Unnamed farmer", "geometry": json.loads(row[2])} for row in rows]

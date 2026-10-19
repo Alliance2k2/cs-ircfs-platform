@@ -44,3 +44,5 @@ class MapData(BaseModel):
     features: list[MapFeature]
     # Spatial overlays need PostGIS; local SQLite returns points only and the UI shows a notice.
     spatial_available: bool = True
+    # Reports in the area without recorded coordinates: counted, never drawn at a guessed position.
+    unlocated_reports: int = 0
