@@ -8,8 +8,8 @@ def test_create_field_user_normalises_phone(client):
 
 
 def test_duplicate_phone_returns_409(client):
-    client.post("/api/v1/field-users", json={"phone_number": "+250788111222"})
-    assert client.post("/api/v1/field-users", json={"phone_number": "+250788111222"}).status_code == 409
+    client.post("/api/v1/field-users", json={"phone_number": "0788 111 222"})
+    assert client.post("/api/v1/field-users", json={"phone_number": "788111222"}).status_code == 409
 
 
 def test_cannot_delete_field_user_with_reports(client):

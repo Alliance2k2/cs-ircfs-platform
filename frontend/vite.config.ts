@@ -22,7 +22,10 @@ export default defineConfig({
       "/favicon.ico": api,
     },
   },
-  build: { outDir: "dist", sourcemap: true, chunkSizeWarningLimit: 900 },
+  // Source maps stay on for local debugging only. A shipped .map file reconstructs every
+  // screen's source, including comments and the API shapes, so production builds omit it.
+  // Set VITE_SOURCEMAP=true for an exception (for example a staging-only investigation).
+  build: { outDir: "dist", sourcemap: process.env.VITE_SOURCEMAP === "true", chunkSizeWarningLimit: 900 },
   test: {
     environment: "jsdom",
     globals: true,

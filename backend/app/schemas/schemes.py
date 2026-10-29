@@ -9,6 +9,9 @@ class IrrigationSchemeRead(BaseModel):
     hectares_developed: float | None
     baseline_yield_target_tons: float | None
     baseline_source: str | None
+    target_crop_type: str | None
+    target_season: str | None
+    target_yield_tons_per_hectare: float | None
     sector_id: int | None
     latitude: float | None
     longitude: float | None
@@ -23,6 +26,9 @@ class IrrigationSchemeCreate(BaseModel):
     hectares_developed: float | None = Field(default=None, ge=0)
     baseline_yield_target_tons: float | None = Field(default=None, ge=0)
     baseline_source: str | None = Field(default=None, max_length=255)
+    target_crop_type: str | None = Field(default=None, max_length=80)
+    target_season: str | None = Field(default=None, max_length=20)
+    target_yield_tons_per_hectare: float | None = Field(default=None, gt=0)
     sector_id: int | None = Field(default=None, gt=0)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
@@ -42,6 +48,9 @@ class IrrigationSchemeUpdate(BaseModel):
     hectares_developed: float | None = Field(default=None, ge=0)
     baseline_yield_target_tons: float | None = Field(default=None, ge=0)
     baseline_source: str | None = Field(default=None, max_length=255)
+    target_crop_type: str | None = Field(default=None, max_length=80)
+    target_season: str | None = Field(default=None, max_length=20)
+    target_yield_tons_per_hectare: float | None = Field(default=None, gt=0)
     sector_id: int | None = Field(default=None, gt=0)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)

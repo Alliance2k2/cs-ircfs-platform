@@ -33,6 +33,7 @@ from app.db.models import (
 from app.schemas import ActNowItem, DashboardSummary
 from app.services.advisory import advice_for_rainfall, threshold_map
 from app.services.cases import case_source
+from app.services.rainfall import aggregate_gauges
 from app.services.evidence import counted
 
 CLOSED = [ReportStatus.resolved, ReportStatus.closed]
@@ -230,15 +231,26 @@ def rainfall_map(db: Session, days: int = 7) -> list[dict]:
     """Citizen-Led Rain Gauge Network: 7-day rainfall per cell and its drought-warning level."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     thresholds = threshold_map(db)
-    rows = db.execute(
-        select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id, func.sum(IrrigationClimateLog.rainfall_mm), func.count(IrrigationClimateLog.id))
-        .join(IrrigationClimateLog, IrrigationClimateLog.cell_id == Cell.id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
-        .group_by(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
+    cells = db.execute(
+        select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
+        .where(Cell.latitude.is_not(None), Cell.longitude.is_not(None))
     ).all()
-    return [{"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng, "rainfall_mm": round(total or 0, 1), "readings": readings,
-             "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level}
-            for cell_id, name, lat, lng, sector_id, total, readings in rows if lat is not None and lng is not None]
+    result = []
+    for cell_id, name, lat, lng, sector_id in cells:
+        rows = db.execute(
+            select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
+            .where(IrrigationClimateLog.cell_id == cell_id, IrrigationClimateLog.rainfall_mm.is_not(None),
+                   IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
+        ).all()
+        gauge_rows = [((reporter_id, cell_id if reporter_id is None else None), created_at, mm)
+                      for reporter_id, mm, created_at in rows]
+        totals, counts = aggregate_gauges(gauge_rows)
+        total = sum(totals.values()) / len(totals) if totals else 0.0
+        readings = sum(counts.values())
+        result.append({"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng,
+                       "rainfall_mm": round(total, 1), "readings": readings,
+                       "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level})
+    return result
 
 
 DOWN = ("faulty", "offline")

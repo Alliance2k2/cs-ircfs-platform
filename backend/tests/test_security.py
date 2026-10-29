@@ -135,8 +135,9 @@ def test_mask_phone():
 # --- Production guard and headers --------------------------------------------------
 
 def production(**overrides) -> Settings:
-    values = {"environment": "production", "require_api_key": True, "database_url": "postgresql://u:p@db/cs",
-              "cookie_secure": True, "cors_origins": "", "gateway_callback_token": TOKEN}
+    values = {"environment": "production", "require_api_key": True, "dev_auth_bypass_enabled": False,
+              "database_url": "postgresql://u:p@db/cs", "cookie_secure": True, "cors_origins": "",
+              "gateway_callback_token": TOKEN}
     values.update(overrides)
     return Settings(_env_file=None, **values)
 

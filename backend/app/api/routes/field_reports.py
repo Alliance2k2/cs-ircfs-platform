@@ -1,7 +1,5 @@
 """Citizen field reports: the unified list with quality flags, one report's detail,
 verification by district staff, and a CSV export without personal data."""
-import csv
-import io
 import json
 from datetime import datetime, timezone
 from typing import Literal
@@ -12,6 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.csv_export import csv_download
 from app.core.privacy import sees_personal_data
 from app.core.scope import allowed_cells, check_cell
 from app.core.security import Principal, require_roles
@@ -38,8 +37,11 @@ def filters(
     scheme_id: int | None = Query(default=None, gt=0),
     verification: Literal["unverified", "verified", "rejected"] | None = None,
     origin: Literal["field", "demo", "import"] | None = None,
+    limit: int = Query(default=100, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ) -> dict:
-    return {"kind": kind, "days": days, "sector_id": sector_id, "scheme_id": scheme_id, "verification": verification, "origin": origin}
+    return {"kind": kind, "days": days, "sector_id": sector_id, "scheme_id": scheme_id,
+            "verification": verification, "origin": origin, "limit": limit, "offset": offset}
 
 
 @router.get("")
@@ -48,8 +50,14 @@ def field_reports(params: dict = Depends(filters), db: Session = Depends(get_db)
 
     Monitors and cooperative leaders see masked phone numbers and no verification notes.
     """
-    rows = list_reports(db, allowed_cells(db, principal), sees_personal_data(principal), **params)
-    return {"reports": rows, "kinds": list(KINDS), "personal_data": sees_personal_data(principal), "truncated": len(rows) >= 500}
+    limit = params["limit"]
+    offset = params["offset"]
+    rows = list_reports(db, allowed_cells(db, principal), sees_personal_data(principal),
+                        **{**params, "limit": limit + 1})
+    truncated = len(rows) > limit
+    rows = rows[:limit]
+    return {"reports": rows, "kinds": list(KINDS), "personal_data": sees_personal_data(principal),
+            "truncated": truncated, "offset": offset, "next_offset": offset + len(rows) if truncated else None}
 
 
 def find_report(db: Session, source: str, report_id: int, principal: Principal):
@@ -63,19 +71,16 @@ def find_report(db: Session, source: str, report_id: int, principal: Principal):
 @router.get("/export.csv")
 def export_reports(params: dict = Depends(filters), db: Session = Depends(get_db), principal: Principal = staff) -> StreamingResponse:
     """The filtered list as CSV for analysis. No names or phone numbers are included."""
-    rows = list_reports(db, allowed_cells(db, principal), False, **params)
-    columns = ["id", "source", "kind", "title", "crop", "pest", "severity", "expected_tons", "reported_tons", "rainfall_mm", "asset",
+    export_params = {key: value for key, value in params.items() if key not in {"limit", "offset"}}
+    reports = list_reports(db, allowed_cells(db, principal), False, **export_params, limit=500)
+    columns = ["id", "source", "kind", "title", "crop", "pest", "severity", "expected_tons", "reported_tons",
+               "cultivated_area_hectares", "yield_tons_per_hectare", "harvest_date", "season", "rainfall_mm", "asset",
                "condition", "bottleneck", "scheme", "sector", "cell", "data_origin", "verification_status", "flags", "created_at"]
-    buffer = io.StringIO()
-    writer = csv.writer(buffer)
-    writer.writerow(columns)
-    for item in rows:
-        writer.writerow([";".join(item[column]) if column == "flags" else item[column] for column in columns])
+    rows = [[";".join(item[column]) if column == "flags" else item[column] for column in columns] for item in reports]
     record(db, principal, "field_reports.export", "field_report", None, rows=len(rows), **{k: v for k, v in params.items() if v is not None})
     db.commit()
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d")
-    return StreamingResponse(iter([buffer.getvalue()]), media_type="text/csv",
-                             headers={"Content-Disposition": f'attachment; filename="cs-ircfs-field-reports-{stamp}.csv"'})
+    return csv_download(f"cs-ircfs-field-reports-{stamp}.csv", columns, rows)
 
 
 def _note(detail: str | None) -> str | None:

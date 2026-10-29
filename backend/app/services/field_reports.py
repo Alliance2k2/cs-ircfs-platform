@@ -55,6 +55,8 @@ def flags(source: str, kind: str, report) -> list[str]:
         found.append("no_scheme")
     if kind == "harvest" and report.expected_harvest_tons is None and report.reported_harvest_tons is None:
         found.append("missing_measure")
+    if kind == "harvest" and report.reported_harvest_tons is not None and report.cultivated_area_hectares is None:
+        found.append("missing_area")
     if kind == "pest" and report.severity is None:
         found.append("missing_measure")
     if kind == "asset" and not report.operational_status:
@@ -94,6 +96,13 @@ def row(source: str, report, lookup: Lookup, personal: bool, duplicate: bool) ->
         "condition": getattr(report, "operational_status", None), "bottleneck": getattr(report, "bottleneck_category", None),
         "scheme_id": report.scheme_id, "scheme": lookup.schemes.get(report.scheme_id),
         "cell_id": report.cell_id, "cell": cell.name if cell else None, "sector_id": sector_id, "sector": sector,
+        "yield_tons_per_hectare": (round(reported_tons / cultivated_area, 3)
+                                    if (reported_tons := getattr(report, "reported_harvest_tons", None)) is not None
+                                    and (cultivated_area := getattr(report, "cultivated_area_hectares", None)) not in (None, 0)
+                                    else None),
+        "cultivated_area_hectares": getattr(report, "cultivated_area_hectares", None),
+        "harvest_date": getattr(report, "harvest_date", None),
+        "season": getattr(report, "season", None),
         "reporter_id": report.reporter_id,
         "reporter": (person.phone_number if personal else mask_phone(person.phone_number)) if person else None,
         "reporter_role": person.role.value if person else None,
@@ -105,7 +114,7 @@ def row(source: str, report, lookup: Lookup, personal: bool, duplicate: bool) ->
 
 def list_reports(db: Session, cells: set[int] | None, personal: bool, *, kind: str | None = None, days: int = 30,
                  sector_id: int | None = None, scheme_id: int | None = None, verification: str | None = None,
-                 origin: str | None = None, limit: int = 500) -> list[dict]:
+                 origin: str | None = None, limit: int = 100, offset: int = 0) -> list[dict]:
     since = datetime.now(timezone.utc) - timedelta(days=days)
     lookup = Lookup(db)
     if sector_id is not None:
@@ -140,7 +149,7 @@ def list_reports(db: Session, cells: set[int] | None, personal: bool, *, kind: s
             continue
         rows.append(row(source, report, lookup, personal, duplicate))
     rows.sort(key=lambda item: aware(item["created_at"]), reverse=True)
-    return rows[:limit]
+    return rows[offset:offset + limit]
 
 
 def linked_case(db: Session, source: str, report_id: int) -> IncidentCase | None:

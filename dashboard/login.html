@@ -128,7 +128,13 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
   button.disabled = true;
   button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Signing in…';
   try { finish(await CS.apiJson("auth/login", { method: "POST", body: { email: form.get("email"), password: form.get("password") } })); }
-  catch (error) { showNotice(error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message); }
+  catch (error) {
+    if (error.status === 403 && /approval/i.test(error.message || "")) {
+      showNotice(`${error.message} Ask a district administrator to approve your account.`);
+    } else {
+      showNotice(error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message);
+    }
+  }
   finally { button.disabled = false; button.textContent = "Sign in"; }
 });
 </script>

@@ -4,6 +4,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field, field_validator
 
 from app.db.models import UserRole
+from app.services.sms import is_valid_phone, normalise_phone
 
 
 class FieldUserCreate(BaseModel):
@@ -21,8 +22,11 @@ class FieldUserCreate(BaseModel):
 
     @field_validator("phone_number")
     @classmethod
-    def normalise_phone(cls, value: str) -> str:
-        return value.replace(" ", "").replace("-", "")
+    def canonical_phone(cls, value: str) -> str:
+        normalised = normalise_phone(value)
+        if not is_valid_phone(normalised):
+            raise ValueError("A valid international phone number is required")
+        return normalised
 
 
 class FieldUserRead(BaseModel):

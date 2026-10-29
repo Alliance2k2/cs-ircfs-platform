@@ -37,6 +37,7 @@ from app.api.routes import (
 )
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.metrics import record_http_request
 from app.core.ratelimit import limiter
 from app.db.base import Base
 from app.db.session import engine
@@ -92,9 +93,13 @@ async def rate_limit_handler(_: Request, __: RateLimitExceeded) -> JSONResponse:
 
 @app.middleware("http")
 async def request_logging(request: Request, call_next):
-    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    # Generated here, never taken from the client: a caller could otherwise pick the id that
+    # appears in our logs and make two different requests look like one.
+    request_id = str(uuid.uuid4())
     started = time.perf_counter()
     response = await call_next(request)
+    duration_ms = (time.perf_counter() - started) * 1000
+    record_http_request(request.method, request.url.path, response.status_code, duration_ms)
     response.headers["X-Request-ID"] = request_id
     # The React build's assets carry a content hash in their name: cache them for a year,
     # which matters on rural mobile data. Everything else (legacy pages, the React
@@ -110,7 +115,7 @@ async def request_logging(request: Request, call_next):
         request.method,
         request.url.path,
         response.status_code,
-        (time.perf_counter() - started) * 1000,
+        duration_ms,
     )
     return response
 
@@ -122,6 +127,26 @@ SECURITY_HEADERS = {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
 }
 
+# Report-only first: the legacy dashboard and the React build both rely on inline styles and
+# scripts today, so an enforcing policy would break pages. Browsers still enforce the policy
+# in report-only mode for evaluation, and violations appear in the console while the allow-list
+# is narrowed in later weeks. Mapbox GL needs its tile hosts, a blob worker, and events.
+CSP_REPORT_ONLY = "; ".join((
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "img-src 'self' data: blob: https://images.unsplash.com https://*.mapbox.com",
+    "media-src 'self' https://videos.pexels.com",
+    "font-src 'self' data:",
+    "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' https://unpkg.com https://accounts.google.com https://*.mapbox.com",
+    "worker-src 'self' blob:",
+    "connect-src 'self' https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://accounts.google.com",
+    "frame-src 'self' https://accounts.google.com",
+))
+
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
@@ -129,6 +154,7 @@ async def security_headers(request: Request, call_next):
     response = await call_next(request)
     for header, value in SECURITY_HEADERS.items():
         response.headers.setdefault(header, value)
+    response.headers.setdefault("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY)
     if settings.environment == "production":
         response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
     return response

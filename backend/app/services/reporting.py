@@ -11,6 +11,7 @@ from statistics import median
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -35,6 +36,7 @@ from app.db.models import (
 from app.services.cases import auto_create_case
 from app.services.cooperatives import participation as cooperative_participation
 from app.services.evidence import counted
+from app.services.rainfall import aggregate_gauges
 
 KIGALI = timezone(timedelta(hours=2))
 MIN_HOUSEHOLDS_PER_GROUP = 5  # matches services/analytics.py
@@ -83,12 +85,30 @@ def scheme_by_prefix(db: Session, prefix: str) -> int | None:
 
 
 def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
-    """A first-time caller is registered as a farmer, keyed by phone number."""
+    """A first-time caller is registered as a farmer, keyed by phone number.
+
+    Two first messages can arrive at the same moment; the unique phone index decides and
+    the losing request re-reads the winner's row instead of failing. ``consent_at`` marks
+    the first inbound message, which is when the opt-out notice becomes available.
+    """
     user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
-    if user is None:
-        user = FieldUser(phone_number=phone_number)
-        db.add(user)
-        db.flush()
+    if user is not None:
+        if user.consent_at is None:
+            user.consent_at = datetime.now(timezone.utc)
+        return user
+    user = FieldUser(phone_number=phone_number, consent_at=datetime.now(timezone.utc))
+    try:
+        # Added inside the savepoint: begin_nested() flushes pending objects on entry, which
+        # would raise before the block that knows how to recover.
+        with db.begin_nested():
+            db.add(user)
+            db.flush()
+    except IntegrityError:
+        if user in db:
+            db.expunge(user)
+        user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
+        if user is None:
+            raise
     return user
 
 
@@ -219,17 +239,21 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
         if sector_of(cell_id):
             entry["sectors"].add(sector_of(cell_id))
 
-    gauges: dict[str, dict[int | None, float]] = {}
-    readings: dict[str, int] = {}
-    for reporter_id, cell_id, mm in db.execute(select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm)
-                                               .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at))):
+    per_sector_rows: dict[str, list[tuple]] = {}
+    for reporter_id, cell_id, mm, created_at in db.execute(
+        select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
+        .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at), counted(IrrigationClimateLog))
+    ):
         name = sector_of(cell_id) or "Location not set"
         gauge = (reporter_id, cell_id if reporter_id is None else None)
-        gauges.setdefault(name, {}).setdefault(gauge, 0.0)
-        gauges[name][gauge] += float(mm)
-        readings[name] = readings.get(name, 0) + 1
-    rainfall = sorted(({"sector": name, "rainfall_mm": round(sum(totals.values()) / len(totals), 1), "gauges": len(totals), "readings": readings[name]}
-                       for name, totals in gauges.items()), key=lambda row: row["rainfall_mm"])
+        per_sector_rows.setdefault(name, []).append((gauge, created_at, mm))
+    rainfall = []
+    for name, gauge_rows in per_sector_rows.items():
+        totals, counts = aggregate_gauges(gauge_rows)
+        rainfall.append({"sector": name,
+                         "rainfall_mm": round(sum(totals.values()) / len(totals), 1) if totals else 0.0,
+                         "gauges": len(totals), "readings": sum(counts.values())})
+    rainfall.sort(key=lambda row: row["rainfall_mm"])
 
     surveys = list(db.scalars(select(NutritionSurvey).where(*in_month(NutritionSurvey.created_at))))
     risk_by_cell: dict[int | None, list[int]] = {}

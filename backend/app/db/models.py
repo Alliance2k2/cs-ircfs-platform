@@ -6,7 +6,7 @@ Two clearly separate people systems live here:
 * ``PlatformAccount`` — web dashboard staff who sign in with an email and password.
 """
 import enum
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
@@ -29,6 +29,30 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+
+class UTCDateTime(TypeDecorator):
+    """Store naive UTC values while always returning timezone-aware UTC datetimes."""
+
+    impl = DateTime
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        return dialect.type_descriptor(DateTime(timezone=False))
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if value.tzinfo is not None:
+            value = value.astimezone(timezone.utc).replace(tzinfo=None)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
 
 
 class SpatialGeometry(TypeDecorator):
@@ -153,6 +177,9 @@ class IrrigationScheme(Base):
     hectares_developed: Mapped[float | None] = mapped_column(Float)
     baseline_yield_target_tons: Mapped[float | None] = mapped_column(Float)
     baseline_source: Mapped[str | None] = mapped_column(String(255))
+    target_crop_type: Mapped[str | None] = mapped_column(String(80))
+    target_season: Mapped[str | None] = mapped_column(String(20))
+    target_yield_tons_per_hectare: Mapped[float | None] = mapped_column(Float)
     sector_id: Mapped[int | None] = mapped_column(ForeignKey("sectors.id"))
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
@@ -189,8 +216,13 @@ class FieldUser(Base):
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.farmer)
     cooperative_name: Mapped[str | None] = mapped_column(String(120))  # legacy free text; superseded by cooperative_id
     cooperative_id: Mapped[int | None] = mapped_column(ForeignKey("cooperatives.id"), index=True)
-    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"))
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Consent and opt-out (Law N° 058/2021): consent_at marks the first inbound message,
+    # opted_out_at marks a HAGARIKA/STOP request. Broadcasts skip opted-out people;
+    # replies to a message they sent themselves are still delivered.
+    consent_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    opted_out_at: Mapped[datetime | None] = mapped_column(UTCDateTime(), index=True)
     # Data Champion designation and training record (WP5, Section 8 objective 5).
     is_data_champion: Mapped[bool] = mapped_column(Boolean, default=False)
     trained_at: Mapped[date | None] = mapped_column(Date)
@@ -330,9 +362,14 @@ class InboundMessage(Base):
 
     ``record_id`` is informational only; it deliberately carries no foreign key so a
     retired source record never blocks an inbound log from being written.
+
+    The unique constraint is the idempotency guard: a gateway retry repeats the same
+    (channel, session id, text), so the second insert fails and the stored reply is
+    replayed instead of recording the report twice.
     """
 
     __tablename__ = "inbound_messages"
+    __table_args__ = (UniqueConstraint("channel", "session_id", "text", name="uq_inbound_channel_session_text"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), index=True)
     channel: Mapped[str] = mapped_column(String(10))
@@ -342,7 +379,7 @@ class InboundMessage(Base):
     record_type: Mapped[str | None] = mapped_column(String(40))
     record_id: Mapped[int | None] = mapped_column(Integer)
     data_origin: Mapped[str] = data_origin_column()
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
 
 class NutritionSurvey(Base):
@@ -361,13 +398,20 @@ class NutritionSurvey(Base):
 
 
 class IncentiveReward(Base):
-    """Airtime micro-bonus earned for regular weather or infrastructure reporting."""
+    """Airtime micro-bonus earned for regular weather or infrastructure reporting.
+
+    ``milestone`` is the report count the reward was earned at. The unique constraint on
+    (field_user_id, milestone) makes a second payout for the same milestone impossible,
+    even when two reports arrive concurrently.
+    """
 
     __tablename__ = "incentive_rewards"
+    __table_args__ = (UniqueConstraint("field_user_id", "milestone", name="uq_reward_user_milestone"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     field_user_id: Mapped[int] = mapped_column(ForeignKey("field_users.id"), index=True)
     phone_number: Mapped[str] = mapped_column(String(20))
     amount_rwf: Mapped[int] = mapped_column(Integer)
+    milestone: Mapped[int | None] = mapped_column(Integer)
     reason: Mapped[str] = mapped_column(String(120))
     status: Mapped[str] = mapped_column(String(20), default="pending")
     provider_id: Mapped[str | None] = mapped_column(String(120))
@@ -388,6 +432,9 @@ class CitizenScienceLog(VerifiedReport, Base):
     expected_harvest_month: Mapped[date | None] = mapped_column(Date)
     expected_harvest_tons: Mapped[float | None] = mapped_column(Float)
     reported_harvest_tons: Mapped[float | None] = mapped_column(Float)
+    cultivated_area_hectares: Mapped[float | None] = mapped_column(Float)
+    harvest_date: Mapped[date | None] = mapped_column(Date)
+    season: Mapped[str | None] = mapped_column(String(20), index=True)
     pest_or_disease: Mapped[str | None] = mapped_column(String(120))
     severity: Mapped[int | None] = mapped_column(Integer)
     notes: Mapped[str | None] = mapped_column(Text)

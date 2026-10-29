@@ -75,7 +75,7 @@ export const en = {
   "side.channelsNote": "Farmers report from any phone",
   "footer.brand": "CS-IRCFS · Bugesera District",
   "footer.tagline": "Citizen Science for Irrigation Resilience and Climate-smart Food Security",
-  "footer.privacy": "AIMS Rwanda — KTT Office. Counts, not personal data, leave district staff screens.",
+  "footer.privacy": "CS-IRCFS · Bugesera District. Counts, not personal data, leave district staff screens.",
   "footer.public": "Public site",
   "footer.api": "API docs",
   "overview.eyebrow": "District planning dashboard",

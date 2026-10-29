@@ -1,7 +1,7 @@
 """Field report schemas: crop, irrigation, and household nutrition."""
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 
 class CropReportCreate(BaseModel):
@@ -14,6 +14,9 @@ class CropReportCreate(BaseModel):
     expected_harvest_month: date | None = None
     expected_harvest_tons: float | None = Field(default=None, ge=0)
     reported_harvest_tons: float | None = Field(default=None, ge=0)
+    cultivated_area_hectares: float | None = Field(default=None, gt=0, le=100000)
+    harvest_date: date | None = None
+    season: str | None = Field(default=None, pattern=r"^[A-Za-z0-9][A-Za-z0-9 _/-]{1,19}$")
     pest_or_disease: str | None = Field(default=None, max_length=120)
     severity: int | None = Field(default=None, ge=1, le=5)
     notes: str | None = Field(default=None, max_length=2000)
@@ -31,6 +34,16 @@ class CropReportCreate(BaseModel):
 class CropReportRead(CropReportCreate):
     id: int
     created_at: datetime
+
+    @computed_field
+    @property
+    def yield_tons_per_hectare(self) -> float | None:
+        if self.reported_harvest_tons is None or self.cultivated_area_hectares is None:
+            return None
+        if self.cultivated_area_hectares <= 0:
+            return None
+        return round(self.reported_harvest_tons / self.cultivated_area_hectares, 3)
+
     model_config = {"from_attributes": True}
 
 
@@ -44,7 +57,7 @@ class IrrigationReportCreate(BaseModel):
         default=None, pattern="^(technical|social|institutional|environmental)$"
     )
     fault_description: str | None = Field(default=None, max_length=2000)
-    rainfall_mm: float | None = Field(default=None, ge=0, le=500)
+    rainfall_mm: float | None = Field(default=None, ge=0, le=300)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
 

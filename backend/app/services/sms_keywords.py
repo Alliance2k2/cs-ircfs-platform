@@ -9,9 +9,10 @@ Examples a farmer can text:
 Anything else receives a short help message.
 """
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.models import Cell, CommunityFeedback, FieldUser, Sector
@@ -22,7 +23,14 @@ from app.services.ussd import varieties_for
 CROP_WORDS = {"UMUCERI": "Rice", "IBIGORI": "Maize", "IBISHYIMBO": "Beans", "IMYUMBATI": "Cassava", "IMBOGA": "Vegetables",
               "RICE": "Rice", "MAIZE": "Maize", "BEANS": "Beans", "CASSAVA": "Cassava", "VEGETABLES": "Vegetables"}
 HELP = ("CS-IRCFS: NZANA <ubukana 1-5>, INDWARA <igihingwa>, IMVURA <mm>, UMUSARURO <igihingwa> <toni> [UKWEZI <n>], "
-        "IKIBAZO <ubutumwa>. Kanda *801#.")
+        "IKIBAZO <ubutumwa>. Kanda *801#. Guhagarika ubutumwa: HAGARIKA.")
+# Consent: HAGARIKA (Kinyarwanda for "stop") and the English equivalents stop broadcasts.
+# ONGERA ("continue") turns them back on. Transactional replies to a report are unaffected.
+OPT_OUT_WORDS = {"HAGARIKA", "STOP", "UNSUBSCRIBE", "KURURA"}
+OPT_IN_WORDS = {"ONGERA", "SUBSCRIBE", "START", "KOMEZA"}
+OPT_OUT_REPLY = ("Wahagaritse ubutumwa bwa CS-IRCFS (HAGARIKA/STOP). Ntuzakomeza kubona ubutumwa bw'amakuru. "
+                 "Niba wifuza kongera, ohereza ONGERA cyangwa START.")
+OPT_IN_REPLY = "Ubusabe bwawe bwakiriwe. Uzongera kubona ubutumwa bwa CS-IRCFS."
 # Optional yield-forecaster tokens on UMUSARURO (WP1): variety, months until harvest,
 # months since planting. Old messages without them keep working.
 # RW: needs field review
@@ -89,6 +97,12 @@ def _sector_location(db: Session, words: list[str]) -> tuple[int | None, float |
 def handle(db: Session, user: FieldUser, text: str) -> SmsResult:
     """Parse one inbound SMS and create the matching record. The caller commits."""
     words = (text or "").upper().replace(",", " ").split()
+    if words and words[0] in OPT_OUT_WORDS:
+        user.opted_out_at = datetime.now(timezone.utc)
+        return SmsResult(OPT_OUT_REPLY)
+    if words and words[0] in OPT_IN_WORDS:
+        user.opted_out_at = None
+        return SmsResult(OPT_IN_REPLY)
     sector_id, latitude, longitude, words = _sector_location(db, words)
     if not words:
         return SmsResult(HELP)

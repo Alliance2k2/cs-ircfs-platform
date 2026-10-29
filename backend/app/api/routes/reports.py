@@ -1,5 +1,5 @@
 """Field report endpoints: crop, irrigation, and household nutrition."""
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -37,9 +37,11 @@ def create_crop_report(payload: CropReportCreate, db: Session = Depends(get_db),
 
 
 @router.get("/citizen-reports", response_model=list[CropReportRead])
-def list_crop_reports(db: Session = Depends(get_db), principal: Principal = reader) -> list[CitizenScienceLog]:
+def list_crop_reports(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
+                      db: Session = Depends(get_db), principal: Principal = reader) -> list[CitizenScienceLog]:
     cells = allowed_cells(db, principal)
-    return list(db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, cells)).order_by(CitizenScienceLog.id.desc())))
+    return list(db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, cells))
+                          .order_by(CitizenScienceLog.id.desc()).offset(offset).limit(limit)))
 
 
 @router.post("/irrigation-reports", response_model=IrrigationReportRead, status_code=status.HTTP_201_CREATED)
@@ -52,9 +54,11 @@ def create_irrigation_report(payload: IrrigationReportCreate, db: Session = Depe
 
 
 @router.get("/irrigation-reports", response_model=list[IrrigationReportRead])
-def list_irrigation_reports(db: Session = Depends(get_db), principal: Principal = reader) -> list[IrrigationClimateLog]:
+def list_irrigation_reports(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
+                            db: Session = Depends(get_db), principal: Principal = reader) -> list[IrrigationClimateLog]:
     cells = allowed_cells(db, principal)
-    return list(db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, cells)).order_by(IrrigationClimateLog.id.desc())))
+    return list(db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, cells))
+                          .order_by(IrrigationClimateLog.id.desc()).offset(offset).limit(limit)))
 
 
 @router.post("/nutrition-surveys", response_model=NutritionSurveyRead, status_code=status.HTTP_201_CREATED)
@@ -72,6 +76,8 @@ def create_nutrition_survey(payload: NutritionSurveyCreate, db: Session = Depend
 
 
 @router.get("/nutrition-surveys", response_model=list[NutritionSurveyRead])
-def list_nutrition_surveys(db: Session = Depends(get_db), principal: Principal = household_reader) -> list[NutritionSurvey]:
+def list_nutrition_surveys(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
+                           db: Session = Depends(get_db), principal: Principal = household_reader) -> list[NutritionSurvey]:
     cells = allowed_cells(db, principal)
-    return list(db.scalars(select(NutritionSurvey).where(cell_filter(NutritionSurvey.cell_id, cells)).order_by(NutritionSurvey.id.desc())))
+    return list(db.scalars(select(NutritionSurvey).where(cell_filter(NutritionSurvey.cell_id, cells))
+                          .order_by(NutritionSurvey.id.desc()).offset(offset).limit(limit)))

@@ -1,4 +1,3 @@
-import { FlaskConical } from "lucide-react";
 import { DataState } from "@/components/feedback/DataState";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -48,7 +47,7 @@ export function OverviewPage() {
 
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 rounded-[20px] border border-line bg-surface px-4 py-4 shadow-card sm:px-5">
         <div className="max-w-xl">
-          <h2 className="text-lg font-extrabold">{t("overview.title")}</h2>
+          <h1 className="text-xl font-extrabold sm:text-2xl">{t("overview.title")}</h1>
           <p className="mt-0.5 text-sm text-muted">{t("overview.subtitle")}</p>
         </div>
         <FilterBar
@@ -62,8 +61,7 @@ export function OverviewPage() {
 
       {data?.demo_mode && (
         <p role="note" className="flex items-start gap-2.5 rounded-card border border-amber/30 bg-amber-soft px-4 py-3 text-sm font-semibold text-amber">
-          <FlaskConical aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
-          {t("banner.demo")}
+          Demonstration data: this dashboard is showing sample figures.
         </p>
       )}
 
@@ -77,31 +75,51 @@ export function OverviewPage() {
         />
       ) : data ? (
         <>
-          <section aria-label={t("overview.title")} className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-            {data.metrics.map((metric) => (
-              <MetricCard key={metric.key} metric={metric} icon={METRIC_STYLE[metric.key]?.icon} accent={METRIC_STYLE[metric.key]?.accent} />
-            ))}
+          <section className="space-y-3">
+            <header>
+              <h2 className="text-lg font-extrabold">Key figures</h2>
+              <p className="text-sm text-muted">District-wide coverage over the selected period</p>
+            </header>
+            <div aria-label={t("overview.title")} className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+              {data.metrics.map((metric) => (
+                <MetricCard key={metric.key} metric={metric} icon={METRIC_STYLE[metric.key]?.icon} accent={METRIC_STYLE[metric.key]?.accent} />
+              ))}
+            </div>
           </section>
 
-          <div className="grid gap-6 lg:grid-cols-12">
+          <section className="grid gap-6 lg:grid-cols-12">
+            <header className="lg:col-span-12">
+              <h2 className="text-lg font-extrabold">Decisions & infrastructure</h2>
+              <p className="text-sm text-muted">Actions that need a decision and assets that need follow-up</p>
+            </header>
             <div className="min-w-0 lg:col-span-7">
               <PriorityActions actions={data.priority_actions} />
             </div>
             <div className="min-w-0 lg:col-span-5">
               <AssetHealth assets={data.assets} schemes={data.schemes} />
             </div>
-          </div>
+          </section>
 
-          <div className="grid gap-6 lg:grid-cols-12">
+          <section className="grid gap-6 lg:grid-cols-12">
+            <header className="lg:col-span-12">
+              <h2 className="text-lg font-extrabold">Schemes & water</h2>
+              <p className="text-sm text-muted">PADAB and APEFA Solar performance with rainfall and advice</p>
+            </header>
             <div className="min-w-0 lg:col-span-7">
               <SchemeComparison schemes={data.schemes} />
             </div>
             <div className="min-w-0 lg:col-span-5">
               <RainfallPanel rows={data.rainfall} />
             </div>
-          </div>
+          </section>
 
-          <RecentReports reports={data.recent_reports} />
+          <section className="space-y-3">
+            <header>
+              <h2 className="text-lg font-extrabold">Field activity</h2>
+              <p className="text-sm text-muted">Latest reports from farmers and monitors</p>
+            </header>
+            <RecentReports reports={data.recent_reports} />
+          </section>
 
           <ModuleGrid data={data} />
         </>

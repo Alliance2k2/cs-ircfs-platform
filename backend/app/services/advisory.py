@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import func, or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -19,6 +20,7 @@ from app.db.models import (
 )
 from app.services.evidence import counted
 from app.services.forecast import rainfall_forecast
+from app.services.rainfall import aggregate_gauges
 from app.services.sms import deliver, send_airtime
 
 KIGALI = timezone(timedelta(hours=2))
@@ -93,19 +95,22 @@ def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int
     """Return {sector_id: (total_mm, readings)} for citizen rain-gauge readings in the window."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     rows = db.execute(
-        select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm)
+        select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
         .join(Cell, Cell.id == IrrigationClimateLog.cell_id)
         .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
     ).all()
-    # Sum each gauge (reporter, or cell when anonymous) over the window, then average the
-    # gauges in a sector so two gauges reading the same rain are not double-counted.
+    # Deduplicate through gauge identity, cap readings and daily gauge totals, then average
+    # the gauges in a sector rather than counting every submitted row as independent rain.
     gauges: dict[int, dict[tuple, float]] = {}
     readings: dict[int, int] = {}
-    for sector_id, reporter_id, cell_id, mm in rows:
-        key = (reporter_id, cell_id if reporter_id is None else None)
-        gauges.setdefault(sector_id, {}).setdefault(key, 0.0)
-        gauges[sector_id][key] += float(mm)
-        readings[sector_id] = readings.get(sector_id, 0) + 1
+    per_sector_rows: dict[int, list[tuple]] = {}
+    for sector_id, reporter_id, cell_id, mm, created_at in rows:
+        gauge_key = (reporter_id, cell_id if reporter_id is None else None)
+        per_sector_rows.setdefault(sector_id, []).append((gauge_key, created_at, mm))
+    for sector_id, gauge_rows in per_sector_rows.items():
+        totals, counts = aggregate_gauges(gauge_rows)
+        gauges[sector_id] = dict(totals)
+        readings[sector_id] = sum(counts.values())
     return {sector_id: (sum(totals.values()) / len(totals), readings[sector_id]) for sector_id, totals in gauges.items()}
 
 
@@ -144,10 +149,13 @@ def sector_schedule(db: Session) -> list[dict]:
 
 
 def sector_recipients(db: Session, sector_id: int) -> list[tuple[str, int | None]]:
-    """Phones in a sector that receive advice: leaders, monitors, and farmers."""
+    """Phones in a sector that receive advice: leaders, monitors, and farmers.
+
+    Anyone who sent HAGARIKA/STOP is left out until they opt back in.
+    """
     return db.execute(
         select(FieldUser.phone_number, FieldUser.cell_id).join(Cell, Cell.id == FieldUser.cell_id)
-        .where(Cell.sector_id == sector_id, FieldUser.is_active.is_(True),
+        .where(Cell.sector_id == sector_id, FieldUser.is_active.is_(True), FieldUser.opted_out_at.is_(None),
                FieldUser.role.in_([UserRole.cooperative_leader, UserRole.citizen_science_monitor, UserRole.farmer]))
     ).all()
 
@@ -306,7 +314,7 @@ def incentivised_report_count(db: Session, user: FieldUser) -> int:
 
 def nutrition_rewards_this_month(db: Session, user: FieldUser) -> int:
     """Rewards already paid to this household for a nutrition survey in the current Kigali month."""
-    month_start = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=2))).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    month_start = datetime.now(timezone.utc).astimezone(KIGALI).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     return db.scalar(select(func.count()).select_from(IncentiveReward).where(
         IncentiveReward.field_user_id == user.id,
         IncentiveReward.reason.like("%nutrition survey%"),
@@ -314,11 +322,25 @@ def nutrition_rewards_this_month(db: Session, user: FieldUser) -> int:
     )) or 0
 
 
+def rewards_today(db: Session, user: FieldUser) -> int:
+    """Rewards already paid to this person since midnight in Africa/Kigali."""
+    day_start = datetime.now(timezone.utc).astimezone(KIGALI).replace(hour=0, minute=0, second=0, microsecond=0)
+    return db.scalar(select(func.count()).select_from(IncentiveReward).where(
+        IncentiveReward.field_user_id == user.id,
+        IncentiveReward.created_at >= day_start.astimezone(timezone.utc),
+    )) or 0
+
+
 def maybe_reward(db: Session, user: FieldUser, from_nutrition_survey: bool = False) -> IncentiveReward | None:
     """Every Nth incentivised report earns an airtime micro-bonus (Section 8.1).
 
     Which report types count comes from ``INCENTIVE_REPORT_TYPES``; a nutrition survey
-    is rewarded at most ``INCENTIVE_NUTRITION_PER_MONTH`` times per household per month.
+    is rewarded at most ``INCENTIVE_NUTRITION_PER_MONTH`` times per household per month,
+    and no one is paid more than ``INCENTIVE_MAX_PER_DAY`` times a day.
+
+    The reward row is written — and its milestone claimed — before the payout is
+    requested. The unique (field_user_id, milestone) constraint means two concurrent
+    reports can never both pay for the same milestone.
     """
     settings = get_settings()
     if from_nutrition_survey and "nutrition" in settings.incentive_types:
@@ -329,10 +351,28 @@ def maybe_reward(db: Session, user: FieldUser, from_nutrition_survey: bool = Fal
     count = incentivised_report_count(db, user)
     if count == 0 or count % every:
         return None
-    result = send_airtime(user.phone_number, settings.incentive_amount_rwf)
+    daily_cap = max(0, settings.incentive_max_per_day)
+    if daily_cap and rewards_today(db, user) >= daily_cap:
+        return None
+    amount = settings.incentive_amount_rwf
     reason = (f"{count} reports incl. nutrition survey" if from_nutrition_survey
               else f"{count} weather/infrastructure reports")
-    reward = IncentiveReward(field_user_id=user.id, phone_number=user.phone_number, amount_rwf=settings.incentive_amount_rwf,
-                             reason=reason, status=result["status"], provider_id=result.get("provider_id"))
-    db.add(reward)
+    reward = IncentiveReward(field_user_id=user.id, phone_number=user.phone_number, amount_rwf=amount,
+                             milestone=count, reason=reason, status="pending")
+    try:
+        # Claim the milestone transactionally before any provider call. Committing here
+        # makes a payout safe across retries, workers, and process crashes.
+        with db.begin_nested():
+            db.add(reward)
+            db.flush()
+        db.commit()
+    except IntegrityError:
+        if reward in db:
+            db.expunge(reward)
+        db.rollback()
+        return None  # this milestone has already been paid
+    result = send_airtime(user.phone_number, amount)
+    reward.status = result["status"]
+    reward.provider_id = result.get("provider_id")
+    db.commit()
     return reward

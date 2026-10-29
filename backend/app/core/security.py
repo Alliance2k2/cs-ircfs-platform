@@ -56,11 +56,12 @@ def get_current_principal(
 ) -> Principal:
     """Authenticate a signed-in person (cookie or Bearer token) or a service (X-API-Key).
 
-    Local development is intentionally open. In pilot/production set REQUIRE_API_KEY=true;
-    people then sign in with their platform account, and integrations use API_KEY_ROLES.
+    Local development skips sign-in only when DEV_AUTH_BYPASS=true is set explicitly. In
+    pilot/production set REQUIRE_API_KEY=true; people then sign in with their platform
+    account, and integrations use API_KEY_ROLES.
     """
     settings = get_settings()
-    if settings.environment == "development" and not settings.require_api_key:
+    if settings.dev_auth_bypass:
         return Principal(name="local-development", role=UserRole.administrator)
     token = authorization[7:].strip() if authorization and authorization.lower().startswith("bearer ") else ""
     token = token or (session_cookie or "")

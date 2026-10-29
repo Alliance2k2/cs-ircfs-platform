@@ -59,21 +59,28 @@ def evaluate(db: Session, days: int = 365) -> dict:
         harvests = [report for report in crop_reports if not report.pest_or_disease]
         by_crop: dict[str, dict] = {}
         for report in harvests:
-            item = by_crop.setdefault(report.crop_type, {"crop": report.crop_type, "reports": 0, "with_reported_tons": 0, "reported_tons": 0.0, "expected_tons": 0.0})
+            item = by_crop.setdefault(report.crop_type, {"crop": report.crop_type, "reports": 0, "with_reported_tons": 0,
+                                                          "with_area": 0, "reported_tons": 0.0, "cultivated_area_hectares": 0.0,
+                                                          "yield_tons_per_hectare": None, "expected_tons": 0.0})
             item["reports"] += 1
             if report.reported_harvest_tons is not None:
                 item["with_reported_tons"] += 1
                 item["reported_tons"] = round(item["reported_tons"] + report.reported_harvest_tons, 2)
+            if report.cultivated_area_hectares is not None:
+                item["with_area"] += 1
+                item["cultivated_area_hectares"] = round(item["cultivated_area_hectares"] + report.cultivated_area_hectares, 3)
+            if item["cultivated_area_hectares"] > 0 and item["reported_tons"]:
+                item["yield_tons_per_hectare"] = round(item["reported_tons"] / item["cultivated_area_hectares"], 3)
             item["expected_tons"] = round(item["expected_tons"] + (report.expected_harvest_tons or 0), 2)
 
         state = target_state(scheme)
         requirements = [
             {"item": "A yield target entered with its source document", "met": state == "documented",
              "note": {"documented": scheme.baseline_source, "demo": "Only a demonstration value is entered", "missing": "No documented target yet"}[state]},
-            {"item": "The target stated per crop, per hectare and per season", "met": False,
-             "note": "The platform stores one total target per scheme; crop, area and season are not recorded with it"},
-            {"item": "Harvested area recorded on each harvest report", "met": False,
-             "note": "USSD harvest reports record tons, not the area harvested, so yields per hectare cannot be derived"},
+            {"item": "The target stated per crop, per hectare and per season", "met": bool(scheme.target_crop_type and scheme.target_season and scheme.target_yield_tons_per_hectare),
+             "note": "Crop, hectare and season target fields are configured" if scheme.target_crop_type and scheme.target_season and scheme.target_yield_tons_per_hectare else "Crop, area-normalised and season-specific target values are not complete"},
+            {"item": "Harvested area recorded on each harvest report", "met": bool(harvests and all(r.reported_harvest_tons is None or r.cultivated_area_hectares is not None for r in harvests)),
+             "note": f"{sum(1 for r in harvests if r.cultivated_area_hectares is not None)} of {len(harvests)} harvest reports include area"},
             {"item": "Verified harvest observations for the same season", "met": False,
              "note": f"{sum(1 for r in harvests if r.verification_status == 'verified')} of {len(harvests)} harvest reports are verified"},
         ]

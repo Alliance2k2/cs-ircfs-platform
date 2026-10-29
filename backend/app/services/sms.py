@@ -11,7 +11,8 @@ from app.core.config import get_settings
 from app.db.models import AdvisoryMessage
 
 logger = logging.getLogger(__name__)
-PHONE_PATTERN = re.compile(r"^\+?\d{9,15}$")
+# E.164: a leading "+", a non-zero country code, 9-15 digits in total.
+PHONE_PATTERN = re.compile(r"^\+[1-9]\d{8,14}$")
 WITHHELD = "withheld"  # same value as app.core.privacy.WITHHELD
 
 # Set while the phone simulator runs: nothing reaches a telecom provider, whatever the
@@ -30,18 +31,41 @@ def simulation():
 
 
 def live(provider: str) -> bool:
-    return provider == "africas_talking" and not _simulating.get()
+    """True only when the provider is configured and live sending is allowed here.
+
+    Outside production a live provider is refused unless ALLOW_LIVE_MESSAGES=true, so a
+    laptop that still holds live credentials cannot text real citizens by accident.
+    """
+    settings = get_settings()
+    if provider != "africas_talking" or _simulating.get():
+        return False
+    return settings.environment == "production" or settings.allow_live_messages
 
 
 def normalise_phone(value: str) -> str:
-    """Return an E.164-style Rwandan number: '0788 123 456' -> '+250788123456'."""
-    phone = re.sub(r"[\s\-()]", "", value or "")
-    if phone.startswith("07") and len(phone) == 10:
-        phone = "+250" + phone[1:]
-    elif phone.isdigit() and len(phone) >= 11:
-        # International number whose "+" was lost (a "+" in form data can arrive as a space).
-        phone = "+" + phone
-    return phone
+    """Return an E.164 Rwandan number:'788 123 456', '0788-123-456', '00250788123456'
+    and '+250 788 123 456' all become '+250788123456'.
+
+    One canonical form matters: the phone number is the identity key, so a second spelling
+    would create a second field user, a second reward history and double airtime.
+    """
+    text = re.sub(r"[\s\-().]", "", value or "")
+    if text.startswith("00"):
+        text = "+" + text[2:]
+    if text.startswith("+"):
+        digits = re.sub(r"\D", "", text)
+        return "+" + digits if digits else ""
+    digits = re.sub(r"\D", "", text)
+    if len(digits) == 10 and digits.startswith("07"):
+        return "+250" + digits[1:]
+    if len(digits) == 9 and digits.startswith("7"):
+        return "+250" + digits
+    if len(digits) == 12 and digits.startswith("250"):
+        return "+" + digits
+    if len(digits) >= 11:
+        # An international number whose "+" was lost in form encoding.
+        return "+" + digits
+    return digits
 
 
 def is_valid_phone(value: str) -> bool:

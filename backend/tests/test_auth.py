@@ -16,20 +16,31 @@ def activate(session_factory, email="x@example.org"):
         session.commit()
 
 
-def test_register_always_creates_citizen_science_monitor(client):
-    response = register(client)
-    assert response.status_code == 201
-    assert response.json()["role"] == "citizen_science_monitor"
+def test_register_creates_monitor_and_waits_for_approval_with_real_sign_in(client, session_factory, monkeypatch):
+    import app.api.routes.auth as auth_routes
+    from app.core.config import Settings
 
-
-def test_registered_account_waits_for_approval(client, session_factory):
-    assert register(client).json()["status"] == "pending"
+    monkeypatch.setattr(auth_routes, "get_settings", lambda: Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles=""))
+    created = register(client).json()
+    assert created["role"] == "citizen_science_monitor"
+    assert created["status"] == "pending"
     refused = client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"})
     assert refused.status_code == 403
     assert "approval" in refused.json()["detail"]
+    assert "Administration > Accounts" in refused.json()["detail"]
     assert "set-cookie" not in refused.headers
     activate(session_factory)
     assert client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"}).status_code == 200
+
+
+def test_registration_always_waits_for_approval_even_on_a_local_server(client):
+    """Sign-up never grants access by itself, whatever ENVIRONMENT says."""
+    response = register(client)
+    assert response.status_code == 201
+    assert response.json()["role"] == "citizen_science_monitor"
+    assert response.json()["status"] == "pending"
+    refused = client.post("/api/v1/auth/login", json={"email": "x@example.org", "password": "Str0ng!pass"})
+    assert refused.status_code == 403
 
 
 def test_pending_status_is_not_revealed_without_the_password(client):

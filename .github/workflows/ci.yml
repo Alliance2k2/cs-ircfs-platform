@@ -4,6 +4,18 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Deployed staging or production base URL to verify after deployment"
+        required: false
+        type: string
+      deployment_environment:
+        description: "Deployment environment"
+        required: true
+        type: choice
+        options: [staging, production]
+        default: staging
 
 permissions:
   contents: read
@@ -139,3 +151,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build --tag cs-ircfs:ci .
+
+  deployment-readiness:
+    name: Verify deployed environment
+    if: github.event_name == 'workflow_dispatch' && inputs.target_url != ''
+    runs-on: ubuntu-latest
+    needs: [backend, migrations, frontend, e2e, docker]
+    environment: ${{ inputs.deployment_environment }}
+    steps:
+      - name: Wait for database-ready response
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error --retry 3 --retry-delay 10 "$TARGET_URL/ready"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Deployment never became database-ready" >&2
+          exit 1
+        env:
+          TARGET_URL: ${{ inputs.target_url }}

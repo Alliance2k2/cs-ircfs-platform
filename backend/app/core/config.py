@@ -1,8 +1,8 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:8080"
     require_api_key: bool = False
     api_key_roles: str = ""
+    # Local development skips sign-in only when this is explicitly switched on. Without it
+    # a forgotten REQUIRE_API_KEY=false no longer turns every request into an administrator.
+    # The documented environment variable is the short DEV_AUTH_BYPASS.
+    dev_auth_bypass_enabled: bool = Field(default=False, validation_alias=AliasChoices("DEV_AUTH_BYPASS", "dev_auth_bypass_enabled"))
+    # Live SMS/airtime is refused outside production unless this is explicitly true, so a
+    # laptop holding live credentials cannot text real citizens by accident.
+    allow_live_messages: bool = False
     log_level: str = "INFO"
     sms_provider: str = "dry_run"
     africas_talking_username: str = ""
@@ -21,6 +28,10 @@ class Settings(BaseSettings):
     sms_sender_id: str = ""  # only set once Africa's Talking approves the sender ID
     google_client_id: str = ""
     session_hours: int = 12
+    # Privacy and retention defaults (reviewed operationally, not legal advice).
+    field_user_retention_days: int = 730
+    audit_log_retention_days: int = 365
+    export_retention_days: int = 30
     # Local HTTP development sets COOKIE_SECURE=false; every deployed environment must use HTTPS.
     cookie_secure: bool = False
     # Field channels (architecture Section 4): USSD short code and SMS keyword number.
@@ -35,6 +46,8 @@ class Settings(BaseSettings):
     # at INCENTIVE_NUTRITION_PER_MONTH rewards per household per month to prevent abuse.
     incentive_report_types: str = "rainfall,infrastructure,nutrition"
     incentive_nutrition_per_month: int = 1
+    # Safety cap: a report loop must not be able to drain the district's airtime budget.
+    incentive_max_per_day: int = 3
     # Irrigation Scheduling Assistant thresholds (7-day rainfall, mm). Calibrate these against
     # PADAB (Mwesa Valley) and APEFA (Ngeruka/Mareba) historical records — Section 9.2.
     dry_spell_threshold_mm: float = 10.0
@@ -64,6 +77,7 @@ class Settings(BaseSettings):
     bottleneck_category_min_counts: str = ""
     alert_phone_numbers: str = ""
     alert_min_priority: str = "critical"
+    operational_alert_webhook_url: str = ""
     # Gateway callbacks (USSD/SMS) are public URLs. Africa's Talking does not sign its
     # callbacks, so the callback URLs carry a shared secret: configure them in the
     # Africa's Talking dashboard as https://<host>/api/v1/ussd?token=<GATEWAY_CALLBACK_TOKEN>.
@@ -77,7 +91,7 @@ class Settings(BaseSettings):
     mapbox_style: str = "mapbox://styles/mapbox/light-v11"
 
     # The project-root .env, found from this file so scripts work from any folder.
-    model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", extra="ignore", populate_by_name=True)
 
     @field_validator("database_url")
     @classmethod
@@ -97,6 +111,8 @@ class Settings(BaseSettings):
             return
         if not self.require_api_key:
             raise RuntimeError("ENVIRONMENT=production requires REQUIRE_API_KEY=true")
+        if self.dev_auth_bypass_enabled:
+            raise RuntimeError("ENVIRONMENT=production must not set DEV_AUTH_BYPASS=true")
         if self.database_url.startswith("sqlite"):
             raise RuntimeError("ENVIRONMENT=production requires a PostgreSQL DATABASE_URL, not SQLite")
         if not self.cookie_secure:
@@ -109,8 +125,8 @@ class Settings(BaseSettings):
 
     @property
     def dev_auth_bypass(self) -> bool:
-        """True when local development skips sign-in entirely."""
-        return self.environment == "development" and not self.require_api_key
+        """True only when local development explicitly opts out of sign-in."""
+        return self.environment == "development" and not self.require_api_key and self.dev_auth_bypass_enabled
 
     @property
     def bottleneck_category_counts(self) -> dict[str, int]:

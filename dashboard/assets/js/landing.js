@@ -4,14 +4,6 @@
   const $ = (selector) => document.querySelector(selector);
   const fmt = (n) => Number(n || 0).toLocaleString();
 
-  // ---------- AIMS Rwanda logo: shown only when assets/img/aims-logo.png exists ----------
-  const aimsLogo = new Image();
-  aimsLogo.onload = () => document.querySelectorAll("[data-aims-logo]").forEach((img) => {
-    img.hidden = false;
-    img.closest("[data-aims]")?.classList.add("has-aims-logo");
-  });
-  aimsLogo.src = "assets/img/aims-logo.png";
-
   // ---------- Header: mobile menu, active section, language ----------
   const menuBtn = $("#menuBtn");
   const links = $("#site-links");

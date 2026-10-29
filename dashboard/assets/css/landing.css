@@ -279,27 +279,26 @@ summary:focus-visible {
   position: absolute;
 }
 
-/* Irrigated rice fields on the right, drifting slowly. The gradient above stays as the fallback offline. */
-.hero-photo {
+/* Background video for immersive feel */
+.hero-video {
+  position: absolute;
   inset: -3%;
-  background: url("https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1920&q=75") 72% 45% / cover no-repeat;
-  opacity: 0.62;
-  animation: kenburns 32s ease-in-out infinite alternate;
-}
-
-@keyframes kenburns {
-  from { transform: scale(1); }
-  to { transform: scale(1.08) translate(-1.5%, -1%); }
+  width: 106%;
+  height: 106%;
+  object-fit: cover;
+  object-position: 72% 45%;
+  opacity: 0.65;
+  filter: saturate(1.1) contrast(1.05);
 }
 
 /* Deep green behind the text, opening up towards the photo on the right */
 .hero-shade {
   inset: 0;
   background:
-    linear-gradient(90deg, #052e21 0%, #052e21f5 28%, #052e21c4 50%, #052e2170 72%, #052e2147 100%),
-    linear-gradient(0deg, #04261b 0%, #04261b00 32%),
-    linear-gradient(180deg, #052e21b3 0%, #052e2100 22%),
-    linear-gradient(120deg, #0a4a3166, #1f8a5426);
+    linear-gradient(90deg, #052e21 0%, #052e21f5 25%, #052e21c4 48%, #052e2170 75%, #052e2147 100%),
+    linear-gradient(0deg, #04261b 0%, #04261b00 35%),
+    linear-gradient(180deg, #052e21b3 0%, #052e2100 25%),
+    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(215, 245, 110, 0.15), transparent 70%);
 }
 
 /* Fine dot grid behind the text, faded towards the edges */
@@ -2031,54 +2030,92 @@ summary:focus-visible {
 
 /* Footer */
 .footer {
+  position: relative;
   background: #f7faf5;
+  overflow: hidden;
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #2d9361, #58c5d8 58%, rgba(88, 197, 216, 0));
 }
 
 .footer-top {
-  padding: 75px 0;
+  padding: 72px 0 46px;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.1fr;
-  gap: 65px;
+  grid-template-columns: minmax(0, 1.9fr) repeat(3, minmax(0, 1fr));
+  gap: 48px;
+  align-items: start;
 }
 
 .footer-brand > p {
-  max-width: 290px;
+  max-width: 300px;
   font-size: 13px;
   line-height: 1.8;
   color: #738576;
-  margin-top: 19px;
+  margin-top: 18px;
 }
 
-.footer-top > div > b {
-  font-size: 13px;
+.footer-col > b {
   display: block;
-  margin: 8px 0 22px;
-}
-
-.footer-top > div > a:not(.brand) {
-  display: block;
-  font-size: 13px;
-  color: #738576;
-  margin-bottom: 15px;
-}
-
-.footer-top > div > a:not(.brand):hover {
+  margin: 4px 0 18px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #2d9361;
 }
 
-.footer-top > div > p {
+.footer-col > a {
+  display: block;
+  width: fit-content;
   font-size: 13px;
   color: #738576;
-  line-height: 1.75;
+  margin-bottom: 13px;
+  text-decoration: none;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.footer-col > a:hover {
+  color: #1d6b47;
+  transform: translateX(3px);
+}
+
+.footer-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.footer-badges > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid #dce9d8;
+  border-radius: 99px;
+  background: #fff;
+  color: #3f5f4c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.footer-badges .bi {
+  color: #2d9361;
 }
 
 .footer-bottom {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   border-top: 1px solid #e2eae0;
-  padding: 25px 0;
+  padding: 22px 0;
   color: #849586;
   font-size: 12px;
 }
@@ -2137,7 +2174,8 @@ summary:focus-visible {
   .section-header { align-items: start; flex-direction: column; gap: 17px; }
   .roles-grid { grid-template-columns: repeat(2, 1fr); }
   .role-card:last-child { grid-column: span 2; }
-  .footer-top { grid-template-columns: repeat(2, 1fr); gap: 35px; }
+  .footer-top { grid-template-columns: repeat(3, 1fr); gap: 35px; }
+  .footer-brand { grid-column: 1 / -1; }
 }
 
 @media (max-width: 600px) {
@@ -2161,9 +2199,10 @@ summary:focus-visible {
   .insight-sm { right: 0; }
   .project-visual { height: 210px; }
   .project-body h3 { font-size: 22px; }
-  .footer-top { grid-template-columns: repeat(2, 1fr); gap: 26px; }
-  .footer-top > div:first-child { grid-column: span 2; }
-  .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+  .footer-top { grid-template-columns: repeat(2, 1fr); gap: 26px; padding: 52px 0 34px; }
+  .footer-brand { grid-column: span 2; }
+  .footer-bottom, .footer-status { flex-direction: column; gap: 10px; text-align: center; }
+  .footer-status-note { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2229,47 +2268,57 @@ summary:focus-visible {
   transform: translateY(6px);
 }
 
-/* ---------- Built-around strip ---------- */
+/* ---------- Impact strip ---------- */
 .context-strip {
-  background: #f7faf5;
+  background: linear-gradient(90deg, #f7faf5 0%, #fff 50%, #f7faf5 100%);
   border-bottom: 1px solid #e6eee3;
+  border-top: 1px solid #e6eee3;
 }
 
 .context-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 14px 30px;
-  padding: 22px 0;
+  justify-content: space-around;
+  gap: 20px 40px;
+  padding: 32px 0;
 }
 
-.context-label {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-  color: #8a978b;
-}
-
-.context-item {
-  display: inline-flex;
+.impact-stat {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  color: #3f5f4c;
-  font: 800 14px var(--l-heading);
+  text-align: center;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.impact-stat b {
+  font: 800 32px/1 var(--l-heading);
+  color: var(--l-green);
   letter-spacing: -0.02em;
 }
 
-.context-item .bi {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: #e6f4e9;
-  color: var(--l-green);
-  font-size: 14px;
+.impact-stat span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5f6f63;
+  letter-spacing: 0.02em;
+}
+
+.impact-divider {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, #d6e6d9, transparent);
+}
+
+@media (max-width: 980px) {
+  .impact-divider {
+    display: none;
+  }
+  .context-inner {
+    justify-content: center;
+  }
 }
 
 /* ---------- Footer status and back-to-top ---------- */
@@ -2279,8 +2328,13 @@ summary:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 0;
+  padding: 18px 0;
   border-top: 1px solid #e2eae0;
+}
+
+.footer-status-note {
+  color: #849586;
+  font-size: 12px;
 }
 
 .footer-live {
@@ -2306,29 +2360,6 @@ summary:focus-visible {
 
 .footer-live.offline i {
   background: #d95454;
-}
-
-.footer-channels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.footer-channels span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 11px;
-  border: 1px solid #dce9d8;
-  border-radius: 99px;
-  background: #fff;
-  color: #3f5f4c;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.footer-channels .bi {
-  color: var(--l-green);
 }
 
 .to-top {
@@ -2371,38 +2402,29 @@ summary:focus-visible {
 }
 
 
-/* AIMS Rwanda logo (assets/img/aims-logo.png). landing.js shows it only once the file loads,
-   so the page never shows a broken image. A white plate keeps it legible on dark green. */
-.aims-logo { display: inline-block; background: #fff; border-radius: 6px; object-fit: contain; }
-.aims-logo[hidden] { display: none; }
-.aims-logo-xs { height: 22px; padding: 1px 3px; }
-.aims-logo-sm { height: 44px; padding: 3px; border: 1px solid #dbe9df; }
-.aims-logo-footer { display: block; height: 96px; margin-top: 14px; padding: 6px; }
-.has-aims-logo .bi-mortarboard { display: none; }
-
 /* Dark footer: the same deep green as the top line, so the page opens and closes in one colour.
    Text colours keep at least 4.5:1 contrast on #052e1f. */
 .footer {
   background: radial-gradient(120% 90% at 85% 0%, #0b4a31 0%, rgba(11, 74, 49, 0) 55%), #052e1f;
   color: #cfe3d6;
 }
+.footer::before { background: linear-gradient(90deg, #c7ef7c, #58c5d8 58%, rgba(88, 197, 216, 0)); }
 .footer .brand strong { color: #fff; }
 .footer .brand small { color: #9fc2ac; }
-.footer-brand > p,
-.footer-top > div > p,
-.footer-top > div > a:not(.brand) { color: #a9c8b4; }
-.footer-top > div > b { color: #fff; }
-.footer-top > div > p b { color: #e8f5ec; }
-.footer-top > div > a:not(.brand):hover { color: #c7ef7c; }
-.footer-status { border-top-color: rgba(255, 255, 255, 0.1); }
-.footer-live { color: #e3f1e8; }
-.footer-live i { background: #6f8f7c; }
-.footer-channels span {
+.footer-brand > p { color: #a9c8b4; }
+.footer-col > b { color: #c7ef7c; }
+.footer-col > a { color: #a9c8b4; }
+.footer-col > a:hover { color: #fff; }
+.footer-badges > span {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.14);
   color: #e3f1e8;
 }
-.footer-channels .bi { color: #c7ef7c; }
+.footer-badges .bi { color: #c7ef7c; }
+.footer-status { border-top-color: rgba(255, 255, 255, 0.1); }
+.footer-live { color: #e3f1e8; }
+.footer-live i { background: #6f8f7c; }
+.footer-status-note { color: #8fb39c; }
 .footer-bottom { border-top-color: rgba(255, 255, 255, 0.1); color: #8fb39c; }
 .footer-bottom a { color: #c7ef7c; }
 .footer a:focus-visible { outline: 2px solid #c7ef7c; outline-offset: 3px; border-radius: 4px; }

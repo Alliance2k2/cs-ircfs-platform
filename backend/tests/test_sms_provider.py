@@ -15,8 +15,10 @@ class FakeResponse:
 
 
 def configure(monkeypatch, username="sandbox", sender=""):
+    # Tests exercise the real request shape, so live sending is explicitly allowed here;
+    # the production guard itself is covered in test_hardening.py.
     settings = Settings(_env_file=None, sms_provider="africas_talking", africas_talking_username=username,
-                        africas_talking_api_key="test-key", sms_sender_id=sender)
+                        africas_talking_api_key="test-key", sms_sender_id=sender, allow_live_messages=True)
     monkeypatch.setattr(sms, "get_settings", lambda: settings)
 
 

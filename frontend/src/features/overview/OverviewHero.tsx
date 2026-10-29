@@ -46,9 +46,9 @@ export function OverviewHero({ data }: { data: ExecutiveOverview | undefined }) 
       <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="min-w-0">
           <p className="text-2xs font-bold uppercase tracking-[0.18em] text-lime">{t("hero.eyebrow")}</p>
-          <h1 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+          <div className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             {t(greetingKey())}, {firstName}
-          </h1>
+          </div>
           <p className="mt-2 max-w-xl text-sm text-white/75 sm:text-base">{t("hero.subtitle")}</p>
 
           <ul className="mt-6 grid max-w-3xl grid-cols-2 gap-3 md:grid-cols-4">
