@@ -70,9 +70,11 @@ These inputs cannot be invented or replaced by passing automated tests.
 
 - Backend: **298 passed**, including migrations, privacy operations, scope/masking, reference validation, rainfall consistency, receipt races and private route expiry/erasure.
 - Frontend: **59 passed**; lint, TypeScript and production build passed.
-- Chrome: the updated management/navigation/delivery workflows passed their focused 10-test run; the complete regression result is recorded below when available.
+- Chrome: **24 passed** in the complete regression run, including dark-mode persistence, mobile management, role navigation, account approval, reporting and delivery reconciliation.
 - PostgreSQL 18.6 / PostGIS 3.6.2: migration 28 upgrade, zero schema differences, downgrade/upgrade and rollback-only spatial/scientific workflow checks passed.
 - Read-only deployment-check rehearsal passed against the isolated authentication-enabled browser test server. Optional administrator-secret checks were not run. This is not an online-production acceptance result.
 - Local demonstration readiness, management, queue and schema checks passed. No retention apply, inventory import, private queue activation or live telecom send was performed.
 
 Established build notices remain for public-font paths and the Mapbox chunk size. The tests report existing dependency deprecation warnings; these did not fail validation.
+
+Release review: [pull request #13](https://github.com/Alliance2k2/cs-ircfs-platform/pull/13). GitHub CI results are tracked on that request.
