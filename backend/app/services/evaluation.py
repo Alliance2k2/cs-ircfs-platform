@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from app.db.models import ORIGIN_DEMO, CitizenScienceLog, CommunityFeedback, IrrigationClimateLog, IrrigationScheme
 from app.services.analytics import CLOSED, latest_asset_status, scheme_performance
 from app.services.evidence import counted
+from app.services.yield_evaluation import evaluate_yield, exclusion
 
 QUESTIONS = [
     {"id": 1, "question": "Were the expected irrigation outcomes achieved?", "section": "outcomes"},
@@ -59,24 +60,30 @@ def evaluate(db: Session, days: int = 365) -> dict:
         harvests = [report for report in crop_reports if not report.pest_or_disease]
         by_crop: dict[str, dict] = {}
         for report in harvests:
-            item = by_crop.setdefault(report.crop_type, {"crop": report.crop_type, "reports": 0, "with_reported_tons": 0, "reported_tons": 0.0, "expected_tons": 0.0})
+            item = by_crop.setdefault(report.crop_type, {"crop": report.crop_type, "reports": 0, "with_reported_tons": 0,
+                                                          "with_area": 0, "reported_tons": 0.0, "harvested_area_hectares": 0.0, "cultivated_area_hectares": 0.0,
+                                                          "yield_tons_per_hectare": None, "expected_tons": 0.0})
             item["reports"] += 1
+            item["cultivated_area_hectares"] += report.cultivated_area_hectares or 0
             if report.reported_harvest_tons is not None:
                 item["with_reported_tons"] += 1
                 item["reported_tons"] = round(item["reported_tons"] + report.reported_harvest_tons, 2)
+            if report.harvested_area_hectares is not None and report.reported_harvest_tons is not None:
+                item["with_area"] += 1
+                item["harvested_area_hectares"] = round(item["harvested_area_hectares"] + report.harvested_area_hectares, 3)
+
             item["expected_tons"] = round(item["expected_tons"] + (report.expected_harvest_tons or 0), 2)
 
+        for crop, item in by_crop.items():
+            measured = [r for r in harvests if r.crop_type == crop and exclusion(r) is None]
+            # A crop spanning seasons must not be presented as one comparable yield.
+            groups = {(r.season, r.reference_year) for r in measured}
+            area = sum(r.harvested_area_hectares for r in measured)
+            if area > 0 and len(groups) == 1:
+                item["yield_tons_per_hectare"] = round(sum(r.reported_harvest_tons for r in measured) / area, 3)
+
         state = target_state(scheme)
-        requirements = [
-            {"item": "A yield target entered with its source document", "met": state == "documented",
-             "note": {"documented": scheme.baseline_source, "demo": "Only a demonstration value is entered", "missing": "No documented target yet"}[state]},
-            {"item": "The target stated per crop, per hectare and per season", "met": False,
-             "note": "The platform stores one total target per scheme; crop, area and season are not recorded with it"},
-            {"item": "Harvested area recorded on each harvest report", "met": False,
-             "note": "USSD harvest reports record tons, not the area harvested, so yields per hectare cannot be derived"},
-            {"item": "Verified harvest observations for the same season", "met": False,
-             "note": f"{sum(1 for r in harvests if r.verification_status == 'verified')} of {len(harvests)} harvest reports are verified"},
-        ]
+        achievement = evaluate_yield(db, scheme.id, harvests)
 
         performance_row = performance.get(scheme.id, {})
         scheme_assets = [asset for asset in assets if asset["scheme_id"] == scheme.id]
@@ -99,8 +106,7 @@ def evaluate(db: Session, days: int = 365) -> dict:
                 "reported_tons": round(sum(r.reported_harvest_tons or 0 for r in harvests), 2),
                 "expected_tons": round(sum(r.expected_harvest_tons or 0 for r in harvests), 2),
                 "pest_alerts": sum(1 for r in crop_reports if r.pest_or_disease), "severe_pest_alerts": sum(1 for r in crop_reports if (r.severity or 0) >= 4),
-                "yield_achievement": {"value": None, "computable": False, "formula": "100 × comparable observed yield ÷ comparable target yield",
-                                      "requirements": requirements},
+                "yield_achievement": achievement,
             },
             "bottlenecks": {
                 "window_days": performance_row.get("bottleneck_window_days"), "by_category": performance_row.get("bottlenecks", {}),
@@ -122,5 +128,5 @@ def evaluate(db: Session, days: int = 365) -> dict:
         })
     return {"generated_at": now, "period_days": days, "questions": QUESTIONS, "schemes": schemes,
             "method": ("Counts of citizen and staff reports linked to each scheme in the period. Simulator tests are excluded; "
-                       "demonstration rows are counted and labelled. No outcome is estimated, modelled or attributed causally: "
+                       "demonstration and superseded rows are excluded. Yields use verified measured samples only. No outcome is attributed causally: "
                        "a change over time shows association, not the effect of the investment.")}

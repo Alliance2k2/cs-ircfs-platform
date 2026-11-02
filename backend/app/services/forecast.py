@@ -4,6 +4,7 @@ Citizen rain gauges tell us what already fell; the forecast tells farmers what i
 so irrigation advice can look ahead. One request covers every sector. Results are cached,
 and any failure returns no forecast: advice then falls back to the gauges alone.
 """
+from math import isfinite
 import logging
 import time
 
@@ -36,7 +37,11 @@ def rainfall_forecast(points: dict[int, tuple[float, float]]) -> dict[int, float
         response.raise_for_status()
         body = response.json()
         locations = body if isinstance(body, list) else [body]
-        result = {key: round(sum(value or 0 for value in location["daily"]["precipitation_sum"]), 1) for key, location in zip(keys, locations)}
+        result = {}
+        for key, location in zip(keys, locations):
+            values = location["daily"]["precipitation_sum"]
+            if len(values) == 7 and all(isinstance(value, (int, float)) and isfinite(value) and value >= 0 for value in values):
+                result[key] = round(sum(values), 1)
         _cache[cache_key] = (time.monotonic() + CACHE_SECONDS, result)
     except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
         logger.warning("Rainfall forecast unavailable: %s", error)

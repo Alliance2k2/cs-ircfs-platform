@@ -74,11 +74,11 @@ def seed(db: Session) -> str:
         cells = list(db.scalars(select(Cell).join(Sector).where(Sector.name == sector_name).order_by(Cell.name)))
         for member in range(8):
             role = UserRole.cooperative_leader if member == 0 else UserRole.citizen_science_monitor if member in (1, 2) else UserRole.farmer
-            user = FieldUser(phone_number=f"{DEMO_PREFIX}{coop_index}{member}", full_name=next(names), role=role, cooperative_name=coop,
+            user = FieldUser(phone_number=f"{DEMO_PREFIX}{coop_index}{member}", data_origin=ORIGIN_DEMO, full_name=next(names), role=role, cooperative_name=coop,
                         cell_id=cells[member % len(cells)].id if cells else None, created_at=ago(40 - member))
             db.add(user)
             users.append((user, scheme_prefix))
-    db.add(FieldUser(phone_number=f"{DEMO_PREFIX}99", full_name="Demo District Planner", role=UserRole.district_planner))
+    db.add(FieldUser(phone_number=f"{DEMO_PREFIX}99", data_origin=ORIGIN_DEMO, full_name="Demo District Planner", role=UserRole.district_planner))
     db.flush()
 
     def stamp(record, days):

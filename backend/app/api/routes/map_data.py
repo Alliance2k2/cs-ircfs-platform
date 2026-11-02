@@ -73,7 +73,7 @@ def farmer_points(db: Session, area, postgis: bool) -> list[MapFeature]:
     query = (
         select(FieldUser.id, FieldUser.full_name, ST_Y(FieldUser.location), ST_X(FieldUser.location))
         if postgis else select(FieldUser.id, FieldUser.full_name, FieldUser.location)
-    ).where(FieldUser.role == UserRole.farmer, FieldUser.location.is_not(None), cell_filter(FieldUser.cell_id, area))
+    ).where(FieldUser.role == UserRole.farmer, FieldUser.data_origin != "simulator", FieldUser.location.is_not(None), cell_filter(FieldUser.cell_id, area))
     points = []
     for row in db.execute(query):
         if postgis:

@@ -13,8 +13,32 @@ from app.db.models import (
     UserRole,
 )
 from app.services import analytics
+from sqlalchemy import select
 
 ADMIN = Principal(name="test", role=UserRole.administrator)
+
+
+def test_farmer_summary_uses_current_assets_and_paid_totals_exclude_training(db):
+    from app.db.models import IncentiveReward
+    world(db)
+    real = db.scalar(select(FieldUser).where(FieldUser.phone_number == "+250788000001"))
+    training = FieldUser(phone_number="sim-analytics", data_origin="simulator", is_active=True)
+    db.add(training)
+    db.flush()
+    db.add_all([
+        IrrigationClimateLog(infrastructure_name="Pump 1", operational_status="offline"),
+        IrrigationClimateLog(infrastructure_name="Pump 1", operational_status="operational"),
+        IrrigationClimateLog(infrastructure_name="Pump 2", operational_status="faulty"),
+        IncentiveReward(field_user_id=real.id, phone_number=real.phone_number, amount_rwf=100, reason="dry run", status="dry_run"),
+        IncentiveReward(field_user_id=real.id, phone_number=real.phone_number, amount_rwf=25, reason="accepted", status="sent"),
+        IncentiveReward(field_user_id=training.id, phone_number=training.phone_number, amount_rwf=100, reason="training", status="sent"),
+    ])
+    db.commit()
+    summary = analytics.farmer_summary(db)
+    assert summary.registered_farmers == 1
+    assert summary.active_schemes == 1 and summary.open_complaints == 1
+    assert summary.faulty_or_offline_assets == 1
+    assert analytics.dashboard_summary(db, ADMIN).rewards_paid_rwf == 25
 
 
 def world(db):
@@ -51,9 +75,9 @@ def test_dashboard_summary_counts_known_records(db):
 def test_scheme_performance_achievement_percent(db):
     _, _, scheme = world(db)
     row = next(r for r in analytics.scheme_performance(db) if r["scheme_id"] == scheme.id)
-    assert row["achievement_percent"] == 80.0
+    assert row["achievement_percent"] is None  # legacy whole-scheme totals are not comparable yields
     assert row["basis"] == "forecast"
-    assert row["status"] == "watch"
+    assert row["status"] == "no_target"
 
 
 def test_scheme_performance_groups_expected_harvest_by_month(db):

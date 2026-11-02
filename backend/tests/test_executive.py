@@ -69,7 +69,7 @@ def test_simulator_tests_are_left_out_and_demo_rows_are_labelled(client, distric
         session.commit()
     body = client.get(OVERVIEW).json()
     assert body["demo_mode"] is True
-    assert metrics(body)["citizen_reports"] == {**metrics(body)["citizen_reports"], "value": 1, "source": "demo"}
+    assert metrics(body)["citizen_reports"] == {**metrics(body)["citizen_reports"], "value": 0, "source": "live_unverified"}
 
 
 def test_sector_filter_and_coverage(client, district, session_factory):

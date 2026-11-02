@@ -6,6 +6,14 @@
   <title>CS-IRCFS | Every Voice. Every Harvest. A Stronger Future.</title>
   <meta name="description" content="CS-IRCFS connects citizen science, irrigation resilience and food security in Bugesera, Rwanda. Farmers report by USSD *801# and SMS 8448; district planners verify irrigation outcomes and act.">
   <meta name="theme-color" content="#073e2b">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="CS-IRCFS | Every Voice. Every Harvest. A Stronger Future.">
+  <meta property="og:description" content="Community-powered irrigation resilience and climate-smart food security reporting in Bugesera, Rwanda.">
+  <meta property="og:image" content="assets/img/logo-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"CS-IRCFS","description":"Citizen Science for Irrigation Resilience and Climate-smart Food Security","areaServed":"Bugesera District, Rwanda"}
+  </script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -14,13 +22,14 @@
   <link rel="stylesheet" href="assets/vendor/bootstrap-icons-1.11.3/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/bootstrap-theme.css">
-  <link rel="stylesheet" href="assets/css/landing.css?v=20261012a">
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261027">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 <div class="topline">
   <span class="ticker" aria-live="polite"><span class="live-dot"></span><b>LIVE</b><span id="ticker-text">Citizen-powered resilience in Bugesera, Rwanda</span></span>
-  <span>Citizen Science for Irrigation Resilience and Climate-smart Food Security · <img class="aims-logo aims-logo-xs" src="assets/img/aims-logo.png" alt="" data-aims-logo hidden>AIMS Rwanda — KTT Office</span>
+  <span>Citizen Science for Irrigation Resilience and Climate-smart Food Security</span>
 </div>
 
 <header class="site-header" id="header">
@@ -43,10 +52,13 @@
   </div>
 </header>
 
-<main>
+<main id="main-content">
   <section class="hero" id="home">
     <div class="hero-art" aria-hidden="true">
-      <span class="hero-photo"></span>
+      <video class="hero-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1920&q=80">
+        <source src="https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4" type="video/mp4">
+        <source src="https://videos.pexels.com/video-files/2934919/2934919-hd_1920_1080_25fps.mp4" type="video/mp4">
+      </video>
       <span class="hero-shade"></span>
       <span class="hero-dots"></span>
       <span class="hero-glow glow-sun"></span>
@@ -62,15 +74,16 @@
     </div>
     <div class="hero-grid wrap">
       <div class="hero-copy">
-        <div class="hero-badge"><span class="badge-pulse"></span>Bugesera District, Rwanda</div>
+        <div class="hero-badge"><span class="badge-pulse"></span>Citizen Science for Irrigation Resilience</div>
         <h1>
-          <span>Better harvests,</span>
-          <em>backed by evidence.<svg class="swash" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 70 3, 150 3, 297 9"/></svg></em>
+          <span data-i18n="hero.title1">Transforming agriculture</span>
+          <em><span data-i18n="hero.title2">through community knowledge.</span><svg class="swash" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 70 3, 150 3, 297 9"/></svg></em>
         </h1>
-        <p>Farmers report from any phone. District teams use that evidence to verify irrigation schemes and act on problems.</p>
+        <p data-i18n="hero.copy">Empowering farmers in Bugesera District, Rwanda with accessible technology to report, monitor, and improve irrigation resilience for climate-smart food security.</p>
         <div class="hero-actions">
-          <a class="button button-lime" id="hero-cta" href="login.html">Sign in <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-          <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>How it works</span></a>
+          <a class="button button-dark" href="/app/">Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+          <a class="button button-lime" id="hero-cta" href="simulator.html">Try phone reporting <i class="bi bi-phone" aria-hidden="true"></i></a>
+          <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>See How It Works</span></a>
         </div>
         <div class="dial-card" aria-label="Report from any phone, in Kinyarwanda, without internet">
           <div class="dial"><span class="dial-icon"><i class="bi bi-hash" aria-hidden="true"></i></span><div><small>USSD</small><b>*801#</b></div></div>
@@ -106,14 +119,27 @@
     </div>
   </section>
 
-  <section class="context-strip" aria-label="What the platform is built around">
+  <section class="context-strip" aria-label="Impact and reach">
     <div class="wrap context-inner">
-      <span class="context-label">Built around</span>
-      <span class="context-item"><i class="bi bi-water" aria-hidden="true"></i>PADAB · Mwesa Valley</span>
-      <span class="context-item"><i class="bi bi-sun" aria-hidden="true"></i>APEFA Solar · Ngeruka &amp; Mareba</span>
-      <span class="context-item"><i class="bi bi-geo-alt" aria-hidden="true"></i>Bugesera District · 15 sectors</span>
-      <span class="context-item"><i class="bi bi-broadcast" aria-hidden="true"></i>Africa's Talking USSD &amp; SMS</span>
-      <span class="context-item" data-aims><img class="aims-logo aims-logo-sm" src="assets/img/aims-logo.png" alt="" data-aims-logo hidden><i class="bi bi-mortarboard" aria-hidden="true"></i>AIMS Rwanda — KTT Office</span>
+      <div class="impact-stat">
+        <b>Bugesera</b>
+        <span>District-wide pilot</span>
+      </div>
+      <div class="impact-divider"></div>
+      <div class="impact-stat">
+        <b>2 pilot schemes</b>
+        <span>PADAB and APEFA</span>
+      </div>
+      <div class="impact-divider"></div>
+      <div class="impact-stat">
+        <b>Any Phone</b>
+        <span>USSD &amp; SMS Access</span>
+      </div>
+      <div class="impact-divider"></div>
+      <div class="impact-stat">
+        <b>Real-Time</b>
+        <span>Field Evidence</span>
+      </div>
     </div>
   </section>
 
@@ -122,14 +148,14 @@
     <div class="wrap">
       <div class="section-header reveal">
         <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> WHAT IT DOES</div>
-          <h2>Three kinds of evidence,<br><span class="serif-green">one clear picture.</span></h2>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="eyebrow.what">WHAT IT DOES</span></div>
+          <h2><span data-i18n="what.title1">Three kinds of evidence</span>,<br><span class="serif-green" data-i18n="what.title2">one clear picture.</span></h2>
         </div>
         <p>Farmers know their land. Their reports on crops, water and community concerns show district teams where help is needed first.</p>
       </div>
       <div class="solutions-grid">
         <article class="pillar pillar-crops reveal">
-          <div class="pillar-media"><span class="pillar-num">01</span><span class="pillar-icon"><i class="bi bi-flower2" aria-hidden="true"></i></span></div>
+          <div class="pillar-media" style="background-image: linear-gradient(rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.5)), url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;"><span class="pillar-num">01</span><span class="pillar-icon"><i class="bi bi-flower2" aria-hidden="true"></i></span></div>
           <div class="pillar-body">
             <span class="pillar-tag">Citizen science</span>
             <h3>Listen to the land.</h3>
@@ -141,7 +167,7 @@
           </div>
         </article>
         <article class="pillar pillar-water reveal">
-          <div class="pillar-media"><span class="pillar-num">02</span><span class="pillar-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></span></div>
+          <div class="pillar-media" style="background-image: linear-gradient(rgba(14, 165, 233, 0.3), rgba(14, 165, 233, 0.5)), url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;"><span class="pillar-num">02</span><span class="pillar-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></span></div>
           <div class="pillar-body">
             <span class="pillar-tag">Water resilience</span>
             <h3>Every drop, put to better use.</h3>
@@ -153,7 +179,7 @@
           </div>
         </article>
         <article class="pillar pillar-voice reveal">
-          <div class="pillar-media"><span class="pillar-num">03</span><span class="pillar-icon"><i class="bi bi-people" aria-hidden="true"></i></span></div>
+          <div class="pillar-media" style="background-image: linear-gradient(rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.5)), url('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;"><span class="pillar-num">03</span><span class="pillar-icon"><i class="bi bi-people" aria-hidden="true"></i></span></div>
           <div class="pillar-body">
             <span class="pillar-tag">Community voice</span>
             <h3>Every voice is heard.</h3>
@@ -184,10 +210,11 @@
         </div>
         <div class="fv-chip chip-a"><i class="bi bi-reception-4"></i><div><b>No smartphone needed</b><small>Any feature phone</small></div></div>
         <div class="fv-chip chip-b"><i class="bi bi-translate"></i><div><b>Kinyarwanda</b><small>Numbered choices</small></div></div>
+        <button class="demo-toggle" type="button" id="demo-toggle" aria-pressed="false"><i class="bi bi-pause-fill" aria-hidden="true"></i><span>Pause demo</span></button>
       </div>
       <div class="feature-copy reveal">
-        <div class="eyebrow light"><span class="eyebrow-dot"></span> HOW IT WORKS</div>
-        <h2>Simple for farmers.<br><span class="serif-green">Powerful for planners.</span></h2>
+        <div class="eyebrow light"><span class="eyebrow-dot"></span> <span data-i18n="eyebrow.how">HOW IT WORKS</span></div>
+        <h2><span data-i18n="how.title1">Simple for farmers.</span><br><span class="serif-green" data-i18n="how.title2">Powerful for planners.</span></h2>
         <p class="feature-lead">Three steps, from a farmer's phone to a district decision and back.</p>
         <ol class="flow">
           <li><span class="flow-icon"><i class="bi bi-phone" aria-hidden="true"></i></span><div><small>Step 01</small><h4>Farmers report</h4><p>Dial *801# or text 8448, in Kinyarwanda, from any phone.</p></div></li>
@@ -198,12 +225,28 @@
     </div>
   </section>
 
+  <section class="closing-loop section" aria-labelledby="closing-loop-title">
+    <div class="wrap">
+      <div class="section-header reveal">
+        <div><div class="eyebrow"><span class="eyebrow-dot"></span> ACCOUNTABILITY</div><h2 id="closing-loop-title">A report becomes<br><span class="serif-green">a verified action.</span></h2></div>
+        <p>Clear stages help the district respond consistently and tell the community what changed.</p>
+      </div>
+      <ol class="loop-grid reveal">
+        <li><span>1</span><strong>Citizen reports</strong><small>A farmer dials USSD or sends SMS.</small></li>
+        <li><span>2</span><strong>Evidence is checked</strong><small>Reading quality and report context are validated.</small></li>
+        <li><span>3</span><strong>A case is assigned</strong><small>Authorized staff set priority and ownership.</small></li>
+        <li><span>4</span><strong>Action is resolved</strong><small>The result is recorded and reviewed.</small></li>
+        <li><span>5</span><strong>Community is informed</strong><small>The district can send a closing-the-loop SMS.</small></li>
+      </ol>
+    </div>
+  </section>
+
   <section class="roles-section section" id="roles">
     <div class="wrap">
       <div class="section-header reveal">
         <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> WHO IT'S FOR</div>
-          <h2>Choose how<br><span class="serif-green">you take part.</span></h2>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="eyebrow.roles">WHO IT'S FOR</span></div>
+          <h2><span data-i18n="roles.title1">Choose how</span><br><span class="serif-green" data-i18n="roles.title2">you take part.</span></h2>
         </div>
         <p>Each group sees what it needs, and nothing more.</p>
       </div>
@@ -249,23 +292,23 @@
     <div class="wrap">
       <div class="section-header reveal">
         <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> PILOT SCHEMES</div>
-          <h2>Starting with two<br><span class="serif-green">irrigation investments.</span></h2>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="eyebrow.projects">PILOT SCHEMES</span></div>
+          <h2><span data-i18n="projects.title1">Starting with two</span><br><span class="serif-green" data-i18n="projects.title2">irrigation investments.</span></h2>
         </div>
         <p>Both in Bugesera District. The platform checks what changed for the farmers they serve.</p>
       </div>
       <div class="projects-grid">
         <article class="project-card reveal">
-          <div class="project-visual project-padab"><span class="project-pill">PROJECT 01</span><div class="project-visual-symbol"><i class="bi bi-water" aria-hidden="true"></i></div></div>
+          <div class="project-visual project-padab" style="background-image: linear-gradient(rgba(6, 78, 59, 0.4), rgba(6, 78, 59, 0.6)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center;"><span class="project-pill">PROJECT 01</span><div class="project-visual-symbol"><i class="bi bi-water" aria-hidden="true"></i></div></div>
           <div class="project-body">
             <div class="project-label">PADAB · MWESA VALLEY</div>
             <h3>Building on existing irrigation infrastructure.</h3>
             <p>Assessing irrigation outcomes and bottlenecks across a scheme with pumping stations and a large canal network.</p>
-            <div class="project-tags"><span>650 hectares</span><span>2 pumping stations</span><span>65.5 km canals</span></div>
+            <div class="project-tags"><span>Field evidence</span><span>Pump monitoring</span><span>Rainfall checks</span></div>
           </div>
         </article>
         <article class="project-card reveal">
-          <div class="project-visual project-apefa"><span class="project-pill">PROJECT 02</span><div class="project-visual-symbol"><i class="bi bi-sun" aria-hidden="true"></i></div></div>
+          <div class="project-visual project-apefa" style="background-image: linear-gradient(rgba(6, 95, 70, 0.4), rgba(6, 95, 70, 0.6)), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center;"><span class="project-pill">PROJECT 02</span><div class="project-visual-symbol"><i class="bi bi-sun" aria-hidden="true"></i></div></div>
           <div class="project-body">
             <div class="project-label">APEFA · NGERUKA &amp; MAREBA</div>
             <h3>Making solar-powered irrigation more resilient.</h3>
@@ -280,16 +323,16 @@
   <section class="faq-section section" id="faq">
     <div class="wrap faq-layout">
       <div class="reveal">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> GOOD QUESTIONS</div>
-        <h2>Curious about<br><span class="serif-green">how it works?</span></h2>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> <span data-i18n="eyebrow.faq">GOOD QUESTIONS</span></div>
+        <h2><span data-i18n="faq.title1">Curious about</span><br><span class="serif-green" data-i18n="faq.title2">how it works?</span></h2>
         <p>Short answers about reporting and privacy.</p>
         <div class="faq-deco"><i class="bi bi-asterisk" aria-hidden="true"></i></div>
       </div>
       <div class="faq-list reveal">
         <details open><summary>What is CS-IRCFS?<span>+</span></summary><p>Citizen Science for Irrigation Resilience and Climate-smart Food Security: farmers' phone reports help Bugesera District check and improve its irrigation schemes.</p></details>
         <details><summary>Do I need a smartphone or internet?<span>+</span></summary><p>No. Any phone works: dial *801# or text 8448. The menus are in Kinyarwanda with numbered choices.</p></details>
-        <details><summary>What do I get back?<span>+</span></summary><p>Irrigation advice for your sector by SMS, and 100 RWF airtime for every third rain, infrastructure or nutrition report.</p></details>
-        <details><summary>Who can see my information?<span>+</span></summary><p>Only district staff, so they can act. Grievances are anonymous: your name and number are never kept. This page shows counts only.</p></details>
+        <details><summary>What do I get back?<span>+</span></summary><p>Irrigation advice for your sector by SMS. Airtime rewards may be available after approved milestones and provider activation; district limits, eligibility and reward status can change.</p></details>
+                <details><summary>Who can see my information?<span>+</span></summary><p>Authorized district staff can handle reports and personal data under assigned roles. Grievances are stored without a reporter account or phone number. Public pages show only aggregated counts and sector summaries. <a href="privacy.html">Read the privacy notice</a>.</p></details>
         <details><summary>What happens after I report a problem?<span>+</span></summary><p>Severe pests and broken pumps reach the district at once. When the problem is solved, everyone in your cell gets an SMS saying what was done.</p></details>
       </div>
     </div>
@@ -301,17 +344,37 @@
     <div class="footer-brand">
       <a class="brand" href="#home"><img src="assets/img/logo-192.png" alt="CS-IRCFS logo" width="53" height="53"><span><strong>CS-IRCFS</strong><small>People • Water • Food • Future</small></span></a>
       <p>Turning community knowledge into better decisions for irrigation resilience and food security.</p>
+      <div class="footer-badges">
+        <span><i class="bi bi-geo-alt" aria-hidden="true"></i>Bugesera District, Rwanda</span>
+        <span><i class="bi bi-translate" aria-hidden="true"></i>English &amp; Kinyarwanda</span>
+      </div>
     </div>
-    <div><b>Explore</b><a href="#what">What it does</a><a href="#how">How it works</a><a href="#faq">Questions</a></div>
-    <div><b>Platform</b><a href="login.html">Sign in</a><a href="register.html">Create account</a><a href="simulator.html">Phone simulator</a><a href="report.html">Monthly report</a></div>
-    <div><b>Report from the field</b><p>USSD <b>*801#</b><br>SMS <b>8448</b>, e.g. IMVURA 12<br>Kinyarwanda, any phone</p><p>Bugesera District, Rwanda<br>AIMS Rwanda — KTT Office</p><img class="aims-logo aims-logo-footer" src="assets/img/aims-logo.png" alt="AIMS Rwanda" data-aims-logo hidden></div>
+    <nav class="footer-col" aria-label="Explore">
+      <b>Explore</b>
+      <a href="#what">What it does</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <nav class="footer-col" aria-label="Platform">
+      <b>Platform</b>
+      <a href="login.html">Sign in</a>
+      <a href="register.html">Create account</a>
+      <a href="simulator.html">Phone simulator</a>
+    </nav>
+    <nav class="footer-col" aria-label="Resources">
+      <b>Resources</b>
+      <a href="#how">How reporting works</a>
+      <a href="/docs">API reference</a>
+      <a href="privacy.html">Privacy notice</a>
+    </nav>
   </div>
   <div class="wrap footer-status">
     <span class="footer-live" data-footer-status><i></i><span>Checking the platform…</span></span>
+    <span class="footer-status-note">Refreshed automatically</span>
   </div>
   <div class="wrap footer-bottom">
-    <span>© <span id="year"></span> CS-IRCFS · Bugesera District</span>
-    <span>Counts and sectors only on this page. Personal data stays with district staff.</span>
+    <span>© <span id="year"></span> CS-IRCFS</span>
+    <span>Public counts and sector summaries only. <a href="privacy.html">Privacy notice</a>.</span>
     <a href="#home">Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
   </div>
 </footer>
@@ -320,6 +383,6 @@
 
 <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/shared.js?v=20261010"></script>
-<script src="assets/js/landing.js?v=20261012a"></script>
+<script src="assets/js/landing.js?v=20261027"></script>
 </body>
 </html>

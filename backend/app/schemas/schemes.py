@@ -3,12 +3,16 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class IrrigationSchemeRead(BaseModel):
+    coverage_sector_ids: list[int] = Field(default_factory=list)
     id: int
     name: str
     implementing_partner: str | None
     hectares_developed: float | None
     baseline_yield_target_tons: float | None
     baseline_source: str | None
+    target_crop_type: str | None
+    target_season: str | None
+    target_yield_tons_per_hectare: float | None
     sector_id: int | None
     latitude: float | None
     longitude: float | None
@@ -18,11 +22,15 @@ class IrrigationSchemeRead(BaseModel):
 
 
 class IrrigationSchemeCreate(BaseModel):
+    coverage_sector_ids: list[int] | None = Field(default=None, max_length=100)
     name: str = Field(min_length=2, max_length=100)
     implementing_partner: str | None = Field(default=None, max_length=100)
     hectares_developed: float | None = Field(default=None, ge=0)
     baseline_yield_target_tons: float | None = Field(default=None, ge=0)
     baseline_source: str | None = Field(default=None, max_length=255)
+    target_crop_type: str | None = Field(default=None, max_length=80)
+    target_season: str | None = Field(default=None, max_length=20)
+    target_yield_tons_per_hectare: float | None = Field(default=None, gt=0)
     sector_id: int | None = Field(default=None, gt=0)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
@@ -38,10 +46,14 @@ class IrrigationSchemeCreate(BaseModel):
 
 
 class IrrigationSchemeUpdate(BaseModel):
+    coverage_sector_ids: list[int] | None = Field(default=None, max_length=100)
     implementing_partner: str | None = Field(default=None, max_length=100)
     hectares_developed: float | None = Field(default=None, ge=0)
     baseline_yield_target_tons: float | None = Field(default=None, ge=0)
     baseline_source: str | None = Field(default=None, max_length=255)
+    target_crop_type: str | None = Field(default=None, max_length=80)
+    target_season: str | None = Field(default=None, max_length=20)
+    target_yield_tons_per_hectare: float | None = Field(default=None, gt=0)
     sector_id: int | None = Field(default=None, gt=0)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)

@@ -68,6 +68,7 @@
 
         <div class="auth-links mt-4">
           <p class="mb-2">Don't have an account yet? <a href="register.html">Create an account</a></p>
+          <p class="mb-2"><a href="privacy.html">Privacy notice</a></p>
           <p class="mb-0"><a href="index.html"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Return to CS-IRCFS home</a></p>
         </div>
       </div>
@@ -106,7 +107,8 @@ if (account) {
   box.innerHTML = `<i class="bi bi-person-check" aria-hidden="true"></i><span>You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a class="alert-link" href="/app/">Continue to the dashboard →</a></span>`;
 }
 
-CS.apiJson("auth/config").then(({ google_client_id }) => {
+CS.apiJson("auth/config").then(({ google_client_id, development_bypass }) => {
+  if (development_bypass) { goNext(); return; }
   if (!google_client_id) return;
   document.querySelector("#google-block").hidden = false;
   document.querySelector("#google-divider").hidden = false;
@@ -128,7 +130,13 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
   button.disabled = true;
   button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Signing in…';
   try { finish(await CS.apiJson("auth/login", { method: "POST", body: { email: form.get("email"), password: form.get("password") } })); }
-  catch (error) { showNotice(error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message); }
+  catch (error) {
+    if (error.status === 403 && /approval/i.test(error.message || "")) {
+      showNotice(`${error.message} Ask a district administrator to approve your account.`);
+    } else {
+      showNotice(error.status === 401 ? "Incorrect email or password." : error.message.includes("fetch") ? "The platform is not reachable. Is it running?" : error.message);
+    }
+  }
   finally { button.disabled = false; button.textContent = "Sign in"; }
 });
 </script>

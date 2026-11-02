@@ -22,7 +22,6 @@ from sqlalchemy.orm import Session
 
 from app.core.privacy import mask_phone
 from app.db.models import Cell, CitizenScienceLog, FieldUser, IncidentCase, IrrigationClimateLog, IrrigationScheme, Sector
-from app.services.evidence import counted
 
 KINDS = ("harvest", "pest", "rain", "asset")
 RAIN_LIMIT_MM = 150
@@ -55,6 +54,12 @@ def flags(source: str, kind: str, report) -> list[str]:
         found.append("no_scheme")
     if kind == "harvest" and report.expected_harvest_tons is None and report.reported_harvest_tons is None:
         found.append("missing_measure")
+    if kind == "harvest" and report.reported_harvest_tons is not None and report.cultivated_area_hectares is None:
+        found.append("missing_area")
+    if kind == "harvest" and report.reported_harvest_tons is not None and report.harvested_area_hectares is None:
+        found.append("missing_harvested_area")
+    if report.superseded_by_id is not None:
+        found.append("superseded")
     if kind == "pest" and report.severity is None:
         found.append("missing_measure")
     if kind == "asset" and not report.operational_status:
@@ -73,7 +78,7 @@ class Lookup:
         self.cells = {cell.id: cell for cell in db.scalars(select(Cell))}
         self.sectors = dict(db.execute(select(Sector.id, Sector.name)).all())
         self.schemes = dict(db.execute(select(IrrigationScheme.id, IrrigationScheme.name)).all())
-        self.people = {person.id: person for person in db.scalars(select(FieldUser))}
+        self.people = {person.id: person for person in db.scalars(select(FieldUser).where(FieldUser.data_origin != "simulator"))}
 
     def sector_of(self, cell_id: int | None) -> tuple[int | None, str | None]:
         cell = self.cells.get(cell_id)
@@ -90,10 +95,28 @@ def row(source: str, report, lookup: Lookup, personal: bool, duplicate: bool) ->
         "id": report.id, "source": source, "kind": kind, "title": title,
         "crop": getattr(report, "crop_type", None), "pest": getattr(report, "pest_or_disease", None), "severity": getattr(report, "severity", None),
         "expected_tons": getattr(report, "expected_harvest_tons", None), "reported_tons": getattr(report, "reported_harvest_tons", None),
+        "observation_date": getattr(report, "observation_date", None),
+        "gauge_code": getattr(report, "gauge_code", None),
         "rainfall_mm": getattr(report, "rainfall_mm", None), "asset": getattr(report, "infrastructure_name", None),
         "condition": getattr(report, "operational_status", None), "bottleneck": getattr(report, "bottleneck_category", None),
         "scheme_id": report.scheme_id, "scheme": lookup.schemes.get(report.scheme_id),
         "cell_id": report.cell_id, "cell": cell.name if cell else None, "sector_id": sector_id, "sector": sector,
+        "yield_tons_per_hectare": (round(reported_tons / cultivated_area, 3)
+                                    if (reported_tons := getattr(report, "reported_harvest_tons", None)) is not None
+                                    and (cultivated_area := getattr(report, "harvested_area_hectares", None)) not in (None, 0)
+                                    else None),
+        "cultivated_area_hectares": getattr(report, "cultivated_area_hectares", None),
+        "harvested_area_hectares": getattr(report, "harvested_area_hectares", None),
+        "observed_quantity": getattr(report, "observed_quantity", None),
+        "harvest_unit": getattr(report, "harvest_unit", None),
+        "observation_type": getattr(report, "observation_type", None),
+        "data_source": getattr(report, "data_source", None),
+        "reference_year": getattr(report, "reference_year", None),
+        "reporting_date": getattr(report, "reporting_date", None),
+        "superseded_by_id": report.superseded_by_id,
+        "correction_reason": report.correction_reason if personal else None,
+        "harvest_date": getattr(report, "harvest_date", None),
+        "season": getattr(report, "season", None),
         "reporter_id": report.reporter_id,
         "reporter": (person.phone_number if personal else mask_phone(person.phone_number)) if person else None,
         "reporter_role": person.role.value if person else None,
@@ -105,7 +128,7 @@ def row(source: str, report, lookup: Lookup, personal: bool, duplicate: bool) ->
 
 def list_reports(db: Session, cells: set[int] | None, personal: bool, *, kind: str | None = None, days: int = 30,
                  sector_id: int | None = None, scheme_id: int | None = None, verification: str | None = None,
-                 origin: str | None = None, limit: int = 500) -> list[dict]:
+                 origin: str | None = None, limit: int = 100, offset: int = 0) -> list[dict]:
     since = datetime.now(timezone.utc) - timedelta(days=days)
     lookup = Lookup(db)
     if sector_id is not None:
@@ -116,15 +139,11 @@ def list_reports(db: Session, cells: set[int] | None, personal: bool, *, kind: s
     for source in wanted_sources:
         model = SOURCES[source]
         # Look back an extra day so duplicates of reports at the start of the window are found.
-        query = select(model).where(counted(model), model.created_at >= since - DUPLICATE_WINDOW)
+        query = select(model).where(model.data_origin != "simulator", model.created_at >= since - DUPLICATE_WINDOW)
         if cells is not None:
             query = query.where(model.cell_id.in_(cells))
         if scheme_id is not None:
             query = query.where(model.scheme_id == scheme_id)
-        if verification:
-            query = query.where(model.verification_status == verification)
-        if origin:
-            query = query.where(model.data_origin == origin)
         collected += [(source, report) for report in db.scalars(query)]
     collected.sort(key=lambda item: (aware(item[1].created_at), item[1].id))
 
@@ -138,9 +157,11 @@ def list_reports(db: Session, cells: set[int] | None, personal: bool, *, kind: s
         last_seen[signature] = created
         if created < since or (kind and report_kind != kind):
             continue
+        if (verification and report.verification_status != verification) or (origin and report.data_origin != origin):
+            continue
         rows.append(row(source, report, lookup, personal, duplicate))
     rows.sort(key=lambda item: aware(item["created_at"]), reverse=True)
-    return rows[:limit]
+    return rows[offset:offset + limit]
 
 
 def linked_case(db: Session, source: str, report_id: int) -> IncidentCase | None:

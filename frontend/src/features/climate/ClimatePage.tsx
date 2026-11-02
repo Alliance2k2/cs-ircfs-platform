@@ -1,3 +1,4 @@
+import { RainfallRecords } from "./RainfallRecords";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, CloudRain, RefreshCw, Send } from "lucide-react";
 import { useState } from "react";
@@ -62,7 +63,7 @@ export function ClimatePage() {
       render: (row) => (
         <span className="text-sm">
           {formatNumber(row.threshold_dry_mm, lang)} / {formatNumber(row.threshold_wet_mm, lang)} mm
-          <span className="block text-xs text-muted">{row.threshold_source ?? t("climate.uncalibrated")}</span>
+          <span className="block text-xs text-muted">{row.threshold_source ?? t("climate.uncalibrated")}{row.threshold_status && <span className="block">{row.threshold_status.replaceAll("_", " ")} (agronomist approval not recorded)</span>}</span>
         </span>
       ),
     },
@@ -131,11 +132,13 @@ export function ClimatePage() {
         <Card>
           <CardHeader title={t("climate.trend")} />
           <div className="p-5">
+            <p className="mb-3 text-xs text-muted">This activity trend uses receipt dates. Use dated rainfall evidence below for historical comparisons.</p>
             <TrendChart series={[{ key: "rainfall_mm", label: t("climate.rainMonth"), color: "water", kind: "bar" }, { key: "rain_readings", label: t("climate.readings"), color: "primary", kind: "line" }]} />
           </div>
         </Card>
       </div>
 
+      <RainfallRecords />
       <Dialog
         open={preview !== null}
         onClose={() => setPreview(null)}

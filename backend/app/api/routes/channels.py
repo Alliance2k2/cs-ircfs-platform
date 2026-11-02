@@ -18,6 +18,7 @@ from urllib.parse import parse_qs
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import func, select, true, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -40,7 +41,7 @@ from app.db.models import (
 from app.db.session import get_db
 from app.services import sms_keywords, ussd
 from app.services.reporting import find_or_register_user
-from app.services.sms import deliver, is_valid_phone, normalise_phone, simulation
+from app.services.sms import deliver, is_valid_phone, normalise_phone, simulation, simulation_phone
 
 router = APIRouter(prefix="/api/v1", tags=["field channels"])
 reader = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.cooperative_leader, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
@@ -91,10 +92,11 @@ def verify_gateway(request: Request, token: str | None = Query(default=None)) ->
         raise HTTPException(status_code=403, detail="Unknown gateway")
 
 
-def throttle(db: Session, phone: str) -> None:
+def throttle(db: Session, phone: str, origin: str = ORIGIN_FIELD) -> None:
     since = datetime.now(timezone.utc) - timedelta(minutes=1)
     recent = db.scalar(select(func.count()).select_from(InboundMessage)
-                       .where(InboundMessage.phone_number == phone, InboundMessage.created_at >= since)) or 0
+                       .where(InboundMessage.phone_number == phone, InboundMessage.data_origin == origin,
+                              InboundMessage.created_at >= since)) or 0
     if recent >= PHONE_LIMIT_PER_MINUTE:
         raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
 
@@ -108,33 +110,66 @@ def tag_origin(db: Session, record_type: str | None, record_id: int | None, orig
             record.data_origin = origin
 
 
+def claim_inbound(db: Session, *, phone: str, channel: str, session_id: str | None, text: str, origin: str) -> tuple[InboundMessage | None, InboundMessage | None]:
+    """Write the inbound row before any side effect, and let the database decide retries.
+
+    Africa's Talking repeats a callback it believes failed. The unique constraint on
+    (channel, session_id, text) means only the first request can insert the row; the
+    repeat hits it, replays the stored reply, and never records a second report or pays
+    a second reward. The work that follows is in the same transaction, so a failure
+    rolls the claim back and the gateway's next retry is processed normally.
+
+    Returns (claim, None) for a new message, or (None, earlier) for a retry.
+    """
+    message = InboundMessage(phone_number=phone, channel=channel, session_id=session_id,
+                             text=text, data_origin=origin)
+    if not session_id:
+        db.add(message)
+        return message, None  # nothing to de-duplicate against
+    try:
+        # The row is added *inside* the savepoint: entering begin_nested() flushes anything
+        # already pending, which would raise outside the block we can recover from.
+        with db.begin_nested():
+            db.add(message)
+            db.flush()
+    except IntegrityError:
+        if message in db:
+            db.expunge(message)
+        earlier = db.scalar(select(InboundMessage).where(
+            InboundMessage.channel == channel,
+            InboundMessage.session_id == session_id,
+            InboundMessage.text == text,
+            InboundMessage.data_origin == origin,
+        ).limit(1))
+        return None, earlier
+    return message, None
+
+
 def run_ussd(db: Session, fields: dict[str, str], origin: str) -> tuple[ussd.UssdResult | None, InboundMessage | None]:
     """One USSD keypress. Returns (result, None), or (None, earlier) for a gateway retry."""
     phone = caller(fields, "phoneNumber")
     text = fields.get("text", "")
     session_id = fields.get("sessionId")
-    # A gateway retry repeats the same sessionId and text. Replay the stored reply instead
-    # of recording the report a second time.
-    if session_id:
-        earlier = db.scalar(select(InboundMessage).where(
-            InboundMessage.channel == "ussd", InboundMessage.session_id == session_id, InboundMessage.text == (text or "(dial)")).limit(1))
-        if earlier is not None:
-            return None, earlier
-    throttle(db, phone)
+    if origin == ORIGIN_SIMULATOR and session_id:
+        session_id = simulation_phone(f"session:{phone}:{session_id}")
+    throttle(db, phone, origin)
+    claim, earlier = claim_inbound(db, phone=phone, channel="ussd", session_id=session_id,
+                                   text=text or "(dial)", origin=origin)
+    if earlier is not None:
+        return None, earlier
     user = find_or_register_user(db, phone)
     result = ussd.handle(db, user, text)
     tag_origin(db, result.record_type, result.record_id, origin)
-    stored_phone = phone
     if result.record_type == GRIEVANCE:
         # Grievances are anonymous: drop the phone from every step of this session, so the
         # log cannot tie a number to the grievance (or its FB reference in the reply).
-        stored_phone = WITHHELD
+        claim.phone_number = WITHHELD
         if session_id:
-            db.execute(update(InboundMessage).where(InboundMessage.channel == "ussd", InboundMessage.session_id == session_id)
+            db.execute(update(InboundMessage).where(InboundMessage.channel == "ussd", InboundMessage.session_id == session_id, InboundMessage.data_origin == origin)
                        .values(phone_number=WITHHELD))
-    db.add(InboundMessage(phone_number=stored_phone, channel="ussd", session_id=session_id, text=text or "(dial)", reply=result.response,
-                          record_type=result.record_type, record_id=None if result.record_type == GRIEVANCE else result.record_id,
-                          data_origin=origin))
+    claim.reply = result.response
+    claim.record_type = result.record_type
+    claim.record_id = None if result.record_type == GRIEVANCE else result.record_id
     db.commit()
     return result, None
 
@@ -143,20 +178,24 @@ def run_sms(db: Session, fields: dict[str, str], origin: str) -> dict:
     phone = caller(fields, "from")
     text = fields.get("text", "")
     message_id = fields.get("id") or None
+    if origin == ORIGIN_SIMULATOR and message_id:
+        message_id = simulation_phone(f"message:{phone}:{message_id}")
+    throttle(db, phone, origin)
     # Africa's Talking retries a callback it thinks failed. The same message ID must not
     # create a second report or a second reply.
-    if message_id:
-        earlier = db.scalar(select(InboundMessage).where(InboundMessage.channel == "sms", InboundMessage.session_id == message_id).limit(1))
-        if earlier is not None:
-            return {"reply": earlier.reply, "reply_status": "duplicate", "record_type": earlier.record_type, "record_id": earlier.record_id}
-    throttle(db, phone)
+    claim, earlier = claim_inbound(db, phone=phone, channel="sms", session_id=message_id,
+                                   text=text, origin=origin)
+    if earlier is not None:
+        return {"reply": earlier.reply, "reply_status": "duplicate", "record_type": earlier.record_type, "record_id": earlier.record_id}
     user = find_or_register_user(db, phone)
     result = sms_keywords.handle(db, user, text)
     tag_origin(db, result.record_type, result.record_id, origin)
     anonymous = result.record_type == GRIEVANCE
     reply = deliver(db, phone, result.reply, purpose="auto_reply", cell_id=user.cell_id, anonymous=anonymous)
-    db.add(InboundMessage(phone_number=WITHHELD if anonymous else phone, channel="sms", session_id=message_id, text=text, reply=result.reply,
-                          record_type=result.record_type, record_id=None if anonymous else result.record_id, data_origin=origin))
+    claim.phone_number = WITHHELD if anonymous else phone
+    claim.reply = result.reply
+    claim.record_type = result.record_type
+    claim.record_id = None if anonymous else result.record_id
     db.commit()
     return {"reply": result.reply, "reply_status": reply.status, "record_type": result.record_type, "record_id": result.record_id}
 
@@ -176,13 +215,13 @@ async def sms_callback(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/simulator/ussd")
-async def simulator_ussd(request: Request, db: Session = Depends(get_db), _: Principal = simulator_user) -> dict:
+async def simulator_ussd(request: Request, db: Session = Depends(get_db), principal: Principal = simulator_user) -> dict:
     """The on-screen phone: same menu as *801#, with an English translation of each screen.
 
     Records are marked as simulator data and nothing is sent to a telecom provider.
     """
     fields = await read_fields(request)
-    with simulation():
+    with simulation(f"{principal.account_id}:{principal.name}:{principal.role.value}"):
         result, earlier = run_ussd(db, fields, ORIGIN_SIMULATOR)
     service_code = get_settings().ussd_service_code
     if earlier is not None:
@@ -193,10 +232,10 @@ async def simulator_ussd(request: Request, db: Session = Depends(get_db), _: Pri
 
 
 @router.post("/simulator/sms")
-async def simulator_sms(request: Request, db: Session = Depends(get_db), _: Principal = simulator_user) -> dict:
+async def simulator_sms(request: Request, db: Session = Depends(get_db), principal: Principal = simulator_user) -> dict:
     """The on-screen phone's SMS to 8448. The reply is recorded as dry-run, never sent."""
     fields = await read_fields(request)
-    with simulation():
+    with simulation(f"{principal.account_id}:{principal.name}:{principal.role.value}"):
         return run_sms(db, fields, ORIGIN_SIMULATOR)
 
 

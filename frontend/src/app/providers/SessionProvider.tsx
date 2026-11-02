@@ -23,13 +23,13 @@ export function redirectToSignIn() {
 }
 
 async function loadSession(signal: AbortSignal): Promise<Session> {
+  const config = await apiGet("auth/config", authConfigSchema, signal);
+  if (config.development_bypass) return { account: null, role: "administrator", development: true };
   try {
     const account = await apiGet("auth/me", accountSchema, signal);
     return { account, role: account.role, development: false };
   } catch (error) {
     if (!(error instanceof ApiError) || error.status !== 401) throw error;
-    const config = await apiGet("auth/config", authConfigSchema, signal);
-    if (config.development_bypass) return { account: null, role: "administrator", development: true };
     redirectToSignIn();
     return new Promise<Session>(() => undefined); // stay on the loading screen while the browser leaves
   }

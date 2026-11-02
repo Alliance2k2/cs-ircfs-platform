@@ -1,5 +1,6 @@
 """Outbound SMS and airtime through Africa's Talking, with a safe dry-run default."""
 import logging
+import hashlib
 import re
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -11,37 +12,72 @@ from app.core.config import get_settings
 from app.db.models import AdvisoryMessage
 
 logger = logging.getLogger(__name__)
-PHONE_PATTERN = re.compile(r"^\+?\d{9,15}$")
+# E.164: a leading "+", a non-zero country code, 9-15 digits in total.
+PHONE_PATTERN = re.compile(r"^\+[1-9]\d{8,14}$")
 WITHHELD = "withheld"  # same value as app.core.privacy.WITHHELD
 
 # Set while the phone simulator runs: nothing reaches a telecom provider, whatever the
 # SMS_PROVIDER and AIRTIME_PROVIDER settings say (staff alerts and rewards included).
 _simulating: ContextVar[bool] = ContextVar("simulating", default=False)
+_simulation_namespace: ContextVar[str] = ContextVar("simulation_namespace", default="training")
+
+
+def simulation_phone(phone: str) -> str:
+    """A non-dialable, staff-specific identity; never mutate the real caller."""
+    if not _simulating.get():
+        return phone
+    digest = hashlib.sha256(f"{_simulation_namespace.get()}:{phone}".encode()).hexdigest()[:16]
+    return f"sim-{digest}"
 
 
 @contextmanager
-def simulation():
+def simulation(namespace: str = "training"):
     """Run a block with all SMS and airtime forced to dry-run."""
     token = _simulating.set(True)
+    namespace_token = _simulation_namespace.set(namespace)
     try:
         yield
     finally:
         _simulating.reset(token)
+        _simulation_namespace.reset(namespace_token)
 
 
 def live(provider: str) -> bool:
-    return provider == "africas_talking" and not _simulating.get()
+    """True only when the provider is configured and live sending is allowed here.
+
+    Outside production a live provider is refused unless ALLOW_LIVE_MESSAGES=true, so a
+    laptop that still holds live credentials cannot text real citizens by accident.
+    """
+    settings = get_settings()
+    if provider != "africas_talking" or _simulating.get():
+        return False
+    return settings.environment == "production" or settings.allow_live_messages
 
 
 def normalise_phone(value: str) -> str:
-    """Return an E.164-style Rwandan number: '0788 123 456' -> '+250788123456'."""
-    phone = re.sub(r"[\s\-()]", "", value or "")
-    if phone.startswith("07") and len(phone) == 10:
-        phone = "+250" + phone[1:]
-    elif phone.isdigit() and len(phone) >= 11:
-        # International number whose "+" was lost (a "+" in form data can arrive as a space).
-        phone = "+" + phone
-    return phone
+    """Return an E.164 Rwandan number:'788 123 456', '0788-123-456', '00250788123456'
+    and '+250 788 123 456' all become '+250788123456'.
+
+    One canonical form matters: the phone number is the identity key, so a second spelling
+    would create a second field user, a second reward history and double airtime.
+    """
+    text = re.sub(r"[\s\-().]", "", value or "")
+    if text.startswith("00"):
+        text = "+" + text[2:]
+    if text.startswith("+"):
+        digits = re.sub(r"\D", "", text)
+        return "+" + digits if digits else ""
+    digits = re.sub(r"\D", "", text)
+    if len(digits) == 10 and digits.startswith("07"):
+        return "+250" + digits[1:]
+    if len(digits) == 9 and digits.startswith("7"):
+        return "+250" + digits
+    if len(digits) == 12 and digits.startswith("250"):
+        return "+" + digits
+    if len(digits) >= 11:
+        # An international number whose "+" was lost in form encoding.
+        return "+" + digits
+    return digits
 
 
 def is_valid_phone(value: str) -> bool:
@@ -90,7 +126,11 @@ def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id:
     ``anonymous`` logs the message without the recipient's number, for replies that
     would otherwise tie a phone to an anonymous grievance.
     """
-    result = send_sms(phone_number, message)
+    # Commit ordinary live messages with the business operation. A separate worker sends
+    # them only after commit. Anonymous grievance replies retain no recipient in storage
+    # and are deliberately synchronous until an approved private reply mechanism exists.
+    result = ({"status": "queued"} if not anonymous and live(get_settings().sms_provider)
+              else send_sms(phone_number, message))
     record = AdvisoryMessage(
         phone_number=WITHHELD if anonymous else phone_number, message=message, status=result["status"],
         provider_id=result.get("provider_id"), purpose=purpose, cell_id=cell_id,

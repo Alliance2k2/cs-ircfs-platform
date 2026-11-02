@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.models import Cell, FieldUser, IrrigationScheme
+from app.core.scope import allowed_cells, check_cell
 
 
 def require_if_provided(db: Session, model, value: int | None, field_name: str) -> None:
@@ -11,9 +12,20 @@ def require_if_provided(db: Session, model, value: int | None, field_name: str) 
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"{field_name} does not reference an existing record",
         )
+    if model is FieldUser and value is not None and db.get(FieldUser, value).data_origin == "simulator":
+        raise HTTPException(422, "Training profiles cannot be used in field records")
 
 
 def validate_report_references(db: Session, reporter_id: int | None, scheme_id: int | None, cell_id: int | None) -> None:
     require_if_provided(db, FieldUser, reporter_id, "reporter_id")
     require_if_provided(db, Cell, cell_id, "cell_id")
     require_if_provided(db, IrrigationScheme, scheme_id, "scheme_id")
+
+
+def validate_report_scope(db, principal, payload):
+    cells = allowed_cells(db, principal)
+    check_cell(payload.cell_id, cells, "Cell")
+    if cells is not None and payload.reporter_id is not None:
+        person = db.get(FieldUser, payload.reporter_id)
+        if person is not None:
+            check_cell(person.cell_id, cells, "Reporter")

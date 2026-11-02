@@ -37,7 +37,7 @@ def test_close_loop_sms_queues_one_message_per_cell_resident(client, district, s
     feedback_id = client.get("/api/v1/feedback").json()[0]["id"]
     client.patch(f"/api/v1/feedback/{feedback_id}", json={"status": "resolved", "action_taken": "Canal cleared"})
     result = client.post(f"/api/v1/feedback/{feedback_id}/notify-cell", json={}).json()
-    assert result["sent"] == 2
+    assert result["sent"] == 0 and result["dry_run"] == 2
     with session_factory() as session:
         queued = list(session.scalars(select(AdvisoryMessage).where(AdvisoryMessage.purpose == "close_loop")))
     assert len(queued) == 2

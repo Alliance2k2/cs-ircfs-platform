@@ -85,6 +85,10 @@ export function ChannelsPage() {
           </>
         }
       />
+      <p className="rounded-control border border-line bg-surface px-4 py-3 text-sm text-muted">
+        Queued messages await dispatch. Sent means accepted by the provider; handset delivery is unconfirmed.
+        Unknown outcomes require provider review before any resend. Dry-run records do not send SMS or airtime.
+      </p>
       {data && (
         <p className="text-sm text-muted">
           {t("channels.codes", { ussd: data.service_code, sms: data.sms_shortcode })}

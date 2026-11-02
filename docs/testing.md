@@ -50,3 +50,44 @@ On failure Playwright keeps a trace and a screenshot in `frontend/test-results/`
 
 - Unit tests render with `renderWithProviders` and stub the API with `stubApi` (`frontend/src/test/render.tsx`); the longest matching path prefix answers.
 - End-to-end tests sign in through `asRole("planner")` from `e2e/fixtures.ts`. Workflows run one at a time because they change shared server state. Prefer role and label locators; tables render both a desktop table and phone cards, so scope queries to `getByRole("table")`.
+
+## November 2026 scientific regression coverage
+
+`backend/tests/test_scientific_evidence.py` covers area-weighted yield, kg/t conversion, zero yield, crop/season/year mismatches, source/verification/origin exclusion, target versions/approval, corrections, scope and duplicate detection across filters. Migration tests preserve legacy targets and cultivated areas without inventing harvested areas. Frontend scientific-form tests cover unapproved target creation, dated explicit approval and corrected measurement submission. Browser evaluation workflow exercises target creation/approval and verified yield rendering using clearly synthetic records in the guarded disposable E2E database. The production/demo seed continues to mark invented records as demo.
+
+Final local results, 2 November 2026:
+
+| Check | Result |
+| --- | --- |
+| Backend, including SQLite migrations | 229 passed; 10 existing dependency/Alembic deprecation warnings |
+| Frontend unit tests | 52 passed |
+| TypeScript | Passed |
+| ESLint | Passed |
+| Production frontend build | Passed; existing font-resolution and large-chunk warnings |
+| Playwright browser workflows | 20 passed (including 5 sign-in setup tests) |
+| Diff whitespace check | Passed |
+| PostgreSQL/PostGIS runtime and concurrent row locks | Not run locally; CI/staging required |
+| Docker build | Not run; Docker command unavailable |
+| Live telecom / real feature phones | Not run; dry-run preserved |
+
+The account-table unit test still reports an existing nested-button DOM warning. No tests were deleted or disabled; prior tests that expected forecast-based achievement or cultivated-area yield were updated to the scientifically valid contract and expanded with regression coverage. See [implementation report](implementation-2026-11.md) for the complete changed-file inventory and remaining requirements.
+
+## Batch 5 validation (2 November 2026)
+
+| Check | Result |
+| --- | --- |
+| Full backend suite | 263 passed; 12 dependency/Alembic deprecation warnings |
+| Full frontend unit suite | 56 passed |
+| TypeScript / ESLint | Passed |
+| Production frontend build | Passed; existing font-resolution / large-map-chunk warnings |
+| Full browser suite | 21 passed, including five sign-in setups and the new rainfall-reference / six-hour repair workflow |
+| PostgreSQL/PostGIS | PostgreSQL 18.6 / PostGIS 3.6.2: existing and new migrations, schema parity (zero differences), downgrade/upgrade, and rolled-back service workflow checks passed |
+| Spatial/service checks | Spatial round trip, row-lock query execution, verified yield, approved rainfall anomaly and timed maintenance passed |
+| Concurrent-worker contention | Not stress-tested; staging requirement |
+| Docker / live telecom / real feature phones | Not run; Docker unavailable and live services remain unactivated |
+
+The PostGIS cluster was disposable, bound to localhost on a separate port, and stopped after validation. The configured application database was not used. CI's PostGIS job now also runs the guarded workflow script against its dedicated *_validation database. Backend/SQLite tests cover unknown-versus-zero rain, daily duplicates, late receipt dates, gauge coverage, reference approval/matching, origin/scope exclusion, repair ordering/overlap, history protection and migration preservation. Frontend tests verify missing-data presentation, explicit source entry and correct Kigali timestamps. See [climate-maintenance.md](climate-maintenance.md).
+
+## Batch 6 verification
+
+Final local results: 278 backend tests, 57 frontend tests and 22 Chrome end-to-end tests passed; type check, lint and build passed. PostgreSQL 18.6/PostGIS 3.6.2 migrations through `20261102_27`, schema comparison (zero differences), three-revision downgrade/upgrade and rolled-back pilot service checks passed. See [the verification report](batch6-platform-reliability.md#final-verification) for environment, limits and operations.

@@ -1,14 +1,21 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { z } from "zod";
-import { apiGet } from "./client";
+import { apiGet, ApiError } from "./client";
 import { schemeSchema, sectorSchema } from "./schemas";
 import { cellSchema } from "./workspaces";
 
 /** GET a path with a schema, cached under the path itself. */
-export function useApi<T>(path: string | null, schema: z.ZodType<T, z.ZodTypeDef, unknown>, options: Partial<UseQueryOptions<T>> = {}) {
-  return useQuery<T>({
+export function useApi<T>(path: string | null, schema: z.ZodType<T, z.ZodTypeDef, unknown>, options: Partial<Omit<UseQueryOptions<unknown, Error, T>, "queryKey" | "queryFn" | "select">> = {}) {
+  return useQuery<unknown, Error, T>({
     queryKey: ["api", path],
-    queryFn: ({ signal }) => apiGet(path as string, schema, signal),
+    // Cache the full response. Each observer validates its own view, so a compact
+    // reference picker cannot discard fields needed later by an editing form.
+    queryFn: ({ signal }) => apiGet(path as string, z.unknown(), signal),
+    select: (data) => {
+      const parsed = schema.safeParse(data);
+      if (!parsed.success) throw new ApiError("The platform sent data in an unexpected format.", 200);
+      return parsed.data;
+    },
     enabled: path !== null,
     ...options,
   });

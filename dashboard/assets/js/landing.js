@@ -4,14 +4,6 @@
   const $ = (selector) => document.querySelector(selector);
   const fmt = (n) => Number(n || 0).toLocaleString();
 
-  // ---------- AIMS Rwanda logo: shown only when assets/img/aims-logo.png exists ----------
-  const aimsLogo = new Image();
-  aimsLogo.onload = () => document.querySelectorAll("[data-aims-logo]").forEach((img) => {
-    img.hidden = false;
-    img.closest("[data-aims]")?.classList.add("has-aims-logo");
-  });
-  aimsLogo.src = "assets/img/aims-logo.png";
-
   // ---------- Header: mobile menu, active section, language ----------
   const menuBtn = $("#menuBtn");
   const links = $("#site-links");
@@ -22,26 +14,94 @@
     menuBtn.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
   });
   links.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && links.classList.contains("open")) { closeMenu(); menuBtn.focus(); } });
 
   const NAV = {
     en: { label: "EN", items: ["What it does", "How it works", "Who it's for", "Pilot schemes", "FAQs"] },
-    // RW: needs field review
-    rw: { label: "RW", items: ["Icyo ikora", "Uko bikora", "Abo igenewe", "Imishinga y'igerageza", "Ibibazo"] },
+    rw: { label: "RW", items: ["Ibyo ikora", "Uko ikora", "Abagenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
-  let lang = "en";
-  $("#langBtn").addEventListener("click", () => {
-    lang = lang === "en" ? "rw" : "en";
+  const RW_COPY = {
+    "What it does":"Ibyo ikora", "How it works":"Uko ikora", "Who it's for":"Abagenewe", "Pilot schemes":"Imishinga y'igerageza", "FAQs":"Ibibazo", "Sign in":"Injira", "Create account":"Fungura konti",
+    "Transforming agriculture":"Guhindura ubuhinzi", "through community knowledge.":"bishingiye ku bumenyi bw'abaturage.",
+    "Empowering farmers in Bugesera District, Rwanda with accessible technology to report, monitor, and improve irrigation resilience for climate-smart food security.":"Duha abahinzi bo mu Karere ka Bugesera, u Rwanda, ikoranabuhanga ryoroshye ryo gutanga amakuru, kugenzura no guteza imbere ubudahangarwa bw'ubuhinzi buhungabanya ikirere.",
+    "Citizen Science for Irrigation Resilience":"Ubumenyi bw'abaturage mu kurwanya ubukene bw'amazi", "Try phone reporting":"Gerageza gutanga raporo kuri telefoni", "See How It Works":"Reba uko bikora",
+    "No internet":"Nta murongo wa interineti", "Live from the field":"Amakuru avuye mu murima", "connecting…":"birimo guhuzwa…", "offline":"birahari?",
+    "District-wide pilot":"Igerageza ku karere hose", "2 pilot schemes":"Imishinga 2 y'igerageza", "Any Phone":"Telefoni iyo ari yo yose", "USSD & SMS Access":"Kubona hakoreshejwe USSD na SMS", "Real-Time":"Mu gihe nyacyo", "Field Evidence":"Ibimenyetso byo mu murima",
+    "WHAT IT DOES":"IBYO IKORA", "Three kinds of evidence":"Ubwoko butatu bw'ibimenyetso", "one clear picture.":"igikora ishusho imwe isobanutse.",
+    "Farmers know their land. Their reports on crops, water and community concerns show district teams where help is needed first.":"Abahinzi bazi ubutaka bwabo. Raporo zabo ku bihingwa, amazi n'ibibazo by'abaturage zerekana inzego z'akarere aho ubufasha bukenewe mbere.",
+    "Citizen science":"Ubumenyi bw'abaturage", "Listen to the land.":"Umva icyo ubutaka kivuga.", "Harvests, pest alerts and household food screening.":"Ibisarurwa, amakuru ku tunyangingo ndetse n'isuzuma ryo mu rugo.", "Pest alerts on a map":"Amakuru ku tunyangingo ku ikarita", "Nutrition risk by cell":"Ingaruka ku mirire ku kagari",
+    "Water resilience":"Kudahangarira ikibazo cy'amazi", "Every drop, put to better use.":"Amazi yose akoreshwa neza.", "Pump and canal faults, rain gauges and irrigation advice.":"Ibibazo by'amashanyarazi, imiyoboro, ibipimo by'imvura n'inama zo kuhira.", "Pump and canal health":"Imiterere ya pompe n'imiyoboro", "Weekly advice by SMS":"Inama buri cyumweru kuri SMS",
+    "Community voice":"Ijwi ry'abaturage", "Every voice is heard.":"Ijwi rya buri muntu ryumvikana.", "Anonymous concerns, followed up until they are solved.":"Ibibazo byatanzwe mu ibanga, bikurikiranwa kugeza bikemuye.", "No name or number kept":"Nta izina cyangwa nimero ibikwa", "An SMS when it is solved":"SMS igihe ikibazo kimaze gukemuka",
+    "HOW IT WORKS":"UKO BIKORA", "Simple for farmers.":"Byoroshye ku bahinzi.", "Powerful for planners.":"Bifitiye imbaraga abayitegura ingamba.", "No smartphone needed":"Nta smartphone ikenewe", "Any feature phone":"Telefoni isanzwe iyo ari yo yose", "Kinyarwanda":"Ikinyarwanda", "Numbered choices":"Amahitamo afite nimero", "Pause demo":"Hagarika urugero", "Play demo":"Komeza urugero",
+    "Three steps, from a farmer's phone to a district decision and back.":"Intambwe eshatu, kuva kuri telefoni y'umuhinzi kugeza ku cyemezo cy'akarere, hanyuma bikagaruka.",
+    "Step 01":"Intambwe ya 01", "Step 02":"Intambwe ya 02", "Step 03":"Intambwe ya 03", "Farmers report":"Abahinzi batanga amakuru", "Dial *801# or text 8448, in Kinyarwanda, from any phone.":"Kanda *801# cyangwa ohereza ubutumwa kuri 8448 mu Kinyarwanda, ukoresheje telefoni iyo ari yo yose.", "The district sees it":"Ukarere kibona amakuru", "Each report is placed by sector and scheme. Severe pests and broken pumps open a case at once.":"Raporo buri imwe igashyirwa mu murenge no mu mugambi. Tunyangingo dukaze na pompe zangiritse bihita biza ku rwego rwihuse.", "The community hears back":"Abaturage babona igisubizo", "Irrigation advice, airtime, and an SMS saying what was done.":"Inama zo kuhira, amasaha yo guhamagara, na SMS ibwira icyakozwe.",
+    "ACCOUNTABILITY":"KUBAZA BITABO", "A report becomes":"Raporo ihinduka", "a verified action.":"igikorwa cyagenzuwe.", "Clear stages help the district respond consistently and tell the community what changed.":"Intambwe zisobanutse zifasha akarere gusubiza mu buryo buhamye kandi zikamenyesha abaturage ibyahindutse.",
+    "Citizen reports":"Raporo z'abaturage", "A farmer dials USSD or sends SMS.":"Umuhinzi akanda USSD cyangwa agohereza SMS.", "Evidence is checked":"Ibimenyetso biragenzurwa", "Reading quality and report context are validated.":"Ubwiza bw'amakuru n'aho yavugiye biragenzurwa.", "A case is assigned":"Dosiye ihabwa abayizimiyemo", "Authorized staff set priority and ownership.":"Abakozi bemerewe gushyira ku isonga kandi bagaha ubuyobozi.", "Action is resolved":"Igikorwa kirangiye", "The result is recorded and reviewed.":"Igisubizo kirandikwa kandi kigasuzumwa.", "Community is informed":"Abaturage baramenyeshwa", "The district can send a closing-the-loop SMS.":"Akarere gashobora kohereza SMS igaragaza igisubizo.",
+    "WHO IT'S FOR":"ABAGENEWE", "Choose how":"Hitamo uburyo", "you take part.":"uzagiramo uruhare.", "Each group sees what it needs, and nothing more.":"Buri tsinda ribona ibikeneye gusa, nta kindi.",
+    "Farmers & cooperatives":"Abahinzi n'amakoperative", "Report from any phone":"Tanga raporo kuri telefoni iyo ari yo yose", "No account and no internet needed.":"Nta konti cyangwa interineti bikenewe.", "Get irrigation advice and airtime back":"Bona inama zo kuhira no kwishyurirwa amaherere",
+    "Citizen Science Monitors":"Abagenzuzi b'ubumenyi bw'abaturage", "Follow the live picture":"Kurikirana iby'impamo", "Live field reports and maps":"Raporo zo mu murima n'ikarita", "Rainfall, advice and nutrition by sector":"Imvura, inama n'imirire ku murenge", "New accounts are approved by the district.":"Konti nshya zemezwa n'akarere.",
+    "District Planners":"Abategura ingamba z'akarere", "Verify and act":"Emeza kandi ukore", "Assign and resolve cases":"Tanga dosiye kandi ukemure ikibazo", "Send advice and tell each cell what was done":"Ohereza inama kandi ubwire buri kagari ibyakozwe", "The district administrator gives the planner role.":"Umuyobozi w'akarere ni we utanga uruhare rwo gutegura.",
+    "PILOT SCHEMES":"IMISHINGA Y'IGERAGEZA", "Starting with two":"Twatangiriye ku mishinga ibiri", "irrigation investments.":"y'ibikorwa byo kuhira.", "Both in Bugesera District. The platform checks what changed for the farmers they serve.":"Zombi ziherereye mu Karere ka Bugesera. Iyi platform igenzura impinduka ku bahinzi zikorerwa.",
+    "PADAB · MWESA VALLEY":"PADAB · IKIBAYA CYA MWESA", "Building on existing irrigation infrastructure.":"Twubakiye ku bikorwa biriho byo kuhira.", "Assessing irrigation outcomes and bottlenecks across a scheme with pumping stations and a large canal network.":"Gusuzuma umusaruro n'ingorane byo kuhira mu mushinga ufite pompe n'umuyoboro munini.", "Field evidence":"Ibimenyetso byo mu murima", "Pump monitoring":"Gukurikirana pompe", "Rainfall checks":"Gusuzuma imvura",
+    "APEFA · NGERUKA & MAREBA":"APEFA · NGERUKA NA MAREBA", "Making solar-powered irrigation more resilient.":"Guteza imbere imirimo yo kuhira ikoresha izuba.", "Connecting farmer feedback and local observations with the operational performance of solar-powered irrigation.":"Guhuza ibitekerezo by'abahinzi n'ibikorwa byo mu karere n'imikorere y'ibikoresho byo kuhira bikoresha izuba.", "Solar irrigation":"Kuhira hakoreshejwe izuba", "Ngeruka":"Ngeruka", "Mareba":"Mareba",
+    "GOOD QUESTIONS":"IBIBAZO BYIZA", "Curious about":"Wifuza kumenya", "how it works?":"uko bikora?", "Short answers about reporting and privacy.":"Ibisubizo bigufi ku gutanga amakuru n'ibanga.",
+    "What is CS-IRCFS?":"CS-IRCFS ni iki?", "Citizen Science for Irrigation Resilience and Climate-smart Food Security: farmers' phone reports help Bugesera District check and improve its irrigation schemes.":"Ubumenyi bw'abaturage mu kurwanya ubukene bw'amazi no gushakira umutekano mu biribwa bihanganye n'ihindagurika ry'ikirere: raporo z'abahinzi zifasha Akarere ka Bugesera kugenzura no guteza imbere imishinga yo kuhira.",
+    "Do I need a smartphone or internet?":"Ese nkeneye telefone yubugeni cyangwa interineti?", "No. Any phone works: dial *801# or text 8448. The menus are in Kinyarwanda with numbered choices.":"Oya. Telefoni iyo ari yo yose irakora: kanda *801# cyangwa ohereza ubutumwa kuri 8448. Imyanya iri mu Kinyarwanda kandi ifite amahitamo afite nimero.",
+    "What do I get back?":"Nzabona iki?", "Irrigation advice for your sector by SMS. Airtime rewards may be available after approved milestones and provider activation; district limits, eligibility and reward status can change.":"Inama zo kuhira muri telefoni y'egerejwe URI muri SMS. Igihembo cya airtime gishobora kuboneka nyuma yo gukora intambwe yemejwe n'ikigo; imipaka y'akarere, inshingano n'igihembo bishobora guhinduka.",
+    "Who can see my information?":"Ni nde ushobora kubona amakuru yanjye?", "Authorized district staff can handle reports and personal data under assigned roles. Grievances are stored without a reporter account or phone number. Public pages show only aggregated counts and sector summaries.":"Abakozi b'akarere bemerewe bashobora gukurikirana raporo n'amakuru y'umuntu ku rwego rwabo. Ibibazo bikekwa ntabwo bihuzwa na konti cyangwa nimero ya telefoni. Urubuga rusange rwerekana imibare ihuriweho n'umubare ku murenge gusa.",
+    "What happens after I report a problem?":"Haba iki nyuma yo gutanga ikibazo?", "Severe pests and broken pumps reach the district at once. When the problem is solved, everyone in your cell gets an SMS saying what was done.":"Tunyangingo dukomeye na pompe zangiritse bihita bivugwa ku karere. Igihe ikibazo kimaze gukemuka, abaturage bose bo mu kagari basangizwa SMS ibabwira icyo bakoze.",
+    "Turning community knowledge into better decisions for irrigation resilience and food security.":"Guhindura ubumenyi bw'abaturage mu mfatiro zo gufata ibyemezo byiza byo kurwanya ubukene bw'amazi no guhimiriza umutekano w'ibiribwa.", "Bugesera District, Rwanda":"Akarere ka Bugesera, u Rwanda", "English & Kinyarwanda":"Icyongereza n'Ikinyarwanda", "Public counts and sector summaries only.":"Imibare rusange n'incamake y'imirenge gusa.", "Checking the platform…":"Reba uko urubuga rukora…",
+    "Read the privacy notice":"Soma itangazo ry'ibanga", "Explore":"Shakisha", "Questions":"Ibibazo", "Platform":"Urubuga", "Phone simulator":"Imyigishirizo kuri telefoni", "Resources":"Ibikoresho", "How reporting works":"Uko gutanga raporo bikora", "API reference":"Amabwiriza ya API", "Privacy notice":"Itangazo ry'ibanga",
+    "Refreshed automatically":"Byongerwa mu buryo bwikora", "Back to top":"Subira hejuru", "Pilot starting":"Igerageza ritangiye", "Community voices matter":"Ijwi ry'abaturage riragira agaciro", "Be the first: dial *801#":"Ba uwa mbere: kanda *801#", "Waiting for the latest reports…":"Tegereza raporo ziheruka…", "Bugesera":"Bugesera", "sectors reporting":"imirenge itanga amakuru", "last 30 days":"iminsi 30 ishize",
+    "Platform online ·":"Urubuga ruri ku murongo ·", "reports from the field":"raporo zavuye mu murima", "Platform offline · live figures paused":"Urubuga ntiruri ku murongo · imibare y'igihe nyacyo yahagaritswe", "Live reports appear here when the platform is running.":"Raporo z'igihe nyacyo zigaragara hano iyo urubuga rukora.",
+    "Dial *801#":"Kanda *801#", "Main menu · press 2 for pests & disease":"Ibijyanye n'ingenzi · kanda 2 ku tunyangingo n'indwara", "Which crop? 2 = maize":"Igihingwa kihe? 2 = ibigori", "Which problem? 1 = fall armyworm":"Ni ikibazo kihe? 1 = nzana", "How severe? 5 = everything damaged":"Nkanshi? 5 = byangiritse byose", "Saved. Planners see a critical case straight away.":"Byabitswe. Abategura ingamba bahita babona ikibazo gikomeye."
+  };
+
+  let lang = localStorage.getItem("cs-ircfs-lang") === "rw" ? "rw" : "en";
+  let textNodes = [];
+  const originalTextNodes = new WeakMap();
+  function collectTextNodes() {
+    textNodes = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.parentElement || node.parentElement.closest("script, style, code")) return NodeFilter.FILTER_REJECT;
+        return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    let textNode;
+    while ((textNode = walker.nextNode())) {
+      if (!originalTextNodes.has(textNode)) originalTextNodes.set(textNode, textNode.textContent);
+      textNodes.push({ node: textNode, en: originalTextNodes.get(textNode) });
+    }
+  }
+
+  function applyLanguage(next) {
+    lang = next;
+    localStorage.setItem("cs-ircfs-lang", lang);
+    document.documentElement.lang = lang === "rw" ? "rw" : "en";
+    collectTextNodes();
     $("#langLabel").textContent = NAV[lang].label;
     links.querySelectorAll("a[data-nav]").forEach((a, i) => { a.textContent = NAV[lang].items[i]; });
-    $("#langBtn").title = lang === "rw" ? "Menu in Kinyarwanda; page text is in English" : "English menu";
-  });
+    textNodes.forEach(({ node, en }) => {
+      const key = en.trim();
+      node.textContent = lang === "rw" && RW_COPY[key] ? RW_COPY[key] : en;
+    });
+    $("#langBtn").title = lang === "rw" ? "Hindura ujye mu Cyongereza" : "Hindurira mu Kinyarwanda";
+    $("#langBtn").setAttribute("aria-label", lang === "rw" ? "Hindura urubuga mu Cyongereza" : "Hindura urubuga mu Kinyarwanda");
+  }
+  $("#langBtn").addEventListener("click", () => applyLanguage(lang === "en" ? "rw" : "en"));
+  applyLanguage(lang);
 
   if ("IntersectionObserver" in window) {
     const navLinks = [...links.querySelectorAll("a[data-nav]")];
     const spy = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`));
+        navLinks.forEach((a) => {
+          const active = a.getAttribute("href") === `#${entry.target.id}`;
+          a.classList.toggle("active", active);
+          if (active) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current");
+        });
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
     navLinks.forEach((a) => { const target = document.querySelector(a.getAttribute("href")); if (target) spy.observe(target); });
@@ -49,10 +109,11 @@
 
   // ---------- Signed-in people go straight to the dashboard ----------
   if (session.account()) {
-    $("#nav-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
-    $("#hero-cta").innerHTML = 'Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
+    const dashboardLabel = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
+    $("#nav-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
+    $("#hero-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
     ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "/app/"; });
-    const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = "Open dashboard";
+    const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
   }
 
   $("#year").textContent = new Date().getFullYear();
@@ -90,25 +151,25 @@
   // ---------- Live figures in the hero ----------
   function ago(value) {
     const seconds = Math.max(0, (Date.now() - new Date(String(value).endsWith("Z") || String(value).includes("+") ? value : `${value}Z`)) / 1000);
-    if (seconds < 60) return "just now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} h ago`;
-    return `${Math.floor(seconds / 86400)} d ago`;
+    if (seconds < 60) return lang === "rw" ? "ubu" : "just now";
+    if (seconds < 3600) return lang === "rw" ? `iminota ${Math.floor(seconds / 60)} ishize` : `${Math.floor(seconds / 60)} min ago`;
+    if (seconds < 86400) return lang === "rw" ? `amasaha ${Math.floor(seconds / 3600)} ashize` : `${Math.floor(seconds / 3600)} h ago`;
+    return lang === "rw" ? `iminsi ${Math.floor(seconds / 86400)} ishize` : `${Math.floor(seconds / 86400)} d ago`;
   }
 
   const KIND_ICON = { pest: "bug", fault: "tools", rain: "cloud-rain", harvest: "basket", water: "droplet", feedback: "chat-left-text", nutrition: "heart-pulse" };
   function setLive(online) {
     $("#hf-dot").classList.toggle("off", !online);
-    document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = online ? "LIVE" : "OFFLINE"; badge.classList.toggle("off", !online); });
+    document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = online ? (lang === "rw" ? "AMAKURU" : "LIVE") : (lang === "rw" ? "NTIRURIHO" : "OFFLINE"); badge.classList.toggle("off", !online); });
   }
 
   function renderHero(data) {
     // Before the first report, invite one instead of showing "0 farmer reports".
     $("#hero-reports").textContent = data.reports ? `${fmt(data.reports)} farmer report${data.reports === 1 ? "" : "s"}` : "Pilot starting";
-    $("#hero-reports-note").textContent = data.reports ? "Community voices matter" : "Be the first: dial *801#";
+    $("#hero-reports-note").textContent = data.demo_mode ? "Demonstration figures" : data.reports ? "Community voices matter" : "Be the first: dial *801#";
     $("#hero-feed").innerHTML = data.recent.length
       ? data.recent.slice(0, 3).map((item) => `<li class="${escapeHtml(item.kind)}"><i class="bi bi-${KIND_ICON[item.kind] || "clipboard-data"}" aria-hidden="true"></i><div><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.sector || "Bugesera")} · ${ago(item.created_at)}</small></div></li>`).join("")
-      : `<li class="hf-empty">The pilot is starting. Reports appear here as soon as farmers dial *801# or text 8448.</li>`;
+      : `<li class="hf-empty">${lang === "rw" ? "Igerageza ritangiye. Raporo zigaragara hano abahinzi bamaze gukanda *801# cyangwa kohereza ubutumwa kuri 8448." : "The pilot is starting. Reports appear here as soon as farmers dial *801# or text 8448."}</li>`;
     const share = data.sectors_total ? (data.sectors_reporting / data.sectors_total) * 100 : 0;
     $("#sector-progress").style.width = `${Math.max(data.sectors_reporting ? 4 : 0, share)}%`;
   }
@@ -130,6 +191,7 @@
       $("#hero-feed").innerHTML = `<li class="hf-empty">Live reports appear here when the platform is running.</li>`;
       setFooterStatus(false, "Platform offline · live figures paused");
     }
+    applyLanguage(lang);
   }
 
   function setFooterStatus(online, text) {
@@ -170,7 +232,7 @@
     window.setTimeout(() => {
       ussd.textContent = screen.text;
       ussd.classList.toggle("dial", Boolean(screen.dial));
-      caption.textContent = screen.caption;
+      caption.textContent = lang === "rw" && RW_COPY[screen.caption] ? RW_COPY[screen.caption] : screen.caption;
       ussd.classList.remove("is-fading");
     }, 250);
     if (screen.key) {
@@ -180,7 +242,18 @@
     step = (step + 1) % SCREENS.length;
   }
   showScreen();
-  window.setInterval(() => { if (!document.hidden) showScreen(); }, 2900);
+  let demoPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const demoTimer = window.setInterval(() => { if (!document.hidden && !demoPaused) showScreen(); }, 2900);
+  const demoToggle = $("#demo-toggle");
+  if (demoToggle && demoPaused) {
+    demoToggle.setAttribute("aria-pressed", "true");
+    demoToggle.innerHTML = `<i class="bi bi-play-fill" aria-hidden="true"></i><span>${lang === "rw" ? "Komeza urugero" : "Play demo"}</span>`;
+  }
+  demoToggle?.addEventListener("click", () => {
+    demoPaused = !demoPaused;
+    demoToggle.setAttribute("aria-pressed", String(demoPaused));
+    demoToggle.innerHTML = demoPaused ? `<i class="bi bi-play-fill" aria-hidden="true"></i><span>${lang === "rw" ? "Komeza urugero" : "Play demo"}</span>` : `<i class="bi bi-pause-fill" aria-hidden="true"></i><span>${lang === "rw" ? "Hagarika urugero" : "Pause demo"}</span>`;
+  });
 
   refresh();
   window.setInterval(() => { if (!document.hidden) refresh(); }, 20000);

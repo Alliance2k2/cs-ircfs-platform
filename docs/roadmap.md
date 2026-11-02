@@ -25,3 +25,15 @@
 3. Train cooperative Data Champions, first with the phone simulator and then on their own phones.
 4. Run the three-cooperative pilot and use the monthly report for pilot reporting.
 5. Hand over to the district IT unit with the `infrastructure/` stack and this documentation.
+
+## November 2026 evidence milestone
+
+Implemented: sourced/versioned target approval; harvested-area measurements and kg/t conversion; comparable verified sample yields; demo/simulator/superseded report exclusion; immutable report correction workflow; existing React/classic integration. Official target entry, measurement-protocol approval and field validation remain pending. Next technical milestones: climate references and infrastructure maintenance, multi-sector GIS relationships, deeper telecom/participant isolation and durable outbound delivery. No ML training is justified by repository code alone.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Batch 5 climate evidence and explicit maintenance are implemented with local SQLite/PostGIS and browser validation. Next technical priority is Batch 6: scheme coverage relationships, simulator isolation and durable delivery. Official historical references and maintenance records, staff acceptance, Kinyarwanda review and production-version staging rehearsal remain prerequisites for real pilot reporting.
+
+## Batch 6 status
+
+Coverage relationships, participant isolation, transactional ordinary-SMS/airtime dispatch, bounded protected metrics, corrected summaries and local startup safety are implemented. Remaining technical and external acceptance work is explicitly listed in [Batch 6 platform reliability](batch6-platform-reliability.md); the older next-priority statements above are historical. Official data entry and field readiness are not claimed complete.

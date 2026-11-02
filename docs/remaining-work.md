@@ -1,5 +1,7 @@
 # Remaining-work register
 
+> Latest implementation status: [Batch 6 platform reliability](batch6-platform-reliability.md). Earlier milestone tables below are historical; the Batch 6 section at the end lists current gaps.
+
 Status of the modernization brief. **Implemented** means code exists. **Tested** means automated tests cover it. **Blocked** means it needs something outside the repository. **Field validation** means it works technically but must be proven with people in Bugesera. Updated at the end of Phase 2 (October 2026).
 
 ## Done
@@ -68,12 +70,12 @@ All pages are described in [workspaces.md](workspaces.md).
 | Browser end-to-end tests | 10 workflows (14 tests, plus 5 sign-in setups), passing twice in a row locally; see [testing.md](testing.md) |
 | Documentation | [workspaces.md](workspaces.md), [testing.md](testing.md), user guide, design system, security, data model and README updated |
 
-## Not built, and why
+## Historical gaps (see the latest milestone status below)
 
 | Item | What it needs |
 | --- | --- |
 | Crop distribution by season and seasonal comparison | Crop and season recorded on every harvest report |
-| Asset downtime durations and a maintenance log | A maintenance table and agreement on how repairs are recorded |
+| Asset downtime durations and maintenance | Implemented in Batch 5; field recording protocol and real maintenance records pending |
 | Rainfall anomaly against a reference period | A historical rainfall series for Mwesa Valley and Ngeruka/Mareba |
 | SMS delivery states and callback errors | Provider delivery reports (blocked on live credentials) |
 | Advisory model by crop, growth stage and soil | Agronomist-approved rules; advice is labelled as using starting thresholds |
@@ -87,7 +89,7 @@ All pages are described in [workspaces.md](workspaces.md).
 | Item | Status | What is needed |
 | --- | --- | --- |
 | Yield achievement (`100 × observed ÷ target`) | **Deliberately not calculated** | Harvested area, crop and season on each harvest report; each scheme target per crop, unit (t/ha) and season. The evaluation page lists each missing requirement |
-| Rainfall anomaly | Not started | Historical rainfall |
+| Rainfall anomaly | Implemented in Batch 5 | Approved exact-period reference means and complete verified daily gauge evidence |
 | Response-time statistics | Median days to resolve | |
 
 ## Blocked outside the repository
@@ -113,3 +115,25 @@ All pages are described in [workspaces.md](workspaces.md).
 - **Fresh databases.** Grievance categories and the asset inventory are created by the demonstration seed only. A new production database needs them entered (classic Management page) or a reference seed script; until then USSD uses its built-in lists.
 - **Area-limited accounts** see their own sectors' records; district totals, trends and the monthly report stay district-wide. Decide which behaviour the district wants.
 - Reads of personal data on screen are not audited (changes and exports are).
+
+## November 2026 status update
+
+This update supersedes earlier statements that all yield achievement is deliberately unavailable or that demo rows count as evidence.
+
+- Implemented: verified measured yield calculations per approved crop/season/year baseline; source/units and harvested-area validation; original-preserving corrections; duplicate review across verification filters; sector checks on report creation/correction; baseline and correction forms in existing workspaces.
+- Implemented but not field-validated: all new scientific workflows and English labels (Kinyarwanda fallback remains). Official values are not fabricated or automatically approved.
+- Pending: climate reference periods/anomalies, maintenance/downtime records, multi-sector scheme coverage, simulator participant isolation, delivery outbox, formal retention operations and ML data-readiness analysis.
+- Externally blocked: official feasibility-study documents, agronomist/measurement protocols, telecom activation, district privacy review and field-pilot acceptance.
+- Operational registry/message totals are not scientific outcomes; source-aware participant registry isolation remains a later task.
+
+See [scientific-evaluation.md](scientific-evaluation.md) for migration and compatibility details.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Implemented in Batch 5: observation dates/source/gauge IDs; daily and selected-season evidence; coverage and null missing days; exact-period sourced rainfall references with explicit approval; timed outages, repair/maintenance history and recurrence; integrated existing workspaces. Local PostGIS schema/workflow validation passed. Still pending: official reference inputs, verified inventory cell entry, field protocols and Kinyarwanda review; alignment of all legacy rainfall activity/report/map calculations; Batch 6 multi-sector coverage, simulator participant isolation and delivery reliability. Nothing here constitutes field or agronomist approval.
+
+## Batch 6: coverage, simulator isolation and delivery (November 2026)
+
+This status supersedes the earlier pending lists above. Implemented: editable multi-sector scheme coverage with ambiguity-safe assignment; staff-specific isolated simulator profiles excluded from registries/recipients; transactional queues for ordinary live SMS and airtime, atomic dispatch and unknown-outcome recovery; administrator-only bounded metrics; truthful farmer/current-asset summaries and paid totals; mobile table accessibility; raw API caching so compact pickers cannot erase editing fields; demo restarts preserve data and force dry-run providers. Migration head: `20261102_27`.
+
+Still pending: anonymous-reply durable delivery, signed provider receipt callbacks and reconciliation UI, scheduled dispatcher activation, legacy rainfall alignment, remaining React management tools/reference inventory, approved retention/read-audit operations, uncertainty/ML-readiness policy and field-reviewed translations. Official data, credentials, agronomy/privacy approval and field acceptance remain external prerequisites. Historical simulator-touched caller profiles require review rather than automatic deletion or relabelling. See [the full Batch 6 report](batch6-platform-reliability.md).

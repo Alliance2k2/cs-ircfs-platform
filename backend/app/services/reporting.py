@@ -11,6 +11,7 @@ from statistics import median
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -35,6 +36,8 @@ from app.db.models import (
 from app.services.cases import auto_create_case
 from app.services.cooperatives import participation as cooperative_participation
 from app.services.evidence import counted
+from app.services.rainfall import aggregate_gauges
+from app.services.scheme_coverage import covering_sectors
 
 KIGALI = timezone(timedelta(hours=2))
 MIN_HOUSEHOLDS_PER_GROUP = 5  # matches services/analytics.py
@@ -73,9 +76,10 @@ def scheme_for_cell(db: Session, cell_id: int | None) -> int | None:
     cell = db.get(Cell, cell_id)
     if not cell:
         return None
-    return db.scalar(
-        select(IrrigationScheme.id).where(IrrigationScheme.sector_id == cell.sector_id).order_by(IrrigationScheme.id).limit(1)
-    )
+    matches = list(db.scalars(select(IrrigationScheme.id).where(
+        covering_sectors([cell.sector_id]), IrrigationScheme.is_active.is_(True))))
+    # Overlapping service areas require explicit scheme selection. Never guess.
+    return matches[0] if len(matches) == 1 else None
 
 
 def scheme_by_prefix(db: Session, prefix: str) -> int | None:
@@ -83,12 +87,34 @@ def scheme_by_prefix(db: Session, prefix: str) -> int | None:
 
 
 def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
-    """A first-time caller is registered as a farmer, keyed by phone number."""
+    """A first-time caller is registered as a farmer, keyed by phone number.
+
+    Two first messages can arrive at the same moment; the unique phone index decides and
+    the losing request re-reads the winner's row instead of failing. ``consent_at`` marks
+    the first inbound message, which is when the opt-out notice becomes available.
+    """
+    from app.services.sms import simulation_phone
+    phone_number = simulation_phone(phone_number)
     user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
-    if user is None:
-        user = FieldUser(phone_number=phone_number)
-        db.add(user)
-        db.flush()
+    if user is not None:
+        if user.consent_at is None:
+            user.consent_at = datetime.now(timezone.utc)
+        return user
+    training = phone_number.startswith("sim-")
+    user = FieldUser(phone_number=phone_number, consent_at=datetime.now(timezone.utc),
+                     data_origin="simulator" if training else "field", is_active=not training)
+    try:
+        # Added inside the savepoint: begin_nested() flushes pending objects on entry, which
+        # would raise before the block that knows how to recover.
+        with db.begin_nested():
+            db.add(user)
+            db.flush()
+    except IntegrityError:
+        if user in db:
+            db.expunge(user)
+        user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
+        if user is None:
+            raise
     return user
 
 
@@ -124,7 +150,7 @@ def change(current: int | float, previous: int | float) -> float | None:
 
 def evidence(model) -> tuple:
     """Simulator tests are never counted in reports (only tables with a data origin have them)."""
-    return (counted(model),) if hasattr(model, "data_origin") else ()
+    return (counted(model),) if hasattr(model, "data_origin") or model is IncidentCase else ()
 
 
 def headline(db: Session, start: datetime, end: datetime) -> dict:
@@ -194,10 +220,10 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
 
     opened = list(db.scalars(select(IncidentCase).where(*in_month(IncidentCase.created_at))))
     first_closed = dict(db.execute(select(IncidentEvent.case_id, func.min(IncidentEvent.created_at))
-                                   .where(IncidentEvent.new_status.in_(CLOSED)).group_by(IncidentEvent.case_id)).all())
+                                   .join(IncidentCase, IncidentCase.id == IncidentEvent.case_id).where(IncidentEvent.new_status.in_(CLOSED), counted(IncidentCase)).group_by(IncidentEvent.case_id)).all())
     resolved_in_month = [case_id for case_id, at in first_closed.items() if start <= aware(at) < end]
     durations = [(aware(first_closed[case.id]) - aware(case.created_at)).total_seconds() / 86400 for case in opened if case.id in first_closed]
-    open_at_end = db.scalar(select(func.count()).select_from(IncidentCase).where(IncidentCase.created_at < end, IncidentCase.status.not_in(CLOSED))) or 0
+    open_at_end = db.scalar(select(func.count()).select_from(IncidentCase).where(IncidentCase.created_at < end, IncidentCase.status.not_in(CLOSED), counted(IncidentCase))) or 0
     by_priority: dict[str, int] = {}
     for case in opened:
         by_priority[case.priority] = by_priority.get(case.priority, 0) + 1
@@ -219,17 +245,21 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
         if sector_of(cell_id):
             entry["sectors"].add(sector_of(cell_id))
 
-    gauges: dict[str, dict[int | None, float]] = {}
-    readings: dict[str, int] = {}
-    for reporter_id, cell_id, mm in db.execute(select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm)
-                                               .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at))):
+    per_sector_rows: dict[str, list[tuple]] = {}
+    for reporter_id, cell_id, mm, created_at in db.execute(
+        select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
+        .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at), counted(IrrigationClimateLog))
+    ):
         name = sector_of(cell_id) or "Location not set"
         gauge = (reporter_id, cell_id if reporter_id is None else None)
-        gauges.setdefault(name, {}).setdefault(gauge, 0.0)
-        gauges[name][gauge] += float(mm)
-        readings[name] = readings.get(name, 0) + 1
-    rainfall = sorted(({"sector": name, "rainfall_mm": round(sum(totals.values()) / len(totals), 1), "gauges": len(totals), "readings": readings[name]}
-                       for name, totals in gauges.items()), key=lambda row: row["rainfall_mm"])
+        per_sector_rows.setdefault(name, []).append((gauge, created_at, mm))
+    rainfall = []
+    for name, gauge_rows in per_sector_rows.items():
+        totals, counts = aggregate_gauges(gauge_rows)
+        rainfall.append({"sector": name,
+                         "rainfall_mm": round(sum(totals.values()) / len(totals), 1) if totals else 0.0,
+                         "gauges": len(totals), "readings": sum(counts.values())})
+    rainfall.sort(key=lambda row: row["rainfall_mm"])
 
     surveys = list(db.scalars(select(NutritionSurvey).where(*in_month(NutritionSurvey.created_at))))
     risk_by_cell: dict[int | None, list[int]] = {}
@@ -246,7 +276,8 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
     delivery: dict[str, int] = dict(db.execute(select(AdvisoryMessage.status, func.count()).where(*in_month(AdvisoryMessage.created_at))
                                                .group_by(AdvisoryMessage.status)).all())
     rewards = db.execute(select(func.count(), func.coalesce(func.sum(IncentiveReward.amount_rwf), 0))
-                         .where(IncentiveReward.status.in_(["sent", "dry_run"]), *in_month(IncentiveReward.created_at))).one()
+                         .join(FieldUser, FieldUser.id == IncentiveReward.field_user_id)
+                         .where(IncentiveReward.status == "sent", counted(FieldUser), *in_month(IncentiveReward.created_at))).one()
 
     start_kigali = start.astimezone(KIGALI)
     return {
@@ -328,10 +359,10 @@ def build_trends(db: Session, months: int = 12) -> dict:
     for (created,) in db.execute(select(CommunityFeedback.created_at).where(CommunityFeedback.created_at >= start, counted(CommunityFeedback))):
         if row := bucket(created):
             row["grievances"] += 1
-    for (created,) in db.execute(select(IncidentCase.created_at).where(IncidentCase.created_at >= start)):
+    for (created,) in db.execute(select(IncidentCase.created_at).where(IncidentCase.created_at >= start, counted(IncidentCase))):
         if row := bucket(created):
             row["cases_opened"] += 1
-    for _, closed in db.execute(select(IncidentEvent.case_id, func.min(IncidentEvent.created_at)).where(IncidentEvent.new_status.in_(CLOSED))
+    for _, closed in db.execute(select(IncidentEvent.case_id, func.min(IncidentEvent.created_at)).join(IncidentCase, IncidentCase.id == IncidentEvent.case_id).where(IncidentEvent.new_status.in_(CLOSED), counted(IncidentCase))
                                 .group_by(IncidentEvent.case_id)):
         if row := bucket(closed):
             row["cases_resolved"] += 1

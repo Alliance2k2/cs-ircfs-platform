@@ -1,6 +1,6 @@
 # Data model
 
-The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261011_18`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
+The schema is created and changed **only** through Alembic migrations in `backend/migrations/versions/`. The current head is `20261102_24`. Do not run the sample `CREATE TABLE` SQL from the architecture document. The column names differ, as shown at the end of this page.
 
 ## Tables
 
@@ -81,3 +81,11 @@ platform_accounts ↔ sectors (account_sectors)
 | `stunting_risk_score` on crop logs | `nutrition_surveys.stunting_risk_score` |
 | `status` (irrigation) | `operational_status` |
 | `message_text`, `is_resolved`, `resolved_at` | `message`, `status` workflow + `community_feedback_events` |
+
+## November 2026 additions
+
+`scheme_baselines` stores sourced crop/season/reference-year target versions, original yield units, explicit approval and supersession. Crop logs add distinct harvested area, original observed quantity/unit, observation type, data source, reference year and reporting date. Crop and irrigation logs add `superseded_by_id` and `correction_reason`. Existing columns and data are retained; migration does not infer areas, provenance or approval. Correction links are service-validated integer IDs within the source table; original reports are retained. See [scientific-evaluation.md](scientific-evaluation.md) for eligibility and API rules.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Migration `20261102_24` adds observation_date/gauge_code/data_source to irrigation-climate logs, nullable verified cell_id to scheme assets, and rainfall_references, asset_outages and asset_maintenance tables. Source data, locations, observation dates and outage intervals are not backfilled. See [climate-maintenance.md](climate-maintenance.md) for validation and scope rules.

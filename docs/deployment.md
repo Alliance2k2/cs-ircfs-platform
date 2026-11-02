@@ -37,7 +37,7 @@ Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYL
 
 1. Push this folder to GitHub, keeping `.env` out of Git.
 2. Use the **Deploy to Render** link in the main README. When asked for `API_KEY_ROLES`, give a **new** `random-secret:administrator` value.
-3. The container runs `alembic upgrade head` and adds the reference schemes on every start. Check `/health`.
+3. The container runs `alembic upgrade head` and adds the reference schemes on every start. Check `/ready` for database readiness and `/health` for process liveness.
 4. Open the Render shell and run `python scripts/load_locations.py`, then `python scripts/create_admin.py you@example.org`.
 5. Render's free PostgreSQL expires after 30 days and has no backups. Use it only for demonstrations, never for real citizen records.
 
@@ -56,6 +56,19 @@ Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYL
 - [ ] A consent message for first-time callers, and a data-retention policy agreed with the district.
 - [ ] For officers who should see only their own sectors, set each account's area in Administration → Accounts (open the account).
 
+## Production activation checklist
+
+Use [production-activation-checklist.md](production-activation-checklist.md) for provider-console, GitHub, pilot, data-governance, and restore-owner actions that require human approval or external access.
+
+## Operations and alert thresholds
+
+- Scrape `GET /metrics` from the platform monitoring system. It reports HTTP request/status totals, route latency totals, database availability, inbound callbacks, and outbound delivery state.
+- Alert immediately if `/ready` stays non-200 for 2 minutes. Alert on repeated HTTP 5xx responses, callback 403/429 responses, or failed/dry-run delivery unexpectedly in production.
+- Treat outbound `failed` status above 5% of deliveries over 15 minutes as a high-priority telecom incident. Treat database availability or migration failure as critical.
+- For Docker Compose, run `docker compose --env-file stack.env exec db pg_dump -U cs_ircfs -Fc cs_ircfs > backup.dump` daily. The handover script `infrastructure/backup-database.ps1 -RetentionDays 30` automates local custom-format dumps and local retention.
+- Encrypted off-server backups and a restore owner are mandatory before real citizen data. Rehearse restore quarterly: restore into an isolated database, run `alembic current`, run smoke checks, and confirm representative row counts against the source.
+- Do not place production backups or database credentials in Git, monitoring dashboards, support tickets, or chat logs.
+
 ## Security notes
 
 - Passwords are hashed with PBKDF2-SHA256 (210,000 rounds). Session tokens are stored only as SHA-256 hashes and expire.
@@ -63,3 +76,17 @@ Each map has a control in its corner to switch between **Map** (the `MAPBOX_STYL
 - Suspending an account signs the person out immediately.
 - The USSD and SMS callbacks are public URLs protected by `GATEWAY_CALLBACK_TOKEN`; `GATEWAY_ALLOWED_IPS` (or the reverse proxy) can also limit them to Africa's Talking's addresses. See [security.md](security.md).
 - Outgoing messages and rewards are logged with their delivery status (`sent`, `dry_run`, `failed`).
+
+## Scientific evidence upgrade (November 2026)
+
+Apply Alembic migrations through `20261102_23` after an approved backup and staging rehearsal. New columns are nullable; no existing harvested area or target approval is inferred. Upgrade application and migrations together, then build the frontend. Enter sourced target versions and explicitly approve them only after district document review. Run PostGIS schema checks and validate existing observations remain accessible. No production deployment or shared-database migration was performed by the development milestone. See [scientific-evaluation.md](scientific-evaluation.md).
+
+## Batch 5: climate and maintenance (November 2026)
+
+The climate/maintenance head is `20261102_24`. Isolated local PostgreSQL 18.6/PostGIS 3.6.2 upgrade, schema parity, downgrade/upgrade and rolled-back workflow checks passed. Rehearse on the deployment PostGIS version and preserve new tables before any downgrade. The application database was not migrated. Populate verified asset cells and sourced reference documents only after district review. The temporary test cluster was stopped.
+
+## Transactional delivery worker (November 2026)
+
+Migration head is `20261102_27`. Apply migrations before starting the updated API. Ordinary live SMS and airtime now commit to the database queue first. Schedule `python scripts/process_delivery_outbox.py --send --limit 100` only after telecom approval and credentials are configured; it can charge the provider account. Without `--send` the script reports counts only. Do not automatically replay `unknown` outcomes or historical `pending` airtime: reconcile with the provider first. Anonymous grievance replies retain their synchronous privacy-preserving path. See [delivery and recovery operations](batch6-platform-reliability.md). No dispatcher was activated during local implementation.
+
+For local evaluation, double-click `start-platform.bat` or run `./start-local.ps1 -Demo`. This preserves the demo database between restarts, prefers the repository virtual environment and forces dry-run SMS/airtime. `-ResetDemo` explicitly discards demo work. The configured database is used only when starting `start-local.ps1` without `-Demo`.

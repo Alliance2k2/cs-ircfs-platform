@@ -134,7 +134,7 @@ def delete_cooperative(
     principal: Principal = Depends(require_roles(*WRITE_ROLES)),
 ) -> None:
     cooperative = _get(db, cooperative_id, principal)
-    members = db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.cooperative_id == cooperative_id)) or 0
+    members = db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.cooperative_id == cooperative_id, FieldUser.data_origin != "simulator")) or 0
     if members:
         raise HTTPException(
             status_code=409,

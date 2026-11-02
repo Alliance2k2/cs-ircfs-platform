@@ -81,13 +81,14 @@
 
           <div class="alert alert-success alert-icon mt-4 mb-0 note" role="status">
             <i class="bi bi-info-circle" aria-hidden="true"></i>
-            <span>New accounts start as Citizen Science Monitors and wait for approval. A district administrator approves accounts and gives planners and officers their role in Administration → Accounts.</span>
+            <span>New accounts start as Citizen Science Monitors and wait for approval. A district administrator approves them in the dashboard under <b>Administration → Accounts</b> (left sidebar, administrators only), and gives planners and officers their role there.</span>
           </div>
           <button class="btn btn-primary btn-submit w-100 mt-4" type="submit">Create account</button>
         </form>
 
         <div class="auth-links mt-4">
           <p class="mb-2">Already have an account? <a href="login.html">Sign in</a></p>
+          <p class="mb-2"><a href="privacy.html">Privacy notice</a></p>
           <p class="mb-0"><a href="index.html"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Return to CS-IRCFS home</a></p>
         </div>
       </div>
@@ -129,6 +130,8 @@ document.querySelectorAll("[data-toggle-password]").forEach((button) => button.a
 password.addEventListener("input", check);
 confirmPassword.addEventListener("input", check);
 check();
+
+let bypass = false;
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();

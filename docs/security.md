@@ -58,3 +58,17 @@ Every control above has an automated test in `backend/tests/test_security.py` or
 4. **Sign-in throttling per account.** The limit is per client address; add a per-email lockout if password guessing is seen.
 5. **Audit log of staff reads.** Changes and CSV exports are audited; reads of personal data on screen are not.
 6. **Timing correlation.** A grievance's time can still be matched to the time a phone number was first registered. Only first-time callers are affected; a delayed registration timestamp would close this.
+
+## November 2026 scientific workflow controls
+
+Target creation and approval are administrator-only and audited; immutable version replacement is explicit. Report correction/verification is district-staff-only, rejects out-of-area changes and retains original observations. Creation checks scoped reporter references as well as submitted cells. Corrections cannot set origin, verification status or audit fields. Simulator and demo reports are excluded from scientific outcomes, including source-linked incident counts. Existing dry-run and anonymous grievance controls remain. No compliance determination or production activation is implied.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Climate references require administrator creation/approval. Outage and maintenance writes require district staff and scope checks against verified asset/event cells. Outage overlaps and completion are serialized through inventory row locks on PostgreSQL; actual concurrent-worker contention remains a staging test. Read-only monitors do not receive free-text maintenance descriptions/actions. Demonstration references cannot be approved and demo repairs cannot close real outages. All new write operations are audited.
+
+## Batch 6 training and operations boundaries
+
+Simulator profiles use staff-specific non-dialable identities and never reuse a real caller's profile, consent, location or opt-out state. Training profiles are excluded from operational participant registries/counts, maps, cooperative measures and broadcast recipients; real-report references and registry updates reject them. Source-aware callback retry keys separate live/training traffic. Existing historical profile contamination cannot be inferred safely and requires an operator review. `/metrics` requires administrator authentication and stores bounded route-template labels.
+
+Ordinary live SMS/rewards are dispatched only from committed queue rows, with an atomic state claim. Unknown provider outcomes are held for review instead of blindly retried; provider acceptance is not proof of handset receipt. Anonymous replies remain synchronous to avoid persisting a grievance-to-phone link in the queue. See [Batch 6 limitations and operating procedure](batch6-platform-reliability.md).

@@ -1,3 +1,4 @@
+import { BaselineManager } from "./BaselineManager";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, History, Landmark, PauseCircle, PlayCircle, Save, Users } from "lucide-react";
 import { useState, type FormEvent } from "react";
@@ -176,6 +177,8 @@ function Accounts() {
 
 function SchemeForm({ scheme, onClose }: { scheme: Scheme; onClose: () => void }) {
   const { t } = useI18n();
+  const { sectors } = useReferenceData();
+  const [coverage, setCoverage] = useState(new Set(scheme.coverage_sector_ids));
   const save = useSave();
   const [target, setTarget] = useState(scheme.baseline_yield_target_tons?.toString() ?? "");
   const [source, setSource] = useState(scheme.baseline_source ?? "");
@@ -195,7 +198,7 @@ function SchemeForm({ scheme, onClose }: { scheme: Scheme; onClose: () => void }
     save.mutate(
       {
         path: `irrigation-schemes/${scheme.id}`,
-        body: { baseline_yield_target_tons: number(target), baseline_source: source.trim() || null, implementing_partner: partner.trim() || null, hectares_developed: number(hectares) },
+        body: { baseline_yield_target_tons: number(target), baseline_source: source.trim() || null, implementing_partner: partner.trim() || null, hectares_developed: number(hectares), coverage_sector_ids: [...coverage] },
         done: t("admin.schemeSaved"),
       },
       { onSuccess: onClose },
@@ -206,6 +209,19 @@ function SchemeForm({ scheme, onClose }: { scheme: Scheme; onClose: () => void }
     <Drawer open onClose={onClose} title={scheme.name} subtitle={t("admin.schemeNote")}
       footer={<Button variant="primary" icon={Save} type="submit" form="scheme-form" loading={save.isPending}>{t("action.save")}</Button>}>
       <form id="scheme-form" onSubmit={submit} className="space-y-4" noValidate>
+        <fieldset>
+          <legend className="text-sm font-semibold">Scheme coverage sectors</legend>
+          <p className="mb-2 text-xs text-muted">Select only confirmed service areas. Overlapping schemes require explicit report assignment.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {sectors.map((sector) => <label key={sector.id} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={coverage.has(sector.id)} onChange={() => setCoverage((current) => {
+                const next = new Set(current);
+                if (next.has(sector.id)) next.delete(sector.id); else next.add(sector.id);
+                return next;
+              })} />{sector.name}
+            </label>)}
+          </div>
+        </fieldset>
         <TextField label={t("admin.schemeTarget")} inputMode="decimal" value={target} error={errors.target} onChange={(event) => setTarget(event.target.value)} />
         <TextField label={t("admin.schemeSource")} hint={t("admin.schemeSourceHint")} error={errors.source} maxLength={255} value={source} onChange={(event) => setSource(event.target.value)} />
         <TextField label={t("evaluation.partner")} maxLength={100} value={partner} onChange={(event) => setPartner(event.target.value)} />
@@ -237,6 +253,7 @@ function Schemes() {
       <DataTable rows={schemes.data} columns={columns} rowKey={(row) => row.id} caption={t("admin.schemes")} loading={schemes.isPending}
           error={schemes.error ? schemes.error.message : null} onRetry={() => void schemes.refetch()} emptyMessage={t("evaluation.noSchemes")} onRowClick={setEditing} />
       <p className="text-xs text-muted">{t("admin.schemeNote")}</p>
+      <BaselineManager schemes={schemes.data ?? []} />
       {editing && <SchemeForm key={editing.id} scheme={editing} onClose={() => setEditing(null)} />}
     </>
   );

@@ -1,3 +1,4 @@
+import { MaintenancePanel } from "./MaintenancePanel";
 import { AlertTriangle, CircleCheck, ClipboardList, RefreshCw, Wrench } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -149,6 +150,7 @@ export function IrrigationPage() {
           </ul>
         </Card>
       )}
+      <MaintenancePanel />
       <AssetDrawer asset={selected} onClose={() => setSelected(null)} />
     </div>
   );

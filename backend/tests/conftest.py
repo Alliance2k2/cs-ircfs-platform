@@ -8,6 +8,8 @@ import os
 os.environ["DATABASE_URL"] = "sqlite://"
 os.environ["ENVIRONMENT"] = "development"
 os.environ["REQUIRE_API_KEY"] = "false"
+# The bypass is opt-in since Week 1, so tests that exercise the web API must ask for it.
+os.environ["DEV_AUTH_BYPASS"] = "true"
 os.environ["WEATHER_FORECAST_ENABLED"] = "false"
 # Tests must never hit a real telecom provider, whatever the local .env says.
 os.environ["SMS_PROVIDER"] = "dry_run"
@@ -32,7 +34,8 @@ limiter.enabled = False
 
 def production_settings() -> Settings:
     """A production configuration with real sign-in enforced (no dev bypass)."""
-    return Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles="")
+    return Settings(_env_file=None, environment="production", require_api_key=True, api_key_roles="",
+                    dev_auth_bypass_enabled=False)
 
 
 @pytest.fixture()

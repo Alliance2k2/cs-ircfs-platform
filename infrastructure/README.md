@@ -39,9 +39,11 @@ Both callbacks need a public HTTPS address. Put the platform behind the district
 | Task | Command |
 | --- | --- |
 | View logs | `docker compose --env-file stack.env logs -f platform` |
-| Back up the database | `docker compose --env-file stack.env exec db pg_dump -U cs_ircfs cs_ircfs > backup-%DATE%.sql` |
-| Restore a backup | `type backup.sql \| docker compose --env-file stack.env exec -T db psql -U cs_ircfs cs_ircfs` |
+| Back up the database | `./backup-database.ps1` (custom-format dump with local retention) |
+| Restore a rehearsal backup | Restore to an isolated database with `pg_restore -U cs_ircfs -d <isolated-db> backup.dump` |
 | Update to a new version | `git pull`, then `docker compose --env-file stack.env up -d --build` (migrations run automatically) |
 | Check the database | `docker compose --env-file stack.env exec platform python scripts/check_db.py` |
+| View operational metrics | `Invoke-WebRequest http://localhost:8000/metrics` (PowerShell) |
+| Check readiness | `Invoke-WebRequest http://localhost:8000/ready` (requires PostgreSQL) |
 
 Schedule a daily `pg_dump`, and keep copies off the server.

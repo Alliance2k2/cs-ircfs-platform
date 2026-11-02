@@ -12,6 +12,9 @@ from sqlalchemy.orm import Session
 
 from app.core.security import require_roles
 from app.db.models import (
+    AssetOutage,
+    AssetMaintenance,
+    Cell,
     CommunityFeedback,
     GrievanceCategory,
     IrrigationClimateLog,
@@ -106,6 +109,7 @@ def create_scheme_asset(payload: SchemeAssetCreate, db: Session = Depends(get_db
     clash = db.scalar(select(SchemeAsset).where(SchemeAsset.name_en == payload.name_en))
     if clash:
         raise HTTPException(status_code=409, detail="An asset with this English name already exists")
+    require_if_provided(db, Cell, payload.cell_id, "cell_id")
     require_if_provided(db, IrrigationScheme, payload.scheme_id, "scheme_id")
     asset = SchemeAsset(**payload.model_dump())
     db.add(asset)
@@ -124,6 +128,8 @@ def update_scheme_asset(asset_id: int, payload: SchemeAssetUpdate, db: Session =
         select(SchemeAsset).where(SchemeAsset.name_en == changes["name_en"], SchemeAsset.id != asset_id)
     ):
         raise HTTPException(status_code=409, detail="An asset with this English name already exists")
+    if "cell_id" in changes:
+        require_if_provided(db, Cell, changes["cell_id"], "cell_id")
     if "scheme_id" in changes:
         require_if_provided(db, IrrigationScheme, changes["scheme_id"], "scheme_id")
     for field, value in changes.items():
@@ -139,6 +145,7 @@ def delete_scheme_asset(asset_id: int, db: Session = Depends(get_db)) -> None:
     if not asset:
         raise HTTPException(status_code=404, detail="Scheme asset not found")
     in_use = db.scalar(select(IrrigationClimateLog.id).where(IrrigationClimateLog.infrastructure_name == asset.name_en).limit(1))
+    in_use = in_use or db.scalar(select(AssetOutage.id).where(AssetOutage.asset_id == asset_id).limit(1)) or db.scalar(select(AssetMaintenance.id).where(AssetMaintenance.asset_id == asset_id).limit(1))
     if in_use:
         raise HTTPException(status_code=409, detail="Reports already reference this asset. Deactivate it instead.")
     db.delete(asset)

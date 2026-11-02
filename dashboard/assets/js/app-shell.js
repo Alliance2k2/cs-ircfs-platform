@@ -152,7 +152,7 @@
       </nav>
       <div class="app-footer-meta">
         <span data-api-status><i></i><span>Checking platform…</span></span>
-        <small>© ${new Date().getFullYear()} AIMS Rwanda — KTT Office · Counts, not personal data, leave district staff screens.</small>
+        <small>© ${new Date().getFullYear()} CS-IRCFS · Bugesera District · Counts, not personal data, leave district staff screens.</small>
       </div>`;
   }
 

@@ -47,10 +47,21 @@ def verify_password(password: str, encoded: str) -> bool:
 PENDING = "pending"
 
 
+def registration_defaults() -> tuple[UserRole, str]:
+    """Role and status for a self-registered account.
+
+    A new account is a read-only monitor held for approval. An administrator
+    activates it and promotes planners and officers from Administration > Accounts.
+    """
+    return UserRole.citizen_science_monitor, PENDING
+
+
 def refuse_inactive(account: PlatformAccount) -> None:
     """Stop a pending or suspended account from signing in, saying which it is."""
     if account.status == PENDING:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Your account is waiting for approval by a district administrator")
+        raise HTTPException(status.HTTP_403_FORBIDDEN,
+                            "Your account is waiting for approval by a district administrator. "
+                            "An administrator can approve it in Administration > Accounts.")
     if account.status != "active":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This account is suspended")
 
@@ -107,12 +118,13 @@ def register(payload: AccountRegister, db: Session = Depends(get_db)):
     if db.scalar(select(PlatformAccount).where(PlatformAccount.email == email)):
         raise HTTPException(409, "An account with this email already exists")
     full_name = " ".join(part for part in (payload.first_name, payload.middle_name, payload.surname) if part)
-    # Self-registration starts with the least-privileged web role and waits for approval:
-    # monitors can read field records, so an open sign-up must not grant access by itself.
-    # An administrator activates the account and promotes planners and officers from
-    # Platform Management > Accounts.
+    # Self-registration always starts with the least-privileged web role and waits for
+    # approval: monitors can read field records, so an open sign-up must not grant access
+    # by itself. An administrator activates the account and promotes planners and officers
+    # from Administration > Accounts.
+    role, account_status = registration_defaults()
     account = PlatformAccount(email=email, password_hash=hash_password(payload.password), full_name=full_name,
-                              role=UserRole.citizen_science_monitor, status=PENDING)
+                              role=role, status=account_status)
     db.add(account)
     db.commit()
     db.refresh(account)
@@ -151,8 +163,9 @@ def google_login(payload: GoogleLogin, response: Response, db: Session = Depends
         raise HTTPException(401, "A verified Google email is required")
     account = db.scalar(select(PlatformAccount).where(PlatformAccount.email == email))
     if not account:
+        role, account_status = registration_defaults()
         account = PlatformAccount(email=email, password_hash=hash_password(secrets.token_urlsafe(32)), full_name=claims.get("name") or email.split("@")[0],
-                                  role=UserRole.citizen_science_monitor, status=PENDING)
+                                  role=role, status=account_status)
         db.add(account)
         db.commit()
         db.refresh(account)

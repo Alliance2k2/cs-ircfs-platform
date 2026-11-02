@@ -27,13 +27,14 @@ from app.db.models import (
     IrrigationScheme,
     NutritionSurvey,
     ReportStatus,
-    ORIGIN_SIMULATOR,
     UserRole,
 )
 from app.schemas import ActNowItem, DashboardSummary
 from app.services.advisory import advice_for_rainfall, threshold_map
 from app.services.cases import case_source
+from app.services.rainfall import aggregate_gauges
 from app.services.evidence import counted
+from app.services.yield_evaluation import evaluate_yield
 
 CLOSED = [ReportStatus.resolved, ReportStatus.closed]
 ACTIVE = [ReportStatus.open, ReportStatus.triaged, ReportStatus.assigned, ReportStatus.in_progress]
@@ -62,26 +63,32 @@ def aware(value: datetime | None) -> datetime | None:
 
 def dashboard_summary(db: Session, principal: Principal) -> DashboardSummary:
     count = lambda query: db.scalar(query) or 0  # noqa: E731
-    crop_reports = count(select(func.count()).select_from(CitizenScienceLog))
-    irrigation_reports = count(select(func.count()).select_from(IrrigationClimateLog))
+    crop_reports = count(select(func.count()).select_from(CitizenScienceLog).where(counted(CitizenScienceLog)))
+    irrigation_reports = count(select(func.count()).select_from(IrrigationClimateLog).where(counted(IrrigationClimateLog)))
     return DashboardSummary(
-        registered_farmers=count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer)),
+        registered_farmers=count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer, FieldUser.data_origin != "simulator")),
         total_reports=crop_reports + irrigation_reports,
         active_schemes=count(select(func.count()).select_from(IrrigationScheme).where(IrrigationScheme.is_active.is_(True))),
-        open_complaints=count(select(func.count()).select_from(CommunityFeedback).where(CommunityFeedback.status.not_in(CLOSED))),
-        faulty_or_offline_assets=count(select(func.count()).select_from(IrrigationClimateLog).where(IrrigationClimateLog.operational_status.in_(["faulty", "offline"]))),
-        households_surveyed=count(select(func.count()).select_from(NutritionSurvey)),
-        average_stunting_risk=round(float(db.scalar(select(func.avg(NutritionSurvey.stunting_risk_score))) or 0), 1) or None,
-        rewards_paid_rwf=count(select(func.sum(IncentiveReward.amount_rwf)).where(IncentiveReward.status.in_(["sent", "dry_run"]))),
-        field_messages=count(select(func.count()).select_from(InboundMessage)),
+        open_complaints=count(select(func.count()).select_from(CommunityFeedback).where(CommunityFeedback.status.not_in(CLOSED), counted(CommunityFeedback))),
+        faulty_or_offline_assets=sum(asset["down"] for asset in latest_asset_status(db)),
+        households_surveyed=count(select(func.count()).select_from(NutritionSurvey).where(counted(NutritionSurvey))),
+        average_stunting_risk=round(float(db.scalar(select(func.avg(NutritionSurvey.stunting_risk_score)).where(counted(NutritionSurvey))) or 0), 1) or None,
+        rewards_paid_rwf=count(select(func.sum(IncentiveReward.amount_rwf)).join(FieldUser, FieldUser.id == IncentiveReward.field_user_id)
+                              .where(IncentiveReward.status == "sent", counted(FieldUser))),
+        field_messages=count(select(func.count()).select_from(InboundMessage).where(counted(InboundMessage))),
     )
 
 
 def farmer_summary(db: Session) -> DashboardSummary:
-    farmers = db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer, FieldUser.is_active.is_(True))) or 0
-    crop_reports = db.scalar(select(func.count()).select_from(CitizenScienceLog)) or 0
-    irrigation_reports = db.scalar(select(func.count()).select_from(IrrigationClimateLog)) or 0
-    return DashboardSummary(registered_farmers=farmers, total_reports=crop_reports + irrigation_reports, active_schemes=0, open_complaints=0, faulty_or_offline_assets=0)
+    farmers = db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer, FieldUser.is_active.is_(True), FieldUser.data_origin != "simulator")) or 0
+    crop_reports = db.scalar(select(func.count()).select_from(CitizenScienceLog).where(counted(CitizenScienceLog))) or 0
+    irrigation_reports = db.scalar(select(func.count()).select_from(IrrigationClimateLog).where(counted(IrrigationClimateLog))) or 0
+    schemes = db.scalar(select(func.count()).select_from(IrrigationScheme).where(IrrigationScheme.is_active.is_(True))) or 0
+    complaints = db.scalar(select(func.count()).select_from(CommunityFeedback).where(
+        CommunityFeedback.status.not_in(CLOSED), counted(CommunityFeedback))) or 0
+    return DashboardSummary(registered_farmers=farmers, total_reports=crop_reports + irrigation_reports,
+        active_schemes=schemes, open_complaints=complaints,
+        faulty_or_offline_assets=sum(asset["down"] for asset in latest_asset_status(db)))
 
 
 def act_now_queue(db: Session, principal: Principal) -> list[ActNowItem]:
@@ -89,7 +96,7 @@ def act_now_queue(db: Session, principal: Principal) -> list[ActNowItem]:
     cells = allowed_cells(db, principal)
     for case in db.scalars(select(IncidentCase).where(IncidentCase.status.in_(ACTIVE))):
         report = case_source(db, case)
-        if report is None or report.data_origin == ORIGIN_SIMULATOR:  # simulator tests are not work to do
+        if report is None or report.data_origin not in ("field", "import") or report.superseded_by_id is not None:  # simulator tests are not work to do
             continue
         if case.source_type == SOURCE_INFRASTRUCTURE:
             title = f"{report.infrastructure_name or 'Irrigation asset'} is {report.operational_status}"
@@ -128,15 +135,15 @@ def scheme_performance(db: Session) -> list[dict]:
     for scheme in db.scalars(select(IrrigationScheme).order_by(IrrigationScheme.name)):
         expected, reported, crop_reports = db.execute(
             select(func.sum(CitizenScienceLog.expected_harvest_tons), func.sum(CitizenScienceLog.reported_harvest_tons), func.count(CitizenScienceLog.id))
-            .where(CitizenScienceLog.scheme_id == scheme.id)
+            .where(counted(CitizenScienceLog), CitizenScienceLog.scheme_id == scheme.id)
         ).one()
-        pest_alerts = db.scalar(select(func.count()).select_from(CitizenScienceLog).where(CitizenScienceLog.scheme_id == scheme.id, CitizenScienceLog.severity >= 4)) or 0
-        faults = db.scalar(select(func.count()).select_from(IrrigationClimateLog).where(IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.operational_status.in_(["faulty", "offline"]))) or 0
-        grievances = db.scalar(select(func.count()).select_from(CommunityFeedback).where(CommunityFeedback.scheme_id == scheme.id, CommunityFeedback.status.not_in(CLOSED))) or 0
-        window_reports = db.scalar(select(func.count()).select_from(IrrigationClimateLog).where(IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.created_at >= window_start)) or 0
+        pest_alerts = db.scalar(select(func.count()).select_from(CitizenScienceLog).where(counted(CitizenScienceLog), CitizenScienceLog.scheme_id == scheme.id, CitizenScienceLog.severity >= 4)) or 0
+        faults = db.scalar(select(func.count()).select_from(IrrigationClimateLog).where(counted(IrrigationClimateLog), IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.operational_status.in_(["faulty", "offline"]))) or 0
+        grievances = db.scalar(select(func.count()).select_from(CommunityFeedback).where(counted(CommunityFeedback), CommunityFeedback.scheme_id == scheme.id, CommunityFeedback.status.not_in(CLOSED))) or 0
+        window_reports = db.scalar(select(func.count()).select_from(IrrigationClimateLog).where(counted(IrrigationClimateLog), IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.created_at >= window_start)) or 0
         bottlenecks = dict(db.execute(
             select(IrrigationClimateLog.bottleneck_category, func.count())
-            .where(IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.bottleneck_category.is_not(None), IrrigationClimateLog.created_at >= window_start)
+            .where(counted(IrrigationClimateLog), IrrigationClimateLog.scheme_id == scheme.id, IrrigationClimateLog.bottleneck_category.is_not(None), IrrigationClimateLog.created_at >= window_start)
             .group_by(IrrigationClimateLog.bottleneck_category)
         ).all())
         scheme_baselines = baselines.get(scheme.id, {})
@@ -152,16 +159,17 @@ def scheme_performance(db: Session) -> list[dict]:
 
         above_baseline = sorted(category for category, count in bottlenecks.items()
                                 if scheme_baselines.get(category) is not None and count > scheme_baselines[category])
-        basis, achieved = ("reported", reported) if reported else ("forecast", expected)
+        basis = "reported" if reported is not None else "forecast"
         target = scheme.baseline_yield_target_tons
-        percent = round(achieved / target * 100, 1) if target and achieved is not None else None
-        status = "no_target" if not target else "no_data" if percent is None else "on_track" if percent >= 90 else "watch" if percent >= 60 else "below_target"
+        yield_result = evaluate_yield(db, scheme.id)
+        percent = yield_result["value"]
+        status = "no_target" if not yield_result["comparisons"] else "no_data" if percent is None else "on_track" if percent >= 90 else "watch" if percent >= 60 else "below_target"
         # Yield forecaster inputs (WP1): when the crop reports say harvest is expected.
         # Grouped in Python so the query stays portable across SQLite and PostgreSQL.
         harvest_by_month: dict[str, float] = {}
         for month_value, tons in db.execute(
             select(CitizenScienceLog.expected_harvest_month, CitizenScienceLog.expected_harvest_tons)
-            .where(CitizenScienceLog.scheme_id == scheme.id, CitizenScienceLog.expected_harvest_month.is_not(None))
+            .where(counted(CitizenScienceLog), CitizenScienceLog.scheme_id == scheme.id, CitizenScienceLog.expected_harvest_month.is_not(None))
         ).all():
             key = month_value.strftime("%Y-%m")
             harvest_by_month[key] = harvest_by_month.get(key, 0.0) + (tons or 0)
@@ -169,7 +177,8 @@ def scheme_performance(db: Session) -> list[dict]:
         results.append({
             "scheme_id": scheme.id, "name": scheme.name, "is_active": scheme.is_active, "implementing_partner": scheme.implementing_partner,
             "hectares_developed": scheme.hectares_developed, "target_tons": target, "target_source": scheme.baseline_source,
-            "expected_tons": round(expected or 0, 2), "reported_tons": round(reported or 0, 2), "basis": basis, "achievement_percent": percent,
+            "expected_tons": round(expected or 0, 2), "reported_tons": round(reported or 0, 2), "basis": "verified_yield" if percent is not None else basis, "achievement_percent": percent,
+            "yield_evaluation": yield_result,
             "status": status, "crop_reports": crop_reports, "pest_alerts": pest_alerts, "infrastructure_faults": faults, "open_grievances": grievances,
             "bottlenecks": bottlenecks, "flagged_bottlenecks": sorted(category for category, n in bottlenecks.items() if flagged(category, n)),
             "baseline_bottlenecks": above_baseline, "bottleneck_window_days": window_days,
@@ -180,14 +189,14 @@ def scheme_performance(db: Session) -> list[dict]:
 
 def response_health(db: Session) -> dict:
     """Module 3 accountability: how fast community concerns are resolved and communicated back."""
-    feedback = list(db.scalars(select(CommunityFeedback)))
+    feedback = list(db.scalars(select(CommunityFeedback).where(counted(CommunityFeedback))))
     resolved = [item for item in feedback if item.status in CLOSED]
     first_resolution = dict(db.execute(
         select(FeedbackStatusEvent.feedback_id, func.min(FeedbackStatusEvent.created_at))
         .where(FeedbackStatusEvent.new_status.in_(CLOSED)).group_by(FeedbackStatusEvent.feedback_id)
     ).all())
     durations = [(aware(first_resolution[item.id]) - aware(item.created_at)).total_seconds() / 86400 for item in resolved if item.id in first_resolution]
-    cases = list(db.scalars(select(IncidentCase)))
+    cases = list(db.scalars(select(IncidentCase).where(counted(IncidentCase))))
     cases_resolved = [case for case in cases if case.status in CLOSED]
     close_loop_messages = db.scalar(select(func.count()).select_from(AdvisoryMessage).where(AdvisoryMessage.purpose == "close_loop")) or 0
     by_category: dict[str, int] = {}
@@ -230,15 +239,26 @@ def rainfall_map(db: Session, days: int = 7) -> list[dict]:
     """Citizen-Led Rain Gauge Network: 7-day rainfall per cell and its drought-warning level."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     thresholds = threshold_map(db)
-    rows = db.execute(
-        select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id, func.sum(IrrigationClimateLog.rainfall_mm), func.count(IrrigationClimateLog.id))
-        .join(IrrigationClimateLog, IrrigationClimateLog.cell_id == Cell.id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
-        .group_by(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
+    cells = db.execute(
+        select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
+        .where(Cell.latitude.is_not(None), Cell.longitude.is_not(None))
     ).all()
-    return [{"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng, "rainfall_mm": round(total or 0, 1), "readings": readings,
-             "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level}
-            for cell_id, name, lat, lng, sector_id, total, readings in rows if lat is not None and lng is not None]
+    result = []
+    for cell_id, name, lat, lng, sector_id in cells:
+        rows = db.execute(
+            select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
+            .where(IrrigationClimateLog.cell_id == cell_id, IrrigationClimateLog.rainfall_mm.is_not(None),
+                   IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
+        ).all()
+        gauge_rows = [((reporter_id, cell_id if reporter_id is None else None), created_at, mm)
+                      for reporter_id, mm, created_at in rows]
+        totals, counts = aggregate_gauges(gauge_rows)
+        total = sum(totals.values()) / len(totals) if totals else 0.0
+        readings = sum(counts.values())
+        result.append({"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng,
+                       "rainfall_mm": round(total, 1), "readings": readings,
+                       "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level})
+    return result
 
 
 DOWN = ("faulty", "offline")
@@ -278,7 +298,7 @@ def nutrition_summary(db: Session) -> dict:
     Screening scores, not diagnoses. Cells with fewer than MIN_HOUSEHOLDS_PER_GROUP
     households show their count only (``suppressed``); district totals include them.
     """
-    surveys = list(db.scalars(select(NutritionSurvey)))
+    surveys = list(db.scalars(select(NutritionSurvey).where(counted(NutritionSurvey))))
     cells = {cell.id: cell for cell in db.scalars(select(Cell))}
     by_cell: dict[int | None, list[NutritionSurvey]] = {}
     for survey in surveys:

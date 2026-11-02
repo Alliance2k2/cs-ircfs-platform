@@ -70,8 +70,8 @@ def public_overview(db: Session = Depends(get_db)) -> dict:
         "reports": count(select(func.count()).select_from(CitizenScienceLog).where(counted(CitizenScienceLog)))
         + count(select(func.count()).select_from(IrrigationClimateLog).where(counted(IrrigationClimateLog))),
         "field_messages": count(select(func.count()).select_from(InboundMessage).where(counted(InboundMessage))),
-        "farmers": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer)),
-        "monitors": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.citizen_science_monitor)),
+        "farmers": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.farmer, FieldUser.data_origin != "simulator")),
+        "monitors": count(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.citizen_science_monitor, FieldUser.data_origin != "simulator")),
         "active_schemes": count(select(func.count()).select_from(IrrigationScheme).where(IrrigationScheme.is_active.is_(True))),
         "sectors_reporting": count(select(func.count()).select_from(crop_sectors.union(water_sectors).subquery())),
         "sectors_total": count(select(func.count()).select_from(Sector)),
