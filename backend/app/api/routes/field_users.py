@@ -57,7 +57,7 @@ def list_field_users(
     db: Session = Depends(get_db),
     principal: Principal = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator)),
 ) -> list[FieldUser]:
-    query = select(FieldUser).where(cell_filter(FieldUser.cell_id, allowed_cells(db, principal))).order_by(FieldUser.id.desc())
+    query = select(FieldUser).where(FieldUser.data_origin != "simulator", cell_filter(FieldUser.cell_id, allowed_cells(db, principal))).order_by(FieldUser.id.desc())
     if q:
         term = f"%{q.strip()}%"
         query = query.where(FieldUser.full_name.ilike(term) | FieldUser.phone_number.ilike(term) | FieldUser.cooperative_name.ilike(term))
@@ -74,7 +74,7 @@ def update_field_user(
     _: object = Depends(require_roles(UserRole.administrator)),
 ) -> FieldUser:
     user = db.get(FieldUser, field_user_id)
-    if not user:
+    if not user or user.data_origin == "simulator":
         raise HTTPException(status_code=404, detail="Field user not found")
     changes = payload.model_dump(exclude_unset=True)
     latitude = changes.pop("latitude", None)
@@ -104,7 +104,7 @@ def delete_field_user(
 ) -> None:
     """Permanently remove a field user only when no historical record references them."""
     user = db.get(FieldUser, field_user_id)
-    if not user:
+    if not user or user.data_origin == "simulator":
         raise HTTPException(status_code=404, detail="Field user not found")
     references = (
         select(CitizenScienceLog.id).where(CitizenScienceLog.reporter_id == field_user_id),

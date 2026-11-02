@@ -181,4 +181,16 @@ Released under the [MIT License](LICENSE).
 
 ## Status
 
-The platform is complete for pilot use. Live SMS and airtime delivery require Africa's Talking production credentials and an approved short code; until then, outgoing messages are recorded as `dry_run`. Scheme yield targets must be entered from the official feasibility studies. See the [roadmap](docs/roadmap.md).
+The platform has substantial pilot functionality; scientific evidence approval and field acceptance remain required. Live SMS and airtime delivery require Africa's Talking production credentials and an approved short code; until then, outgoing messages are recorded as `dry_run`. Scheme yield targets must be entered from the official feasibility studies. See the [roadmap](docs/roadmap.md).
+
+## Scientific-evidence milestone (November 2026)
+
+Verified yield evaluation now uses harvested area and approved crop/season/year target versions. Legacy totals are retained but cannot establish achievement. Demo, simulator and superseded reports are excluded from report-derived official figures; they remain inspectable in reporting/operations workspaces. Staff corrections preserve originals and require new verification. See [scientific evaluation](docs/scientific-evaluation.md). Official data, local approval protocols and field acceptance remain pending; technical implementation is not pilot sign-off.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Batch 5 adds dated daily/seasonal rainfall evidence, coverage and missing-data indicators, explicitly approved historical references, and recorded outage/maintenance history in the existing Climate and Irrigation pages. See [climate and maintenance](docs/climate-maintenance.md). No historical measurements or repair records are invented. Current migration head: `20261102_24`.
+
+## Coverage and delivery reliability update
+
+Multi-sector coverage, isolated simulator participants, transactional ordinary-SMS/airtime queues, protected operational metrics and safer local startup are implemented through migration `20261102_27`. Double-click `start-platform.bat` for the complete local demo, including its landing page; demo data survives ordinary restarts and messaging stays dry-run. Live delivery requires an explicitly scheduled dispatcher. See [current status and remaining work](docs/batch6-platform-reliability.md).

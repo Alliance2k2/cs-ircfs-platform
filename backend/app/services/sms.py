@@ -1,5 +1,6 @@
 """Outbound SMS and airtime through Africa's Talking, with a safe dry-run default."""
 import logging
+import hashlib
 import re
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -18,16 +19,27 @@ WITHHELD = "withheld"  # same value as app.core.privacy.WITHHELD
 # Set while the phone simulator runs: nothing reaches a telecom provider, whatever the
 # SMS_PROVIDER and AIRTIME_PROVIDER settings say (staff alerts and rewards included).
 _simulating: ContextVar[bool] = ContextVar("simulating", default=False)
+_simulation_namespace: ContextVar[str] = ContextVar("simulation_namespace", default="training")
+
+
+def simulation_phone(phone: str) -> str:
+    """A non-dialable, staff-specific identity; never mutate the real caller."""
+    if not _simulating.get():
+        return phone
+    digest = hashlib.sha256(f"{_simulation_namespace.get()}:{phone}".encode()).hexdigest()[:16]
+    return f"sim-{digest}"
 
 
 @contextmanager
-def simulation():
+def simulation(namespace: str = "training"):
     """Run a block with all SMS and airtime forced to dry-run."""
     token = _simulating.set(True)
+    namespace_token = _simulation_namespace.set(namespace)
     try:
         yield
     finally:
         _simulating.reset(token)
+        _simulation_namespace.reset(namespace_token)
 
 
 def live(provider: str) -> bool:
@@ -114,7 +126,11 @@ def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id:
     ``anonymous`` logs the message without the recipient's number, for replies that
     would otherwise tie a phone to an anonymous grievance.
     """
-    result = send_sms(phone_number, message)
+    # Commit ordinary live messages with the business operation. A separate worker sends
+    # them only after commit. Anonymous grievance replies retain no recipient in storage
+    # and are deliberately synchronous until an approved private reply mechanism exists.
+    result = ({"status": "queued"} if not anonymous and live(get_settings().sms_provider)
+              else send_sms(phone_number, message))
     record = AdvisoryMessage(
         phone_number=WITHHELD if anonymous else phone_number, message=message, status=result["status"],
         provider_id=result.get("provider_id"), purpose=purpose, cell_id=cell_id,

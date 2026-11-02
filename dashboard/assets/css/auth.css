@@ -20,8 +20,8 @@ body {
   position: relative;
   color: #fff;
   background:
-    linear-gradient(160deg, rgba(7, 43, 37, 0.9) 0%, rgba(7, 43, 37, 0.62) 50%, rgba(11, 79, 64, 0.82) 100%),
-    url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80") center / cover,
+    radial-gradient(circle at 72% 18%, rgba(215, 245, 110, 0.16), transparent 30%),
+    linear-gradient(160deg, rgba(7, 43, 37, 0.98) 0%, rgba(7, 43, 37, 0.86) 50%, rgba(11, 79, 64, 0.96) 100%),
     var(--cs-deep);
   padding: 48px 56px;
 }

@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.metrics import snapshot
-from app.db.models import AdvisoryMessage, InboundMessage
+from app.db.models import AdvisoryMessage, InboundMessage, UserRole
+from app.core.security import require_roles
 from app.db.session import get_db
 from app.schemas import HealthResponse
 
@@ -28,7 +29,8 @@ def readiness_check(db: Session = Depends(get_db)) -> dict[str, str]:
 
 
 @router.get("/metrics")
-def operational_metrics(db: Session = Depends(get_db)) -> dict:
+def operational_metrics(db: Session = Depends(get_db),
+                        _: object = Depends(require_roles(UserRole.administrator))) -> dict:
     """Operational JSON metrics for dashboards and simple alert probes."""
     outbound_statuses = dict(db.execute(
         select(AdvisoryMessage.status, func.count(AdvisoryMessage.id))

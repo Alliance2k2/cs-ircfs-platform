@@ -67,6 +67,20 @@ export const assigneeSchema = z.object({ id: z.number(), full_name: z.string(), 
 export type Assignee = z.infer<typeof assigneeSchema>;
 
 export const fieldReportSchema = z.object({
+  observation_date: z.string().nullable().optional(),
+  gauge_code: z.string().nullable().optional(),
+  cultivated_area_hectares: z.number().nullable().optional(),
+  harvested_area_hectares: z.number().nullable().optional(),
+  observed_quantity: z.number().nullable().optional(),
+  harvest_unit: z.string().nullable().optional(),
+  observation_type: z.string().nullable().optional(),
+  data_source: z.string().nullable().optional(),
+  reference_year: z.number().nullable().optional(),
+  harvest_date: ts.nullable().optional(),
+  reporting_date: ts.nullable().optional(),
+  season: z.string().nullable().optional(),
+  superseded_by_id: z.number().nullable().optional(),
+  correction_reason: z.string().nullable().optional(),
   id: z.number(),
   source: z.enum(["crop", "infrastructure"]),
   kind: z.enum(["harvest", "pest", "rain", "asset"]),
@@ -151,6 +165,7 @@ export const scheduleRowSchema = z.object({
   threshold_dry_mm: z.number(),
   threshold_wet_mm: z.number(),
   threshold_source: z.string().nullable(),
+  threshold_status: z.string().optional(),
 });
 export type ScheduleRow = z.infer<typeof scheduleRowSchema>;
 export const weeklyAdviceSchema = z.object({
@@ -186,6 +201,17 @@ export const nutritionSchema = z.object({
 });
 
 const requirement = z.object({ item: z.string(), met: z.boolean(), note: z.string().nullable() });
+export const yieldComparisonSchema = z.object({
+  baseline_id: z.number(), crop: z.string(), season: z.string(), reference_year: z.number(), source: z.string(),
+  document_reference: z.string(), target_tons_per_hectare: z.number(), observed_tons_per_hectare: z.number().nullable(),
+  observed_tons: z.number(), harvested_area_hectares: z.number(), eligible_reports: z.number(), value: z.number().nullable(),
+});
+export const baselineSchema = z.object({
+  id: z.number(), scheme_id: z.number(), crop_type: z.string(), season: z.string(), reference_year: z.number(),
+  expected_yield: z.number(), yield_unit: z.string(), official_source: z.string(), document_reference: z.string(),
+  data_origin: z.string(), verification_status: z.string(), approved_at: ts.nullable(), supersedes_id: z.number().nullable(),
+});
+export type Baseline = z.infer<typeof baselineSchema>;
 export const evaluationSchema = z.object({
   generated_at: ts,
   period_days: z.number(),
@@ -197,7 +223,8 @@ export const evaluationSchema = z.object({
     outcomes: z.object({
       harvest_reports: z.number(), reported_tons: z.number(), expected_tons: z.number(), pest_alerts: z.number(), severe_pest_alerts: z.number(),
       crops: z.array(z.object({ crop: z.string(), reports: z.number(), with_reported_tons: z.number(), reported_tons: z.number(), expected_tons: z.number() })),
-      yield_achievement: z.object({ value: z.number().nullable(), computable: z.boolean(), formula: z.string(), requirements: z.array(requirement) }),
+      yield_achievement: z.object({ value: z.number().nullable(), computable: z.boolean(), formula: z.string(), requirements: z.array(requirement),
+        comparisons: z.array(yieldComparisonSchema).default([]), excluded: z.record(z.number()).default({}) }),
     }),
     bottlenecks: z.object({
       window_days: z.number().nullable(), by_category: z.record(z.number()), flagged: z.array(z.string()), above_baseline: z.array(z.string()),
@@ -252,6 +279,7 @@ export const auditSchema = z.object({
 });
 export type AuditRow = z.infer<typeof auditSchema>;
 export const schemeFullSchema = z.object({
+  coverage_sector_ids: z.array(z.number()).default([]),
   id: z.number(), name: z.string(), implementing_partner: z.string().nullable(), hectares_developed: z.number().nullable(),
   baseline_yield_target_tons: z.number().nullable(), baseline_source: z.string().nullable(), is_active: z.boolean(),
 });

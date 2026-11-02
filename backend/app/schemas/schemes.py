@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class IrrigationSchemeRead(BaseModel):
+    coverage_sector_ids: list[int] = Field(default_factory=list)
     id: int
     name: str
     implementing_partner: str | None
@@ -21,6 +22,7 @@ class IrrigationSchemeRead(BaseModel):
 
 
 class IrrigationSchemeCreate(BaseModel):
+    coverage_sector_ids: list[int] | None = Field(default=None, max_length=100)
     name: str = Field(min_length=2, max_length=100)
     implementing_partner: str | None = Field(default=None, max_length=100)
     hectares_developed: float | None = Field(default=None, ge=0)
@@ -44,6 +46,7 @@ class IrrigationSchemeCreate(BaseModel):
 
 
 class IrrigationSchemeUpdate(BaseModel):
+    coverage_sector_ids: list[int] | None = Field(default=None, max_length=100)
     implementing_partner: str | None = Field(default=None, max_length=100)
     hectares_developed: float | None = Field(default=None, ge=0)
     baseline_yield_target_tons: float | None = Field(default=None, ge=0)

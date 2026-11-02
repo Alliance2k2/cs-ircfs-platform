@@ -39,6 +39,7 @@ from app.services.advisory import sector_schedule
 from app.services.analytics import ACTIVE, CLOSED, act_now_queue, aware, latest_asset_status
 from app.services.cases import case_source
 from app.services.evidence import counted, demo_mode
+from app.services.yield_evaluation import evaluate_yield
 
 LIVE, PLATFORM, DOCUMENTED, DEMO, MISSING = "live_unverified", "platform", "documented", "demo", "missing"
 YIELD_NOT_COMPARABLE = ("Not calculated. Citizen harvest reports come from a sample of farmers, while the scheme target "
@@ -55,7 +56,7 @@ def overview(db: Session, principal: Principal, days: int = 30, scheme_id: int |
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=days)
     period = f"Last {days} days"
-    evidence = DEMO if demo_mode(db) else LIVE
+    evidence = LIVE
 
     cells = allowed_cells(db, principal)
     if sector_id is not None:
@@ -140,7 +141,7 @@ def overview(db: Session, principal: Principal, days: int = 30, scheme_id: int |
         "generated_at": now,
         "period": {"days": days, "start": start, "end": now},
         "filters": {"scheme_id": scheme_id, "sector_id": sector_id},
-        "demo_mode": evidence == DEMO,
+        "demo_mode": demo_mode(db),
         "metrics": metrics,
         # Plain counts for navigation badges (the module launcher and the alert bell).
         "counts": {"open_cases": len(open_cases), "open_grievances": open_grievances, "critical": sum(1 for case in open_cases if case.priority == "critical"),
@@ -158,7 +159,7 @@ def overview(db: Session, principal: Principal, days: int = 30, scheme_id: int |
 
 
 def in_scope(report, cells: set[int] | None, scheme_id: int | None) -> bool:
-    if report.data_origin == "simulator":
+    if report.data_origin not in ("field", "import") or getattr(report, "superseded_by_id", None) is not None:
         return False
     if cells is not None and report.cell_id not in cells:
         return False
@@ -171,6 +172,8 @@ def scheme_rows(db: Session, scope, assets: list[dict], scheme_id: int | None, e
         query = select(IrrigationScheme).where(IrrigationScheme.id == scheme_id)
     rows = []
     for scheme in db.scalars(query):
+        yield_reports = list(db.scalars(select(CitizenScienceLog).where(*scope(CitizenScienceLog), CitizenScienceLog.scheme_id == scheme.id)))
+        achievement = evaluate_yield(db, scheme.id, yield_reports)
         def count(model, *extra) -> int:
             return db.scalar(select(func.count()).select_from(model).where(*scope(model), model.scheme_id == scheme.id, *extra)) or 0
 
@@ -195,9 +198,9 @@ def scheme_rows(db: Session, scope, assets: list[dict], scheme_id: int | None, e
                                        "Sum of harvests reported by citizens in the period. A sample of farmers, not the scheme's total output.", evidence),
             "yield_target": metric("yield_target", "Yield target", scheme.baseline_yield_target_tons if scheme.baseline_source else None, "t",
                                    "As documented", "The scheme's yield target as entered with its source document.", target_source, target_note),
-            "yield_achievement": metric("yield_achievement", "Yield achievement", None, "%", period,
-                                        "100 × verified observed yield ÷ verified target yield, for the same crop, area and season.", MISSING,
-                                        YIELD_NOT_COMPARABLE),
+            "yield_achievement": metric("yield_achievement", "Yield achievement", achievement["value"], "%", period,
+                                        "100 × verified observed yield ÷ verified target yield, for the same crop, harvested area, season and year.", DOCUMENTED,
+                                        "Verified measured sample only. " + "; ".join(r["note"] for r in achievement["requirements"] if not r["met"])),
         })
     return rows
 

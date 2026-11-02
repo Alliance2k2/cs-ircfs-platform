@@ -84,6 +84,21 @@ function SchemeEvidence({ scheme }: { scheme: Scheme }) {
               ))}
             </ul>
           </div>
+          <p className="mb-3 text-xs text-muted">{t("science.sample")}</p>
+          {achievement.comparisons.length > 0 && (
+            <section className="mb-3 space-y-2" aria-label={t("science.comparisons")}>
+              <h4 className="text-sm font-bold">{t("science.comparisons")}</h4>
+              {achievement.comparisons.map((group) => (
+                <div key={group.baseline_id} className="rounded-control border border-line p-2 text-xs">
+                  <p className="font-semibold">{group.crop} | {group.season} / {group.reference_year}: {group.value === null ? t("evaluation.notComputable") : `${n(group.value)}%`}</p>
+                  <p>{group.observed_tons_per_hectare === null ? "--" : n(group.observed_tons_per_hectare)} / {n(group.target_tons_per_hectare)} t/ha | {group.eligible_reports} {t("evaluation.harvestReports")}</p>
+                  <p>{n(group.observed_tons)} t / {n(group.harvested_area_hectares)} ha</p>
+                  <p className="break-words text-muted">{group.source} | {group.document_reference} | #{group.baseline_id}</p>
+                </div>
+              ))}
+            </section>
+          )}
+          {Object.keys(achievement.excluded).length > 0 && <p className="mb-3 text-xs text-muted">{t("science.excluded")}: {Object.entries(achievement.excluded).map(([reason, count]) => `${reason.replaceAll("_", " ")}: ${count}`).join("; ")}</p>}
           <dl>
             <Figure label={t("evaluation.harvestReports")} value={n(scheme.outcomes.harvest_reports)} />
             <Figure label={t("evaluation.expectedTons")} value={`${n(scheme.outcomes.expected_tons)} t`} />
@@ -204,6 +219,7 @@ export function EvaluationPage() {
                 </li>
               ))}
             </ol>
+            <p className="mt-3 text-sm">{t("science.realOnly")}</p>
             <p className="mt-4 rounded-control bg-canvas p-3 text-xs text-muted"><span className="font-semibold text-ink">{t("evaluation.method")}:</span> {data.method}</p>
           </Card>
           {data.schemes.length === 0 ? (

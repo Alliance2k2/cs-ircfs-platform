@@ -113,3 +113,11 @@ Administration and **Platform management** (the classic `/management.html`, whic
 - The sidebar collapses to icons on large screens (remembered on the device) and becomes a drawer on phones.
 
 The classic pages (`/planner.html`, `/management.html` and the others) still work and use the same API; they will be retired once the district has used the new pages.
+
+## November 2026 workspace additions
+
+Administration > Scheme baselines now contains official crop/season/year target versions, source references, yield units and a separate dated approval action. Legacy scheme fields remain available. Field-report details show harvested/cultivated area and provenance; staff can save corrected measurements with a reason, preserving the original and resetting the replacement to unverified. Evaluation shows separate comparable groups with verified sample size, tonnes/hectares and source documents; CSV exports include those groups. Field-report CSV remains capped at 500, with a visible notice. Demonstration presence no longer makes official figures count demo rows.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Climate now includes dated daily/selected-season tables, gap-preserving chart, seven-day evidence, gauge coverage, reference selection and administrator reference approval. Irrigation now includes inventory-linked outage/maintenance forms, explicit repair completion, clipped recorded downtime, ongoing status and history. Sector-limited staff need verified inventory cells. New labels are currently English and require Kinyarwanda field review.

@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.services.evidence import counted
 from app.core.config import get_settings
 from app.core.scope import cell_filter
 from app.db.models import (
@@ -33,7 +34,7 @@ REPORT_MODELS = ((CitizenScienceLog, "crop"), (IrrigationClimateLog, "irrigation
 
 def _members(db: Session, cells: set[int] | None) -> dict[int, list[int]]:
     """cooperative_id -> member field-user ids (area-scoped)."""
-    query = select(FieldUser.cooperative_id, FieldUser.id).where(FieldUser.cooperative_id.is_not(None))
+    query = select(FieldUser.cooperative_id, FieldUser.id).where(FieldUser.cooperative_id.is_not(None), FieldUser.data_origin != "simulator")
     query = query.where(cell_filter(FieldUser.cell_id, cells))
     members: dict[int, list[int]] = {}
     for cooperative_id, field_user_id in db.execute(query):
@@ -45,7 +46,7 @@ def _last_reports(db: Session, members: dict[int, list[int]]) -> dict[int, datet
     """cooperative_id -> most recent report date from any member, all time."""
     reporter_last: dict[int, datetime | None] = {}
     for model, _ in REPORT_MODELS:
-        for reporter_id, last_at in db.execute(select(model.reporter_id, func.max(model.created_at)).where(model.reporter_id.is_not(None)).group_by(model.reporter_id)):
+        for reporter_id, last_at in db.execute(select(model.reporter_id, func.max(model.created_at)).where(model.reporter_id.is_not(None), counted(model)).group_by(model.reporter_id)):
             previous = reporter_last.get(reporter_id)
             if last_at is not None and last_at.tzinfo is None:
                 last_at = last_at.replace(tzinfo=timezone.utc)
@@ -65,7 +66,7 @@ def _window_counts(db: Session, members: dict[int, list[int]], start: datetime, 
     if not reporter_cooperative:
         return counts
     for model, kind in REPORT_MODELS:
-        query = select(model.reporter_id, func.count()).where(model.reporter_id.in_(list(reporter_cooperative)), model.created_at >= start)
+        query = select(model.reporter_id, func.count()).where(model.reporter_id.in_(list(reporter_cooperative)), model.created_at >= start, counted(model))
         if end is not None:
             query = query.where(model.created_at < end)
         for reporter_id, total in db.execute(query.group_by(model.reporter_id)):
@@ -106,7 +107,7 @@ def participation(
         member_ids = members.get(cooperative.id, [])
         entry = counts.get(cooperative.id, {"crop": 0, "irrigation": 0, "nutrition": 0, "active": set()})
         champions = db.scalar(
-            select(func.count()).select_from(FieldUser).where(FieldUser.cooperative_id == cooperative.id, FieldUser.is_data_champion.is_(True))
+            select(func.count()).select_from(FieldUser).where(FieldUser.cooperative_id == cooperative.id, FieldUser.data_origin != "simulator", FieldUser.is_data_champion.is_(True))
         ) or 0
         rows.append(
             {
@@ -160,7 +161,7 @@ def training_progress(db: Session, *, cells: set[int] | None = None) -> dict:
     """Trained Citizen Science Monitors against MONITOR_TRAINING_TARGET, plus
     Data Champion and pilot-cooperative counts."""
     settings = get_settings()
-    scope = cell_filter(FieldUser.cell_id, cells)
+    scope = cell_filter(FieldUser.cell_id, cells) & (FieldUser.data_origin != "simulator")
     monitors = db.scalar(select(func.count()).select_from(FieldUser).where(FieldUser.role == UserRole.citizen_science_monitor, scope)) or 0
     trained = db.scalar(
         select(func.count()).select_from(FieldUser).where(

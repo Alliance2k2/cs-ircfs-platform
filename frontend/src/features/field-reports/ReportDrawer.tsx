@@ -1,3 +1,4 @@
+import { CorrectionForm } from "./CorrectionForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -76,7 +77,7 @@ export function ReportDrawer({ report, onClose }: { report: Pick<FieldReport, "s
           <OriginBadge origin={data.data_origin} />
         </span>
       )}
-      footer={staff && data && (
+      footer={staff && data && !data.superseded_by_id && (
         <>
           {data.verification_status !== "unverified" && (
             <Button icon={RotateCcw} onClick={() => decide("unverified")} loading={verify.isPending && verify.variables === "unverified"}>{t("reports.unverify")}</Button>
@@ -96,7 +97,15 @@ export function ReportDrawer({ report, onClose }: { report: Pick<FieldReport, "s
         <DataState kind="error" message={detail.error?.message} onRetry={() => void detail.refetch()} />
       ) : (
         <div className="space-y-6">
+          {data.superseded_by_id && <p role="status" className="text-sm font-semibold">{t("science.superseded", { id: data.superseded_by_id })}</p>}
           <dl>
+            {data.source === "crop" && <>
+              <DetailRow label={t("science.cultivated")}>{data.cultivated_area_hectares ?? "--"}</DetailRow>
+              <DetailRow label={t("science.harvested")}>{data.harvested_area_hectares ?? "--"}</DetailRow>
+              <DetailRow label={t("science.season")}>{data.season ?? "--"} / {data.reference_year ?? "--"}</DetailRow>
+              <DetailRow label={t("science.observation")}>{data.observation_type ?? "--"}</DetailRow>
+              <DetailRow label={t("science.source")}>{data.data_source ?? "--"}</DetailRow>
+            </>}
             <DetailRow label={t("reports.value")}>{reportValue(data, lang)}</DetailRow>
             {data.crop && <DetailRow label={t("crops.crop")}>{data.crop}</DetailRow>}
             {data.pest && <DetailRow label={t("kind.pest")}>{data.pest}</DetailRow>}
@@ -121,6 +130,7 @@ export function ReportDrawer({ report, onClose }: { report: Pick<FieldReport, "s
             </DetailRow>
           </dl>
 
+          {staff && !data.superseded_by_id && <CorrectionForm key={`${data.source}-${data.id}`} report={data} onSaved={onClose} />}
           {staff && (
             <section aria-labelledby="verify-title" className="space-y-3">
               <h3 id="verify-title" className="text-sm font-bold">{t("label.verification")}</h3>
@@ -129,7 +139,7 @@ export function ReportDrawer({ report, onClose }: { report: Pick<FieldReport, "s
                 <ol className="space-y-2 border-l-2 border-line pl-4 text-sm">
                   {data.verification_history.map((event, index) => (
                     <li key={index}>
-                      <span className="font-semibold">{t(`verification.${event.action.replace("report.", "")}` as MessageKey)}</span>
+                      <span className="font-semibold">{event.action === "report.corrected" || event.action === "report.correction_created" ? t("science.correction") : t(`verification.${event.action.replace("report.", "")}` as MessageKey)}</span>
                       <span className="text-xs text-muted"> · {event.by} · {formatDate(event.at, lang)}</span>
                       {event.detail && <p className="text-muted">{event.detail}</p>}
                     </li>

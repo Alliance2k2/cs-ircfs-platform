@@ -1,10 +1,5 @@
-"""Which field records count as evidence, and whether the database holds demonstration data.
-
-Simulator rows (training and testing on the on-screen phone) never count. Demonstration
-rows count, so a demo database still shows figures, but the API reports ``demo_mode`` so
-every screen can label them as demonstration data.
-"""
-from sqlalchemy import exists, or_, select
+"""Real current records count as evidence; demo presence is reported separately."""
+from sqlalchemy import and_, exists, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -14,6 +9,7 @@ from app.db.models import (
     CommunityFeedback,
     InboundMessage,
     IrrigationClimateLog,
+    IncidentCase,
     NutritionSurvey,
 )
 
@@ -21,8 +17,16 @@ ORIGIN_MODELS = (CitizenScienceLog, IrrigationClimateLog, NutritionSurvey, Commu
 
 
 def counted(model):
-    """SQL condition: this row is evidence (not a simulator test)."""
-    return model.data_origin != ORIGIN_SIMULATOR
+    """Real current evidence only. Demo/simulator rows never enter official reporting."""
+    if model is IncidentCase:
+        return or_(
+            and_(model.source_type == "crop", exists().where(CitizenScienceLog.id == model.source_id, counted(CitizenScienceLog))),
+            and_(model.source_type == "infrastructure", exists().where(IrrigationClimateLog.id == model.source_id, counted(IrrigationClimateLog))),
+        )
+    conditions = [model.data_origin.in_(("field", "import"))]
+    if hasattr(model, "superseded_by_id"):
+        conditions.append(model.superseded_by_id.is_(None))
+    return and_(*conditions)
 
 
 def demo_mode(db: Session) -> bool:

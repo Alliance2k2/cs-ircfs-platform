@@ -54,6 +54,6 @@ def list_farmer_locations(db: Session = Depends(get_db), principal: Principal = 
     if not _spatial(db):
         return []
     rows = db.execute(select(FieldUser.id, FieldUser.full_name, ST_AsGeoJSON(FieldUser.location))
-                      .where(FieldUser.role == UserRole.farmer, FieldUser.location.is_not(None),
+                      .where(FieldUser.role == UserRole.farmer, FieldUser.data_origin != "simulator", FieldUser.location.is_not(None),
                              cell_filter(FieldUser.cell_id, allowed_cells(db, principal)))).all()
     return [{"id": row.id, "name": row.full_name or "Unnamed farmer", "geometry": json.loads(row[2])} for row in rows]

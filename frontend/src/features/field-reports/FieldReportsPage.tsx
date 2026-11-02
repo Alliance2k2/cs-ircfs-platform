@@ -133,6 +133,7 @@ export function FieldReportsPage() {
       )}
       {list.data?.truncated && <p role="status" className="rounded-control bg-amber-soft px-4 py-2 text-sm font-semibold text-amber">{t("reports.truncated")}</p>}
 
+      <p className="text-xs text-muted">{t("science.exportLimit")}</p>
       <DataTable
           rows={list.data?.reports}
           columns={columns}

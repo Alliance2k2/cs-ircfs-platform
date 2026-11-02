@@ -6,8 +6,8 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
-from sqlalchemy import select
+from pydantic import BaseModel, Field, ValidationError
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.core.csv_export import csv_download
@@ -18,6 +18,8 @@ from app.db.models import ORIGIN_SIMULATOR, AuditEvent, UserRole
 from app.db.session import get_db
 from app.services.audit import record
 from app.services.field_reports import KINDS, SOURCES, Lookup, linked_case, list_reports, row
+from app.schemas.reports import CropReportCreate, IrrigationReportCreate
+from app.services.references import validate_report_references, validate_report_scope
 
 router = APIRouter(prefix="/api/v1/field-reports", tags=["field reports"])
 viewer = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.cooperative_leader, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
@@ -28,6 +30,11 @@ Source = Literal["crop", "infrastructure"]
 class VerificationUpdate(BaseModel):
     status: Literal["verified", "rejected", "unverified"]
     note: str | None = Field(default=None, max_length=1000)
+
+
+class ReportCorrection(BaseModel):
+    reason: str = Field(min_length=1, max_length=1000)
+    changes: dict
 
 
 def filters(
@@ -74,7 +81,8 @@ def export_reports(params: dict = Depends(filters), db: Session = Depends(get_db
     export_params = {key: value for key, value in params.items() if key not in {"limit", "offset"}}
     reports = list_reports(db, allowed_cells(db, principal), False, **export_params, limit=500)
     columns = ["id", "source", "kind", "title", "crop", "pest", "severity", "expected_tons", "reported_tons",
-               "cultivated_area_hectares", "yield_tons_per_hectare", "harvest_date", "season", "rainfall_mm", "asset",
+               "cultivated_area_hectares", "harvested_area_hectares", "yield_tons_per_hectare", "harvest_date", "season",
+               "reference_year", "observation_type", "data_source", "superseded_by_id", "rainfall_mm", "asset",
                "condition", "bottleneck", "scheme", "sector", "cell", "data_origin", "verification_status", "flags", "created_at"]
     rows = [[";".join(item[column]) if column == "flags" else item[column] for column in columns] for item in reports]
     record(db, principal, "field_reports.export", "field_report", None, rows=len(rows), **{k: v for k, v in params.items() if v is not None})
@@ -86,7 +94,7 @@ def export_reports(params: dict = Depends(filters), db: Session = Depends(get_db
 def _note(detail: str | None) -> str | None:
     """The note recorded with a verification decision, from the audit detail."""
     try:
-        return json.loads(detail).get("note") if detail else None
+        return (json.loads(detail).get("note") or json.loads(detail).get("reason")) if detail else None
     except (ValueError, AttributeError):
         return None
 
@@ -110,7 +118,11 @@ def field_report(source: Source, report_id: int, db: Session = Depends(get_db), 
 @router.patch("/{source}/{report_id}/verification")
 def verify_report(source: Source, report_id: int, payload: VerificationUpdate, db: Session = Depends(get_db), principal: Principal = staff) -> dict:
     """Mark a report verified or rejected (with a note), or return it to unverified."""
+    model = SOURCES[source]
+    db.scalar(select(model).where(model.id == report_id).with_for_update().execution_options(populate_existing=True))
     report = find_report(db, source, report_id, principal)
+    if report.superseded_by_id is not None:
+        raise HTTPException(409, "This report was superseded; verify the replacement instead")
     if payload.status == "rejected" and not (payload.note or "").strip():
         raise HTTPException(status_code=422, detail="Give a reason when rejecting a report")
     report.verification_status = payload.status
@@ -120,3 +132,48 @@ def verify_report(source: Source, report_id: int, payload: VerificationUpdate, d
     record(db, principal, f"report.{payload.status}", f"{source}_report", report.id, note=report.verification_note)
     db.commit()
     return {"id": report.id, "source": source, "verification_status": report.verification_status, "verified_at": report.verified_at}
+
+
+@router.post("/{source}/{report_id}/corrections", status_code=201)
+def correct_report(source: Source, report_id: int, payload: ReportCorrection,
+                   db: Session = Depends(get_db), principal: Principal = staff) -> dict:
+    original = find_report(db, source, report_id, principal)
+    if not payload.reason.strip() or not payload.changes:
+        raise HTTPException(422, "A correction requires changed values and a reason")
+    schema = CropReportCreate if source == "crop" else IrrigationReportCreate
+    if set(payload.changes) - schema.model_fields.keys():
+        raise HTTPException(422, "Only report measurement and location fields can be corrected")
+    model = SOURCES[source]
+    db.scalar(select(model).where(model.id == report_id).with_for_update().execution_options(populate_existing=True))
+    if original.superseded_by_id is not None:
+        raise HTTPException(409, "Report already superseded")
+    values = {name: getattr(original, name) for name in schema.model_fields}
+    values.update(payload.changes)
+    try:
+        validated = schema.model_validate(values)
+    except ValidationError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    validate_report_scope(db, principal, validated)
+    validate_report_references(db, validated.reporter_id, validated.scheme_id, validated.cell_id)
+    if validated.model_dump() == {name: getattr(original, name) for name in schema.model_fields}:
+        raise HTTPException(422, "Correction does not change the report")
+    replacement = model(**validated.model_dump(), data_origin=original.data_origin,
+                        correction_reason=payload.reason.strip(), created_at=original.created_at)
+    db.add(replacement)
+    db.flush()
+    result = db.execute(update(model).where(model.id == report_id, model.superseded_by_id.is_(None))
+                        .values(superseded_by_id=replacement.id).execution_options(synchronize_session=False))
+    if result.rowcount != 1:
+        db.rollback()
+        raise HTTPException(409, "Report was concurrently corrected")
+    case = linked_case(db, source, report_id)
+    if case:
+        # Keep the existing follow-up workflow and history; do not send fresh alerts.
+        check_cell(original.cell_id, allowed_cells(db, principal), "Report")
+        case.source_id = replacement.id
+    record(db, principal, "report.corrected", f"{source}_report", original.id,
+           replacement_id=replacement.id, reason=payload.reason.strip(), changed_fields=sorted(payload.changes))
+    record(db, principal, "report.correction_created", f"{source}_report", replacement.id,
+           original_id=original.id, reason=payload.reason.strip())
+    db.commit()
+    return {"id": replacement.id, "source": source, "original_id": original.id, "verification_status": "unverified"}

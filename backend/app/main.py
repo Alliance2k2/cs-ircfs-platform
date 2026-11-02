@@ -18,7 +18,10 @@ from app.api.routes import (
     advisory,
     analytics,
     auth,
+    baselines,
     calibration,
+    climate,
+    maintenance,
     cases,
     channels,
     cooperatives,
@@ -99,7 +102,9 @@ async def request_logging(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
     duration_ms = (time.perf_counter() - started) * 1000
-    record_http_request(request.method, request.url.path, response.status_code, duration_ms)
+    route = request.scope.get("route")
+    route_path = getattr(route, "path", None) or "/unmatched-or-static"
+    record_http_request(request.method, route_path, response.status_code, duration_ms)
     response.headers["X-Request-ID"] = request_id
     # The React build's assets carry a content hash in their name: cache them for a year,
     # which matters on rural mobile data. Everything else (legacy pages, the React
@@ -169,9 +174,12 @@ async def database_error_handler(_: Request, error: SQLAlchemyError):
 for api_router in (
     system.router,
     auth.router,
+    baselines.router,
     channels.router,
     advisory.router,
     calibration.router,
+    climate.router,
+    maintenance.router,
     cooperatives.router,
     field_users.router,
     schemes.router,

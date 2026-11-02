@@ -41,7 +41,7 @@ from app.db.models import (
 from app.db.session import get_db
 from app.services import sms_keywords, ussd
 from app.services.reporting import find_or_register_user
-from app.services.sms import deliver, is_valid_phone, normalise_phone, simulation
+from app.services.sms import deliver, is_valid_phone, normalise_phone, simulation, simulation_phone
 
 router = APIRouter(prefix="/api/v1", tags=["field channels"])
 reader = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.cooperative_leader, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
@@ -92,10 +92,11 @@ def verify_gateway(request: Request, token: str | None = Query(default=None)) ->
         raise HTTPException(status_code=403, detail="Unknown gateway")
 
 
-def throttle(db: Session, phone: str) -> None:
+def throttle(db: Session, phone: str, origin: str = ORIGIN_FIELD) -> None:
     since = datetime.now(timezone.utc) - timedelta(minutes=1)
     recent = db.scalar(select(func.count()).select_from(InboundMessage)
-                       .where(InboundMessage.phone_number == phone, InboundMessage.created_at >= since)) or 0
+                       .where(InboundMessage.phone_number == phone, InboundMessage.data_origin == origin,
+                              InboundMessage.created_at >= since)) or 0
     if recent >= PHONE_LIMIT_PER_MINUTE:
         raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
 
@@ -138,6 +139,7 @@ def claim_inbound(db: Session, *, phone: str, channel: str, session_id: str | No
             InboundMessage.channel == channel,
             InboundMessage.session_id == session_id,
             InboundMessage.text == text,
+            InboundMessage.data_origin == origin,
         ).limit(1))
         return None, earlier
     return message, None
@@ -148,7 +150,9 @@ def run_ussd(db: Session, fields: dict[str, str], origin: str) -> tuple[ussd.Uss
     phone = caller(fields, "phoneNumber")
     text = fields.get("text", "")
     session_id = fields.get("sessionId")
-    throttle(db, phone)
+    if origin == ORIGIN_SIMULATOR and session_id:
+        session_id = simulation_phone(f"session:{phone}:{session_id}")
+    throttle(db, phone, origin)
     claim, earlier = claim_inbound(db, phone=phone, channel="ussd", session_id=session_id,
                                    text=text or "(dial)", origin=origin)
     if earlier is not None:
@@ -161,7 +165,7 @@ def run_ussd(db: Session, fields: dict[str, str], origin: str) -> tuple[ussd.Uss
         # log cannot tie a number to the grievance (or its FB reference in the reply).
         claim.phone_number = WITHHELD
         if session_id:
-            db.execute(update(InboundMessage).where(InboundMessage.channel == "ussd", InboundMessage.session_id == session_id)
+            db.execute(update(InboundMessage).where(InboundMessage.channel == "ussd", InboundMessage.session_id == session_id, InboundMessage.data_origin == origin)
                        .values(phone_number=WITHHELD))
     claim.reply = result.response
     claim.record_type = result.record_type
@@ -174,7 +178,9 @@ def run_sms(db: Session, fields: dict[str, str], origin: str) -> dict:
     phone = caller(fields, "from")
     text = fields.get("text", "")
     message_id = fields.get("id") or None
-    throttle(db, phone)
+    if origin == ORIGIN_SIMULATOR and message_id:
+        message_id = simulation_phone(f"message:{phone}:{message_id}")
+    throttle(db, phone, origin)
     # Africa's Talking retries a callback it thinks failed. The same message ID must not
     # create a second report or a second reply.
     claim, earlier = claim_inbound(db, phone=phone, channel="sms", session_id=message_id,
@@ -209,13 +215,13 @@ async def sms_callback(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/simulator/ussd")
-async def simulator_ussd(request: Request, db: Session = Depends(get_db), _: Principal = simulator_user) -> dict:
+async def simulator_ussd(request: Request, db: Session = Depends(get_db), principal: Principal = simulator_user) -> dict:
     """The on-screen phone: same menu as *801#, with an English translation of each screen.
 
     Records are marked as simulator data and nothing is sent to a telecom provider.
     """
     fields = await read_fields(request)
-    with simulation():
+    with simulation(f"{principal.account_id}:{principal.name}:{principal.role.value}"):
         result, earlier = run_ussd(db, fields, ORIGIN_SIMULATOR)
     service_code = get_settings().ussd_service_code
     if earlier is not None:
@@ -226,10 +232,10 @@ async def simulator_ussd(request: Request, db: Session = Depends(get_db), _: Pri
 
 
 @router.post("/simulator/sms")
-async def simulator_sms(request: Request, db: Session = Depends(get_db), _: Principal = simulator_user) -> dict:
+async def simulator_sms(request: Request, db: Session = Depends(get_db), principal: Principal = simulator_user) -> dict:
     """The on-screen phone's SMS to 8448. The reply is recorded as dry-run, never sent."""
     fields = await read_fields(request)
-    with simulation():
+    with simulation(f"{principal.account_id}:{principal.name}:{principal.role.value}"):
         return run_sms(db, fields, ORIGIN_SIMULATOR)
 
 

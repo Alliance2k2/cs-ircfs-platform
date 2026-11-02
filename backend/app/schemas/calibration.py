@@ -50,6 +50,7 @@ class SchemeAssetCreate(BaseModel):
     name_rw: str = Field(min_length=1, max_length=120)
     name_en: str = Field(min_length=1, max_length=120)
     scheme_id: int | None = Field(default=None, gt=0)
+    cell_id: int | None = Field(default=None, gt=0)
     asset_type: str | None = Field(default=None, max_length=40)
     is_active: bool = True
 
@@ -63,6 +64,7 @@ class SchemeAssetUpdate(BaseModel):
     name_rw: str | None = Field(default=None, min_length=1, max_length=120)
     name_en: str | None = Field(default=None, min_length=1, max_length=120)
     scheme_id: int | None = Field(default=None, gt=0)
+    cell_id: int | None = Field(default=None, gt=0)
     asset_type: str | None = Field(default=None, max_length=40)
     is_active: bool | None = None
 
@@ -77,6 +79,7 @@ class SchemeAssetRead(BaseModel):
     scheme_id: int | None
     name_rw: str
     name_en: str
+    cell_id: int | None = Field(default=None, gt=0)
     asset_type: str | None
     is_active: bool
     created_at: datetime

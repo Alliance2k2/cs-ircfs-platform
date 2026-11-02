@@ -68,14 +68,15 @@ def test_report_lists_are_paginated(client):
 def test_crop_yield_includes_area_season_and_harvest_date(client, session_factory):
     response = client.post("/api/v1/citizen-reports", json={
         "crop_type": "Rice", "reported_harvest_tons": 4.5,
-        "cultivated_area_hectares": 2, "harvest_date": "2026-08-20", "season": "2026A"
+        "cultivated_area_hectares": 3, "harvested_area_hectares": 2, "harvest_date": "2026-08-20", "season": "2026A"
     })
     assert response.status_code == 201
     assert response.json()["yield_tons_per_hectare"] == 2.25
     with session_factory() as session:
         report = session.scalar(select(CitizenScienceLog))
         assert report.season == "2026A" and report.harvest_date.isoformat() == "2026-08-20"
-        assert report.cultivated_area_hectares == 2
+        assert report.cultivated_area_hectares == 3
+        assert report.harvested_area_hectares == 2
 
 
 def test_field_reports_support_offset_and_limit(client):

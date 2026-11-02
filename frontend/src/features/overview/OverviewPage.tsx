@@ -47,7 +47,7 @@ export function OverviewPage() {
 
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 rounded-[20px] border border-line bg-surface px-4 py-4 shadow-card sm:px-5">
         <div className="max-w-xl">
-          <h1 className="text-xl font-extrabold sm:text-2xl">{t("overview.title")}</h1>
+          <h2 className="text-xl font-extrabold sm:text-2xl">{t("overview.title")}</h2>
           <p className="mt-0.5 text-sm text-muted">{t("overview.subtitle")}</p>
         </div>
         <FilterBar
@@ -61,7 +61,7 @@ export function OverviewPage() {
 
       {data?.demo_mode && (
         <p role="note" className="flex items-start gap-2.5 rounded-card border border-amber/30 bg-amber-soft px-4 py-3 text-sm font-semibold text-amber">
-          Demonstration data: this dashboard is showing sample figures.
+          Demonstration data exists in this database and is excluded from official figures.
         </p>
       )}
 

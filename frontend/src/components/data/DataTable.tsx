@@ -154,13 +154,12 @@ export function DataTable<T>({
               const primary = columns.find((column) => column.primary) ?? columns[0]!;
               return (
                 <li key={rowKey(row)}>
-                  <button
-                    type="button"
-                    disabled={!onRowClick}
-                    onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    className="block w-full px-4 py-3 text-left enabled:hover:bg-canvas"
-                  >
+                  <div className="block w-full px-4 py-3 text-left">
                     <span className="block text-sm font-semibold text-forest">{primary.render(row)}</span>
+                    {onRowClick && <button type="button" onClick={() => onRowClick(row)}
+                      className="mt-1 rounded-control border border-line px-3 py-1 text-xs font-semibold text-forest hover:bg-canvas">
+                      {t("action.open")}<span className="sr-only"> {caption} #{rowKey(row)}</span>
+                    </button>}
                     <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
                       {columns.filter((column) => column !== primary).map((column) => (
                         <div key={column.key} className="min-w-0">
@@ -169,7 +168,7 @@ export function DataTable<T>({
                         </div>
                       ))}
                     </dl>
-                  </button>
+                  </div>
                 </li>
               );
             })}

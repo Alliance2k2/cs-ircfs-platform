@@ -48,3 +48,11 @@ The running schema keeps the same six core tables and improves them. Details are
 - Crop and infrastructure reports become **incident cases** with owners, deadlines and history.
 - Stunting risk lives in its own `nutrition_surveys` table rather than on crop logs, because it is a household measure.
 - PostGIS points and boundaries are used for mapping.
+
+## November 2026 scientific-evidence update
+
+Outcome verification now uses a shared `services/yield_evaluation.py` policy across modern evaluation, executive metrics and classic scheme performance. Immutable `scheme_baselines` replace legacy whole-scheme tonnage as the approved comparison source. Correction replacements retain source observations and audit history. The original document remains the functional requirements reference; its sample tonnage comparison is superseded by the dimensionally consistent policy in [scientific-evaluation.md](scientific-evaluation.md). Current migration head: `20261102_23`.
+
+## Batch 5: climate and maintenance (November 2026)
+
+Batch 5 extends existing climate and irrigation workspaces through `routes/climate.py`, `routes/maintenance.py`, and their services. Dated evidence and source-approved comparisons are separate from the legacy receipt-date activity trend. Explicit inventory-linked outages and maintenance provide recorded downtime. See [climate-maintenance.md](climate-maintenance.md).

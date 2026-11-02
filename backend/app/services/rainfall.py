@@ -1,6 +1,7 @@
 """Plausibility limits and gauge-aware rainfall aggregation."""
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Hashable, Iterable
+from math import isfinite
 
 MAX_READING_MM = 300.0
 MAX_DAILY_GAUGE_MM = 300.0
@@ -21,7 +22,7 @@ def aggregate_gauges(rows: Iterable[tuple[Hashable, datetime | None, float | int
     """Aggregate gauge readings with daily and seven-day-style window caps.
 
     Each gauge is identified by a caller-provided key (usually reporter/cell pair).
-    Reports are capped per reading and once per UTC day, then the gauge window total
+    Reports are capped per reading and once per Africa/Kigali day, then the gauge window total
     is capped to the biological maximum represented by 300 mm per day for 7 days.
     """
     daily: dict[tuple[Hashable, object], float] = {}
@@ -29,15 +30,22 @@ def aggregate_gauges(rows: Iterable[tuple[Hashable, datetime | None, float | int
     gauge_totals: dict[Hashable, float] = {}
 
     for key, created_at, mm in rows:
+        if mm is not None and (not isfinite(float(mm)) or mm < 0):
+            continue
         value = cap_reading(mm)
         if value is None:
             continue
         created_at = created_at or datetime.now(timezone.utc)
         if created_at.tzinfo is None:
             created_at = created_at.replace(tzinfo=timezone.utc)
-        day = created_at.astimezone(timezone.utc).date()
+        day = created_at.astimezone(timezone(timedelta(hours=2))).date()
         daily_key = (key, day)
         accepted = min(value, max(0.0, MAX_DAILY_GAUGE_MM - daily.get(daily_key, 0.0)))
+        if value == 0 and (key, day) not in daily:
+            daily[daily_key] = 0.0
+            counts[key] = counts.get(key, 0) + 1
+            gauge_totals.setdefault(key, 0.0)
+            continue
         if accepted <= 0:
             continue
         daily[daily_key] = daily.get(daily_key, 0.0) + accepted

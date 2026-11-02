@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Cell, CommunityFeedback, FieldUser, Sector
 from app.services.advisory import local_tip, maybe_reward
+from app.schemas.reports import today
 from app.services.reporting import add_months, create_crop_report, create_irrigation_report, scheme_for_cell
 from app.services.ussd import varieties_for
 
@@ -136,7 +137,7 @@ def handle(db: Session, user: FieldUser, text: str) -> SmsResult:
         if mm is None:
             return SmsResult("Andika IMVURA ukurikizeho mm, urugero: IMVURA 12")
         report = create_irrigation_report(db, reporter_id=user.id, scheme_id=scheme_for_cell(db, cell_id), infrastructure_name="Citizen rain gauge",
-                                          rainfall_mm=mm, **location)
+                                          rainfall_mm=mm, observation_date=today(), data_source="Citizen gauge via SMS", **location)
         reward = maybe_reward(db, user)
         bonus = f" Wahawe {reward.amount_rwf} RWF y'itumanaho." if reward else ""
         return SmsResult(f"Murakoze! Imvura {mm:g} mm yanditswe.{bonus} {local_tip(db, user)}", "irrigation_report", report.id)

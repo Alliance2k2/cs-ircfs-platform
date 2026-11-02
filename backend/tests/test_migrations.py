@@ -81,3 +81,36 @@ def test_every_name_fits_postgresql(database):
     engine.dispose()
     assert [name for name in names if len(name) > 63] == []
 
+
+def test_scientific_upgrade_preserves_legacy_area_without_inventing_harvested_area(database):
+    config, url = database
+    command.upgrade(config, "20261029_21")
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("INSERT INTO citizen_science_logs (id, crop_type, cultivated_area_hectares, reported_harvest_tons) VALUES (21, 'Rice', 3, 4)"))
+        connection.execute(text("INSERT INTO irrigation_schemes (id, name, baseline_yield_target_tons, baseline_source, is_active) VALUES (21, 'Legacy scheme', 50, 'Old study', 1)"))
+    engine.dispose()
+    command.upgrade(config, "head")
+    engine = create_engine(url)
+    with engine.connect() as connection:
+        row = connection.execute(text("SELECT cultivated_area_hectares, harvested_area_hectares, reported_harvest_tons, observation_type FROM citizen_science_logs WHERE id=21")).one()
+        assert tuple(row) == (3, None, 4, None)
+        assert connection.scalar(text("SELECT COUNT(*) FROM scheme_baselines")) == 0
+        assert connection.scalar(text("SELECT baseline_yield_target_tons FROM irrigation_schemes WHERE id=21")) == 50
+    engine.dispose()
+
+
+def test_climate_upgrade_does_not_invent_observation_dates_or_outage_intervals(database):
+    config, url = database
+    command.upgrade(config, "20261102_23")
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("INSERT INTO irrigation_climate_logs (id, rainfall_mm, infrastructure_name, operational_status) VALUES (31, 12, 'Legacy pump', 'offline')"))
+    engine.dispose()
+    command.upgrade(config, "head")
+    engine = create_engine(url)
+    with engine.connect() as connection:
+        assert tuple(connection.execute(text("SELECT rainfall_mm, observation_date, data_source FROM irrigation_climate_logs WHERE id=31")).one()) == (12, None, None)
+        assert connection.scalar(text("SELECT COUNT(*) FROM asset_outages")) == 0
+        assert connection.scalar(text("SELECT COUNT(*) FROM rainfall_references")) == 0
+    engine.dispose()

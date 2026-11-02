@@ -76,3 +76,17 @@ Use [production-activation-checklist.md](production-activation-checklist.md) for
 - Suspending an account signs the person out immediately.
 - The USSD and SMS callbacks are public URLs protected by `GATEWAY_CALLBACK_TOKEN`; `GATEWAY_ALLOWED_IPS` (or the reverse proxy) can also limit them to Africa's Talking's addresses. See [security.md](security.md).
 - Outgoing messages and rewards are logged with their delivery status (`sent`, `dry_run`, `failed`).
+
+## Scientific evidence upgrade (November 2026)
+
+Apply Alembic migrations through `20261102_23` after an approved backup and staging rehearsal. New columns are nullable; no existing harvested area or target approval is inferred. Upgrade application and migrations together, then build the frontend. Enter sourced target versions and explicitly approve them only after district document review. Run PostGIS schema checks and validate existing observations remain accessible. No production deployment or shared-database migration was performed by the development milestone. See [scientific-evaluation.md](scientific-evaluation.md).
+
+## Batch 5: climate and maintenance (November 2026)
+
+The climate/maintenance head is `20261102_24`. Isolated local PostgreSQL 18.6/PostGIS 3.6.2 upgrade, schema parity, downgrade/upgrade and rolled-back workflow checks passed. Rehearse on the deployment PostGIS version and preserve new tables before any downgrade. The application database was not migrated. Populate verified asset cells and sourced reference documents only after district review. The temporary test cluster was stopped.
+
+## Transactional delivery worker (November 2026)
+
+Migration head is `20261102_27`. Apply migrations before starting the updated API. Ordinary live SMS and airtime now commit to the database queue first. Schedule `python scripts/process_delivery_outbox.py --send --limit 100` only after telecom approval and credentials are configured; it can charge the provider account. Without `--send` the script reports counts only. Do not automatically replay `unknown` outcomes or historical `pending` airtime: reconcile with the provider first. Anonymous grievance replies retain their synchronous privacy-preserving path. See [delivery and recovery operations](batch6-platform-reliability.md). No dispatcher was activated during local implementation.
+
+For local evaluation, double-click `start-platform.bat` or run `./start-local.ps1 -Demo`. This preserves the demo database between restarts, prefers the repository virtual environment and forces dry-run SMS/airtime. `-ResetDemo` explicitly discards demo work. The configured database is used only when starting `start-local.ps1` without `-Demo`.

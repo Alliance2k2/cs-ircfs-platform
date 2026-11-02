@@ -25,21 +25,34 @@ def evaluation(days: int = Query(default=365, ge=30, le=1825), db: Session = Dep
 
 @router.get("/export.csv")
 def export_evaluation(days: int = Query(default=365, ge=30, le=1825), db: Session = Depends(get_db), principal: Principal = staff) -> StreamingResponse:
-    """One row per scheme with every headline indicator and its source, for the evaluation report."""
+    """One row per comparable baseline group (or scheme if no approved target), with its source."""
     data = evaluate(db, days)
     header = ["scheme", "partner", "hectares_developed", "target_tons", "target_source", "target_state", "harvest_reports",
               "reported_tons", "expected_tons", "yield_achievement", "pest_alerts", "severe_pest_alerts", "assets_down",
               "assets_reported", "flagged_bottlenecks", "grievances", "open_grievances", "downstream_grievances",
-              "reports", "located_percent", "verified_percent", "demo_percent", "months_with_reports", "period_days"]
+              "reports", "located_percent", "verified_percent", "demo_percent", "months_with_reports", "period_days", "baseline_id", "crop", "season", "reference_year",
+              "observed_yield_t_ha", "target_yield_t_ha", "harvested_area_ha", "eligible_reports", "source_document", "official_source"]
     rows = []
     for scheme in data["schemes"]:
         outcomes, bottlenecks, evidence = scheme["outcomes"], scheme["bottlenecks"], scheme["evidence"]
         rows.append([scheme["name"], scheme["implementing_partner"], scheme["hectares_developed"], scheme["documentation"]["target_tons"],
                      scheme["documentation"]["target_source"], scheme["documentation"]["state"], outcomes["harvest_reports"],
-                     outcomes["reported_tons"], outcomes["expected_tons"], "not computable (see requirements)", outcomes["pest_alerts"],
+                     outcomes["reported_tons"], outcomes["expected_tons"], outcomes["yield_achievement"]["value"] if outcomes["yield_achievement"]["computable"] else "not computable (see requirements)", outcomes["pest_alerts"],
                      outcomes["severe_pest_alerts"], bottlenecks["assets_down"], bottlenecks["assets_reported"], ";".join(bottlenecks["flagged"]),
                      scheme["feedback"]["grievances"], scheme["feedback"]["open"], scheme["downstream"]["grievances"], evidence["reports"],
                      evidence["located_percent"], evidence["verified_percent"], evidence["demo_percent"], evidence["months_with_reports"], days])
+    expanded = []
+    for scheme, values in zip(data["schemes"], rows):
+        comparisons = scheme["outcomes"]["yield_achievement"]["comparisons"]
+        if not comparisons:
+            expanded.append(values + [None] * 10)
+        for group in comparisons:
+            group_values = values.copy()
+            group_values[9] = group["value"] if group["value"] is not None else "not computable (no eligible observations)"
+            expanded.append(group_values + [group["baseline_id"], group["crop"], group["season"], group["reference_year"],
+                            group["observed_tons_per_hectare"], group["target_tons_per_hectare"], group["harvested_area_hectares"],
+                            group["eligible_reports"], group["document_reference"], group["source"]])
+    rows = expanded
     record(db, principal, "evaluation.export", "evaluation", None, period_days=days)
     db.commit()
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d")

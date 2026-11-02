@@ -128,6 +128,8 @@ class VerifiedReport:
     verified_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
     verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     verification_note: Mapped[str | None] = mapped_column(Text)
+    superseded_by_id: Mapped[int | None] = mapped_column(Integer)
+    correction_reason: Mapped[str | None] = mapped_column(Text)
 
 
 class Sector(Base):
@@ -187,6 +189,35 @@ class IrrigationScheme(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
+class SchemeSectorCoverage(Base):
+    """Explicit scheme service area; a scheme may cover several sectors."""
+
+    __tablename__ = "scheme_sector_coverage"
+    scheme_id: Mapped[int] = mapped_column(ForeignKey("irrigation_schemes.id"), primary_key=True)
+    sector_id: Mapped[int] = mapped_column(ForeignKey("sectors.id"), primary_key=True)
+
+
+class SchemeBaseline(Base):
+    """Immutable sourced target version; approval is a separate audited decision."""
+
+    __tablename__ = "scheme_baselines"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    scheme_id: Mapped[int] = mapped_column(ForeignKey("irrigation_schemes.id"), index=True)
+    crop_type: Mapped[str] = mapped_column(String(80))
+    season: Mapped[str] = mapped_column(String(20))
+    reference_year: Mapped[int] = mapped_column(Integer)
+    expected_yield: Mapped[float] = mapped_column(Float)
+    yield_unit: Mapped[str] = mapped_column(String(10))
+    official_source: Mapped[str] = mapped_column(String(255))
+    document_reference: Mapped[str] = mapped_column(String(255))
+    data_origin: Mapped[str] = data_origin_column()
+    verification_status: Mapped[str] = mapped_column(String(12), default="unverified", server_default="unverified")
+    approved_at: Mapped[date | None] = mapped_column(Date)
+    approved_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
+    supersedes_id: Mapped[int | None] = mapped_column(ForeignKey("scheme_baselines.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Cooperative(Base):
     """A farmer cooperative (WP5). Pilot cooperatives host the Data Champion pilot.
 
@@ -212,6 +243,7 @@ class FieldUser(Base):
     __tablename__ = "field_users"
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), unique=True, index=True)
+    data_origin: Mapped[str] = data_origin_column()
     full_name: Mapped[str | None] = mapped_column(String(120))
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.farmer)
     cooperative_name: Mapped[str | None] = mapped_column(String(120))  # legacy free text; superseded by cooperative_id
@@ -278,6 +310,7 @@ class SchemeAsset(Base):
     scheme_id: Mapped[int | None] = mapped_column(ForeignKey("irrigation_schemes.id"), index=True)
     name_rw: Mapped[str] = mapped_column(String(120))
     name_en: Mapped[str] = mapped_column(String(120))
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
     asset_type: Mapped[str | None] = mapped_column(String(40))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -352,6 +385,8 @@ class AdvisoryMessage(Base):
     channel: Mapped[str] = mapped_column(String(10), default="sms")
     status: Mapped[str] = mapped_column(String(20), default="queued")
     provider_id: Mapped[str | None] = mapped_column(String(120))
+    delivery_attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_attempt_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     purpose: Mapped[str | None] = mapped_column(String(30), index=True)
     cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -369,7 +404,7 @@ class InboundMessage(Base):
     """
 
     __tablename__ = "inbound_messages"
-    __table_args__ = (UniqueConstraint("channel", "session_id", "text", name="uq_inbound_channel_session_text"),)
+    __table_args__ = (UniqueConstraint("channel", "session_id", "text", "data_origin", name="uq_inbound_channel_session_origin"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), index=True)
     channel: Mapped[str] = mapped_column(String(10))
@@ -411,6 +446,8 @@ class IncentiveReward(Base):
     field_user_id: Mapped[int] = mapped_column(ForeignKey("field_users.id"), index=True)
     phone_number: Mapped[str] = mapped_column(String(20))
     amount_rwf: Mapped[int] = mapped_column(Integer)
+    delivery_attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    last_attempt_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     milestone: Mapped[int | None] = mapped_column(Integer)
     reason: Mapped[str] = mapped_column(String(120))
     status: Mapped[str] = mapped_column(String(20), default="pending")
@@ -433,6 +470,13 @@ class CitizenScienceLog(VerifiedReport, Base):
     expected_harvest_tons: Mapped[float | None] = mapped_column(Float)
     reported_harvest_tons: Mapped[float | None] = mapped_column(Float)
     cultivated_area_hectares: Mapped[float | None] = mapped_column(Float)
+    harvested_area_hectares: Mapped[float | None] = mapped_column(Float)
+    observed_quantity: Mapped[float | None] = mapped_column(Float)
+    harvest_unit: Mapped[str | None] = mapped_column(String(10))
+    observation_type: Mapped[str | None] = mapped_column(String(30))
+    data_source: Mapped[str | None] = mapped_column(String(255))
+    reference_year: Mapped[int | None] = mapped_column(Integer)
+    reporting_date: Mapped[date | None] = mapped_column(Date)
     harvest_date: Mapped[date | None] = mapped_column(Date)
     season: Mapped[str | None] = mapped_column(String(20), index=True)
     pest_or_disease: Mapped[str | None] = mapped_column(String(120))
@@ -456,6 +500,9 @@ class IrrigationClimateLog(VerifiedReport, Base):
     operational_status: Mapped[str | None] = mapped_column(String(30))
     bottleneck_category: Mapped[str | None] = mapped_column(String(30))
     fault_description: Mapped[str | None] = mapped_column(Text)
+    observation_date: Mapped[date | None] = mapped_column(Date, index=True)
+    gauge_code: Mapped[str | None] = mapped_column(String(80))
+    data_source: Mapped[str | None] = mapped_column(String(255))
     rainfall_mm: Mapped[float | None] = mapped_column(Float)
     data_origin: Mapped[str] = data_origin_column()
     latitude: Mapped[float | None] = mapped_column(Float)
@@ -547,3 +594,56 @@ class IncidentEvent(Base):
     action_taken: Mapped[str | None] = mapped_column(Text)
     changed_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class RainfallReference(Base):
+    """Sourced historical mean for one explicitly defined comparison window/location."""
+    __tablename__ = "rainfall_references"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sector_id: Mapped[int | None] = mapped_column(ForeignKey("sectors.id"), index=True)
+    scheme_id: Mapped[int | None] = mapped_column(ForeignKey("irrigation_schemes.id"), index=True)
+    period_start: Mapped[date] = mapped_column(Date)
+    period_end: Mapped[date] = mapped_column(Date)
+    reference_start_year: Mapped[int] = mapped_column(Integer)
+    reference_end_year: Mapped[int] = mapped_column(Integer)
+    mean_rainfall_mm: Mapped[float] = mapped_column(Float)
+    source: Mapped[str] = mapped_column(String(255))
+    document_reference: Mapped[str] = mapped_column(String(255))
+    data_origin: Mapped[str] = data_origin_column()
+    approved_at: Mapped[date | None] = mapped_column(Date)
+    approved_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), server_default=func.now())
+
+
+class AssetOutage(Base):
+    """Explicit recorded outage interval; never inferred from condition-report frequency."""
+    __tablename__ = "asset_outages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    asset_id: Mapped[int] = mapped_column(ForeignKey("scheme_assets.id"), index=True)
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    ended_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    category: Mapped[str] = mapped_column(String(30))
+    description: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(255))
+    repair_status: Mapped[str] = mapped_column(String(20), default="reported", server_default="reported")
+    data_origin: Mapped[str] = data_origin_column()
+    created_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), server_default=func.now())
+
+
+class AssetMaintenance(Base):
+    """Append-only inspection, preventive maintenance or repair event."""
+    __tablename__ = "asset_maintenance"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    asset_id: Mapped[int] = mapped_column(ForeignKey("scheme_assets.id"), index=True)
+    cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"), index=True)
+    outage_id: Mapped[int | None] = mapped_column(ForeignKey("asset_outages.id"), index=True)
+    performed_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    kind: Mapped[str] = mapped_column(String(20))
+    action: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(255))
+    restored: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    data_origin: Mapped[str] = data_origin_column()
+    created_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), server_default=func.now())

@@ -100,7 +100,7 @@ def test_evaluation_lists_evidence_and_never_computes_incomparable_yields(client
     assert row["outcomes"]["crops"][0] == {
         "crop": "Maize", "reports": 1, "with_reported_tons": 1,
         "reported_tons": 3.0, "expected_tons": 0.0,
-        "cultivated_area_hectares": 0.0, "with_area": 0,
+        "harvested_area_hectares": 0.0, "cultivated_area_hectares": 0.0, "with_area": 0,
         "yield_tons_per_hectare": None,
     }
     achievement = row["outcomes"]["yield_achievement"]

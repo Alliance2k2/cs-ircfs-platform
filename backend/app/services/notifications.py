@@ -16,16 +16,19 @@ def notify_cell(db: Session, cell_id: int | None, message: str, preview: bool) -
         raise HTTPException(status_code=422, detail="This record has no cell, so the affected community cannot be identified")
     cell = db.get(Cell, cell_id)
     phones = list(db.scalars(select(FieldUser.phone_number).where(
-        FieldUser.cell_id == cell_id, FieldUser.is_active.is_(True), FieldUser.opted_out_at.is_(None))))
+        FieldUser.cell_id == cell_id, FieldUser.data_origin != "simulator", FieldUser.is_active.is_(True), FieldUser.opted_out_at.is_(None))))
+    statuses = []
     if not preview:
         for phone in phones:
-            deliver(db, phone, message, purpose="close_loop", cell_id=cell_id)
+            statuses.append(deliver(db, phone, message, purpose="close_loop", cell_id=cell_id).status)
     return {
         "preview": preview,
         "cell": cell.name if cell else f"Cell #{cell_id}",
         "recipients": len(phones),
         "message": message,
-        "sent": 0 if preview else len(phones),
+        "sent": statuses.count("sent"),
+        "queued": statuses.count("queued"),
+        "dry_run": statuses.count("dry_run"),
     }
 
 

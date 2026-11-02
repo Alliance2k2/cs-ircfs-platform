@@ -11,6 +11,8 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BackendRoot = Join-Path $ProjectRoot "backend"
 $EnvironmentFile = Join-Path $ProjectRoot ".env"
+$LocalPython = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+$Python = if (Test-Path $LocalPython) { $LocalPython } else { "python" }
 
 if (-not (Test-Path $EnvironmentFile)) {
     Copy-Item (Join-Path $ProjectRoot ".env.example") $EnvironmentFile
@@ -22,27 +24,34 @@ Push-Location $BackendRoot
 # under "Stop", so native commands are checked through $LASTEXITCODE instead.
 $ErrorActionPreference = "Continue"
 try {
-    python -c "import fastapi, uvicorn, sqlalchemy, pydantic_settings, alembic, geoalchemy2, httpx" 2>$null
+    & $Python -c "import fastapi, uvicorn, sqlalchemy, pydantic_settings, alembic, geoalchemy2, httpx" 2>$null
     if ($LASTEXITCODE -ne 0) {
         throw "Python dependencies are missing. Run: python -m pip install -r backend/requirements.txt"
     }
-    python -c "import google.auth" 2>$null
+    & $Python -c "import google.auth" 2>$null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Note: google-auth is not installed, so 'Continue with Google' is disabled. Email sign-in works." -ForegroundColor Yellow
     }
 
     if ($Demo -or $ResetDemo) {
         $DemoDatabase = Join-Path $BackendRoot "demo.db"
-        # Always delete the demo database so migrations start clean.
-        # The demo database holds invented data only — nothing is lost.
-        if (Test-Path $DemoDatabase) { Remove-Item $DemoDatabase -Confirm:$false }
+        # Preserve training work on ordinary restarts; reset only when explicitly requested.
+        if ($ResetDemo -and (Test-Path $DemoDatabase)) { Remove-Item -LiteralPath $DemoDatabase -Confirm:$false }
         # Environment variables override .env for this window only.
         $env:DATABASE_URL = "sqlite:///" + ($DemoDatabase -replace "\\", "/")
         $env:ENVIRONMENT = "development"
         $env:REQUIRE_API_KEY = "false"
-        python -m alembic upgrade head
+        $env:DEV_AUTH_BYPASS = "true"
+        $env:SMS_PROVIDER = "dry_run"
+        $env:AIRTIME_PROVIDER = "dry_run"
+        $env:ALLOW_LIVE_MESSAGES = "false"
+        $env:WEATHER_FORECAST_ENABLED = "false"
+        $env:ADVICE_SCHEDULE_ENABLED = "false"
+        $env:ALERT_PHONE_NUMBERS = ""
+        $env:OPERATIONAL_ALERT_WEBHOOK_URL = ""
+        & $Python -m alembic upgrade head
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
-        python scripts/seed_demo_data.py
+        & $Python scripts/seed_demo_data.py
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         Write-Host "DEMONSTRATION MODE: invented data in backend/demo.db. Everyone has full access; do not use for real records." -ForegroundColor Magenta
     }
@@ -50,9 +59,9 @@ try {
         $DatabaseLine = (Get-Content $EnvironmentFile | Where-Object { $_ -match "^DATABASE_URL=" } | Select-Object -First 1)
         if ($DatabaseLine -match "^DATABASE_URL=postgres") {
             Write-Host "Applying database migrations..." -ForegroundColor Cyan
-            python -m alembic upgrade head
+            & $Python -m alembic upgrade head
             if ($LASTEXITCODE -ne 0) { throw "Database migration failed. Check that PostgreSQL is running, then try again." }
-            python scripts/seed_reference_schemes.py
+            & $Python scripts/seed_reference_schemes.py
         }
     }
 
@@ -83,10 +92,10 @@ try {
     Write-Host "Refresh the browser after dashboard changes. Restart this command after Python changes."
     Write-Host "Press Ctrl+C to stop the platform."
     if ($Reload) {
-        python -m uvicorn app.main:app --host 127.0.0.1 --port $Port --reload
+        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port --reload
     }
     else {
-        python -m uvicorn app.main:app --host 127.0.0.1 --port $Port
+        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port
     }
 }
 finally {

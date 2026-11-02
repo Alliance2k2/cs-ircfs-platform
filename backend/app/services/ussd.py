@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Cell, CommunityFeedback, FieldUser, GrievanceCategory, NutritionSurvey, SchemeAsset, Sector
 from app.services.advisory import local_tip, maybe_reward, nutrition_risk_score
+from app.schemas.reports import today
 from app.services.reporting import add_months, create_crop_report, create_irrigation_report, scheme_by_prefix, scheme_for_cell
 
 # (Kinyarwanda, English) pairs. Kinyarwanda wording should be reviewed with field teams.
@@ -276,7 +277,8 @@ def rainfall(db: Session, user: FieldUser, steps: list[str]) -> UssdResult:
     if mm is None:
         return end(INVALID)
     report = create_irrigation_report(db, reporter_id=user.id, cell_id=user.cell_id, scheme_id=scheme_for_cell(db, user.cell_id),
-                                      infrastructure_name="Citizen rain gauge", rainfall_mm=mm)
+                                      infrastructure_name="Citizen rain gauge", rainfall_mm=mm,
+                                      observation_date=today(), data_source="Citizen gauge via USSD")
     reward = reward_line(db, user)
     tip = local_tip(db, user)
     return end((f"Murakoze! Imvura {mm} mm yanditswe.{reward[0]}\n{tip}", f"Thank you! {mm} mm recorded.{reward[1]}"), "irrigation_report", report.id)

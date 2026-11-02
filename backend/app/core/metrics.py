@@ -7,12 +7,15 @@ _http_statuses: dict[str, int] = defaultdict(int)
 _http_paths: dict[str, int] = defaultdict(int)
 _http_latency_total_ms: dict[str, float] = defaultdict(float)
 _http_requests_total = 0
+MAX_ROUTE_KEYS = 500
 
 
 def record_http_request(method: str, path: str, status: int, duration_ms: float) -> None:
     global _http_requests_total
     route_key = f"{method} {path}"
     with _lock:
+        if route_key not in _http_paths and len(_http_paths) >= MAX_ROUTE_KEYS:
+            route_key = "OTHER /overflow"
         _http_requests_total += 1
         _http_statuses[str(status)] += 1
         _http_paths[route_key] += 1

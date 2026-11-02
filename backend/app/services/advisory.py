@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -21,7 +21,7 @@ from app.db.models import (
 from app.services.evidence import counted
 from app.services.forecast import rainfall_forecast
 from app.services.rainfall import aggregate_gauges
-from app.services.sms import deliver, send_airtime
+from app.services.sms import deliver, live, send_airtime
 
 KIGALI = timezone(timedelta(hours=2))
 WEEKDAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
@@ -93,19 +93,26 @@ def with_forecast(advice: IrrigationAdvice, forecast_mm: float | None, dry_mm: f
 
 def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int]]:
     """Return {sector_id: (total_mm, readings)} for citizen rain-gauge readings in the window."""
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    today = datetime.now(KIGALI).date()
+    first_day = today - timedelta(days=days - 1)
+    cutoff = datetime.combine(first_day, datetime.min.time(), tzinfo=KIGALI).astimezone(timezone.utc)
     rows = db.execute(
-        select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
+        select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id,
+               IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at, IrrigationClimateLog.observation_date)
         .join(Cell, Cell.id == IrrigationClimateLog.cell_id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
+        .where(IrrigationClimateLog.rainfall_mm.is_not(None), counted(IrrigationClimateLog), IrrigationClimateLog.verification_status != "rejected",
+               or_(IrrigationClimateLog.observation_date.between(first_day, today),
+                   and_(IrrigationClimateLog.observation_date.is_(None), IrrigationClimateLog.created_at >= cutoff)))
     ).all()
     # Deduplicate through gauge identity, cap readings and daily gauge totals, then average
     # the gauges in a sector rather than counting every submitted row as independent rain.
     gauges: dict[int, dict[tuple, float]] = {}
     readings: dict[int, int] = {}
     per_sector_rows: dict[int, list[tuple]] = {}
-    for sector_id, reporter_id, cell_id, mm, created_at in rows:
-        gauge_key = (reporter_id, cell_id if reporter_id is None else None)
+    for sector_id, reporter_id, cell_id, mm, created_at, observation_date in rows:
+        if observation_date is not None:
+            created_at = datetime.combine(observation_date, datetime.min.time(), tzinfo=KIGALI)
+        gauge_key = (reporter_id, cell_id)
         per_sector_rows.setdefault(sector_id, []).append((gauge_key, created_at, mm))
     for sector_id, gauge_rows in per_sector_rows.items():
         totals, counts = aggregate_gauges(gauge_rows)
@@ -144,6 +151,7 @@ def sector_schedule(db: Session) -> list[dict]:
                      "threshold_dry_mm": calibrated[0] if calibrated else settings.dry_spell_threshold_mm,
                      "threshold_wet_mm": calibrated[1] if calibrated else settings.wet_spell_threshold_mm,
                      "threshold_source": sources.get(sector.id),
+                     "threshold_status": "historically_calibrated" if sources.get(sector.id) else "starting_values",
                      "latitude": sector.latitude, "longitude": sector.longitude})
     return rows
 
@@ -155,7 +163,7 @@ def sector_recipients(db: Session, sector_id: int) -> list[tuple[str, int | None
     """
     return db.execute(
         select(FieldUser.phone_number, FieldUser.cell_id).join(Cell, Cell.id == FieldUser.cell_id)
-        .where(Cell.sector_id == sector_id, FieldUser.is_active.is_(True), FieldUser.opted_out_at.is_(None),
+        .where(Cell.sector_id == sector_id, FieldUser.data_origin != "simulator", FieldUser.is_active.is_(True), FieldUser.opted_out_at.is_(None),
                FieldUser.role.in_([UserRole.cooperative_leader, UserRole.citizen_science_monitor, UserRole.farmer]))
     ).all()
 
@@ -207,6 +215,8 @@ def _aggregate_status(statuses: list[str]) -> str:
         return "sent"
     if all(status == "dry_run" for status in statuses):
         return "dry_run"
+    if all(status == "queued" for status in statuses):
+        return "queued"
     if all(status == "failed" for status in statuses):
         return "failed"
     return "partial"
@@ -360,19 +370,17 @@ def maybe_reward(db: Session, user: FieldUser, from_nutrition_survey: bool = Fal
     reward = IncentiveReward(field_user_id=user.id, phone_number=user.phone_number, amount_rwf=amount,
                              milestone=count, reason=reason, status="pending")
     try:
-        # Claim the milestone transactionally before any provider call. Committing here
-        # makes a payout safe across retries, workers, and process crashes.
+        # Claim the milestone in the caller's transaction. Only the post-commit worker
+        # may contact a live provider; a rolled-back report cannot earn a payout.
         with db.begin_nested():
             db.add(reward)
             db.flush()
-        db.commit()
     except IntegrityError:
         if reward in db:
             db.expunge(reward)
-        db.rollback()
         return None  # this milestone has already been paid
-    result = send_airtime(user.phone_number, amount)
+    result = ({"status": "queued"} if live(settings.airtime_provider)
+              else send_airtime(user.phone_number, amount))
     reward.status = result["status"]
     reward.provider_id = result.get("provider_id")
-    db.commit()
     return reward
