@@ -9,6 +9,7 @@ import { cx } from "@/lib/cx";
 import { relativeTime } from "@/lib/format";
 import { API_BASE } from "@/services/api/client";
 import { CommandPalette } from "./CommandPalette";
+import { ThemeToggle } from "./ThemeToggle";
 import { ROUTES } from "./nav";
 
 async function signOut() {
@@ -169,6 +170,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
           </Popover>
         )}
 
+        <ThemeToggle />
         <div role="group" aria-label={t("lang.label")} className="flex rounded-full border border-line p-0.5">
           {(["en", "rw"] as Language[]).map((code) => (
             <button key={code} type="button" aria-pressed={lang === code} onClick={() => setLang(code)}
@@ -205,10 +207,10 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
                     <Settings aria-hidden className="h-4 w-4 text-muted" />
                     {t("nav.admin")}
                   </Link>
-                  <a href="/management.html" className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">
+                  <Link to="/management" className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">
                     <SlidersHorizontal aria-hidden className="h-4 w-4 text-muted" />
                     {t("nav.management")}
-                  </a>
+                  </Link>
                 </>
               )}
               <a href="/" className="flex items-center gap-2 rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">

@@ -1,7 +1,7 @@
 """Calibration reference schemas (WP7): grievance categories and scheme assets."""
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class GrievanceCategoryCreate(BaseModel):
@@ -14,7 +14,9 @@ class GrievanceCategoryCreate(BaseModel):
     @field_validator("label_rw", "label_en")
     @classmethod
     def tidy(cls, value: str) -> str:
-        return " ".join(value.split())
+        value = " ".join(value.split())
+        if not value: raise ValueError("A reference label cannot be blank")
+        return value
 
     @field_validator("code")
     @classmethod
@@ -31,7 +33,15 @@ class GrievanceCategoryUpdate(BaseModel):
     @field_validator("label_rw", "label_en")
     @classmethod
     def tidy(cls, value: str | None) -> str | None:
-        return " ".join(value.split()) if value else value
+        if value is None or not value.strip(): raise ValueError("A reference label cannot be blank or null")
+        return " ".join(value.split())
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_null_required(cls, values):
+        if isinstance(values, dict) and any(key in values and values[key] is None for key in ('label_rw', 'label_en', 'sort_order', 'is_active')):
+            raise ValueError("Required reference fields cannot be null")
+        return values
 
 
 class GrievanceCategoryRead(BaseModel):
@@ -57,7 +67,9 @@ class SchemeAssetCreate(BaseModel):
     @field_validator("name_rw", "name_en")
     @classmethod
     def tidy(cls, value: str) -> str:
-        return " ".join(value.split())
+        value = " ".join(value.split())
+        if not value: raise ValueError("A reference label cannot be blank")
+        return value
 
 
 class SchemeAssetUpdate(BaseModel):
@@ -71,7 +83,15 @@ class SchemeAssetUpdate(BaseModel):
     @field_validator("name_rw", "name_en")
     @classmethod
     def tidy(cls, value: str | None) -> str | None:
-        return " ".join(value.split()) if value else value
+        if value is None or not value.strip(): raise ValueError("A reference label cannot be blank or null")
+        return " ".join(value.split())
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_null_required(cls, values):
+        if isinstance(values, dict) and any(key in values and values[key] is None for key in ('name_rw', 'name_en', 'is_active')):
+            raise ValueError("Required reference fields cannot be null")
+        return values
 
 
 class SchemeAssetRead(BaseModel):

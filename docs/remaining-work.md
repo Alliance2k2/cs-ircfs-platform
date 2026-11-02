@@ -1,5 +1,7 @@
 # Remaining-work register
 
+> Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 > Latest implementation status: [Batch 6 platform reliability](batch6-platform-reliability.md). Earlier milestone tables below are historical; the Batch 6 section at the end lists current gaps.
 
 Status of the modernization brief. **Implemented** means code exists. **Tested** means automated tests cover it. **Blocked** means it needs something outside the repository. **Field validation** means it works technically but must be proven with people in Bugesera. Updated at the end of Phase 2 (October 2026).

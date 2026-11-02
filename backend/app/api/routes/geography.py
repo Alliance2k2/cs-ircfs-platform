@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from geoalchemy2.functions import ST_AsGeoJSON
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from app.services.audit import personal_read
 
 from app.core.scope import allowed_cells, cell_filter
 from app.core.security import Principal, require_roles
@@ -51,6 +52,7 @@ staff = Depends(require_roles(UserRole.district_officer, UserRole.district_plann
 
 @router.get("/farmers")
 def list_farmer_locations(db: Session = Depends(get_db), principal: Principal = staff) -> list[dict]:
+    personal_read(db, principal, "farmer_locations")
     if not _spatial(db):
         return []
     rows = db.execute(select(FieldUser.id, FieldUser.full_name, ST_AsGeoJSON(FieldUser.location))

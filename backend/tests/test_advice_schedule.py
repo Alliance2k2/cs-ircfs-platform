@@ -26,7 +26,7 @@ def seed(db, readings: int = 1) -> Sector:
     db.flush()
     db.add(FieldUser(phone_number="+250788000001", role=UserRole.citizen_science_monitor, cell_id=cell.id))
     for index in range(readings):
-        db.add(IrrigationClimateLog(cell_id=cell.id, rainfall_mm=1.0 + index, reporter_id=None))
+        db.add(IrrigationClimateLog(cell_id=cell.id, rainfall_mm=1.0 + index, reporter_id=None, gauge_code="test-gauge"))
     db.commit()
     return sector
 

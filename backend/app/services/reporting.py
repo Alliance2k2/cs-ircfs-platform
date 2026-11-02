@@ -37,6 +37,7 @@ from app.services.cases import auto_create_case
 from app.services.cooperatives import participation as cooperative_participation
 from app.services.evidence import counted
 from app.services.rainfall import aggregate_gauges
+from app.services.climate import daily_summary, observation_reports, observed_day
 from app.services.scheme_coverage import covering_sectors
 
 KIGALI = timezone(timedelta(hours=2))
@@ -95,7 +96,7 @@ def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
     """
     from app.services.sms import simulation_phone
     phone_number = simulation_phone(phone_number)
-    user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
+    user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number).with_for_update())
     if user is not None:
         if user.consent_at is None:
             user.consent_at = datetime.now(timezone.utc)
@@ -112,7 +113,7 @@ def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
     except IntegrityError:
         if user in db:
             db.expunge(user)
-        user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number))
+        user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number).with_for_update())
         if user is None:
             raise
     return user
@@ -157,13 +158,16 @@ def headline(db: Session, start: datetime, end: datetime) -> dict:
     def count(model, *conditions):
         return db.scalar(select(func.count()).select_from(model).where(model.created_at >= start, model.created_at < end, *evidence(model), *conditions)) or 0
 
+    window_start = start.astimezone(KIGALI).date()
+    window_end = min((end.astimezone(KIGALI) - timedelta(days=1)).date(), datetime.now(KIGALI).date())
+    rain_summary = daily_summary(observation_reports(db, window_start, window_end), window_start, window_end)
     crop = count(CitizenScienceLog)
     water = count(IrrigationClimateLog)
     return {
         "reports": crop + water,
         "harvest_reports": count(CitizenScienceLog, CitizenScienceLog.pest_or_disease.is_(None)),
         "pest_reports": count(CitizenScienceLog, CitizenScienceLog.pest_or_disease.is_not(None)),
-        "rain_readings": count(IrrigationClimateLog, IrrigationClimateLog.rainfall_mm.is_not(None)),
+        "rain_readings": sum(day["gauges"] for day in rain_summary["daily"]),
         "asset_faults": count(IrrigationClimateLog, IrrigationClimateLog.operational_status.in_(["faulty", "offline"])),
         "grievances": count(CommunityFeedback),
         "nutrition_surveys": count(NutritionSurvey),
@@ -245,21 +249,19 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
         if sector_of(cell_id):
             entry["sectors"].add(sector_of(cell_id))
 
-    per_sector_rows: dict[str, list[tuple]] = {}
-    for reporter_id, cell_id, mm, created_at in db.execute(
-        select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), *in_month(IrrigationClimateLog.created_at), counted(IrrigationClimateLog))
-    ):
-        name = sector_of(cell_id) or "Location not set"
-        gauge = (reporter_id, cell_id if reporter_id is None else None)
-        per_sector_rows.setdefault(name, []).append((gauge, created_at, mm))
+    observation_start = start.astimezone(KIGALI).date()
+    observation_end = min((end.astimezone(KIGALI) - timedelta(days=1)).date(), datetime.now(KIGALI).date())
+    per_sector_rows = {}
+    for report in observation_reports(db, observation_start, observation_end):
+        per_sector_rows.setdefault(sector_of(report.cell_id) or "Location not set", []).append(report)
     rainfall = []
-    for name, gauge_rows in per_sector_rows.items():
-        totals, counts = aggregate_gauges(gauge_rows)
-        rainfall.append({"sector": name,
-                         "rainfall_mm": round(sum(totals.values()) / len(totals), 1) if totals else 0.0,
-                         "gauges": len(totals), "readings": sum(counts.values())})
-    rainfall.sort(key=lambda row: row["rainfall_mm"])
+    for name, reports in per_sector_rows.items():
+        summary = daily_summary(reports, observation_start, observation_end)
+        rainfall.append({"sector": name, "rainfall_mm": summary["partial_total_mm"],
+            "gauges": summary["gauges"], "readings": sum(day["gauges"] for day in summary["daily"]),
+            "coverage_percent": summary["coverage_percent"], "missing_days": summary["missing_days"],
+            "legacy_date_reports": summary["legacy_date_reports"], "basis": "observed_daily_means"})
+    rainfall.sort(key=lambda row: (row["rainfall_mm"] is None, row["rainfall_mm"] or 0))
 
     surveys = list(db.scalars(select(NutritionSurvey).where(*in_month(NutritionSurvey.created_at))))
     risk_by_cell: dict[int | None, list[int]] = {}
@@ -277,7 +279,7 @@ def build_monthly_report(db: Session, month: str | None = None) -> dict:
                                                .group_by(AdvisoryMessage.status)).all())
     rewards = db.execute(select(func.count(), func.coalesce(func.sum(IncentiveReward.amount_rwf), 0))
                          .join(FieldUser, FieldUser.id == IncentiveReward.field_user_id)
-                         .where(IncentiveReward.status == "sent", counted(FieldUser), *in_month(IncentiveReward.created_at))).one()
+                         .where(IncentiveReward.status.in_(["sent", "delivered"]), counted(FieldUser), *in_month(IncentiveReward.created_at))).one()
 
     start_kigali = start.astimezone(KIGALI)
     return {
@@ -340,22 +342,24 @@ def build_trends(db: Session, months: int = 12) -> dict:
             row["reported_tons"] += reported or 0
             if planted is not None:
                 row["plantings"] += 1
-    gauges: dict[str, dict] = {}
-    for created, status, mm, reporter_id, cell_id in db.execute(select(IrrigationClimateLog.created_at, IrrigationClimateLog.operational_status,
-                                                                       IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id)
-                                                       .where(IrrigationClimateLog.created_at >= start, counted(IrrigationClimateLog))):
-        row = bucket(created)
-        if not row:
-            continue
-        row["reports"] += 1
-        row["asset_faults"] += 1 if status in ("faulty", "offline") else 0
-        if mm is not None:
-            row["rain_readings"] += 1
-            gauge = (reporter_id, cell_id if reporter_id is None else None)
-            gauges.setdefault(row["month"], {}).setdefault(gauge, 0.0)
-            gauges[row["month"]][gauge] += float(mm)
-    for key, totals in gauges.items():
-        rows[key]["rainfall_mm"] = round(sum(totals.values()) / len(totals), 1)
+    for created, status in db.execute(select(IrrigationClimateLog.created_at, IrrigationClimateLog.operational_status)
+                                      .where(IrrigationClimateLog.created_at >= start, counted(IrrigationClimateLog))):
+        if row := bucket(created):
+            row["reports"] += 1
+            row["asset_faults"] += 1 if status in ("faulty", "offline") else 0
+    rainfall_groups = {}
+    today = datetime.now(KIGALI).date()
+    for report in observation_reports(db, start.astimezone(KIGALI).date(), today):
+        rainfall_groups.setdefault(observed_day(report).strftime("%Y-%m"), []).append(report)
+    for key in keys:
+        period_start, period_end, _ = month_window(key)
+        summary = daily_summary(rainfall_groups.get(key, []), period_start.astimezone(KIGALI).date(),
+            min((period_end.astimezone(KIGALI) - timedelta(days=1)).date(), today))
+        rows[key]["rainfall_mm"] = summary["partial_total_mm"]
+        rows[key]["rain_readings"] = sum(day["gauges"] for day in summary["daily"])
+        rows[key]["rainfall_coverage_percent"] = summary["coverage_percent"]
+        rows[key]["rainfall_missing_days"] = summary["missing_days"]
+        rows[key]["rainfall_legacy_date_reports"] = summary["legacy_date_reports"]
     for (created,) in db.execute(select(CommunityFeedback.created_at).where(CommunityFeedback.created_at >= start, counted(CommunityFeedback))):
         if row := bucket(created):
             row["grievances"] += 1

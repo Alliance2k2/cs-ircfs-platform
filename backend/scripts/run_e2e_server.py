@@ -39,6 +39,8 @@ def sandbox_environment(database: Path, port: int) -> None:
         "CORS_ORIGINS": f"http://127.0.0.1:{port}",
         "SMS_PROVIDER": "dry_run",
         "AIRTIME_PROVIDER": "dry_run",
+        "ANONYMOUS_REPLY_QUEUE_ENABLED": "false",
+        "ALLOW_LIVE_MESSAGES": "false",
         "AFRICAS_TALKING_USERNAME": "",
         "AFRICAS_TALKING_API_KEY": "",
         "GOOGLE_CLIENT_ID": "",
@@ -72,11 +74,12 @@ def prepare(database: Path) -> None:
         # Synthetic field-origin fixtures belong ONLY to this disposable E2E database.
         # The production/demo seed continues to mark every invented record as demo.
         from app.services.evidence import ORIGIN_MODELS
-        from app.db.models import CitizenScienceLog
+        from app.db.models import CitizenScienceLog, AdvisoryMessage
         for model in ORIGIN_MODELS:
             db.execute(update(model).values(data_origin="field"))
         # Exercise a mixed database: this row must never enter official figures.
         db.add(CitizenScienceLog(crop_type="E2E excluded demo", reported_harvest_tons=99999, data_origin="demo"))
+        db.add(AdvisoryMessage(phone_number="+250788555999", message="Synthetic delivery review fixture", status="unknown", purpose="e2e_review"))
         for email, (role, name) in ACCOUNTS.items():
             if db.scalar(select(PlatformAccount).where(PlatformAccount.email == email)) is None:
                 db.add(PlatformAccount(email=email, full_name=name, role=UserRole(role), status="active", password_hash=hash_password(PASSWORD)))

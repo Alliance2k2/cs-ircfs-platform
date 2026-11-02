@@ -18,7 +18,7 @@ from app.core.ratelimit import limiter
 from app.core.security import SESSION_COOKIE, Principal, account_for_token, hash_token, require_roles
 from app.db.models import AuthSession, PlatformAccount, Sector, UserRole
 from app.db.session import get_db
-from app.services.audit import record
+from app.services.audit import record, personal_read
 from app.schemas import AccountLogin, AccountRead, AccountRegister, AccountUpdate
 
 router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])
@@ -196,7 +196,8 @@ def logout(response: Response, authorization: str | None = Header(default=None),
 
 
 @router.get("/accounts", response_model=list[AccountRead])
-def list_accounts(db: Session = Depends(get_db), _: object = admin):
+def list_accounts(db: Session = Depends(get_db), principal: Principal = admin):
+    personal_read(db, principal, "platform_account")
     return list(db.scalars(select(PlatformAccount).order_by(PlatformAccount.id.desc())))
 
 

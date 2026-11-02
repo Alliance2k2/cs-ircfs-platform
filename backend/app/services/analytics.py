@@ -74,7 +74,7 @@ def dashboard_summary(db: Session, principal: Principal) -> DashboardSummary:
         households_surveyed=count(select(func.count()).select_from(NutritionSurvey).where(counted(NutritionSurvey))),
         average_stunting_risk=round(float(db.scalar(select(func.avg(NutritionSurvey.stunting_risk_score)).where(counted(NutritionSurvey))) or 0), 1) or None,
         rewards_paid_rwf=count(select(func.sum(IncentiveReward.amount_rwf)).join(FieldUser, FieldUser.id == IncentiveReward.field_user_id)
-                              .where(IncentiveReward.status == "sent", counted(FieldUser))),
+                              .where(IncentiveReward.status.in_(["sent", "delivered"]), counted(FieldUser))),
         field_messages=count(select(func.count()).select_from(InboundMessage).where(counted(InboundMessage))),
     )
 
@@ -237,26 +237,24 @@ def pest_heatmap(db: Session, days: int = 90) -> list[dict]:
 
 def rainfall_map(db: Session, days: int = 7) -> list[dict]:
     """Citizen-Led Rain Gauge Network: 7-day rainfall per cell and its drought-warning level."""
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    from app.services.climate import daily_summary, observation_reports, KIGALI
+    end = datetime.now(KIGALI).date()
+    start = end - timedelta(days=max(1, min(days, 366)) - 1)
     thresholds = threshold_map(db)
-    cells = db.execute(
-        select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
-        .where(Cell.latitude.is_not(None), Cell.longitude.is_not(None))
-    ).all()
+    cells = db.execute(select(Cell.id, Cell.name, Cell.latitude, Cell.longitude, Cell.sector_id)
+        .where(Cell.latitude.is_not(None), Cell.longitude.is_not(None))).all()
+    grouped = {}
+    for report in observation_reports(db, start, end):
+        grouped.setdefault(report.cell_id, []).append(report)
     result = []
     for cell_id, name, lat, lng, sector_id in cells:
-        rows = db.execute(
-            select(IrrigationClimateLog.reporter_id, IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at)
-            .where(IrrigationClimateLog.cell_id == cell_id, IrrigationClimateLog.rainfall_mm.is_not(None),
-                   IrrigationClimateLog.created_at >= cutoff, counted(IrrigationClimateLog))
-        ).all()
-        gauge_rows = [((reporter_id, cell_id if reporter_id is None else None), created_at, mm)
-                      for reporter_id, mm, created_at in rows]
-        totals, counts = aggregate_gauges(gauge_rows)
-        total = sum(totals.values()) / len(totals) if totals else 0.0
-        readings = sum(counts.values())
+        summary = daily_summary(grouped.get(cell_id, []), start, end)
+        total = summary["partial_total_mm"]
+        readings = sum(day["gauges"] for day in summary["daily"])
         result.append({"cell_id": cell_id, "cell": name, "latitude": lat, "longitude": lng,
-                       "rainfall_mm": round(total, 1), "readings": readings,
+                       "rainfall_mm": total, "readings": readings,
+                       "coverage_percent": summary["coverage_percent"], "missing_days": summary["missing_days"],
+                       "basis": "observed_daily_means", "legacy_date_reports": summary["legacy_date_reports"],
                        "level": advice_for_rainfall(total, readings, thresholds.get(sector_id)).level})
     return result
 

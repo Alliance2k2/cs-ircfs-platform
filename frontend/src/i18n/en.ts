@@ -1,8 +1,10 @@
 /** English interface text: the source of every translation key. */
+import { operations } from "./en.operations";
 import { workspaces } from "./en.workspaces";
 
 export const en = {
   ...workspaces,
+  ...operations,
   "app.name": "CS-IRCFS",
   "app.tagline": "People • Water • Food • Future",
   "app.skip": "Skip to main content",

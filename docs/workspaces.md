@@ -1,5 +1,7 @@
 # Workspaces
 
+> Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 The district dashboard at `/app/` is a React application (`frontend/`). Every page here has the same frame: a page header that states the page's purpose and when its data was last loaded, loading skeletons, an empty state that says how data arrives, and an error state with a retry. Figures come only from the API; nothing is estimated in the browser.
 
 Who can open a page follows the backend's role checks (`frontend/src/components/navigation/nav.ts`). The menu hides pages a role cannot use, and opening one by address shows who the page is for. The backend refuses the same requests, so hiding a link is a convenience, not the protection.

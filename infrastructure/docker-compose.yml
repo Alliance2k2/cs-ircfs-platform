@@ -29,7 +29,7 @@ services:
         condition: service_healthy
     ports:
       - "${PLATFORM_PORT:-8000}:8000"
-    environment:
+    environment: &platform_environment
       ENVIRONMENT: production
       DATABASE_URL: postgresql+psycopg://cs_ircfs:${POSTGRES_PASSWORD}@db:5432/cs_ircfs
       REQUIRE_API_KEY: "true"
@@ -43,6 +43,15 @@ services:
       AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME:-sandbox}
       AFRICAS_TALKING_API_KEY: ${AFRICAS_TALKING_API_KEY:-}
       SMS_SENDER_ID: ${SMS_SENDER_ID:-}
+      MESSAGE_RETENTION_DAYS: ${MESSAGE_RETENTION_DAYS:-30}
+      FIELD_USER_RETENTION_DAYS: ${FIELD_USER_RETENTION_DAYS:-730}
+      AUDIT_LOG_RETENTION_DAYS: ${AUDIT_LOG_RETENTION_DAYS:-365}
+      AUDIT_PERSONAL_READS: ${AUDIT_PERSONAL_READS:-true}
+      DELIVERY_MAX_AGE_HOURS: ${DELIVERY_MAX_AGE_HOURS:-24}
+      ANONYMOUS_REPLY_TTL_SECONDS: ${ANONYMOUS_REPLY_TTL_SECONDS:-300}
+      ANONYMOUS_REPLY_QUEUE_ENABLED: ${ANONYMOUS_REPLY_QUEUE_ENABLED:-false}
+      ANONYMOUS_REPLY_ENCRYPTION_KEY: ${ANONYMOUS_REPLY_ENCRYPTION_KEY:-}
+      ANONYMOUS_REPLY_POLICY_REFERENCE: ${ANONYMOUS_REPLY_POLICY_REFERENCE:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN:-}
     healthcheck:
@@ -50,6 +59,18 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  delivery-worker:
+    profiles: [delivery]
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      platform:
+        condition: service_healthy
+    environment: *platform_environment
+    command: ["python", "scripts/process_delivery_outbox.py", "--send", "--watch", "--interval", "10"]
 
 volumes:
   pgdata:

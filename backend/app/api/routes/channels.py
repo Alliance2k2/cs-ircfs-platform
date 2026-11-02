@@ -40,6 +40,7 @@ from app.db.models import (
 )
 from app.db.session import get_db
 from app.services import sms_keywords, ussd
+from app.services.audit import personal_read
 from app.services.reporting import find_or_register_user
 from app.services.sms import deliver, is_valid_phone, normalise_phone, simulation, simulation_phone
 
@@ -247,6 +248,7 @@ def channel_activity(limit: int = Query(default=30, ge=1, le=200), db: Session =
     """
     area = allowed_cells(db, principal)
     full = sees_personal_data(principal)
+    personal_read(db, principal, "channel_messages")
     phone = (lambda value: value) if full else mask_phone
     words = (lambda value: value) if full else (lambda _value: None)
     # Inbound messages carry no cell: an area-limited person sees messages from phones registered in their area.

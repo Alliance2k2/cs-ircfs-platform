@@ -12,12 +12,16 @@ import { useApi } from "@/services/api/hooks";
 import { activitySchema } from "@/services/api/workspaces";
 import type { z } from "zod";
 
+import { DeliveryOperations } from "./DeliveryOperations";
+import { useSession } from "@/app/providers/SessionProvider";
+
 type Activity = z.infer<typeof activitySchema>;
 type Tab = "inbound" | "outbound" | "rewards";
 
 /** Inbound USSD and SMS, outbound SMS and airtime rewards: what actually went through the phone channels. */
 export function ChannelsPage() {
   const { t, lang } = useI18n();
+  const { role } = useSession();
   const activity = useApi("channels/activity?limit=200", activitySchema, { refetchInterval: 30_000 });
   const [tab, setTab] = useState<Tab>("inbound");
   const data = activity.data;
@@ -52,7 +56,7 @@ export function ChannelsPage() {
     { key: "phone", header: t("channels.phone"), primary: true, render: (row) => <span className="font-mono text-xs">{row.phone_number ?? "—"}</span> },
     { key: "amount", header: t("channels.amount"), render: (row) => `${row.amount_rwf} RWF`, sortValue: (row) => row.amount_rwf },
     { key: "reason", header: t("channels.reason"), render: (row) => row.reason },
-    { key: "status", header: t("label.status"), render: (row) => <Badge tone={row.status === "paid" ? "good" : row.status === "failed" ? "critical" : "neutral"}>{row.status}</Badge> },
+    { key: "status", header: t("label.status"), render: (row) => <Badge tone={row.status === "sent" || row.status === "delivered" ? "good" : row.status === "failed" ? "critical" : "neutral"}>{row.status}</Badge> },
   ];
 
   const tabs: { id: Tab; label: string; icon: typeof Coins; count: number | undefined }[] = [
@@ -89,6 +93,7 @@ export function ChannelsPage() {
         Queued messages await dispatch. Sent means accepted by the provider; handset delivery is unconfirmed.
         Unknown outcomes require provider review before any resend. Dry-run records do not send SMS or airtime.
       </p>
+      {role === "administrator" && <DeliveryOperations />}
       {data && (
         <p className="text-sm text-muted">
           {t("channels.codes", { ussd: data.service_code, sms: data.sms_shortcode })}

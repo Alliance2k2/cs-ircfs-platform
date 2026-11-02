@@ -208,7 +208,7 @@ def test_missing_forecast_values_do_not_become_zero_rain(monkeypatch, values, ex
 def test_advice_uses_observation_date_and_excludes_rejected_readings(client, db, climate_world):
     from app.schemas.reports import today
     from app.services.advisory import rainfall_by_sector
-    base = {"cell_id": climate_world["cell_id"], "rainfall_mm": 100}
+    base = {"cell_id": climate_world["cell_id"], "rainfall_mm": 100, "gauge_code": "test-gauge"}
     client.post("/api/v1/irrigation-reports", json={**base, "observation_date": str(today() - timedelta(days=10))})
     zero = client.post("/api/v1/irrigation-reports", json={**base, "rainfall_mm": 0, "observation_date": str(today())})
     assert zero.status_code == 201

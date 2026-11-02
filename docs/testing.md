@@ -1,5 +1,7 @@
 # Testing
 
+> Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 Four layers, all run by CI (`.github/workflows/ci.yml`) on every pull request and every push to `main`.
 
 | Layer | Where | Command | What it proves |

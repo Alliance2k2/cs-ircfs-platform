@@ -1,5 +1,7 @@
 # Deployment and handover
 
+> Current implementation and operator instructions: [November completion](../docs/platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 This folder is the deployment package for the Bugesera District IT unit or MINAGRI (architecture Section 5, Months 5–6). It runs two Docker containers:
 
 | Container | What it is |

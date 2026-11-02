@@ -8,7 +8,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import AdvisoryMessage, FieldUser, IncentiveReward, UserRole
 from app.db.session import get_db
 from app.schemas import AdvisorySmsCreate, ScheduleBroadcast
-from app.services.audit import record
+from app.services.audit import record, personal_read
 from app.services.advisory import broadcast_advice, sector_schedule, weekly_advice_status
 from app.services.sms import deliver, is_valid_phone, normalise_phone
 
@@ -32,6 +32,7 @@ def send_advisory_sms(payload: AdvisorySmsCreate, db: Session = Depends(get_db),
 
 @router.get("/messages")
 def list_messages(limit: int = Query(default=100, ge=1, le=500), db: Session = Depends(get_db), principal: Principal = planner) -> list[dict]:
+    personal_read(db, principal, "advisory_message")
     cells = allowed_cells(db, principal)
     return [{"id": m.id, "phone_number": m.phone_number, "message": m.message, "status": m.status, "purpose": m.purpose or "advisory",
              "cell_id": m.cell_id, "created_at": m.created_at}
@@ -41,6 +42,7 @@ def list_messages(limit: int = Query(default=100, ge=1, le=500), db: Session = D
 @router.get("/incentives")
 def list_incentives(db: Session = Depends(get_db), principal: Principal = reader) -> list[dict]:
     """Airtime micro-bonuses earned by regular reporters."""
+    personal_read(db, principal, "incentive_reward")
     area = allowed_cells(db, principal)
     people = None if area is None else set(db.scalars(select(FieldUser.id).where(FieldUser.cell_id.in_(area))))
     return [{"id": r.id, "field_user_id": r.field_user_id, "phone_number": r.phone_number, "amount_rwf": r.amount_rwf, "reason": r.reason,

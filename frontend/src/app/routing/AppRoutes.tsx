@@ -26,6 +26,7 @@ const ChannelsPage = page(() => import("@/features/channels/ChannelsPage"), "Cha
 const SimulatorPage = page(() => import("@/features/simulator/SimulatorPage"), "SimulatorPage");
 const TrendsPage = page(() => import("@/features/trends/TrendsPage"), "TrendsPage");
 const MonthlyReportPage = page(() => import("@/features/monthly/MonthlyReportPage"), "MonthlyReportPage");
+const ManagementPage = page(() => import("@/features/management/ManagementPage"), "ManagementPage");
 const AdminPage = page(() => import("@/features/admin/AdminPage"), "AdminPage");
 
 const WORKSPACES: { path: string; element: ReactNode }[] = [
@@ -43,6 +44,7 @@ const WORKSPACES: { path: string; element: ReactNode }[] = [
   { path: "simulator", element: <SimulatorPage /> },
   { path: "trends", element: <TrendsPage /> },
   { path: "monthly-report", element: <MonthlyReportPage /> },
+  { path: "management", element: <ManagementPage /> },
   { path: "admin", element: <AdminPage /> },
 ];
 

@@ -42,6 +42,6 @@ admin("an administrator sees Administration and Platform management without scro
 
   await page.getByRole("button", { name: "Account menu" }).click();
   await page.getByRole("link", { name: "Platform management" }).last().click();
-  await expect(page).toHaveURL(/\/management\.html/);
+  await expect(page).toHaveURL(/\/app\/management$/);
   await expect(page).not.toHaveURL(/login\.html/);
 });

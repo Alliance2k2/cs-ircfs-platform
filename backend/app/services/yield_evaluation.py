@@ -76,11 +76,15 @@ def compare(baseline: SchemeBaseline, reports: list) -> dict:
     total = sum(r.reported_harvest_tons for r in eligible)
     observed = total / area if area > 0 else None
     target = target_tonnes(baseline)
+    sample = [r.reported_harvest_tons / r.harvested_area_hectares for r in eligible]
     return {"baseline_id": baseline.id, "crop": baseline.crop_type, "season": baseline.season,
             "reference_year": baseline.reference_year, "source": baseline.official_source,
             "document_reference": baseline.document_reference, "target_tons_per_hectare": target,
             "observed_tons_per_hectare": round(observed, 6) if observed is not None else None,
             "observed_tons": total, "harvested_area_hectares": area, "eligible_reports": len(eligible),
+            "sample_min_tons_per_hectare": min(sample) if sample else None,
+            "sample_max_tons_per_hectare": max(sample) if sample else None,
+            "uncertainty_note": "Descriptive sample range only; no population confidence interval or causal effect is established.",
             "value": round(100 * observed / target, 2) if observed is not None and target > 0 else None}
 
 

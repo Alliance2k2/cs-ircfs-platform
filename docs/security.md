@@ -1,5 +1,7 @@
 # Security and privacy
 
+> Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 This page records the platform's security decisions, the settings that enforce them, and what is still open. It was written during the October 2026 audit ([audit-2026-10.md](audit-2026-10.md)).
 
 ## What the platform protects

@@ -1,5 +1,9 @@
 /** English text for the workspaces and the shell. Merged into en.ts. */
 export const workspaces = {
+  "theme.dark": "Dark mode",
+  "theme.useDark": "Use dark mode",
+  "theme.useLight": "Use light mode",
+  "language.partial": "Some labels are shown in English while Kinyarwanda review is pending.",
   "science.baselines": "Official crop and season targets",
   "science.baselineHint": "Create a sourced version, then approve explicitly. Legacy targets remain unapproved. Demonstration targets cannot be approved.",
   "science.crop": "Crop",
@@ -411,7 +415,7 @@ export const workspaces = {
   "trends.severePests": "Severe pest alerts",
   "trends.assetFaults": "Asset fault reports",
   "trends.resolved": "Resolved",
-  "trends.rainNote": "Monthly total per rain gauge, averaged over the gauges that reported.",
+  "trends.rainNote": "Partial sum of daily means across identified gauges, using observation dates. Missing days are not zero; legacy dates use receipt day.",
   "trends.provenance": "Source: citizen reports by USSD, SMS and the web. Simulator tests are left out. Harvest figures come from a sample of farmers.",
   // Monthly report
   "monthly.eyebrow": "Reports",

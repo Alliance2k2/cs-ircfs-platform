@@ -25,6 +25,20 @@ def observed_day(report):
     return report.observation_date or created.astimezone(KIGALI).date()
 
 
+def observation_reports(db, start, end, cells=None):
+    """Current field observations selected by observation date, with labelled legacy fallback."""
+    query = select(IrrigationClimateLog).where(counted(IrrigationClimateLog),
+        IrrigationClimateLog.rainfall_mm.is_not(None),
+        IrrigationClimateLog.verification_status != "rejected",
+        or_(IrrigationClimateLog.observation_date.between(start, end), and_(
+            IrrigationClimateLog.observation_date.is_(None),
+            IrrigationClimateLog.created_at >= datetime.combine(start, datetime.min.time(), tzinfo=KIGALI).astimezone(timezone.utc),
+            IrrigationClimateLog.created_at < datetime.combine(end + timedelta(days=1), datetime.min.time(), tzinfo=KIGALI).astimezone(timezone.utc))))
+    if cells is not None:
+        query = query.where(IrrigationClimateLog.cell_id.in_(cells))
+    return list(db.scalars(query))
+
+
 def daily_summary(reports, start: date, end: date):
     days = [start + timedelta(days=n) for n in range((end - start).days + 1)]
     latest = {}
@@ -101,8 +115,9 @@ def rainfall_analysis(db, principal, start, end, sector_id=None, scheme_id=None,
         if ref is None:
             raise HTTPException(404, "Reference not found")
         if principal.sector_ids is not None:
-            ref_sector = ref.sector_id or (db.get(IrrigationScheme, ref.scheme_id).sector_id if ref.scheme_id else None)
-            if ref_sector not in principal.sector_ids:
+            from app.services.scheme_coverage import sector_ids_for_scheme
+            reference_sectors = ([ref.sector_id] if ref.sector_id else sector_ids_for_scheme(db, db.get(IrrigationScheme, ref.scheme_id)))
+            if not set(reference_sectors).intersection(principal.sector_ids):
                 raise HTTPException(404, "Reference not found")
         if (ref.sector_id, ref.scheme_id, ref.period_start, ref.period_end) != (sector_id, scheme_id, start, end):
             anomaly["status"] = "reference_location_or_period_mismatch"

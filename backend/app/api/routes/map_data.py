@@ -12,6 +12,8 @@ from app.db.models import CitizenScienceLog, FieldUser, IrrigationClimateLog, Ir
 from app.db.session import get_db
 from app.schemas import MapData, MapFeature
 from app.services.evidence import counted
+from app.services.audit import personal_read
+from app.services.climate import observed_day
 
 router = APIRouter(prefix="/api/v1", tags=["map"])
 
@@ -38,18 +40,21 @@ def map_data(db: Session = Depends(get_db), principal: Principal = reader) -> Ma
     unlocated = 0
     area = allowed_cells(db, principal)
     personal = sees_personal_data(principal)
+    personal_read(db, principal, "personal_map")
     postgis = db.bind.dialect.name == "postgresql"
     for scheme in db.scalars(select(IrrigationScheme).where(IrrigationScheme.is_active.is_(True)).order_by(IrrigationScheme.name)):
         if scheme.latitude is not None and scheme.longitude is not None:
             features.append(MapFeature(id=f"scheme-{scheme.id}", feature_type="scheme", name=scheme.name, latitude=scheme.latitude, longitude=scheme.longitude, scheme_id=scheme.id))
-    for report in db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, area), counted(IrrigationClimateLog))
+    for report in db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, area), counted(IrrigationClimateLog), IrrigationClimateLog.verification_status != "rejected")
                              .order_by(IrrigationClimateLog.id.desc())):
         position = located(report)
         if position is None:
             unlocated += 1
             continue
         is_rain = report.operational_status is None and report.rainfall_mm is not None
+        observation_note = f"Observed {observed_day(report).isoformat()}" if is_rain else None
         details = (report.fault_description or report.bottleneck_category) if personal else report.bottleneck_category
+        details = observation_note if is_rain else details
         features.append(MapFeature(id=f"irrigation-{report.id}", feature_type="rainfall" if is_rain else "irrigation",
                                    name=report.infrastructure_name or "Irrigation observation", latitude=position[0], longitude=position[1],
                                    status=f"{report.rainfall_mm:g} mm" if is_rain else report.operational_status, scheme_id=report.scheme_id, details=details))

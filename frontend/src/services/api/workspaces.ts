@@ -204,6 +204,7 @@ const requirement = z.object({ item: z.string(), met: z.boolean(), note: z.strin
 export const yieldComparisonSchema = z.object({
   baseline_id: z.number(), crop: z.string(), season: z.string(), reference_year: z.number(), source: z.string(),
   document_reference: z.string(), target_tons_per_hectare: z.number(), observed_tons_per_hectare: z.number().nullable(),
+  sample_min_tons_per_hectare: z.number().nullable().default(null), sample_max_tons_per_hectare: z.number().nullable().default(null),
   observed_tons: z.number(), harvested_area_hectares: z.number(), eligible_reports: z.number(), value: z.number().nullable(),
 });
 export const baselineSchema = z.object({

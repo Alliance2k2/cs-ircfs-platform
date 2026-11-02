@@ -1,0 +1,52 @@
+import { asRole, expect } from "./fixtures";
+const test=asRole("admin");
+
+test("manage reference inventory and categories in the React workspace",async({page})=>{
+  await page.goto('/app/management');
+  await expect(page.getByRole('heading',{name:'Platform management',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Dark mode',exact:true}).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+  await page.getByRole('button',{name:'Add asset',exact:true}).click();
+  let drawer=page.getByRole('dialog');
+  await drawer.getByLabel('English label').fill('E2E district pump');
+  await drawer.getByLabel('Kinyarwanda label').fill('Pompe y’igerageza');
+  await drawer.getByLabel('Asset type').fill('pump');
+  await drawer.getByRole('button',{name:'Save',exact:true}).click();
+  await expect(drawer).not.toBeVisible();
+  const assets=page.getByRole('table',{name:'Asset inventory'});
+  const row=assets.getByRole('row').filter({hasText:'E2E district pump'});
+  await expect(row).toBeVisible();
+  await row.click();
+  drawer=page.getByRole('dialog');
+  await drawer.getByRole('checkbox',{name:'Active in phone menus'}).uncheck();
+  await drawer.getByRole('button',{name:'Save',exact:true}).click();
+  await expect(row).toContainText('Inactive');
+  await page.getByRole('tab',{name:'Grievance categories',exact:true}).click();
+  await page.getByRole('button',{name:'Add category',exact:true}).click();
+  drawer=page.getByRole('dialog');
+  await drawer.getByLabel('English label').fill('E2E water committee');
+  await drawer.getByLabel('Kinyarwanda label').fill('Komite y’amazi');
+  await drawer.getByRole('button',{name:'Save',exact:true}).click();
+  await expect(page.getByRole('table',{name:'Grievance categories'})).toContainText('E2E water committee');
+  await expect(page.getByRole('heading',{name:'Pilot data readiness'})).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+});
+
+test("unknown deliveries require explicit provider review before requeue",async({page})=>{
+  await page.goto('/app/channels');
+  const queue=page.getByRole('table',{name:'Delivery queue'});
+  await page.getByRole('region',{name:'Delivery review'}).getByRole('searchbox').fill('unknown');
+  const row=queue.getByRole('row').filter({hasText:'unknown'}).first();
+  await row.click();
+  const drawer=page.getByRole('dialog');
+  await drawer.getByLabel('Review outcome').selectOption('requeue');
+  await drawer.getByLabel('Evidence reference', {exact:false}).fill('E2E provider record: not sent');
+  await drawer.getByRole('checkbox',{name:/I checked the provider/}).check();
+  const response=page.waitForResponse(r=>r.url().includes('/reconcile')&&r.request().method()==='POST');
+  await drawer.getByRole('button',{name:'Record review',exact:true}).click();
+  expect((await(await response).json()).status).toBe('queued');
+  await expect(drawer).not.toBeVisible();
+});

@@ -19,7 +19,7 @@ const reportSchema = monthlySchema.extend({
   cases: monthlySchema.shape.cases.extend({ by_priority: z.record(z.number()).optional() }),
   grievances: z.object({ received: z.number(), resolved: z.number(), close_loop_sms: z.number(), median_days_to_resolve: z.number().nullable(), by_category: z.record(z.number()) }),
   pests: z.array(z.object({ pest: z.string(), reports: z.number(), severe: z.number(), sectors: z.array(z.string()) })),
-  rainfall: z.array(z.object({ sector: z.string(), rainfall_mm: z.number(), gauges: z.number(), readings: z.number() })),
+  rainfall: z.array(z.object({ sector: z.string(), rainfall_mm: z.number().nullable(), gauges: z.number(), readings: z.number() })),
   nutrition: z.object({
     households: z.number(), average_risk: z.number().nullable(), high_risk_households: z.number(),
     cells: z.array(z.object({ cell: z.string(), sector: z.string().nullable(), households: z.number(), average_risk: z.number() })),
@@ -160,7 +160,7 @@ export function MonthlyReportPage() {
             </Block>
 
             <Block title={t("monthly.rainfall")} note={t("trends.rainNote")}>
-              <BarList tone="water" unit="mm" empty={t("crops.empty")} items={data.rainfall.map((row) => ({ label: row.sector, value: row.rainfall_mm, note: t("monthly.gauges", { n: row.gauges }) }))} />
+              <BarList tone="water" unit="mm" empty={t("crops.empty")} items={data.rainfall.flatMap((row) => row.rainfall_mm === null ? [] : [{ label: row.sector, value: row.rainfall_mm, note: t("monthly.gauges", { n: row.gauges }) }])} />
             </Block>
 
             <Block title={t("nav.nutrition")} note={t("nutrition.scale")}>

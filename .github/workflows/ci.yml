@@ -163,6 +163,10 @@ jobs:
     needs: [backend, migrations, frontend, e2e, docker]
     environment: ${{ inputs.deployment_environment }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Wait for database-ready response
         run: |
           for attempt in 1 2 3 4 5 6; do
@@ -175,3 +179,9 @@ jobs:
           exit 1
         env:
           TARGET_URL: ${{ inputs.target_url }}
+      - name: Verify public entry points and authentication boundaries
+        run: python backend/scripts/verify_deployment.py "$TARGET_URL" --environment "$DEPLOYMENT_ENVIRONMENT"
+        env:
+          TARGET_URL: ${{ inputs.target_url }}
+          DEPLOYMENT_ENVIRONMENT: ${{ inputs.deployment_environment }}
+          DEPLOYMENT_CHECK_API_KEY: ${{ secrets.DEPLOYMENT_CHECK_API_KEY }}
