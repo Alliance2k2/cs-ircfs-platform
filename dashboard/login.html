@@ -42,7 +42,8 @@
         <div id="signed-in" class="alert alert-success alert-icon" role="status" hidden></div>
 
         <div id="google-block" hidden>
-          <button type="button" class="btn btn-google w-100 d-flex align-items-center justify-content-center gap-2"><span class="google-mark">G</span>Continue with Google</button>
+          <div id="google-signin" class="d-flex justify-content-center"></div>
+          <p id="google-loading" class="small text-secondary text-center" role="status">Loading Google sign-in…</p>
         </div>
         <div class="divider" id="google-divider" hidden>or</div>
 
@@ -76,7 +77,7 @@
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script id="google-identity-script" src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
 <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/shared.js?v=20261010"></script>
 <script>
@@ -112,13 +113,27 @@ CS.apiJson("auth/config").then(({ google_client_id, development_bypass }) => {
   if (!google_client_id) return;
   document.querySelector("#google-block").hidden = false;
   document.querySelector("#google-divider").hidden = false;
-  document.querySelector("#google-block button").addEventListener("click", () => {
-    if (!window.google) { showNotice("Google sign-in is still loading. Please try again."); return; }
-    google.accounts.id.initialize({ client_id: google_client_id, callback: async ({ credential }) => {
+  const loading = document.querySelector("#google-loading");
+  let initialized = false;
+  const initializeGoogle = () => {
+    if (initialized || !window.google?.accounts?.id) return;
+    initialized = true;
+    google.accounts.id.initialize({ client_id: google_client_id, ux_mode: "popup", auto_select: false, callback: async ({ credential }) => {
       try { finish(await CS.apiJson("auth/google", { method: "POST", body: { credential } })); } catch (error) { showNotice(error.message || "Google sign-in failed"); }
     } });
-    google.accounts.id.prompt();
-  });
+    google.accounts.id.renderButton(document.querySelector("#google-signin"), {
+      type: "standard", theme: "outline", size: "large", text: "continue_with", locale: "en",
+      width: Math.min(360, document.querySelector("#google-block").clientWidth),
+    });
+    loading.hidden = true;
+  };
+  const unavailable = () => {
+    if (!initialized) loading.textContent = "Google sign-in could not load. Refresh the page or use email and password.";
+  };
+  document.querySelector("#google-identity-script").addEventListener("load", initializeGoogle, { once: true });
+  document.querySelector("#google-identity-script").addEventListener("error", unavailable, { once: true });
+  initializeGoogle();
+  setTimeout(unavailable, 15000);
 }).catch(() => {});
 
 document.querySelector("#login-form").addEventListener("submit", async (event) => {

@@ -1,5 +1,7 @@
 # Testing
 
+Current public-page and authentication verification is summarized in [current interface changes](current-interface-changes.md). The earlier public redesign tests and captures describe a superseded proposal; that test file was removed when the original layout was restored.
+
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
 
 Four layers, all run by CI (`.github/workflows/ci.yml`) on every pull request and every push to `main`.

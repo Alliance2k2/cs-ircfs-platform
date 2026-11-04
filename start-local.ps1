@@ -41,7 +41,7 @@ try {
         $env:DATABASE_URL = "sqlite:///" + ($DemoDatabase -replace "\\", "/")
         $env:ENVIRONMENT = "development"
         $env:REQUIRE_API_KEY = "false"
-        $env:DEV_AUTH_BYPASS = "true"
+        $env:DEV_AUTH_BYPASS = "false"
         $env:SMS_PROVIDER = "dry_run"
         $env:AIRTIME_PROVIDER = "dry_run"
         $env:ALLOW_LIVE_MESSAGES = "false"
@@ -54,7 +54,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
         & $Python scripts/seed_demo_data.py
         if ($LASTEXITCODE -ne 0) { throw "Could not prepare the demonstration database." }
-        Write-Host "DEMONSTRATION MODE: invented data in backend/demo.db. Everyone has full access; do not use for real records." -ForegroundColor Magenta
+        Write-Host "DEMONSTRATION MODE: invented data in backend/demo.db. Sign in with an approved account; do not use for real records." -ForegroundColor Magenta
     }
     else {
         $DatabaseLine = (Get-Content $EnvironmentFile | Where-Object { $_ -match "^DATABASE_URL=" } | Select-Object -First 1)

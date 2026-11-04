@@ -1,13 +1,14 @@
 ﻿import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n";
-const STORAGE_KEY="cs-ircfs-theme";
+// Restore the white-and-green default; only a new explicit choice enables dark mode.
+const STORAGE_KEY="cs-ircfs-theme-v2";
 export function ThemeToggle(){
   const {t}=useI18n();
   const [dark,setDark]=useState(()=>{
     try {
       const value=window.localStorage.getItem(STORAGE_KEY);
-      return value ? value==="dark" : window.matchMedia?.("(prefers-color-scheme: dark)").matches??false;
+      return value === "dark";
     }catch{return false;}
   });
   useEffect(()=>{document.documentElement.dataset.theme=dark?"dark":"light";},[dark]);

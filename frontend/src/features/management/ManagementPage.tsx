@@ -86,6 +86,11 @@ export function ManagementPage() {
   ];
   return <div className="space-y-6">
     <PageHeader eyebrow={copy("Administration")} title={copy("Platform management")} description={copy("Maintain the reference lists used in phone reporting and infrastructure monitoring.")} />
+    <section className="rounded-card border border-line bg-surface p-5 shadow-card" aria-labelledby="full-management-title">
+      <h2 id="full-management-title" className="text-lg font-bold text-forest">{lang === "rw" ? "Abakoresha, amakoperative, imishinga na raporo" : "Users, cooperatives, schemes and reports"}</h2>
+      <p className="mt-2 text-sm text-muted">{lang === "rw" ? "Fungura ibikoresho bisanzwe kugira ngo wongere kandi uhindure amakuru. Ibikoresho by'ibikorwaremezo n'ibyiciro by'ibibazo biri hasi." : "Open the original management tools to add and edit users, cooperatives, irrigation schemes, field reports and nutrition surveys. Asset inventory and grievance categories remain below."}</p>
+      <a href="/management.html" className="mt-4 inline-flex min-h-10 items-center rounded-control bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-strong">{lang === "rw" ? "Fungura ibikoresho byose" : "Open full management"}</a>
+    </section>
     <div role="tablist" aria-label={copy("Reference lists")} className="flex flex-wrap gap-2">
       {(["assets","categories"] as const).map(tab => <button key={tab} role="tab" aria-selected={kind === tab} onClick={() => {setKind(tab); setEditing(undefined);}}
         className="rounded-control border border-line px-4 py-2 text-sm font-semibold">{copy(tab === "assets" ? "Asset inventory" : "Grievance categories")}</button>)}
