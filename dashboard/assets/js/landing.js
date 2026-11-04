@@ -21,6 +21,9 @@
     rw: { label: "RW", items: ["Ibyo ikora", "Uko ikora", "Abagenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
   const RW_COPY = {
+    "Illustrative photographs; not CS-IRCFS participants or verified pilot sites.":"Amafoto atanga urugero; si ay'abitabiriye CS-IRCFS cyangwa ahantu hemejwe hakorerwa igerageza.",
+    "Photo credits & locations":"Abafashe amafoto n'aho yafatiwe",
+    "Photography credits":"Abafashe amafoto",
     "COMMUNITY KNOWLEDGE. SHARED RESILIENCE.":"UBUMENYI BW'ABATURAGE. UBUDAHERANWA.",
     "Connecting Farmers' Knowledge":"Guhuza ubumenyi bw'abahinzi",
     "with Better Irrigation Decisions.":"n'ibyemezo byiza byo kuhira.",

@@ -2500,3 +2500,36 @@ summary:focus-visible {
   .section { padding: 56px 0; }
   .section-header { gap: 14px; margin-bottom: 26px; }
 }
+
+/* Clear subject photography, with the existing card layout. */
+.card-context-photo { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pillar-media::after { background: linear-gradient(180deg, #05221810, transparent 50%, #05221830); }
+.pillar-crops .card-context-photo { object-position: center 38%; }
+.pillar-voice .card-context-photo { object-position: center 42%; }
+.photo-source-note { margin-top: 26px; color: #52685c; font-size: 12px; line-height: 1.7; }
+.photo-source-note a { color: #086447; text-decoration: underline; text-underline-offset: 3px; }
+/* White and forest-green public footer. */
+.footer { background: #f5f9f6; color: #173b2b; border-top: 1px solid #dbe7df; }
+.footer::before { background: linear-gradient(90deg, #087f5b, #8acbb0, #dff4e7); }
+.footer-top { padding-top: 52px; gap: 38px; }
+.footer-brand { padding: 28px; border-radius: 20px; background: linear-gradient(135deg, #064e3b, #073b2b); }
+.footer .footer-brand .brand strong { color: #fff; }
+.footer .footer-brand .brand small { color: #d2e9dc; }
+.footer-brand > p { color: #e0eee5; margin-bottom: 0; }
+.footer-col > b { color: #064e3b; font-size: 12px; margin-bottom: 22px; }
+.footer-col > a { color: #35594b; font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.footer-col > a:hover { color: #006344; text-decoration: underline; text-underline-offset: 5px; }
+.footer-badges > span { background: #ffffff10; border-color: #ffffff38; color: #eef8f2; }
+.footer-badges .bi { color: #c7efb4; }
+.footer-status { border-top-color: #d5e4da; padding-block: 20px; }
+.footer-live { color: #26523b; }
+.footer-status-note { color: #52685c; }
+.footer-bottom { background: #064e3b; border: 0; border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; color: #e0eee5; }
+.footer-bottom a { color: #fff; }
+.footer a:focus-visible { outline: 3px solid #087f5b; outline-offset: 4px; }
+.footer-brand a:focus-visible, .footer-bottom a:focus-visible { outline-color: #d7f56e; }
+@media (max-width: 700px) {
+ .footer-top { gap: 28px 22px; padding-top: 32px; }
+ .footer-brand { padding: 24px; }
+ .footer-bottom { padding: 20px; gap: 14px; }
+}
