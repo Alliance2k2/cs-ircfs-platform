@@ -47,3 +47,9 @@ def audit_log(
         rows.append({"id": event.id, "actor": event.actor_label, "actor_account_id": event.actor_account_id, "action": event.action,
                      "entity": event.entity, "entity_id": event.entity_id, "detail": detail, "created_at": event.created_at})
     return rows
+
+
+@router.get("/readiness")
+def readiness(db: Session = Depends(get_db), _: Principal = admin):
+    from app.services.readiness import assess
+    return assess(db)

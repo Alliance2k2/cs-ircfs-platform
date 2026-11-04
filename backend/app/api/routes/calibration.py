@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_roles
+from app.core.security import Principal, require_roles
 from app.db.models import (
     AssetOutage,
     AssetMaintenance,
@@ -31,7 +31,8 @@ from app.schemas import (
     SchemeAssetRead,
     SchemeAssetUpdate,
 )
-from app.services.references import require_if_provided
+from app.services.references import require_if_provided, validate_asset_area
+from app.services.audit import record
 
 router = APIRouter(prefix="/api/v1", tags=["calibration"])
 reader = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
@@ -51,7 +52,7 @@ def list_grievance_categories(db: Session = Depends(get_db)) -> list[GrievanceCa
 
 
 @router.post("/grievance-categories", response_model=GrievanceCategoryRead, status_code=status.HTTP_201_CREATED, dependencies=[writer])
-def create_grievance_category(payload: GrievanceCategoryCreate, db: Session = Depends(get_db)) -> GrievanceCategory:
+def create_grievance_category(payload: GrievanceCategoryCreate, db: Session = Depends(get_db), principal: Principal = writer) -> GrievanceCategory:
     clash = db.scalar(select(GrievanceCategory).where(GrievanceCategory.label_en == payload.label_en))
     if clash:
         raise HTTPException(status_code=409, detail="A grievance category with this English label already exists")
@@ -62,13 +63,15 @@ def create_grievance_category(payload: GrievanceCategoryCreate, db: Session = De
         raise HTTPException(status_code=409, detail="A grievance category with this code already exists")
     category = GrievanceCategory(**values)
     db.add(category)
+    db.flush()
+    record(db, principal, "grievance_category.create", "grievance_category", category.id)
     db.commit()
     db.refresh(category)
     return category
 
 
 @router.patch("/grievance-categories/{category_id}", response_model=GrievanceCategoryRead, dependencies=[writer])
-def update_grievance_category(category_id: int, payload: GrievanceCategoryUpdate, db: Session = Depends(get_db)) -> GrievanceCategory:
+def update_grievance_category(category_id: int, payload: GrievanceCategoryUpdate, db: Session = Depends(get_db), principal: Principal = writer) -> GrievanceCategory:
     category = db.get(GrievanceCategory, category_id)
     if not category:
         raise HTTPException(status_code=404, detail="Grievance category not found")
@@ -77,15 +80,19 @@ def update_grievance_category(category_id: int, payload: GrievanceCategoryUpdate
         select(GrievanceCategory).where(GrievanceCategory.label_en == changes["label_en"], GrievanceCategory.id != category_id)
     ):
         raise HTTPException(status_code=409, detail="A grievance category with this English label already exists")
+    if changes.get("label_en") and changes["label_en"] != category.label_en:
+        if db.scalar(select(CommunityFeedback.id).where(CommunityFeedback.category == category.label_en).limit(1)):
+            raise HTTPException(409, "Referenced names are immutable; deactivate this entry and add a replacement")
     for field, value in changes.items():
         setattr(category, field, value)
+    record(db, principal, "grievance_category.update", "grievance_category", category.id)
     db.commit()
     db.refresh(category)
     return category
 
 
 @router.delete("/grievance-categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[writer])
-def delete_grievance_category(category_id: int, db: Session = Depends(get_db)) -> None:
+def delete_grievance_category(category_id: int, db: Session = Depends(get_db), principal: Principal = writer) -> None:
     category = db.get(GrievanceCategory, category_id)
     if not category:
         raise HTTPException(status_code=404, detail="Grievance category not found")
@@ -93,6 +100,7 @@ def delete_grievance_category(category_id: int, db: Session = Depends(get_db)) -
     if in_use:
         raise HTTPException(status_code=409, detail="Grievances already use this category. Deactivate it instead.")
     db.delete(category)
+    record(db, principal, "grievance_category.delete", "grievance_category", category.id)
     db.commit()
 
 
@@ -105,21 +113,24 @@ def list_scheme_assets(db: Session = Depends(get_db)) -> list[SchemeAsset]:
 
 
 @router.post("/scheme-assets", response_model=SchemeAssetRead, status_code=status.HTTP_201_CREATED, dependencies=[writer])
-def create_scheme_asset(payload: SchemeAssetCreate, db: Session = Depends(get_db)) -> SchemeAsset:
+def create_scheme_asset(payload: SchemeAssetCreate, db: Session = Depends(get_db), principal: Principal = writer) -> SchemeAsset:
     clash = db.scalar(select(SchemeAsset).where(SchemeAsset.name_en == payload.name_en))
     if clash:
         raise HTTPException(status_code=409, detail="An asset with this English name already exists")
     require_if_provided(db, Cell, payload.cell_id, "cell_id")
     require_if_provided(db, IrrigationScheme, payload.scheme_id, "scheme_id")
+    validate_asset_area(db, payload.scheme_id, payload.cell_id)
     asset = SchemeAsset(**payload.model_dump())
     db.add(asset)
+    db.flush()
+    record(db, principal, "scheme_asset.create", "scheme_asset", asset.id)
     db.commit()
     db.refresh(asset)
     return asset
 
 
 @router.patch("/scheme-assets/{asset_id}", response_model=SchemeAssetRead, dependencies=[writer])
-def update_scheme_asset(asset_id: int, payload: SchemeAssetUpdate, db: Session = Depends(get_db)) -> SchemeAsset:
+def update_scheme_asset(asset_id: int, payload: SchemeAssetUpdate, db: Session = Depends(get_db), principal: Principal = writer) -> SchemeAsset:
     asset = db.get(SchemeAsset, asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Scheme asset not found")
@@ -132,15 +143,20 @@ def update_scheme_asset(asset_id: int, payload: SchemeAssetUpdate, db: Session =
         require_if_provided(db, Cell, changes["cell_id"], "cell_id")
     if "scheme_id" in changes:
         require_if_provided(db, IrrigationScheme, changes["scheme_id"], "scheme_id")
+    if changes.get("name_en") and changes["name_en"] != asset.name_en:
+        if db.scalar(select(IrrigationClimateLog.id).where(IrrigationClimateLog.infrastructure_name == asset.name_en).limit(1)):
+            raise HTTPException(409, "Referenced names are immutable; deactivate this entry and add a replacement")
+    validate_asset_area(db, changes.get("scheme_id", asset.scheme_id), changes.get("cell_id", asset.cell_id))
     for field, value in changes.items():
         setattr(asset, field, value)
+    record(db, principal, "scheme_asset.update", "scheme_asset", asset.id)
     db.commit()
     db.refresh(asset)
     return asset
 
 
 @router.delete("/scheme-assets/{asset_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[writer])
-def delete_scheme_asset(asset_id: int, db: Session = Depends(get_db)) -> None:
+def delete_scheme_asset(asset_id: int, db: Session = Depends(get_db), principal: Principal = writer) -> None:
     asset = db.get(SchemeAsset, asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Scheme asset not found")
@@ -149,4 +165,5 @@ def delete_scheme_asset(asset_id: int, db: Session = Depends(get_db)) -> None:
     if in_use:
         raise HTTPException(status_code=409, detail="Reports already reference this asset. Deactivate it instead.")
     db.delete(asset)
+    record(db, principal, "scheme_asset.delete", "scheme_asset", asset.id)
     db.commit()

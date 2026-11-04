@@ -10,7 +10,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import IncidentCase, IncidentEvent, PlatformAccount, ReportStatus, UserRole
 from app.db.session import get_db
 from app.schemas import CellNotification, IncidentCaseRead, IncidentEventRead, IncidentUpdate
-from app.services.audit import record
+from app.services.audit import record, personal_read
 from app.services.cases import case_source, change_status, require_case_source, source_cell
 from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided
@@ -21,6 +21,7 @@ planner = Depends(require_roles(UserRole.district_officer, UserRole.district_pla
 
 @router.get("", response_model=list[IncidentCaseRead])
 def list_cases(db: Session = Depends(get_db), principal: Principal = planner):
+    personal_read(db, principal, "incident_case")
     cases = list(db.scalars(select(IncidentCase).order_by(IncidentCase.id.desc())))
     cells = allowed_cells(db, principal)
     return cases if cells is None else [case for case in cases if source_cell(db, case) in cells]
@@ -37,6 +38,7 @@ def find_case(db: Session, case_id: int, principal: Principal) -> IncidentCase:
 
 @router.get("/{case_id}", response_model=IncidentCaseRead)
 def get_case(case_id: int, db: Session = Depends(get_db), principal: Principal = planner):
+    personal_read(db, principal, "incident_case")
     return find_case(db, case_id, principal)
 
 

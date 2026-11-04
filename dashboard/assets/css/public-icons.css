@@ -1,0 +1,125 @@
+/* Subset of Bootstrap Icons 1.11.3, MIT license: ../vendor/bootstrap-icons-1.11.3/LICENSE */
+@font-face {
+  font-family: public-icons;
+  src: url("../fonts/public-icons.woff2") format("woff2");
+  font-display: swap;
+}
+.bi::before {
+  display: inline-block;
+  font-family: public-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -0.125em;
+  -webkit-font-smoothing: antialiased;
+}
+.bi-arrow-clockwise::before {
+  content: "\f116";
+}
+.bi-arrow-down-right::before {
+  content: "\f123";
+}
+.bi-arrow-left-right::before {
+  content: "\f12b";
+}
+.bi-arrow-return-left::before {
+  content: "\f131";
+}
+.bi-arrow-right::before {
+  content: "\f138";
+}
+.bi-arrow-up::before {
+  content: "\f148";
+}
+.bi-arrow-up-right::before {
+  content: "\f144";
+}
+.bi-basket::before {
+  content: "\f180";
+}
+.bi-battery-half::before {
+  content: "\f187";
+}
+.bi-binoculars::before {
+  content: "\f18f";
+}
+.bi-bug::before {
+  content: "\f1dc";
+}
+.bi-chat-square-heart::before {
+  content: "\f71a";
+}
+.bi-chat-square-text::before {
+  content: "\f264";
+}
+.bi-circle-half::before {
+  content: "\f288";
+}
+.bi-clipboard-check::before {
+  content: "\f28b";
+}
+.bi-clipboard-data::before {
+  content: "\f28c";
+}
+.bi-cloud-rain::before {
+  content: "\f2b6";
+}
+.bi-collection::before {
+  content: "\f2cc";
+}
+.bi-diagram-3::before {
+  content: "\f2ee";
+}
+.bi-droplet::before {
+  content: "\f30d";
+}
+.bi-flower1::before {
+  content: "\f3cd";
+}
+.bi-geo-alt::before {
+  content: "\f3e8";
+}
+.bi-globe2::before {
+  content: "\f3ef";
+}
+.bi-info-circle::before {
+  content: "\f431";
+}
+.bi-journal-bookmark::before {
+  content: "\f43d";
+}
+.bi-list::before {
+  content: "\f479";
+}
+.bi-people::before {
+  content: "\f4d0";
+}
+.bi-person::before {
+  content: "\f4e1";
+}
+.bi-phone::before {
+  content: "\f4e7";
+}
+.bi-plus::before {
+  content: "\f4fe";
+}
+.bi-reception-4::before {
+  content: "\f514";
+}
+.bi-sliders::before {
+  content: "\f56b";
+}
+.bi-sun::before {
+  content: "\f5a2";
+}
+.bi-tools::before {
+  content: "\f5db";
+}
+.bi-water::before {
+  content: "\f617";
+}
+.bi-window-desktop::before {
+  content: "\f6ce";
+}

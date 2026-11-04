@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.scope import allowed_cells, cell_filter
+from app.core.privacy import sees_personal_data
 from app.core.security import Principal, require_roles
 from app.db.models import CitizenScienceLog, IrrigationClimateLog, NutritionSurvey, UserRole
 from app.db.session import get_db
@@ -16,6 +17,7 @@ from app.schemas import (
     NutritionSurveyRead,
 )
 from app.services import reporting
+from app.services.audit import personal_read
 from app.services.advisory import nutrition_risk_score
 from app.services.references import validate_report_references, validate_report_scope
 
@@ -41,8 +43,14 @@ def create_crop_report(payload: CropReportCreate, db: Session = Depends(get_db),
 def list_crop_reports(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
                       db: Session = Depends(get_db), principal: Principal = reader) -> list[CitizenScienceLog]:
     cells = allowed_cells(db, principal)
-    return list(db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, cells))
+    personal_read(db, principal, "citizensciencelog")
+    rows = list(db.scalars(select(CitizenScienceLog).where(cell_filter(CitizenScienceLog.cell_id, cells))
                           .order_by(CitizenScienceLog.id.desc()).offset(offset).limit(limit)))
+
+    result = [CropReportRead.model_validate(row).model_dump() for row in rows]
+    if not sees_personal_data(principal):
+        for row in result: row["notes"] = None
+    return result
 
 
 @router.post("/irrigation-reports", response_model=IrrigationReportRead, status_code=status.HTTP_201_CREATED)
@@ -59,8 +67,14 @@ def create_irrigation_report(payload: IrrigationReportCreate, db: Session = Depe
 def list_irrigation_reports(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
                             db: Session = Depends(get_db), principal: Principal = reader) -> list[IrrigationClimateLog]:
     cells = allowed_cells(db, principal)
-    return list(db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, cells))
+    personal_read(db, principal, "irrigationclimatelog")
+    rows = list(db.scalars(select(IrrigationClimateLog).where(cell_filter(IrrigationClimateLog.cell_id, cells))
                           .order_by(IrrigationClimateLog.id.desc()).offset(offset).limit(limit)))
+
+    result = [IrrigationReportRead.model_validate(row).model_dump() for row in rows]
+    if not sees_personal_data(principal):
+        for row in result: row["fault_description"] = None
+    return result
 
 
 @router.post("/nutrition-surveys", response_model=NutritionSurveyRead, status_code=status.HTTP_201_CREATED)
@@ -82,5 +96,6 @@ def create_nutrition_survey(payload: NutritionSurveyCreate, db: Session = Depend
 def list_nutrition_surveys(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0),
                            db: Session = Depends(get_db), principal: Principal = household_reader) -> list[NutritionSurvey]:
     cells = allowed_cells(db, principal)
+    personal_read(db, principal, "nutrition_survey")
     return list(db.scalars(select(NutritionSurvey).where(cell_filter(NutritionSurvey.cell_id, cells))
                           .order_by(NutritionSurvey.id.desc()).offset(offset).limit(limit)))

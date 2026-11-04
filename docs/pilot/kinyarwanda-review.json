@@ -1,0 +1,4191 @@
+{
+  "language": "rw",
+  "review_status": "pending_native_review",
+  "reviewer": "",
+  "evidence_reference": "",
+  "note": "Review terminology and placeholders with field staff. This export does not claim translation or field acceptance.",
+  "entries": [
+    {
+      "key": "access.admin",
+      "english": "This page is for administrators.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "access.all",
+      "english": "Sign in to use this page.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "access.analyst",
+      "english": "This page is for Citizen Science Monitors and district staff.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "access.field",
+      "english": "This page is for Citizen Science Monitors, cooperative leaders and district staff.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "access.planner",
+      "english": "This is for district planners and administrators.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "access.staff",
+      "english": "This page is for district officers, planners and administrators.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "account.local",
+      "english": "Local development",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "account.localNote",
+      "english": "Sign-in is off on this computer",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "account.signout",
+      "english": "Sign out",
+      "kinyarwanda": "Sohoka",
+      "approved": false
+    },
+    {
+      "key": "action.assigned",
+      "english": "Assigned",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.cancel",
+      "english": "Cancel",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.close",
+      "english": "Close",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.confirm",
+      "english": "Confirm",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.due",
+      "english": "Due {date}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.export",
+      "english": "Export CSV",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.open",
+      "english": "Open",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.preview",
+      "english": "Preview",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.print",
+      "english": "Print",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.save",
+      "english": "Save",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.send",
+      "english": "Send",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "action.unassigned",
+      "english": "Not assigned",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.actionHint",
+      "english": "Required to resolve or close. Shared with the community in the closing-the-loop SMS.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.actionTaken",
+      "english": "Action taken",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.allPriorities",
+      "english": "All priorities",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.allTypes",
+      "english": "Cases and grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.assignee",
+      "english": "Assigned to",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.case",
+      "english": "Incident case",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.cases",
+      "english": "Incident cases",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.description",
+      "english": "Open incident cases and grievances, most urgent first. Open one to assign it, record what was done and tell the community.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.due",
+      "english": "Deadline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.empty",
+      "english": "Nothing needs action right now.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.eyebrow",
+      "english": "Act now",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.filterType",
+      "english": "Type",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.grievance",
+      "english": "Grievance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.grievances",
+      "english": "Grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.needsAssignee",
+      "english": "Choose who owns an assigned case.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.noFieldUsers",
+      "english": "No active field users registered in your area.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.noHistory",
+      "english": "No changes recorded yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.noStaff",
+      "english": "No active district staff accounts yet. Administrators approve them in Administration.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.notify",
+      "english": "Tell the community by SMS",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.notifyHint",
+      "english": "Everyone registered in the affected cell receives what was done. Preview first.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.notifyNeedsResolution",
+      "english": "Resolve the case before telling the community.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.notifyPreview",
+      "english": "{n} people in the cell would receive:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.notifySent",
+      "english": "Message recorded for {n} people.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.opened",
+      "english": "Opened",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.overdue",
+      "english": "Overdue",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.place",
+      "english": "Place",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.reportDetails",
+      "english": "Report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.saved",
+      "english": "Saved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.system",
+      "english": "Automatic",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.title",
+      "english": "Priority actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.unassigned",
+      "english": "Not assigned",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "actions.unnamed",
+      "english": "Unnamed field user",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.accounts",
+      "english": "Accounts",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.actionCol",
+      "english": "Action",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.actor",
+      "english": "By",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.approve",
+      "english": "Approve",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.areaCount",
+      "english": "{n} sectors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.areaHint",
+      "english": "An account limited to sectors sees and acts on only those sectors' data. Choose none for the whole district.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.areaSaved",
+      "english": "Area saved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.areaTitle",
+      "english": "Area of work",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.audit",
+      "english": "Audit log",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.auditEmpty",
+      "english": "No changes recorded yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.confirmApprove",
+      "english": "Approve {name} as {role}? They can sign in at once.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.confirmReactivate",
+      "english": "Reactivate {name}? They can sign in again with their current role.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.confirmRole",
+      "english": "Give {name} the role {role}? Their access changes at once.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.confirmSuspend",
+      "english": "Suspend {name}? They are signed out everywhere and cannot sign in until reactivated.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.created",
+      "english": "Registered",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.description",
+      "english": "Approve accounts, set roles and areas, record scheme baselines and review who changed what.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.detail",
+      "english": "Detail",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.email",
+      "english": "Email",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.entity",
+      "english": "Record",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.eyebrow",
+      "english": "Administration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.inactive",
+      "english": "Inactive",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.name",
+      "english": "Name",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.noAccounts",
+      "english": "No accounts match.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.notNumber",
+      "english": "Enter a number of zero or more.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.pending",
+      "english": "Awaiting approval",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.pendingCount",
+      "english": "{n} accounts are waiting for approval.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.reactivate",
+      "english": "Reactivate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.roleChanged",
+      "english": "Role updated.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.roleFor",
+      "english": "Role for {name}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.rowHint",
+      "english": "Open an account to set its area of work. You cannot change your own role or status.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemeNote",
+      "english": "Enter only figures from a named document. A yield target without its source is refused.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemeSaved",
+      "english": "Scheme baseline saved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemeSource",
+      "english": "Source document",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemeSourceHint",
+      "english": "Required with a target, e.g. \"PADAB feasibility study, AfDB, 2014, table 4.2\".",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemeTarget",
+      "english": "Yield target (tons)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.schemes",
+      "english": "Scheme baselines",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.status.active",
+      "english": "Active",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.status.pending",
+      "english": "Awaiting approval",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.status.suspended",
+      "english": "Suspended",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.statusChanged",
+      "english": "Account {status}.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.suspend",
+      "english": "Suspend",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.title",
+      "english": "Administration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.wholeDistrict",
+      "english": "Whole district",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "admin.you",
+      "english": "you",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "advice.forecast",
+      "english": "Forecast next 7 days: {mm} mm",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "advice.irrigate_less",
+      "english": "Wet: irrigate less",
+      "kinyarwanda": "Imvura: uhire gake",
+      "approved": false
+    },
+    {
+      "key": "advice.irrigate_more",
+      "english": "Dry: irrigate more",
+      "kinyarwanda": "Izuba: uhire cyane",
+      "approved": false
+    },
+    {
+      "key": "advice.no_data",
+      "english": "No rain data",
+      "kinyarwanda": "Nta makuru y'imvura",
+      "approved": false
+    },
+    {
+      "key": "advice.normal",
+      "english": "Normal",
+      "kinyarwanda": "Bisanzwe",
+      "approved": false
+    },
+    {
+      "key": "advice.unvalidated",
+      "english": "Advice thresholds are starting values until calibrated with an agronomist.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "app.name",
+      "english": "CS-IRCFS",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "app.skip",
+      "english": "Skip to main content",
+      "kinyarwanda": "Jya ku bikubiyemo",
+      "approved": false
+    },
+    {
+      "key": "app.tagline",
+      "english": "People • Water • Food • Future",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "banner.demo",
+      "english": "Demonstration data. These figures are invented for training and testing; do not use them for decisions.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "banner.local",
+      "english": "Local development: sign-in is turned off and you act as an administrator.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.amount",
+      "english": "Amount",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.channel",
+      "english": "Channel",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.codes",
+      "english": "USSD {ussd} · SMS short code {sms}.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.description",
+      "english": "Messages received from phones, SMS sent back and airtime rewards. Simulator tests are marked and never sent.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.empty",
+      "english": "Nothing yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.eyebrow",
+      "english": "Communications",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.hidden",
+      "english": "Hidden for your role",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.inbound",
+      "english": "Received",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.limit",
+      "english": "The newest 200 of each are shown, in your area.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.masked",
+      "english": "Phone numbers are masked and message text hidden for your role.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.outbound",
+      "english": "Sent",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.phone",
+      "english": "Phone",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.purpose",
+      "english": "Purpose",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.reason",
+      "english": "Reason",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.record",
+      "english": "Record created",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.reply",
+      "english": "Reply",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.rewards",
+      "english": "Airtime rewards",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.simulator",
+      "english": "Simulator",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.text",
+      "english": "Text",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "channels.title",
+      "english": "USSD & SMS operations",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.advice",
+      "english": "Advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.description",
+      "english": "Seven-day citizen rain-gauge totals, the Open-Meteo forecast and the advice each sector receives.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.eyebrow",
+      "english": "Water & climate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.forecast",
+      "english": "Forecast, next 7 days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.lastRun",
+      "english": "Last automatic send: week of {week}, {sectors} sectors, {recipients} people.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.level.irrigate_less",
+      "english": "Wet: irrigate less",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.level.irrigate_more",
+      "english": "Dry: irrigate more",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.level.no_data",
+      "english": "No readings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.level.normal",
+      "english": "Normal",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.noRun",
+      "english": "No automatic send recorded yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.provenance",
+      "english": "Gauges are citizen instruments, not calibrated stations. Forecast: Open-Meteo, refreshed every 3 hours.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.rain7",
+      "english": "Rain, 7 days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.rainMonth",
+      "english": "Rainfall (mm per gauge)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.readings",
+      "english": "Readings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.send",
+      "english": "Send advice by SMS",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.sendHint",
+      "english": "Sectors with rain readings only. Preview shows how many people would receive it.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.sendPreview",
+      "english": "{recipients} people in {sectors} sectors would receive this week's advice.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.sent",
+      "english": "Advice recorded for {recipients} people.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.status",
+      "english": "Situation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.thresholdSource",
+      "english": "Threshold source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.thresholds",
+      "english": "Thresholds (dry / wet)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.title",
+      "english": "Climate & irrigation advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.trend",
+      "english": "Rainfall and rain readings by month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.uncalibrated",
+      "english": "Starting values, not yet calibrated",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.weekly",
+      "english": "Weekly automatic advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.weeklyOff",
+      "english": "Automatic weekly sending is off. Advice is sent only when a planner sends it here.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "climate.weeklyOn",
+      "english": "Sent automatically every {day} at {time} (Kigali).",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.active",
+      "english": "Active reporters, 30 days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.champions",
+      "english": "Data Champions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.description",
+      "english": "Participation by cooperative and Data Champion training. Report counts show activity, not quality: verified reports are what count as evidence.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.empty",
+      "english": "No cooperatives yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.eyebrow",
+      "english": "Community",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.lastReport",
+      "english": "Latest report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.members",
+      "english": "Members",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.nameHint",
+      "english": "Enter a name of at least 2 characters.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.new",
+      "english": "New cooperative",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.pilot",
+      "english": "Pilot cooperatives",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.pilotBadge",
+      "english": "Pilot",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.pilotFlag",
+      "english": "Pilot cooperative",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.reports30",
+      "english": "Reports, 30 days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.saved",
+      "english": "Cooperative saved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.title",
+      "english": "Cooperatives & field teams",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.training",
+      "english": "Citizen Science Monitors trained",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "coops.trainingNote",
+      "english": "{total} monitors registered; {percent}% of the target trained.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.byCrop",
+      "english": "Reports by crop",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.crop",
+      "english": "Crop",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.description",
+      "english": "What farmers are growing, expecting to harvest and seeing in their fields. Harvest figures are reports from a sample of farmers, not total production.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.empty",
+      "english": "No reports in this period.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.expectedByCrop",
+      "english": "Expected harvest by crop (sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.eyebrow",
+      "english": "Agricultural intelligence",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.harvestByCrop",
+      "english": "Expected and reported harvest by crop (tons, sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.monthly",
+      "english": "Plantings and severe pest alerts by month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.pestsBySector",
+      "english": "Pest alerts by sector",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.pestsBySeverity",
+      "english": "Pest and disease alerts by severity",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.plantings",
+      "english": "Plantings reported",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.provenance",
+      "english": "Counts are reports received, verified or not; simulator tests are left out.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.reportedByCrop",
+      "english": "Reported harvest by crop (sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.seeReports",
+      "english": "See and verify the reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.severity",
+      "english": "Severity {n}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.title",
+      "english": "Crops & pests",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.topPests",
+      "english": "Most reported pests and diseases",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crops.truncated",
+      "english": "Figures cover the newest 500 reports only. Choose a shorter period for complete counts.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crumb.label",
+      "english": "Breadcrumb",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "crumb.root",
+      "english": "CS-IRCFS",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.aboveBaseline",
+      "english": "Above the AfDB baseline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.achievement",
+      "english": "Yield achievement",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.assetsDown",
+      "english": "Assets down now",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.bottlenecks",
+      "english": "Bottlenecks",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.byCrop",
+      "english": "Harvest reports by crop",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.days",
+      "english": "Last {n} days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.demo",
+      "english": "Demonstration data",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.description",
+      "english": "The evidence behind the five evaluation questions, scheme by scheme. Nothing here is estimated or modelled.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.documentation",
+      "english": "Documented baseline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.downstream",
+      "english": "Affected and downstream communities",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.downstreamCount",
+      "english": "Resettlement and downstream grievances (open)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.downstreamTotal",
+      "english": "Resettlement and downstream grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.evidence",
+      "english": "Evidence quality",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.expectedShort",
+      "english": "Expected",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.expectedTons",
+      "english": "Expected harvest (sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.eyebrow",
+      "english": "Evaluation laboratory",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.feedback",
+      "english": "Beneficiary feedback",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.flagged",
+      "english": "Recurring bottlenecks flagged",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.grievances",
+      "english": "Grievances (open)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.harvestReports",
+      "english": "Harvest reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.hectares",
+      "english": "Hectares developed",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.lastReport",
+      "english": "Latest report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.located",
+      "english": "With a location",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.method",
+      "english": "Method",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.months",
+      "english": "Months with reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.noBottlenecks",
+      "english": "No fault reports with a category.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.noFeedback",
+      "english": "No grievances linked to this scheme.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.noSchemes",
+      "english": "No irrigation schemes registered.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.notComputable",
+      "english": "Not computable yet",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.outcomes",
+      "english": "Observed outcomes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.partner",
+      "english": "Implementing partner",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.period",
+      "english": "Period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.pestAlerts",
+      "english": "Pest alerts (severe)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.questions",
+      "english": "Evaluation questions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.reportedShort",
+      "english": "Reported (reports)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.reportedTons",
+      "english": "Reported harvest (sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.reports",
+      "english": "Reports in the period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.requirements",
+      "english": "What a valid yield achievement needs",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.source",
+      "english": "Source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.stateDemo",
+      "english": "Demonstration value",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.stateDocumented",
+      "english": "Documented",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.stateMissing",
+      "english": "Not entered",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.target",
+      "english": "Yield target",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.title",
+      "english": "PADAB & APEFA evaluation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "evaluation.verified",
+      "english": "Verified by staff",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "filter.allSchemes",
+      "english": "All schemes",
+      "kinyarwanda": "Imishinga yose",
+      "approved": false
+    },
+    {
+      "key": "filter.allSectors",
+      "english": "All sectors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "filter.days",
+      "english": "Last {n} days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "filter.period",
+      "english": "Period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "filter.refresh",
+      "english": "Refresh",
+      "kinyarwanda": "Vugurura",
+      "approved": false
+    },
+    {
+      "key": "filter.scheme",
+      "english": "Scheme",
+      "kinyarwanda": "Umushinga",
+      "approved": false
+    },
+    {
+      "key": "filter.sector",
+      "english": "Sector",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "filter.updated",
+      "english": "Updated {time}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "flag.missing_measure",
+      "english": "Missing value",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "flag.no_location",
+      "english": "No location",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "flag.no_scheme",
+      "english": "No scheme",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "flag.possible_duplicate",
+      "english": "Possible duplicate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "flag.unusual_value",
+      "english": "Unusual value",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "footer.api",
+      "english": "API docs",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "footer.brand",
+      "english": "CS-IRCFS · Bugesera District",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "footer.privacy",
+      "english": "CS-IRCFS · Bugesera District. Counts, not personal data, leave district staff screens.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "footer.public",
+      "english": "Public site",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "footer.tagline",
+      "english": "Citizen Science for Irrigation Resilience and Climate-smart Food Security",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "greet.afternoon",
+      "english": "Good afternoon",
+      "kinyarwanda": "Mwiriwe",
+      "approved": false
+    },
+    {
+      "key": "greet.evening",
+      "english": "Good evening",
+      "kinyarwanda": "Mwiriwe",
+      "approved": false
+    },
+    {
+      "key": "greet.morning",
+      "english": "Good morning",
+      "kinyarwanda": "Mwaramutse",
+      "approved": false
+    },
+    {
+      "key": "greet.planner",
+      "english": "Planner",
+      "kinyarwanda": "Mugenamigambi",
+      "approved": false
+    },
+    {
+      "key": "grievances.active",
+      "english": "Not yet resolved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.anonymity",
+      "english": "No phone number or name is stored with a grievance. Closing-the-loop messages go to everyone registered in the cell, never to one person.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.category",
+      "english": "Category",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.description",
+      "english": "Anonymous concerns from USSD option 5 and IKIBAZO SMS. The sender is never stored; only the cell is kept to close the loop.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.empty",
+      "english": "No grievances match these filters.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.eyebrow",
+      "english": "Community",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.message",
+      "english": "Message",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.received",
+      "english": "Received",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.reference",
+      "english": "Reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "grievances.title",
+      "english": "Grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.channels",
+      "english": "USSD *801# · SMS 8448",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.district",
+      "english": "Bugesera District",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.eyebrow",
+      "english": "District decision support · Bugesera",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.map",
+      "english": "District map",
+      "kinyarwanda": "Ikarita y'akarere",
+      "approved": false
+    },
+    {
+      "key": "hero.openActNow",
+      "english": "Open Act Now",
+      "kinyarwanda": "Fungura Ibyihutirwa",
+      "approved": false
+    },
+    {
+      "key": "hero.stat.actions",
+      "english": "open actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.stat.critical",
+      "english": "critical incidents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.stat.reporters",
+      "english": "active reporters",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.stat.reports",
+      "english": "field reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "hero.subtitle",
+      "english": "A clear view of irrigation performance, crop risks and community action.",
+      "kinyarwanda": "Ishusho isobanutse y'imikorere yo kuhira, ibyago ku bihingwa n'ibikorwa by'abaturage.",
+      "approved": false
+    },
+    {
+      "key": "irrigation.assets",
+      "english": "Assets reported",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.description",
+      "english": "Every named pump, canal and solar array with its latest condition report. Open an asset for its history and cases.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.down",
+      "english": "Down now",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.empty",
+      "english": "No asset condition reports yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.eyebrow",
+      "english": "Water & climate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.faults",
+      "english": "Fault reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.history",
+      "english": "Condition history",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.lastReport",
+      "english": "Latest report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.never",
+      "english": "Registered but never reported",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.neverNote",
+      "english": "Inventory assets with no condition report yet. Operators report through *801# option 4.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.openCases",
+      "english": "Open cases",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "irrigation.title",
+      "english": "Irrigation command centre",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "kind.asset",
+      "english": "Infrastructure",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "kind.harvest",
+      "english": "Harvest",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "kind.pest",
+      "english": "Pest or disease",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "kind.rain",
+      "english": "Rainfall",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.all",
+      "english": "All",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.date",
+      "english": "Date",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.flags",
+      "english": "Checks",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.history",
+      "english": "History",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.kind",
+      "english": "Type",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.no",
+      "english": "No",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.none",
+      "english": "None",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.notes",
+      "english": "Notes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.origin",
+      "english": "Data origin",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.priority",
+      "english": "Priority",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.scheme",
+      "english": "Scheme",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.sector",
+      "english": "Sector",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.status",
+      "english": "Status",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.verification",
+      "english": "Verification",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "label.yes",
+      "english": "Yes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "lang.label",
+      "english": "Language",
+      "kinyarwanda": "Ururimi",
+      "approved": false
+    },
+    {
+      "key": "language.partial",
+      "english": "Some labels are shown in English while Kinyarwanda review is pending.",
+      "kinyarwanda": "Amagambo amwe ari mu Cyongereza.",
+      "approved": false
+    },
+    {
+      "key": "map.description",
+      "english": "Schemes, assets, reports, rainfall and nutrition risk across Bugesera. Household and grievance locations are never shown.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.eyebrow",
+      "english": "Geographic intelligence",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.label",
+      "english": "Map of Bugesera sectors coloured by this week's irrigation advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layer.crops",
+      "english": "Crop reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layer.food",
+      "english": "Nutrition risk (5+ households)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layer.heat",
+      "english": "Pest heatmap",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layer.infrastructure",
+      "english": "Infrastructure",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layer.rain",
+      "english": "Rainfall",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.layers",
+      "english": "Layers",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.noToken",
+      "english": "The map appears once a Mapbox public token is added: MAPBOX_ACCESS_TOKEN in .env, then restart the platform.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.pointsOnly",
+      "english": "Local database: points only. Sector and cell outlines need PostGIS.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.privacy",
+      "english": "Only GPS points recorded with reports are drawn; no position is guessed. Nutrition appears per cell with 5 or more households. Grievances and households are never mapped.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.reset",
+      "english": "Whole district",
+      "kinyarwanda": "Garura Bugesera yose",
+      "approved": false
+    },
+    {
+      "key": "map.title",
+      "english": "District map",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "map.unlocated",
+      "english": "{n} reports in your area have no GPS point (for example SMS reports) and are not on the map. They are in Field reports.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "metric.definition",
+      "english": "What this means",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "metric.noValue",
+      "english": "No data",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.actnow",
+      "english": "Prioritised cases and grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.advice",
+      "english": "Rain gauges turned into SMS advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.channels",
+      "english": "USSD and SMS reports from phones",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.grievances",
+      "english": "open grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.months",
+      "english": "months",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.none",
+      "english": "Open",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.openItems",
+      "english": "open items",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.rainSectors",
+      "english": "sectors with rain readings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.reports",
+      "english": "reports in the period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.schemes",
+      "english": "schemes tracked",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.count.sectors",
+      "english": "sectors reporting",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.feedback",
+      "english": "Grievances and closing the loop",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.food",
+      "english": "Food access and stunting-risk screening",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.map",
+      "english": "Schemes, reports and risk layers",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.schemes",
+      "english": "Evidence per scheme, targets and bottlenecks",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "module.trends",
+      "english": "Twelve months of field evidence",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "modules.eyebrow",
+      "english": "Workspace",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "modules.note",
+      "english": "Counts use the same live figures as above.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "modules.title",
+      "english": "Open a module",
+      "kinyarwanda": "Fungura igice",
+      "approved": false
+    },
+    {
+      "key": "monthly.cases",
+      "english": "Cases",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.cellsHidden",
+      "english": "{n} cells with fewer than {min} households are not shown, to protect privacy.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.change",
+      "english": "Change",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.changeVs",
+      "english": "{change}% vs {n} last month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.description",
+      "english": "One month of field evidence compared with the month before, ready to print or share.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.eyebrow",
+      "english": "Reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.asset_faults",
+      "english": "Asset faults",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.cases_opened",
+      "english": "Cases opened",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.grievances",
+      "english": "Grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.harvest_reports",
+      "english": "Harvest reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.new_people",
+      "english": "New registered people",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.nutrition_surveys",
+      "english": "Household screenings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.pest_reports",
+      "english": "Pest reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.rain_readings",
+      "english": "Rain readings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.reports",
+      "english": "Reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.sms_received",
+      "english": "SMS received",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figure.ussd_sessions",
+      "english": "USSD sessions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.figures",
+      "english": "Figures",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.gauges",
+      "english": "{n} gauges",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.grievanceLine",
+      "english": "{received} received, {resolved} resolved, {sms} closing-the-loop SMS.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.households",
+      "english": "{n} households",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.medianDays",
+      "english": "Median days to resolve",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.month",
+      "english": "Month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.noCells",
+      "english": "No cell has enough households to show a score.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.noComparison",
+      "english": "{n} last month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.nutritionLine",
+      "english": "{n} households screened; {high} at high risk; average score {risk} / 5.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.openAtEnd",
+      "english": "Open at month end",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.opened",
+      "english": "Opened",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.pests",
+      "english": "Pests and diseases",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.previous",
+      "english": "Previous month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.rainfall",
+      "english": "Rainfall by sector",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.reported",
+      "english": "Reported",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.resolved",
+      "english": "Resolved in the month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.rewards",
+      "english": "{n} airtime rewards paid to reporters ({rwf} RWF).",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.schemes",
+      "english": "Schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.sectors",
+      "english": "Sector activity",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.sectorsReporting",
+      "english": "{n} of {total} sectors sent at least one report.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.severeIn",
+      "english": "{n} severe · {sectors}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "monthly.title",
+      "english": "Monthly district report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.actions",
+      "english": "Priority actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.actnow",
+      "english": "Act now",
+      "kinyarwanda": "Ibyihutirwa",
+      "approved": false
+    },
+    {
+      "key": "nav.admin",
+      "english": "Administration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.advice",
+      "english": "Irrigation advice",
+      "kinyarwanda": "Inama zo kuhira",
+      "approved": false
+    },
+    {
+      "key": "nav.channels",
+      "english": "Field channels",
+      "kinyarwanda": "Ubutumwa bwo mu murima",
+      "approved": false
+    },
+    {
+      "key": "nav.channels2",
+      "english": "USSD & SMS operations",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.classic",
+      "english": "Classic page",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.climate",
+      "english": "Climate & advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.close",
+      "english": "Close menu",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.collapse",
+      "english": "Collapse menu",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.cooperatives",
+      "english": "Cooperatives",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.crops",
+      "english": "Crops & pests",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.districtMap",
+      "english": "District map",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.evaluation",
+      "english": "PADAB & APEFA evaluation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.expand",
+      "english": "Expand menu",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.feedback",
+      "english": "Community feedback",
+      "kinyarwanda": "Ibitekerezo by'abaturage",
+      "approved": false
+    },
+    {
+      "key": "nav.fieldReports",
+      "english": "Field reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.food",
+      "english": "Household nutrition",
+      "kinyarwanda": "Imirire y'ingo",
+      "approved": false
+    },
+    {
+      "key": "nav.grievances",
+      "english": "Grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.admin",
+      "english": "Administration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.comms",
+      "english": "Communications",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.community",
+      "english": "Community",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.dashboard",
+      "english": "Dashboard",
+      "kinyarwanda": "Imbonerahamwe",
+      "approved": false
+    },
+    {
+      "key": "nav.group.evaluation",
+      "english": "Evaluation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.field",
+      "english": "Field intelligence",
+      "kinyarwanda": "Amakuru yo mu murima",
+      "approved": false
+    },
+    {
+      "key": "nav.group.field2",
+      "english": "Field intelligence",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.platform",
+      "english": "Platform",
+      "kinyarwanda": "Urubuga",
+      "approved": false
+    },
+    {
+      "key": "nav.group.reports",
+      "english": "Reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.group.water",
+      "english": "Water & climate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.home",
+      "english": "Public website",
+      "kinyarwanda": "Ahabanza",
+      "approved": false
+    },
+    {
+      "key": "nav.irrigation",
+      "english": "Irrigation command centre",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.management",
+      "english": "Platform management",
+      "kinyarwanda": "Gucunga urubuga",
+      "approved": false
+    },
+    {
+      "key": "nav.map",
+      "english": "Map & observations",
+      "kinyarwanda": "Ikarita n'ibyagaragaye",
+      "approved": false
+    },
+    {
+      "key": "nav.menu",
+      "english": "Menu",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.monthly",
+      "english": "Monthly report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.nutrition",
+      "english": "Food & nutrition",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.overview",
+      "english": "Executive overview",
+      "kinyarwanda": "Incamake",
+      "approved": false
+    },
+    {
+      "key": "nav.report",
+      "english": "Monthly report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nav.schemes",
+      "english": "Scheme performance",
+      "kinyarwanda": "Imikorere y'imishinga",
+      "approved": false
+    },
+    {
+      "key": "nav.simulator",
+      "english": "Phone simulator",
+      "kinyarwanda": "Igerageza rya telefoni",
+      "approved": false
+    },
+    {
+      "key": "nav.trends",
+      "english": "Trends",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "notFound.back",
+      "english": "Back to the overview",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "notFound.body",
+      "english": "This page does not exist in the new dashboard yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "notFound.title",
+      "english": "Page not found",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.averageRisk",
+      "english": "Average risk score",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.byCell",
+      "english": "By cell",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.cell",
+      "english": "Cell",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.description",
+      "english": "Household screening answers by cell. Scores show risk factors to follow up, not a medical diagnosis.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.empty",
+      "english": "No household screenings recorded yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.eyebrow",
+      "english": "Food security",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.hidden",
+      "english": "Hidden (too few)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.highRisk",
+      "english": "High-risk households",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.households",
+      "english": "Households surveyed",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.insufficient",
+      "english": "Not enough food",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.oneMeal",
+      "english": "One meal a day",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.scale",
+      "english": "Score 1–5: 1 lowest risk, 5 highest.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.suppressed",
+      "english": "Fewer than {n} households: figures hidden to protect privacy",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.title",
+      "english": "Food & nutrition",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "nutrition.trend",
+      "english": "Households surveyed and average risk by month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Active",
+      "english": "Active",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Active in phone menus",
+      "english": "Active in phone menus",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Active staff administrators",
+      "english": "Active staff administrators",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Add asset",
+      "english": "Add asset",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Add category",
+      "english": "Add category",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Administration",
+      "english": "Administration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Approved baseline versions",
+      "english": "Approved baseline versions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Approved rainfall references",
+      "english": "Approved rainfall references",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Asset cell",
+      "english": "Asset cell",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Asset inventory",
+      "english": "Asset inventory",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Asset type",
+      "english": "Asset type",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Assets without confirmed cells",
+      "english": "Assets without confirmed cells",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Attempts",
+      "english": "Attempts",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Cancel queued item",
+      "english": "Cancel queued item",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Cancel unsent item",
+      "english": "Cancel unsent item",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Category code (optional)",
+      "english": "Category code (optional)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Check the provider's transaction record first. Requeueing may cause another charge. Never requeue an uncertain transaction without confirmation that it was not sent.",
+      "english": "Check the provider's transaction record first. Requeueing may cause another charge. Never requeue an uncertain transaction without confirmation that it was not sent.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Counts are not a representative sampling design or proof of causal impact.",
+      "english": "Counts are not a representative sampling design or proof of causal impact.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Delivery queue",
+      "english": "Delivery queue",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Delivery reference",
+      "english": "Delivery reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Delivery review",
+      "english": "Delivery review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Delivery review recorded",
+      "english": "Delivery review recorded",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.English label",
+      "english": "English label",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Enter district-confirmed reference information. Deactivate retired entries to preserve report history.",
+      "english": "Enter district-confirmed reference information. Deactivate retired entries to preserve report history.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Evidence reference (no phone numbers or message text)",
+      "english": "Evidence reference (no phone numbers or message text)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Field crop reports",
+      "english": "Field crop reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Grievance categories",
+      "english": "Grievance categories",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Grievance category",
+      "english": "Grievance category",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.I checked the provider and confirmed this transaction was not sent.",
+      "english": "I checked the provider and confirmed this transaction was not sent.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Inactive",
+      "english": "Inactive",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Inactive or uncovered schemes",
+      "english": "Inactive or uncovered schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Irrigation scheme",
+      "english": "Irrigation scheme",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Kinyarwanda",
+      "english": "Kinyarwanda",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Kinyarwanda label",
+      "english": "Kinyarwanda label",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Location not confirmed",
+      "english": "Location not confirmed",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.ML needs approved targets, adequate independent seasons/holdouts, missingness review, consent and a documented validation protocol.",
+      "english": "ML needs approved targets, adequate independent seasons/holdouts, missingness review, consent and a documented validation protocol.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Maintain the reference lists used in phone reporting and infrastructure monitoring.",
+      "english": "Maintain the reference lists used in phone reporting and infrastructure monitoring.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Measured yield reports",
+      "english": "Measured yield reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Menu order",
+      "english": "Menu order",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.No ML training or causal-impact claim is authorized by these counts.",
+      "english": "No ML training or causal-impact claim is authorized by these counts.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.No delivery records.",
+      "english": "No delivery records.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.No reference entries. Add district-confirmed entries to get started.",
+      "english": "No reference entries. Add district-confirmed entries to get started.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Not recorded",
+      "english": "Not recorded",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Official document entry, native-language review, real-phone acceptance and district privacy sign-off require external evidence.",
+      "english": "Official document entry, native-language review, real-phone acceptance and district privacy sign-off require external evidence.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Only provider receipts or an audited operator review establish final delivery. Duplicate or late callbacks cannot regress a delivered transaction.",
+      "english": "Only provider receipts or an audited operator review establish final delivery. Duplicate or late callbacks cannot regress a delivered transaction.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Other registry tools",
+      "english": "Other registry tools",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Pilot data readiness",
+      "english": "Pilot data readiness",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Platform management",
+      "english": "Platform management",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Provider ID",
+      "english": "Provider ID",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Provider confirmed acceptance",
+      "english": "Provider confirmed acceptance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Provider confirmed delivery",
+      "english": "Provider confirmed delivery",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Provider confirmed failure",
+      "english": "Provider confirmed failure",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Provider transaction ID",
+      "english": "Provider transaction ID",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Recipient",
+      "english": "Recipient",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Record review",
+      "english": "Record review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Reference entry",
+      "english": "Reference entry",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Reference entry saved",
+      "english": "Reference entry saved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Reference lists",
+      "english": "Reference lists",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Requeue after provider confirmed nothing was sent",
+      "english": "Requeue after provider confirmed nothing was sent",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Review outcome",
+      "english": "Review outcome",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Review {kind} #{id}",
+      "english": "Review {kind} #{id}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Scheme / location",
+      "english": "Scheme / location",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Status",
+      "english": "Status",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.This state cannot be manually changed: {status}.",
+      "english": "This state cannot be manually changed: {status}.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Unassigned",
+      "english": "Unassigned",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Unmatched provider receipts: {receipts}. Unknown outcomes: {unknown}.",
+      "english": "Unmatched provider receipts: {receipts}. Unknown outcomes: {unknown}.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "operations.Verified crop reports",
+      "english": "Verified crop reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "origin.demo",
+      "english": "Demonstration",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "origin.field",
+      "english": "Field",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "origin.import",
+      "english": "Imported",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "overview.eyebrow",
+      "english": "District planning dashboard",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "overview.subtitle",
+      "english": "Field evidence from USSD, SMS and district staff, with what needs a decision today.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "overview.title",
+      "english": "What is happening in Bugesera",
+      "kinyarwanda": "Ibibera i Bugesera",
+      "approved": false
+    },
+    {
+      "key": "priority.critical",
+      "english": "Critical",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "priority.high",
+      "english": "High",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "priority.medium",
+      "english": "Medium",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.case",
+      "english": "Linked case",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.description",
+      "english": "Every crop, pest, rainfall and infrastructure report, with automatic checks. Open a report to see its source and verify it.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.empty",
+      "english": "No reports match these filters.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.eyebrow",
+      "english": "Citizen science",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.flagNote",
+      "english": "Checks are automatic hints for verification, not errors.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.flaggedCount",
+      "english": "{n} with checks to review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.gps",
+      "english": "GPS from the phone",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.location",
+      "english": "Location",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.masked",
+      "english": "Phone numbers are masked and notes hidden for your role.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.note",
+      "english": "Verification note",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.noteHint",
+      "english": "Required to reject. Seen only by district staff.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.period",
+      "english": "Period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.reject",
+      "english": "Reject",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.reporter",
+      "english": "Reporter",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.title",
+      "english": "Field reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.truncated",
+      "english": "Only the newest 500 reports are listed. Narrow the filters to see older ones.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.unverify",
+      "english": "Mark unverified",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.value",
+      "english": "Value",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.verified",
+      "english": "Report marked {status}.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "reports.verify",
+      "english": "Mark verified",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.achievement",
+      "english": "Yield achievement",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.assetsDown",
+      "english": "Assets down",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.chartTitle",
+      "english": "Reports and problems by scheme",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.grievances",
+      "english": "Open grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.harvest",
+      "english": "Reported harvest",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.pests",
+      "english": "Severe pest alerts",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.reports",
+      "english": "Reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "scheme.target",
+      "english": "Yield target",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.approvalDate",
+      "english": "Date of approval",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.approve",
+      "english": "Approve official target",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.approved",
+      "english": "Target approved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.baselineHint",
+      "english": "Create a sourced version, then approve explicitly. Legacy targets remain unapproved. Demonstration targets cannot be approved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.baselines",
+      "english": "Official crop and season targets",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.comparisons",
+      "english": "Comparable crop, season and year groups",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.correct",
+      "english": "Save corrected report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.corrected",
+      "english": "Replacement saved as unverified; original retained",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.correction",
+      "english": "Correct measurements",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.correctionHint",
+      "english": "The original stays in history. The replacement must be verified separately.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.create",
+      "english": "Save unapproved version",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.crop",
+      "english": "Crop",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.cultivated",
+      "english": "Cultivated area (ha)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.document",
+      "english": "Source document reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.estimate",
+      "english": "Farmer estimate",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.excluded",
+      "english": "Exclusion reasons",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.exportLimit",
+      "english": "CSV export contains up to 500 reports. Narrow the filters for a complete export.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.harvestDate",
+      "english": "Harvest date",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.harvested",
+      "english": "Harvested area (ha)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.historical",
+      "english": "Historical reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.measured",
+      "english": "Measured observation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.none",
+      "english": "No target versions entered",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.observation",
+      "english": "Observation type",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.officialSource",
+      "english": "Official source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.quantity",
+      "english": "Observed harvest quantity",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.realOnly",
+      "english": "Official figures exclude demonstration, simulator and superseded reports.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.reason",
+      "english": "Correction reason",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.replaces",
+      "english": "Replaces version (optional)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.sample",
+      "english": "Verified measured sample only; not total scheme production or causal investment impact.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.saved",
+      "english": "Target version saved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.scheme",
+      "english": "Irrigation scheme",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.season",
+      "english": "Agricultural season",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.source",
+      "english": "Data source or measurement method",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.superseded",
+      "english": "Superseded by report #{id}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.target",
+      "english": "Expected yield",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.unit",
+      "english": "Measurement unit",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "science.year",
+      "english": "Reference year",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.actions",
+      "english": "Priority actions",
+      "kinyarwanda": "Ibikeneye gukorwa vuba",
+      "approved": false
+    },
+    {
+      "key": "section.actionsAll",
+      "english": "Open the full queue",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.actionsEmpty",
+      "english": "Nothing needs action right now.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.actionsNote",
+      "english": "Open cases and grievances, most urgent first.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.actionsStaff",
+      "english": "The action queue is visible to district officers, planners and administrators.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.assets",
+      "english": "Infrastructure health",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.assetsEmpty",
+      "english": "No asset condition reports yet. Operators report through *801# option 4.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.assetsMore",
+      "english": "{n} more assets with a condition report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.assetsNote",
+      "english": "Latest condition report for each named asset.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.map",
+      "english": "Rainfall and irrigation advice",
+      "kinyarwanda": "Imvura n'inama zo kuhira",
+      "approved": false
+    },
+    {
+      "key": "section.mapNote",
+      "english": "Seven-day citizen rain-gauge totals by sector and the advice they trigger.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.recent",
+      "english": "Latest field reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.recentEmpty",
+      "english": "No reports yet. They appear as soon as farmers dial *801# or text 8448.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.recentNote",
+      "english": "One-line summaries. Names, phone numbers and message text are never shown here.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.schemes",
+      "english": "PADAB and APEFA Solar",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.schemesEmpty",
+      "english": "No active schemes match this filter.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "section.schemesNote",
+      "english": "Field evidence per scheme in the selected period.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.allActions",
+      "english": "See all priority actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.area",
+      "english": "Area",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.classic",
+      "english": "Classic pages",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.errorBody",
+      "english": "Something went wrong while displaying it. Reload the page; if it happens again, tell the platform administrator.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.errorTitle",
+      "english": "This page could not be shown.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.noNotifications",
+      "english": "No open actions.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.noPages",
+      "english": "No page matches.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.notifications",
+      "english": "Open actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.profile",
+      "english": "Account menu",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.reload",
+      "english": "Reload",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.role",
+      "english": "Role",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.search",
+      "english": "Search pages",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "shell.searchHint",
+      "english": "Type a page name",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "side.channels",
+      "english": "USSD *801# · SMS 8448",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "side.channelsNote",
+      "english": "Farmers report from any phone",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.again",
+      "english": "New session",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.badge",
+      "english": "Test data only — never counted, never sent",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.code",
+      "english": "*801#",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.description",
+      "english": "Try *801# and SMS 8448 exactly as a farmer would. Records are marked as simulator data, never count as evidence, and nothing is sent to a telecom provider.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.dial",
+      "english": "Dial *801#",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.end",
+      "english": "Session ended",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.english",
+      "english": "English",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.eyebrow",
+      "english": "Communications",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.hangUp",
+      "english": "Hang up",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.idle",
+      "english": "Press Dial to start a USSD session.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.noSms",
+      "english": "No messages yet. Try IMVURA 12.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.noTrace",
+      "english": "Requests and replies appear here.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.notDelivered",
+      "english": "Not delivered",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.phone",
+      "english": "Caller phone number",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.problem",
+      "english": "Connection problem.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.recorded",
+      "english": "Recorded: {type} (simulator)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.reply",
+      "english": "Your answer",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.running",
+      "english": "USSD code running…",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.send",
+      "english": "Send",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.sms",
+      "english": "SMS to 8448",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.smsHint",
+      "english": "For example: IMVURA 12, NZANA 4, UMUSARURO IBIGORI 2.5, IKIBAZO …",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.smsText",
+      "english": "Message",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.title",
+      "english": "Phone simulator",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "sim.trace",
+      "english": "Session trace",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "source.demo",
+      "english": "Demonstration data",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "source.documented",
+      "english": "Documented",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "source.live_unverified",
+      "english": "Citizen reports, unverified",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "source.missing",
+      "english": "Not enough data",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "source.platform",
+      "english": "Platform record",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "state.empty",
+      "english": "Nothing to show yet.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "state.error",
+      "english": "The data could not be loaded.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "state.loading",
+      "english": "Loading…",
+      "kinyarwanda": "Biratangira…",
+      "approved": false
+    },
+    {
+      "key": "state.retry",
+      "english": "Try again",
+      "kinyarwanda": "Ongera ugerageze",
+      "approved": false
+    },
+    {
+      "key": "state.unreachable",
+      "english": "The platform is not reachable. Check that it is running.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.assigned",
+      "english": "Assigned",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.closed",
+      "english": "Closed",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.faulty",
+      "english": "Faulty",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.in_progress",
+      "english": "In progress",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.offline",
+      "english": "Offline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.open",
+      "english": "Open",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.operational",
+      "english": "Working",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.resolved",
+      "english": "Resolved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "status.triaged",
+      "english": "Triaged",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.count",
+      "english": "Showing {shown} of {total}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.next",
+      "english": "Next page",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.noMatch",
+      "english": "Nothing matches your search.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.page",
+      "english": "Page {page} of {pages}",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.previous",
+      "english": "Previous page",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "table.search",
+      "english": "Search",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "theme.dark",
+      "english": "Dark mode",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "theme.useDark",
+      "english": "Use dark mode",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "theme.useLight",
+      "english": "Use light mode",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "time.days",
+      "english": "{n} d ago",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "time.hours",
+      "english": "{n} h ago",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "time.justNow",
+      "english": "just now",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "time.minutes",
+      "english": "{n} min ago",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "toolbar.showing",
+      "english": "Showing",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "top.alerts",
+      "english": "{n} open actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "top.offline",
+      "english": "Platform offline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "top.online",
+      "english": "Platform online",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.allReports",
+      "english": "Reports received",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.assetFaults",
+      "english": "Asset fault reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.cases",
+      "english": "Cases opened and resolved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.description",
+      "english": "Month-by-month field evidence. Counts are reports received, not verified totals.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.empty",
+      "english": "No reports in the last twelve months.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.eyebrow",
+      "english": "Reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.harvest",
+      "english": "Expected and reported harvest (tons, sample)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.month",
+      "english": "Month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.provenance",
+      "english": "Source: citizen reports by USSD, SMS and the web. Simulator tests are left out. Harvest figures come from a sample of farmers.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.rainNote",
+      "english": "Partial sum of daily means across identified gauges, using observation dates. Missing days are not zero; legacy dates use receipt day.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.reports",
+      "english": "Reports by month",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.resolved",
+      "english": "Resolved",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.severePests",
+      "english": "Severe pest alerts",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.table",
+      "english": "Show as table",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "trends.title",
+      "english": "Twelve-month trends",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "verification.rejected",
+      "english": "Rejected",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "verification.unverified",
+      "english": "Unverified",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "key": "verification.verified",
+      "english": "Verified",
+      "kinyarwanda": "",
+      "approved": false
+    }
+  ]
+}

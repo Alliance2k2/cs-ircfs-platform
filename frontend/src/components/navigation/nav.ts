@@ -101,7 +101,7 @@ export const NAV: NavGroup[] = [
       { label: "nav.admin", icon: Settings, to: "/admin", access: "admin" },
       // The classic page still holds field users, grievance categories, the asset
       // inventory, nutrition surveys and the SMS log.
-      { label: "nav.management", icon: SlidersHorizontal, href: "/management.html", access: "admin" },
+      { label: "nav.management", icon: SlidersHorizontal, to: "/management", access: "admin" },
       { label: "nav.home", icon: Globe, href: "/" },
     ],
   },

@@ -92,6 +92,7 @@ function SchemeEvidence({ scheme }: { scheme: Scheme }) {
                 <div key={group.baseline_id} className="rounded-control border border-line p-2 text-xs">
                   <p className="font-semibold">{group.crop} | {group.season} / {group.reference_year}: {group.value === null ? t("evaluation.notComputable") : `${n(group.value)}%`}</p>
                   <p>{group.observed_tons_per_hectare === null ? "--" : n(group.observed_tons_per_hectare)} / {n(group.target_tons_per_hectare)} t/ha | {group.eligible_reports} {t("evaluation.harvestReports")}</p>
+                  <p className="text-xs text-muted">Sample range: {group.sample_min_tons_per_hectare === null ? "Unavailable" : `${n(group.sample_min_tons_per_hectare)}?${n(group.sample_max_tons_per_hectare ?? group.sample_min_tons_per_hectare)} t/ha`}. Descriptive range; no population confidence interval or causal impact established.</p>
                   <p>{n(group.observed_tons)} t / {n(group.harvested_area_hectares)} ha</p>
                   <p className="break-words text-muted">{group.source} | {group.document_reference} | #{group.baseline_id}</p>
                 </div>

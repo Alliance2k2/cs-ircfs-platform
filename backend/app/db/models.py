@@ -387,6 +387,8 @@ class AdvisoryMessage(Base):
     provider_id: Mapped[str | None] = mapped_column(String(120))
     delivery_attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     last_attempt_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    private_recipient: Mapped[str | None] = mapped_column(Text)
+    private_recipient_expires_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     purpose: Mapped[str | None] = mapped_column(String(30), index=True)
     cell_id: Mapped[int | None] = mapped_column(ForeignKey("cells.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -647,3 +649,16 @@ class AssetMaintenance(Base):
     data_origin: Mapped[str] = data_origin_column()
     created_by_account_id: Mapped[int | None] = mapped_column(ForeignKey("platform_accounts.id"))
     created_at: Mapped[datetime] = mapped_column(UTCDateTime(), server_default=func.now())
+
+
+class DeliveryReceipt(Base):
+    """Authenticated provider status without recipient numbers or message contents."""
+    __tablename__ = "delivery_receipts"
+    __table_args__ = (UniqueConstraint("kind", "provider_id", "provider_status", name="uq_delivery_receipt_event"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    provider_id: Mapped[str] = mapped_column(String(120), index=True)
+    provider_status: Mapped[str] = mapped_column(String(40))
+    normalized_status: Mapped[str] = mapped_column(String(20))
+    received_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=lambda: datetime.now(timezone.utc))
+    applied_at: Mapped[datetime | None] = mapped_column(UTCDateTime())

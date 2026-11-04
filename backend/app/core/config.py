@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     # Live SMS/airtime is refused outside production unless this is explicitly true, so a
     # laptop holding live credentials cannot text real citizens by accident.
     allow_live_messages: bool = False
+    anonymous_reply_queue_enabled: bool = False
+    anonymous_reply_encryption_key: str = ""
+    anonymous_reply_policy_reference: str = ""
+    anonymous_reply_ttl_seconds: int = Field(default=300, ge=30, le=3600)
+    audit_personal_reads: bool = True
+    message_retention_days: int = Field(default=30, ge=1, le=36500)
+    delivery_max_age_hours: int = Field(default=24, ge=1, le=168)
     log_level: str = "INFO"
     sms_provider: str = "dry_run"
     africas_talking_username: str = ""
@@ -107,6 +114,14 @@ class Settings(BaseSettings):
 
         Raises RuntimeError for every combination that must never reach production.
         """
+        if self.anonymous_reply_queue_enabled:
+            from cryptography.fernet import Fernet
+            try:
+                Fernet(self.anonymous_reply_encryption_key.encode())
+            except (ValueError, TypeError) as error:
+                raise RuntimeError("Private reply queue requires a valid Fernet key") from error
+            if not self.anonymous_reply_policy_reference.strip():
+                raise RuntimeError("Private reply queue requires an approved policy reference")
         if self.environment != "production":
             return
         if not self.require_api_key:

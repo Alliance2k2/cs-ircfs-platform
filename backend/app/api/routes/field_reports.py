@@ -16,7 +16,7 @@ from app.core.scope import allowed_cells, check_cell
 from app.core.security import Principal, require_roles
 from app.db.models import ORIGIN_SIMULATOR, AuditEvent, UserRole
 from app.db.session import get_db
-from app.services.audit import record
+from app.services.audit import record, personal_read
 from app.services.field_reports import KINDS, SOURCES, Lookup, linked_case, list_reports, row
 from app.schemas.reports import CropReportCreate, IrrigationReportCreate
 from app.services.references import validate_report_references, validate_report_scope
@@ -63,6 +63,7 @@ def field_reports(params: dict = Depends(filters), db: Session = Depends(get_db)
                         **{**params, "limit": limit + 1})
     truncated = len(rows) > limit
     rows = rows[:limit]
+    personal_read(db, principal, "field_report", rows=len(rows))
     return {"reports": rows, "kinds": list(KINDS), "personal_data": sees_personal_data(principal),
             "truncated": truncated, "offset": offset, "next_offset": offset + len(rows) if truncated else None}
 
@@ -103,6 +104,7 @@ def _note(detail: str | None) -> str | None:
 def field_report(source: Source, report_id: int, db: Session = Depends(get_db), principal: Principal = viewer) -> dict:
     """One report with its linked case and verification history."""
     report = find_report(db, source, report_id, principal)
+    personal_read(db, principal, f"read_{source}", report_id)
     personal = sees_personal_data(principal)
     detail = row(source, report, Lookup(db), personal, duplicate=False)
     detail["notes"] = (getattr(report, "notes", None) or getattr(report, "fault_description", None)) if personal else None

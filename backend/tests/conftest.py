@@ -14,6 +14,8 @@ os.environ["WEATHER_FORECAST_ENABLED"] = "false"
 # Tests must never hit a real telecom provider, whatever the local .env says.
 os.environ["SMS_PROVIDER"] = "dry_run"
 os.environ["AIRTIME_PROVIDER"] = "dry_run"
+os.environ["ANONYMOUS_REPLY_QUEUE_ENABLED"] = "false"
+os.environ["ALLOW_LIVE_MESSAGES"] = "false"
 
 import pytest
 from fastapi.testclient import TestClient

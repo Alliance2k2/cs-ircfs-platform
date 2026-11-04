@@ -21,6 +21,7 @@ from app.db.models import (
 from app.db.session import get_db
 from app.schemas import FieldUserCreate, FieldUserRead, FieldUserUpdate
 from app.services.references import require_if_provided
+from app.services.audit import personal_read
 
 router = APIRouter(prefix="/api/v1/field-users", tags=["field users"])
 
@@ -63,7 +64,9 @@ def list_field_users(
         query = query.where(FieldUser.full_name.ilike(term) | FieldUser.phone_number.ilike(term) | FieldUser.cooperative_name.ilike(term))
     if role:
         query = query.where(FieldUser.role == role)
-    return list(db.scalars(query))
+    rows = list(db.scalars(query))
+    personal_read(db, principal, "field_user", rows=len(rows))
+    return rows
 
 
 @router.patch("/{field_user_id}", response_model=FieldUserRead)

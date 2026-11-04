@@ -1,5 +1,7 @@
 # Roadmap
 
+> Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 ## Status
 
 | Phase | Deliverable | Status |

@@ -29,3 +29,15 @@ def validate_report_scope(db, principal, payload):
         person = db.get(FieldUser, payload.reporter_id)
         if person is not None:
             check_cell(person.cell_id, cells, "Reporter")
+
+
+def validate_asset_area(db, scheme_id, cell_id):
+    if scheme_id is None or cell_id is None:
+        return
+    from app.services.scheme_coverage import sector_ids_for_scheme
+    scheme = db.get(IrrigationScheme, scheme_id)
+    cell = db.get(Cell, cell_id)
+    if scheme is not None and cell is not None:
+        sectors = sector_ids_for_scheme(db, scheme)
+        if sectors and cell.sector_id not in sectors:
+            raise HTTPException(422, "The asset cell is outside the confirmed scheme service area")

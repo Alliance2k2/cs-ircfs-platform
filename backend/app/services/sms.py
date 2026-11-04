@@ -126,15 +126,17 @@ def deliver(db: Session, phone_number: str, message: str, purpose: str, cell_id:
     ``anonymous`` logs the message without the recipient's number, for replies that
     would otherwise tie a phone to an anonymous grievance.
     """
-    # Commit ordinary live messages with the business operation. A separate worker sends
-    # them only after commit. Anonymous grievance replies retain no recipient in storage
-    # and are deliberately synchronous until an approved private reply mechanism exists.
-    result = ({"status": "queued"} if not anonymous and live(get_settings().sms_provider)
+    settings = get_settings()
+    private_queue = anonymous and settings.anonymous_reply_queue_enabled and live(settings.sms_provider)
+    result = ({"status": "queued"} if live(settings.sms_provider) and (not anonymous or private_queue)
               else send_sms(phone_number, message))
     record = AdvisoryMessage(
         phone_number=WITHHELD if anonymous else phone_number, message=message, status=result["status"],
         provider_id=result.get("provider_id"), purpose=purpose, cell_id=cell_id,
     )
+    if private_queue:
+        from app.services.private_replies import seal
+        record.private_recipient, record.private_recipient_expires_at = seal(phone_number)
     db.add(record)
     return record
 
@@ -154,10 +156,14 @@ def send_airtime(phone_number: str, amount_rwf: int) -> dict:
         response.raise_for_status()
         body = response.json()
         responses = body.get("responses", [])
-        if body.get("errorMessage", "None") != "None" or (responses and responses[0].get("status") not in ("Sent", "Success")):
-            logger.warning("Airtime rejected: %s", body.get("errorMessage") or responses[0].get("errorMessage"))
-            return {"status": "failed", "detail": body.get("errorMessage") or responses[0].get("errorMessage")}
-        return {"status": "sent", "provider_id": responses[0].get("requestId") if responses else None}
+        error_message = body.get("errorMessage")
+        if error_message not in (None, "None", "") or not responses or responses[0].get("status") not in ("Sent", "Success"):
+            logger.warning("Airtime was not confirmed accepted")
+            return {"status": "failed", "detail": "Airtime provider did not confirm acceptance"}
+        provider_id = responses[0].get("requestId")
+        if not provider_id or provider_id == "None":
+            return {"status": "failed", "detail": "Airtime provider did not supply a transaction reference"}
+        return {"status": "sent", "provider_id": provider_id}
     except (httpx.HTTPError, ValueError) as error:
         logger.warning("Airtime delivery failed: %s", error)
         return {"status": "failed", "detail": "Airtime provider rejected or did not answer the request"}

@@ -20,6 +20,7 @@ from app.api.routes import (
     auth,
     baselines,
     calibration,
+    delivery,
     climate,
     maintenance,
     cases,
@@ -133,8 +134,8 @@ SECURITY_HEADERS = {
 }
 
 # Report-only first: the legacy dashboard and the React build both rely on inline styles and
-# scripts today, so an enforcing policy would break pages. Browsers still enforce the policy
-# in report-only mode for evaluation, and violations appear in the console while the allow-list
+# scripts today, so a shared enforcing policy would break classic pages. Browsers
+# only report violations in report-only mode; enforcement is separate while the allow-list
 # is narrowed in later weeks. Mapbox GL needs its tile hosts, a blob worker, and events.
 CSP_REPORT_ONLY = "; ".join((
     "default-src 'self'",
@@ -153,6 +154,15 @@ CSP_REPORT_ONLY = "; ".join((
 ))
 
 
+# Enforced on the bundled React dashboard; classic pages retain report-only rollout.
+CSP_APP = "; ".join((
+    "default-src 'self'", "base-uri 'self'", "object-src 'none'", "frame-ancestors 'none'", "form-action 'self'",
+    "script-src 'self' blob:", "style-src 'self' 'unsafe-inline'", "font-src 'self' data:",
+    "img-src 'self' data: blob: https://*.mapbox.com", "worker-src 'self' blob:",
+    "connect-src 'self' https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com", "frame-src 'none'",
+))
+
+
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
     """Baseline browser protections on every response (see docs/security.md)."""
@@ -160,6 +170,8 @@ async def security_headers(request: Request, call_next):
     for header, value in SECURITY_HEADERS.items():
         response.headers.setdefault(header, value)
     response.headers.setdefault("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY)
+    if request.url.path == "/app" or request.url.path.startswith("/app/"):
+        response.headers.setdefault("Content-Security-Policy", CSP_APP)
     if settings.environment == "production":
         response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
     return response
@@ -176,6 +188,7 @@ for api_router in (
     auth.router,
     baselines.router,
     channels.router,
+    delivery.router,
     advisory.router,
     calibration.router,
     climate.router,

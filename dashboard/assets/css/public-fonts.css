@@ -1,0 +1,17 @@
+/* Existing SIL OFL fonts. Optional swapping keeps cold rural connections stable:
+   use the local font promptly when available, otherwise retain the system fallback
+   for this navigation rather than moving already-readable text. */
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: optional;
+  src: url("../fonts/manrope-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: optional;
+  src: url("../fonts/dm-sans-latin.woff2") format("woff2");
+}

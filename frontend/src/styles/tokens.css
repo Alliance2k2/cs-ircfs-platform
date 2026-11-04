@@ -45,3 +45,31 @@
   --shadow-raised: 0 12px 32px rgb(10 47 31 / 0.12);
   --focus-ring: 0 0 0 3px rgb(66 184 131 / 0.45);
 }
+
+/* Dashboard theme is screen-only; printed reports retain the original light palette. */
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --canvas: 15 24 22;
+    --surface: 23 37 32;
+    --ink: 232 244 236;
+    --muted: 170 191 179;
+    --line: 96 122 108;
+    --mint: 32 65 49;
+    --amber-soft: 54 43 22;
+    --critical-soft: 61 29 28;
+    --water-soft: 22 44 56;
+    --violet-soft: 42 33 64;
+    --teal-soft: 21 49 45;
+    --shadow-card: 0 1px 4px rgb(0 0 0 / 0.3);
+    --shadow-raised: 0 12px 32px rgb(0 0 0 / 0.45);
+  }
+  [data-theme="dark"] [class*="text-forest"],
+  [data-theme="dark"] [class*="text-primary"] { color: rgb(165 224 190); }
+  [data-theme="dark"] .text-amber { color: rgb(245 207 127); }
+  [data-theme="dark"] .text-critical { color: rgb(255 159 154); }
+  [data-theme="dark"] .text-water { color: rgb(133 210 244); }
+  [data-theme="dark"] .text-violet { color: rgb(198 178 255); }
+  [data-theme="dark"] .text-teal { color: rgb(134 225 211); }
+  [data-theme="dark"] .bg-white { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
+}

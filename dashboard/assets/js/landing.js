@@ -21,6 +21,13 @@
     rw: { label: "RW", items: ["Ibyo ikora", "Uko ikora", "Abagenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
   const RW_COPY = {
+    "Illustrative photographs; not CS-IRCFS participants or verified pilot sites.":"Amafoto atanga urugero; si ay'abitabiriye CS-IRCFS cyangwa ahantu hemejwe hakorerwa igerageza.",
+    "Photo credits & locations":"Abafashe amafoto n'aho yafatiwe",
+    "Photography credits":"Abafashe amafoto",
+    "COMMUNITY KNOWLEDGE. SHARED RESILIENCE.":"UBUMENYI BW'ABATURAGE. UBUDAHERANWA.",
+    "Connecting Farmers' Knowledge":"Guhuza ubumenyi bw'abahinzi",
+    "with Better Irrigation Decisions.":"n'ibyemezo byiza byo kuhira.",
+    "CS-IRCFS connects farmers, climate observations and district teams to support irrigation resilience and climate-smart food security in Bugesera, Rwanda.":"CS-IRCFS ihuza abahinzi, amakuru y'ikirere n'abakozi b'akarere kugira ngo ifashe kuhira no guteza imbere umutekano w'ibiribwa mu Karere ka Bugesera.",
     "What it does":"Ibyo ikora", "How it works":"Uko ikora", "Who it's for":"Abagenewe", "Pilot schemes":"Imishinga y'igerageza", "FAQs":"Ibibazo", "Sign in":"Injira", "Create account":"Fungura konti",
     "Transforming agriculture":"Guhindura ubuhinzi", "through community knowledge.":"bishingiye ku bumenyi bw'abaturage.",
     "Empowering farmers in Bugesera District, Rwanda with accessible technology to report, monitor, and improve irrigation resilience for climate-smart food security.":"Duha abahinzi bo mu Karere ka Bugesera, u Rwanda, ikoranabuhanga ryoroshye ryo gutanga amakuru, kugenzura no guteza imbere ubudahangarwa bw'ubuhinzi buhungabanya ikirere.",

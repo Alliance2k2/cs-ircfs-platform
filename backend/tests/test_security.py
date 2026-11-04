@@ -177,3 +177,13 @@ def test_map_config_returns_only_public_mapbox_tokens(client, monkeypatch):
     assert client.get("/api/v1/public/map-config").json()["mapbox_token"] is None
     monkeypatch.setattr(public, "get_settings", lambda: Settings(_env_file=None, mapbox_access_token=""))
     assert client.get("/api/v1/public/map-config").json() == {"mapbox_token": None, "style": "mapbox://styles/mapbox/light-v11"}
+
+
+def test_react_dashboard_enforces_script_policy_without_breaking_classic_pages(client):
+    policy = client.get("/app/").headers.get("Content-Security-Policy", "")
+    script = next(part for part in policy.split(";") if part.strip().startswith("script-src"))
+    assert "'self'" in script and "'unsafe-inline'" not in script and "'unsafe-eval'" not in script
+    assert "worker-src 'self' blob:" in policy
+    classic = client.get("/login.html").headers
+    assert "Content-Security-Policy-Report-Only" in classic
+    assert "Content-Security-Policy" not in classic

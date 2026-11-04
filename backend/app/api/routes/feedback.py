@@ -8,7 +8,7 @@ from app.core.security import Principal, require_roles
 from app.db.models import CommunityFeedback, FeedbackStatusEvent, FieldUser, ReportStatus, UserRole
 from app.db.session import get_db
 from app.schemas import CellNotification, FeedbackCreate, FeedbackEventRead, FeedbackRead, FeedbackUpdate
-from app.services.audit import record
+from app.services.audit import record, personal_read
 from app.services.notifications import notify_cell, resolution_message
 from app.services.references import require_if_provided, validate_report_references
 
@@ -30,6 +30,7 @@ def create_feedback(payload: FeedbackCreate, db: Session = Depends(get_db), _: o
 
 @router.get("", response_model=list[FeedbackRead])
 def list_feedback(db: Session = Depends(get_db), principal: Principal = manager) -> list[CommunityFeedback]:
+    personal_read(db, principal, "community_feedback")
     cells = allowed_cells(db, principal)
     return list(db.scalars(select(CommunityFeedback).where(cell_filter(CommunityFeedback.cell_id, cells)).order_by(CommunityFeedback.id.desc())))
 
@@ -72,6 +73,7 @@ def update_feedback(
 
 @router.get("/{feedback_id}/history", response_model=list[FeedbackEventRead])
 def feedback_history(feedback_id: int, db: Session = Depends(get_db), principal: Principal = manager) -> list[FeedbackStatusEvent]:
+    personal_read(db, principal, "feedback_history")
     find_feedback(db, feedback_id, principal)
     return list(
         db.scalars(

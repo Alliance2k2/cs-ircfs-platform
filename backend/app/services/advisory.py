@@ -93,32 +93,21 @@ def with_forecast(advice: IrrigationAdvice, forecast_mm: float | None, dry_mm: f
 
 def rainfall_by_sector(db: Session, days: int = 7) -> dict[int, tuple[float, int]]:
     """Return {sector_id: (total_mm, readings)} for citizen rain-gauge readings in the window."""
+    from app.services.climate import daily_summary, observation_reports
     today = datetime.now(KIGALI).date()
-    first_day = today - timedelta(days=days - 1)
-    cutoff = datetime.combine(first_day, datetime.min.time(), tzinfo=KIGALI).astimezone(timezone.utc)
-    rows = db.execute(
-        select(Cell.sector_id, IrrigationClimateLog.reporter_id, IrrigationClimateLog.cell_id,
-               IrrigationClimateLog.rainfall_mm, IrrigationClimateLog.created_at, IrrigationClimateLog.observation_date)
-        .join(Cell, Cell.id == IrrigationClimateLog.cell_id)
-        .where(IrrigationClimateLog.rainfall_mm.is_not(None), counted(IrrigationClimateLog), IrrigationClimateLog.verification_status != "rejected",
-               or_(IrrigationClimateLog.observation_date.between(first_day, today),
-                   and_(IrrigationClimateLog.observation_date.is_(None), IrrigationClimateLog.created_at >= cutoff)))
-    ).all()
-    # Deduplicate through gauge identity, cap readings and daily gauge totals, then average
-    # the gauges in a sector rather than counting every submitted row as independent rain.
-    gauges: dict[int, dict[tuple, float]] = {}
-    readings: dict[int, int] = {}
-    per_sector_rows: dict[int, list[tuple]] = {}
-    for sector_id, reporter_id, cell_id, mm, created_at, observation_date in rows:
-        if observation_date is not None:
-            created_at = datetime.combine(observation_date, datetime.min.time(), tzinfo=KIGALI)
-        gauge_key = (reporter_id, cell_id)
-        per_sector_rows.setdefault(sector_id, []).append((gauge_key, created_at, mm))
-    for sector_id, gauge_rows in per_sector_rows.items():
-        totals, counts = aggregate_gauges(gauge_rows)
-        gauges[sector_id] = dict(totals)
-        readings[sector_id] = sum(counts.values())
-    return {sector_id: (sum(totals.values()) / len(totals), readings[sector_id]) for sector_id, totals in gauges.items()}
+    first = today - timedelta(days=max(1, min(days, 366)) - 1)
+    cell_sectors = dict(db.execute(select(Cell.id, Cell.sector_id)).all())
+    groups = {}
+    for report in observation_reports(db, first, today):
+        sector = cell_sectors.get(report.cell_id)
+        if sector is not None:
+            groups.setdefault(sector, []).append(report)
+    result = {}
+    for sector, reports in groups.items():
+        summary = daily_summary(reports, first, today)
+        if summary["partial_total_mm"] is not None:
+            result[sector] = (summary["partial_total_mm"], sum(day["gauges"] for day in summary["daily"]))
+    return result
 
 
 def threshold_rows(db: Session) -> list[AdvisoryThreshold]:

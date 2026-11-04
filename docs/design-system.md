@@ -1,5 +1,9 @@
 # Design system
 
+## Public website
+
+The public page retains its original layout, typography, navigation and phone demonstration, with local licensed photographs and an updated hero message. The dashboard defaults to white surfaces with dark green accents. See [current interface changes](current-interface-changes.md). Earlier redesign reports are historical proposals, not the current interface.
+
 One visual language for the whole platform. The React dashboard (`frontend/`) implements it; the classic pages share the same palette through `dashboard/assets/css/tokens.css` until they are rebuilt.
 
 ## Colour tokens

@@ -1,0 +1,49 @@
+{
+  "captured": "2026-11-03T11:26:03.742Z",
+  "source": "isolated synthetic preview",
+  "layouts": [
+    {
+      "width": 360,
+      "scrollWidth": 360,
+      "brokenImages": 0
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "brokenImages": 0
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "brokenImages": 0
+    },
+    {
+      "width": 1024,
+      "scrollWidth": 1024,
+      "brokenImages": 0
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "brokenImages": 0
+    }
+  ],
+  "mobile_lab": {
+    "conditions": "390px, cold cache, 1.6Mbps down, 150ms latency, 4x CPU slowdown; one lab navigation, not real-user Core Web Vitals",
+    "lcp_ms": 9200,
+    "cls": 0.000005744912081247743,
+    "paint": [
+      {
+        "name": "first-paint",
+        "milliseconds": 8636
+      },
+      {
+        "name": "first-contentful-paint",
+        "milliseconds": 8636
+      }
+    ],
+    "initial_resource_bytes": 316911,
+    "resources": 14,
+    "external_resources": 0
+  }
+}

@@ -7,6 +7,7 @@ import type { MessageKey } from "./en";
  * marked "existing"; the rest are first drafts.
  */
 export const rw: Partial<Record<MessageKey, string>> = {
+  "language.partial": "Amagambo amwe ari mu Cyongereza.", // draft: native review required
   "app.skip": "Jya ku bikubiyemo",
   "nav.group.dashboard": "Imbonerahamwe",
   "nav.group.field": "Amakuru yo mu murima",

@@ -1,10 +1,12 @@
 # CS-IRCFS
 
+> Current implementation and operator instructions: [November completion](docs/platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
+
 **Citizen Science for Irrigation Resilience and Climate-smart Food Security** — a field-reporting and decision-support platform for Bugesera District, Rwanda.
 
 Farmers, Citizen Science Monitors and cooperatives report crop, water and community information from any mobile phone through **USSD `*801#`** and **SMS `8448`**, in Kinyarwanda and without internet access. District staff use that evidence to verify whether the **PADAB** and **APEFA Solar** irrigation schemes deliver their expected outcomes, to act on problems as they are reported, and to send advice back to the community.
 
-![Public home page with live field activity](docs/images/home.jpg)
+The public website retains its original layout with licensed Rwanda photographs and the updated irrigation headline. Public activity remains aggregate-only. See [the current interface changes](docs/current-interface-changes.md) and [photography credits](dashboard/photography.html).
 
 ## How it works
 
@@ -72,7 +74,7 @@ copy .env.example .env
 .\start-local.ps1 -Demo
 ```
 
-Open **http://127.0.0.1:8000**. The `-Demo` option runs on a separate SQLite database (`backend/demo.db`) filled with invented sample data, with sign-in turned off. It never touches the database configured in `.env`.
+Open **http://127.0.0.1:8000**. The `-Demo` option runs on a separate SQLite database (`backend/demo.db`) filled with invented sample data, with normal account sign-in enabled. It never touches the database configured in `.env`.
 
 To run against PostgreSQL, set `DATABASE_URL` in `.env` and start without `-Demo`. Migrations are applied automatically:
 
