@@ -33,6 +33,16 @@ def test_a_fresh_database_matches_the_models(database):
     assert differences(url) == []
 
 
+def test_migrations_do_not_disable_application_observability(database):
+    import logging
+
+    logger = logging.getLogger("app.main")
+    logger.disabled = False
+    config, _ = database
+    command.upgrade(config, "head")
+    assert logger.disabled is False
+
+
 def test_upgrading_existing_data_keeps_it_and_points_assignments_at_accounts(database):
     config, url = database
     command.upgrade(config, "20261010_16")

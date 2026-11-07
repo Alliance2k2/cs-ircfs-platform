@@ -25,4 +25,4 @@ COPY --from=frontend /frontend/dist /app/frontend/dist
 WORKDIR /app/backend
 # --proxy-headers: behind a load balancer, rate limits must see the real client address.
 # FORWARDED_ALLOW_IPS names the trusted proxy ("*" on Render, where only its proxy can reach the container).
-CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_reference_schemes.py && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-127.0.0.1}"]
+CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_reference_schemes.py && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --no-access-log --proxy-headers --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-127.0.0.1}"]

@@ -55,11 +55,18 @@ RECORD_MODELS = {"crop_report": CitizenScienceLog, "irrigation_report": Irrigati
 # Per caller, across all workers (the database is shared): a USSD session is a few
 # keypresses, so this only stops a runaway client, never a real farmer.
 PHONE_LIMIT_PER_MINUTE = 30
+MAX_CALLBACK_BODY_BYTES = 16_384
 
 
 async def read_fields(request: Request) -> dict[str, str]:
     """Accept Africa's Talking form posts and JSON from the dashboard simulator."""
-    body = (await request.body()).decode("utf-8", errors="replace")
+    # Content-Length may be absent or forged; bound the streamed body as well.
+    chunks = bytearray()
+    async for chunk in request.stream():
+        if len(chunks) + len(chunk) > MAX_CALLBACK_BODY_BYTES:
+            raise HTTPException(status_code=413, detail=f"Callback body exceeds {MAX_CALLBACK_BODY_BYTES} bytes")
+        chunks.extend(chunk)
+    body = chunks.decode("utf-8", errors="replace")
     if request.headers.get("content-type", "").startswith("application/json"):
         try:
             data = json.loads(body or "{}")
@@ -67,8 +74,14 @@ async def read_fields(request: Request) -> dict[str, str]:
             raise HTTPException(status_code=422, detail="Invalid JSON body") from error
         if not isinstance(data, dict):
             raise HTTPException(status_code=422, detail="Expected a JSON object")
-        return {key: str(value) for key, value in data.items() if value is not None}
-    return {key: values[-1] for key, values in parse_qs(body, keep_blank_values=True).items()}
+        fields = {key: str(value) for key, value in data.items() if value is not None}
+    else:
+        fields = {key: values[-1] for key, values in parse_qs(body, keep_blank_values=True).items()}
+    # PostgreSQL enforces the identifier column width; SQLite alone would hide this.
+    for key in ("sessionId", "id"):
+        if len(fields.get(key, "")) > 120:
+            raise HTTPException(status_code=422, detail=f"{key} must not exceed 120 characters")
+    return fields
 
 
 def caller(fields: dict[str, str], key: str) -> str:

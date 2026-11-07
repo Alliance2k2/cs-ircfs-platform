@@ -13,3 +13,5 @@ def configure_logging(level: str = "INFO") -> None:
             "root": {"handlers": ["console"], "level": level.upper()},
         }
     )
+    # Raw access URLs can contain gateway tokens. Structured request logs omit queries.
+    logging.getLogger("uvicorn.access").disabled = True

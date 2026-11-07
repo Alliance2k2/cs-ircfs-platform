@@ -1,5 +1,6 @@
 """USSD menu: first-time registration, harvest yield inputs, severe pests, and anonymity."""
 from datetime import date
+import pytest
 
 from sqlalchemy import select
 
@@ -85,3 +86,28 @@ def test_retry_with_same_session_records_once(client):
     assert retry["reply_status"] == "duplicate"
     assert retry["record_id"] == first["record_id"]
     assert len(client.get("/api/v1/irrigation-reports").json()) == 1
+
+
+@pytest.mark.parametrize("answer", ["nan", "inf", "-1", "301", "not-a-number"])
+def test_invalid_rainfall_does_not_write_a_report_and_new_session_recovers(client, district, answer):
+    response = dial(client, f"3*{answer}", session="invalid-rainfall")
+    assert response.text.startswith("END")
+    assert client.get("/api/v1/irrigation-reports").json() == []
+    recovery = dial(client, "", session="new-provider-session")
+    assert recovery.text.startswith("CON") and "CS-IRCFS" in recovery.text
+    assert "Hitamo umurenge" not in recovery.text
+
+
+@pytest.mark.parametrize("mm", [0, 300])
+def test_phone_rainfall_accepts_the_existing_schema_boundaries(client, district, mm):
+    assert "yanditswe" in dial(client, f"3*{mm}", session="boundary").text
+    sms = client.post("/api/v1/sms/inbound", data={"from": "+250788000001", "text": f"IMVURA {mm}"})
+    assert sms.status_code == 200 and sms.json()["record_type"] == "irrigation_report"
+
+
+@pytest.mark.parametrize("mm", ["301", "500", "-1", "inf", "nan"])
+def test_sms_rainfall_rejects_invalid_or_out_of_range_values_without_a_server_error(client, district, mm):
+    response = client.post("/api/v1/sms/inbound", data={"from": "+250788000001", "text": f"IMVURA {mm}"})
+    assert response.status_code == 200
+    assert response.json()["record_type"] is None
+    assert client.get("/api/v1/irrigation-reports").json() == []

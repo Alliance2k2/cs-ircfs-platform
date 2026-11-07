@@ -93,10 +93,10 @@ try {
     Write-Host "Refresh the browser after dashboard changes. Restart this command after Python changes."
     Write-Host "Press Ctrl+C to stop the platform."
     if ($Reload) {
-        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port --reload
+        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port --no-access-log --reload
     }
     else {
-        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port
+        & $Python -m uvicorn app.main:app --host 127.0.0.1 --port $Port --no-access-log
     }
 }
 finally {

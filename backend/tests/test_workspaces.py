@@ -2,7 +2,7 @@
 the audit log, and nutrition small-group suppression."""
 from sqlalchemy import select
 
-from app.db.models import AuditEvent, CitizenScienceLog, FieldUser, IrrigationScheme, NutritionSurvey, UserRole
+from app.db.models import AuditEvent, CitizenScienceLog, FieldUser, IrrigationClimateLog, IrrigationScheme, NutritionSurvey, UserRole
 
 
 def scheme_id(session_factory, name="PADAB"):
@@ -16,10 +16,18 @@ def sms(client, text, phone="+250788000001"):
 
 # --- Field reports ------------------------------------------------------------------
 
-def test_field_reports_carry_quality_flags(client, district):
+def test_field_reports_carry_quality_flags(client, district, session_factory):
     sms(client, "NZANA 5")
     sms(client, "NZANA 5")  # the same phone, the same pest, minutes later
-    sms(client, "IMVURA 400")  # implausible rain
+    # New invalid readings are refused, but existing unusual records remain reviewable.
+    assert sms(client, "IMVURA 400")["record_type"] is None
+    with session_factory() as db:
+        reporter = db.scalar(select(FieldUser).where(FieldUser.phone_number == "+250788000001"))
+        db.add(IrrigationClimateLog(reporter_id=reporter.id, cell_id=district["cell_id"], rainfall_mm=400))
+        db.commit()
+    legacy = client.get("/api/v1/irrigation-reports")
+    assert legacy.status_code == 200 and legacy.json()[0]["rainfall_mm"] == 400
+    assert client.post("/api/v1/irrigation-reports", json={"rainfall_mm": 400}).status_code == 422
     client.post("/api/v1/citizen-reports", json={"crop_type": "Beans"})  # no location, no measure
     reports = client.get("/api/v1/field-reports").json()["reports"]
     pests = [r for r in reports if r["kind"] == "pest"]
