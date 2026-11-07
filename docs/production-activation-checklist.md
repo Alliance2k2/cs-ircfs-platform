@@ -37,3 +37,16 @@ These items require owner decisions, provider-console access, or physical field 
 - Docker probes use `/ready`; `/health` remains process-only liveness.
 - Operational JSON metrics are available at `/metrics`.
 - The district handover package includes a custom-format backup script and restore instructions.
+
+
+## 6 November technical validation versus activation
+
+- [x] Reproduce and fix simulator retry/onboarding expectations without deleting assertions.
+- [x] Verify local auth/privacy/delivery/scientific suites and disposable PostGIS migration/restore checks; see [actual results](engineering-validation-2026-11-06.md).
+- [x] Prevent hosted field menus from showing development/retired inventory examples.
+- [x] Prepare [staging/rollback checks](staging-smoke-checklist.md) and [native review checklist](pilot/kinyarwanda-review-checklist.md).
+- [ ] Publish the stabilization branch with approval and verify new hosted CI/Docker results.
+- [ ] Supply the real staging URL and verify the deployed commit and readiness.
+- [ ] Complete the external credential, official-data, native-review and field sign-offs above.
+
+Local passing tests do not close any unchecked external activation requirement.

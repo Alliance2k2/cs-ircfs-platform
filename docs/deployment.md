@@ -1,12 +1,14 @@
 # Deployment
 
+> Use the [controlled staging/rollback checklist](staging-smoke-checklist.md) and [latest engineering results](engineering-validation-2026-11-06.md). Hosted deployment and live activation remain approval-gated.
+
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
 
 There are three ways to run the platform. All three use the same code.
 
 | Option | For | How |
 | --- | --- | --- |
-| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, no sign-in; builds the React dashboard on first run when Node.js is installed) |
+| Local evaluation | Trying the platform, training | `.\start-local.ps1 -Demo` (separate `backend/demo.db` with sample data, normal account sign-in; builds the React dashboard on first run when Node.js is installed) |
 | Local real database | Development against your PostgreSQL | `.\start-local.ps1` (runs migrations first) |
 | Docker Compose | District IT / MINAGRI handover | [infrastructure/README.md](../infrastructure/README.md) |
 | Render (hosted preview) | A shareable online demo | `render.yaml` Blueprint, described below |

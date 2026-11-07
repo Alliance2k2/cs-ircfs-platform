@@ -1,12 +1,14 @@
 # CS-IRCFS
 
+> Latest verified fixes and remaining blockers: [6 November engineering validation](docs/engineering-validation-2026-11-06.md).
+
 > Current implementation and operator instructions: [November completion](docs/platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
 
 **Citizen Science for Irrigation Resilience and Climate-smart Food Security** — a field-reporting and decision-support platform for Bugesera District, Rwanda.
 
 Farmers, Citizen Science Monitors and cooperatives report crop, water and community information from any mobile phone through **USSD `*801#`** and **SMS `8448`**, in Kinyarwanda and without internet access. District staff use that evidence to verify whether the **PADAB** and **APEFA Solar** irrigation schemes deliver their expected outcomes, to act on problems as they are reported, and to send advice back to the community.
 
-The public website retains its original layout with licensed Rwanda photographs and the updated irrigation headline. Public activity remains aggregate-only. See [the current interface changes](docs/current-interface-changes.md) and [photography credits](dashboard/photography.html).
+The public website retains its original layout with licensed illustrative photographs and the updated irrigation headline. Public activity remains aggregate-only. See [the current interface changes](docs/current-interface-changes.md) and [photography credits](dashboard/photography.html).
 
 ## How it works
 

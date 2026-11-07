@@ -1,5 +1,7 @@
 # Testing
 
+> Current commands, failures, fixes and actual local counts: [6 November engineering validation](engineering-validation-2026-11-06.md).
+
 Current public-page and authentication verification is summarized in [current interface changes](current-interface-changes.md). The earlier public redesign tests and captures describe a superseded proposal; that test file was removed when the original layout was restored.
 
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
