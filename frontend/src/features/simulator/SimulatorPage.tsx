@@ -62,10 +62,12 @@ export function SimulatorPage() {
     onError: (error: Error) => setThread((items) => [...items, { side: "error", text: `${t("sim.notDelivered")}: ${error.message}` }]),
   });
 
-  const dial = () => ussd.mutate({ id: `sim-${Date.now().toString(36)}`, steps: [] });
+  const dial = () => {
+    if (!ussd.isPending) ussd.mutate({ id: `sim-${crypto.randomUUID()}`, steps: [] });
+  };
   const reply = (event: FormEvent) => {
     event.preventDefault();
-    if (!session || !answer.trim()) return;
+    if (!session || ussd.isPending || !answer.trim()) return;
     ussd.mutate({ id: session.id, steps: [...session.steps, answer.trim()] });
   };
   const submitSms = (event: FormEvent) => {
@@ -81,7 +83,14 @@ export function SimulatorPage() {
     <div className="space-y-6">
       <PageHeader eyebrow={t("sim.eyebrow")} title={t("sim.title")} description={t("sim.description")} />
       <div className="flex flex-wrap items-end gap-4">
-        <div className="w-64"><TextField label={t("sim.phone")} value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" /></div>
+        <div className="w-64"><TextField label={t("sim.phone")} value={phone} disabled={ussd.isPending || sendSms.isPending}
+          onChange={(event) => {
+            setPhone(event.target.value);
+            setSession(null);
+            setAnswer("");
+            setThread([]);
+            setTrace([]);
+          }} inputMode="tel" /></div>
         <label className="flex h-10 items-center gap-2 text-sm font-semibold">
           <input type="checkbox" checked={english} onChange={(event) => setEnglish(event.target.checked)} className="h-4 w-4" />
           {t("sim.english")}
@@ -105,16 +114,16 @@ export function SimulatorPage() {
                   <Button variant="primary" icon={Phone} className="w-full" onClick={dial} loading={ussd.isPending}>{t("sim.dial")}</Button>
                 ) : session.ended ? (
                   <div className="flex gap-2">
-                    <Button className="flex-1" icon={PhoneOff} onClick={() => setSession(null)}>{t("sim.end")}</Button>
-                    <Button variant="primary" className="flex-1" icon={Phone} onClick={dial}>{t("sim.again")}</Button>
+                    <Button className="flex-1" icon={PhoneOff} disabled={ussd.isPending} onClick={() => setSession(null)}>{t("sim.end")}</Button>
+                    <Button variant="primary" className="flex-1" icon={Phone} loading={ussd.isPending} onClick={dial}>{t("sim.again")}</Button>
                   </div>
                 ) : (
                   <form onSubmit={reply} className="flex gap-2">
                     <label className="sr-only" htmlFor="ussd-answer">{t("sim.reply")}</label>
-                    <input id="ussd-answer" value={answer} onChange={(event) => setAnswer(event.target.value)} autoFocus autoComplete="off"
+                    <input id="ussd-answer" value={answer} disabled={ussd.isPending} onChange={(event) => setAnswer(event.target.value)} autoFocus autoComplete="off"
                       className="h-10 min-w-0 flex-1 rounded-control border border-white/20 bg-white px-3 text-sm" placeholder={t("sim.reply")} />
                     <Button type="submit" variant="primary" icon={Send} loading={ussd.isPending}>{t("sim.send")}</Button>
-                    <Button icon={PhoneOff} onClick={() => setSession(null)} aria-label={t("sim.hangUp")} />
+                    <Button icon={PhoneOff} disabled={ussd.isPending} onClick={() => setSession(null)} aria-label={t("sim.hangUp")} />
                   </form>
                 )}
               </div>

@@ -1,4 +1,5 @@
 import { asRole, expect } from "./fixtures";
+import { randomInt } from "node:crypto";
 
 const test = asRole("monitor");
 
@@ -6,7 +7,8 @@ const test = asRole("monitor");
 // and none of it is counted as field evidence.
 test("USSD and SMS in the simulator are recorded as test data only", async ({ page }) => {
   await page.goto("/app/simulator");
-  await page.getByLabel("Caller phone number").fill("+250788777001");
+  // Each attempt owns a new participant, including retries on the same database.
+  await page.getByLabel("Caller phone number").fill(`+25079${randomInt(1_000_000, 10_000_000)}`);
   const screen = page.locator('[aria-live="polite"]').filter({ hasText: /./ }).first();
 
   await page.getByRole("button", { name: "Dial *801#" }).click();
@@ -19,10 +21,14 @@ test("USSD and SMS in the simulator are recorded as test data only", async ({ pa
   await expect(screen).toContainText("Your location is saved");
 
   await page.getByRole("button", { name: "New session" }).click();
-  await expect(screen).toContainText("1.");
+  await expect(screen).toContainText("Welcome to CS-IRCFS. Choose:");
+  await expect(screen).not.toContainText("Choose the sector where you live");
   await page.getByLabel("Your answer").fill("3");
   await page.getByRole("button", { name: "Send", exact: true }).first().click();
-  await expect(screen).toContainText("rainfall");
+  // The main menu already says "Report rainfall": wait for the actual next screen.
+  await expect(screen).toContainText("Enter today's rainfall (mm), e.g. 12");
+  await expect(page.getByLabel("Your answer")).toBeEnabled();
+  await expect(page.getByLabel("Your answer")).toHaveValue("");
   await page.getByLabel("Your answer").fill("37.5");
   await page.getByRole("button", { name: "Send", exact: true }).first().click();
   await expect(screen).toContainText("37.5 mm");

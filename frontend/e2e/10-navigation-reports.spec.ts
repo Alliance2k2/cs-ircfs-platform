@@ -2,6 +2,19 @@ import { asRole, expect } from "./fixtures";
 
 const test = asRole("planner");
 
+test("mobile search has an accessible name and supports keyboard navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/app/simulator");
+  const search = page.getByRole("button", { name: "Search pages", exact: true });
+  await expect(search).toBeVisible();
+  await search.focus();
+  await page.keyboard.press("Enter");
+  await page.getByRole("alertdialog", { name: "Search pages" }).getByRole("combobox").fill("trend");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/app\/trends$/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+});
+
 // Workflow 10: finding pages and reading the reports: search palette, language switch,
 // monthly report by month, trends as a table, nutrition privacy and the map without a token.
 test("search, language, monthly report, trends, nutrition and map", async ({ page }) => {
