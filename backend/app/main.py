@@ -179,7 +179,9 @@ async def security_headers(request: Request, call_next):
 
 @app.exception_handler(SQLAlchemyError)
 async def database_error_handler(_: Request, error: SQLAlchemyError):
-    logger.exception("Database error", exc_info=error)
+    # Driver exception strings and tracebacks can contain SQL parameters, phone numbers
+    # and message text. The request log supplies correlation without exposing those values.
+    logger.error("Database operation failed (%s)", type(error).__name__)
     return JSONResponse(status_code=500, content={"detail": "Database operation failed"})
 
 

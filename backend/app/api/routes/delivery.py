@@ -40,8 +40,6 @@ def verify_receipt_gateway(request: Request, token: str | None = Query(default=N
 
 
 async def receive(kind, request, db):
-    if len(await request.body()) > 16384:
-        raise HTTPException(413, "Receipt payload too large")
     fields = await read_fields(request)
     provider_id = fields.get("id" if kind == "sms" else "requestId", "").strip()
     raw = fields.get("status", "").strip().lower()

@@ -123,6 +123,9 @@ class IrrigationReportCreate(BaseModel):
 
 
 class IrrigationReportRead(IrrigationReportCreate):
+    # Older phone handlers accepted values above today's write limit. Preserve those
+    # original observations for review; quality flags identify them as unusual.
+    rainfall_mm: float | None = Field(default=None, allow_inf_nan=False)
     id: int
     created_at: datetime
     model_config = {"from_attributes": True}

@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Cell, CommunityFeedback, FieldUser, Sector
 from app.services.advisory import local_tip, maybe_reward
+from app.services.rainfall import MAX_READING_MM
 from app.schemas.reports import today
 from app.services.reporting import add_months, create_crop_report, create_irrigation_report, scheme_for_cell
 from app.services.ussd import varieties_for
@@ -133,7 +134,7 @@ def handle(db: Session, user: FieldUser, text: str) -> SmsResult:
         return SmsResult(f"Murakoze! Raporo y'indwara #{report.id} yakiriwe. Umujyanama w'ubuhinzi azabasura.", "crop_report", report.id)
 
     if keyword in {"IMVURA", "RAIN"}:
-        mm = next((n for n in map(_number, args) if n is not None and 0 <= n <= 500), None)
+        mm = next((n for n in map(_number, args) if n is not None and 0 <= n <= MAX_READING_MM), None)
         if mm is None:
             return SmsResult("Andika IMVURA ukurikizeho mm, urugero: IMVURA 12")
         report = create_irrigation_report(db, reporter_id=user.id, scheme_id=scheme_for_cell(db, cell_id), infrastructure_name="Citizen rain gauge",

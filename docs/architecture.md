@@ -24,7 +24,7 @@ flowchart TD
 | **Module 1** Crowdsourced Yield Forecaster | USSD option 1 / `UMUSARURO`; scheme performance compares reported (or forecast) harvest with the scheme's yield target | `analytics/scheme-performance` |
 | SMS Pest/Disease Alert | `NZANA` / `INDWARA` keywords, USSD option 2; pest **heatmap** layer; severity 4–5 creates an Act Now case | `analytics/pest-heatmap` |
 | Household Nutrition Tracker | USSD option 6 (3 questions) gives a stunting-risk score of 1–5, by cell | `nutrition_surveys`, `analytics/nutrition-summary` |
-| **Module 2** Infrastructure Health Reporter | USSD option 4; asset list from the PADAB/APEFA inventory; technical, social, institutional or environmental bottleneck | `services/ussd.py` (`ASSETS`) |
+| **Module 2** Infrastructure Health Reporter | USSD option 4; configured active asset inventory (built-in examples only for an empty development database); technical, social, institutional or environmental bottleneck | `services/ussd.py` (`ASSETS`) |
 | Citizen-Led Rain Gauge Network | USSD option 3 / `IMVURA`; rainfall and drought-warning map layer | `analytics/rainfall-map` |
 | Irrigation Scheduling Assistant | 7-day rainfall per sector, threshold advice, SMS broadcast to cooperatives | `advisory/irrigation-schedule[/send]` |
 | **Module 3** Anonymized Grievance Log | USSD option 5 / `IKIBAZO`; reporter **not** stored, only the cell; resettlement and downstream category | `community_feedback` |

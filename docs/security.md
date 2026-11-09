@@ -1,5 +1,7 @@
 # Security and privacy
 
+> November hardening: database errors exclude SQL parameters; structured request logs replace raw Uvicorn URLs; channel bodies/IDs are bounded; production wildcard CORS is refused; local auth and backup artifacts are excluded from Docker context. Provider key rotation and proxy log redaction still require owner action. See [the validation report](engineering-validation-2026-11-06.md).
+
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
 
 This page records the platform's security decisions, the settings that enforce them, and what is still open. It was written during the October 2026 audit ([audit-2026-10.md](audit-2026-10.md)).

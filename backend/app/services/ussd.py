@@ -13,9 +13,11 @@ from datetime import date, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from app.core.config import get_settings
 
 from app.db.models import Cell, CommunityFeedback, FieldUser, GrievanceCategory, NutritionSurvey, SchemeAsset, Sector
 from app.services.advisory import local_tip, maybe_reward, nutrition_risk_score
+from app.services.rainfall import MAX_READING_MM
 from app.schemas.reports import today
 from app.services.reporting import add_months, create_crop_report, create_irrigation_report, scheme_by_prefix, scheme_for_cell
 
@@ -108,7 +110,14 @@ def paged_pick(title: tuple[str, str], options: list[tuple], steps: list[str]):
 
 def pick(options: list, answer: str):
     """Return the chosen option for a 1-based numeric answer, or None."""
-    return options[int(answer) - 1] if answer.isdigit() and 1 <= int(answer) <= len(options) else None
+    # isdigit() includes characters such as superscripts that int() cannot parse.
+    if not answer.isdecimal():
+        return None
+    try:
+        index = int(answer)
+    except ValueError:  # Python also bounds integer-string conversion length.
+        return None
+    return options[index - 1] if 1 <= index <= len(options) else None
 
 
 def number(answer: str, low: float, high: float) -> float | None:
@@ -137,11 +146,17 @@ def grievance_options(db: Session) -> list[tuple[str, str]]:
 
 def asset_options(db: Session) -> list[tuple[str, str, object]]:
     """(Kinyarwanda, English, scheme id or scheme-name prefix) active assets from the
-    database (WP7), falling back to the built-in PADAB/APEFA inventory."""
+    database (WP7). Only an empty development database may use examples."""
     rows = db.scalars(
         select(SchemeAsset).where(SchemeAsset.is_active.is_(True)).order_by(SchemeAsset.id)
     )
-    return [(row.name_rw, row.name_en, row.scheme_id) for row in rows] or ASSETS
+    configured = [(row.name_rw, row.name_en, row.scheme_id) for row in rows]
+    if configured:
+        return configured
+    # The historical list is a development example, not a district-confirmed inventory.
+    # Never resurrect retired entries or present example pump names as hosted field data.
+    has_inventory = db.scalar(select(SchemeAsset.id).limit(1)) is not None
+    return ASSETS if not has_inventory and get_settings().environment == "development" else []
 
 
 def con(screen: tuple[str, str]) -> UssdResult:
@@ -273,7 +288,7 @@ def reward_line(db: Session, user: FieldUser, from_nutrition_survey: bool = Fals
 def rainfall(db: Session, user: FieldUser, steps: list[str]) -> UssdResult:
     if not steps:
         return con(("Andika imvura yaguye uyu munsi (mm), urugero 12", "Enter today's rainfall (mm), e.g. 12"))
-    mm = number(steps[0], 0, 500)
+    mm = number(steps[0], 0, MAX_READING_MM)
     if mm is None:
         return end(INVALID)
     report = create_irrigation_report(db, reporter_id=user.id, cell_id=user.cell_id, scheme_id=scheme_for_cell(db, user.cell_id),
@@ -286,7 +301,12 @@ def rainfall(db: Session, user: FieldUser, steps: list[str]) -> UssdResult:
 
 def infrastructure(db: Session, user: FieldUser, steps: list[str]) -> UssdResult:
     title = ("Hitamo igikorwa remezo:", "Choose the asset:")
-    outcome = paged_pick(title, asset_options(db), steps)
+    options = asset_options(db)
+    if not options:
+        # RW: draft requiring native field review before deployment.
+        return end(("Nta bikorwaremezo byanditswe. Baza koperative yawe.",
+                    "No confirmed irrigation inventory is available. Please contact your cooperative."))
+    outcome = paged_pick(title, options, steps)
     if outcome[0] == "screen":
         return outcome[1]
     if outcome[0] == "invalid":

@@ -112,7 +112,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
       </nav>
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2.5">
-        <button type="button" onClick={() => setPalette(true)} className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-forest">
+        <button type="button" aria-label={t("shell.search")} onClick={() => setPalette(true)} className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-forest">
           <Search aria-hidden className="h-3.5 w-3.5" />
           <span className="hidden whitespace-nowrap xl:inline">{t("shell.search")}</span>
           <kbd className="hidden rounded border border-line px-1 text-2xs xl:inline">Ctrl K</kbd>

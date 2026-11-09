@@ -133,6 +133,8 @@ class Settings(BaseSettings):
         if not self.cookie_secure:
             raise RuntimeError("ENVIRONMENT=production requires COOKIE_SECURE=true (sessions must only travel over HTTPS)")
         local = [origin for origin in self.allowed_origins if "localhost" in origin or "127.0.0.1" in origin]
+        if any("*" in origin for origin in self.allowed_origins):
+            raise RuntimeError("ENVIRONMENT=production must not allow wildcard CORS origins with credentials")
         if local:
             raise RuntimeError(f"ENVIRONMENT=production must not allow local CORS origins: {', '.join(local)}")
         if len(self.gateway_callback_token.strip()) < 24:

@@ -99,7 +99,7 @@ def main() -> None:
     import uvicorn
 
     print(f"End-to-end platform on http://127.0.0.1:{args.port} (database {database})", flush=True)
-    uvicorn.run("app.main:app", host="127.0.0.1", port=args.port, log_level="warning")
+    uvicorn.run("app.main:app", host="127.0.0.1", port=args.port, log_level="warning", access_log=False)
 
 
 if __name__ == "__main__":
