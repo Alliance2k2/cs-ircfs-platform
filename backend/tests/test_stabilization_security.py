@@ -34,6 +34,25 @@ def test_callback_limit_also_covers_chunked_bodies_without_content_length(client
     assert response.status_code == 413
 
 
+@pytest.mark.parametrize("kind", ["sms", "airtime"])
+def test_delivery_receipts_stop_reading_as_soon_as_stream_exceeds_limit(kind):
+    from fastapi import HTTPException
+    from starlette.requests import Request
+    from app.api.routes.delivery import receive
+
+    chunks_read = []
+
+    async def next_chunk():
+        chunks_read.append(True)
+        return {"type": "http.request", "body": b"x" * 8193, "more_body": len(chunks_read) < 3}
+
+    request = Request({"type": "http", "headers": []}, next_chunk)
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(receive(kind, request, None))
+    assert error.value.status_code == 413
+    assert len(chunks_read) == 2
+
+
 @pytest.mark.parametrize("endpoint,key,phone_key", [
     ("/api/v1/ussd", "sessionId", "phoneNumber"),
     ("/api/v1/sms/inbound", "id", "from"),

@@ -16,6 +16,24 @@ def test_unknown_caller_is_asked_for_a_location(client, district):
     assert response.text.startswith("CON") and "Hitamo umurenge" in response.text
 
 
+@pytest.mark.parametrize("answer", ["\u00b2", "\u2460", "9" * 5000], ids=["superscript", "circled", "oversized"])
+@pytest.mark.parametrize("path", ["{answer}", "1*{answer}", "6*{answer}"])
+def test_invalid_numeric_menu_answers_end_safely_without_reports(client, district, answer, path):
+    response = dial(client, path.format(answer=answer), session="invalid-menu")
+    assert response.status_code == 200
+    assert response.text.startswith("END")
+    assert client.get("/api/v1/citizen-reports").json() == []
+    assert client.get("/api/v1/irrigation-reports").json() == []
+    assert client.get("/api/v1/nutrition-surveys").json() == []
+
+
+@pytest.mark.parametrize("answer", ["\u00b2", "\u2460", "9" * 5000], ids=["superscript", "circled", "oversized"])
+def test_new_caller_invalid_sector_answer_ends_safely(client, district, answer):
+    response = dial(client, answer, phone="+250788999111", session="invalid-sector")
+    assert response.status_code == 200
+    assert response.text.startswith("END")
+
+
 def test_full_new_caller_registration_then_harvest(client, district, session_factory):
     phone = "0788 999 111"
     # Each keypress belongs to its own session, as the gateway sends them.

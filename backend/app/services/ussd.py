@@ -110,7 +110,14 @@ def paged_pick(title: tuple[str, str], options: list[tuple], steps: list[str]):
 
 def pick(options: list, answer: str):
     """Return the chosen option for a 1-based numeric answer, or None."""
-    return options[int(answer) - 1] if answer.isdigit() and 1 <= int(answer) <= len(options) else None
+    # isdigit() includes characters such as superscripts that int() cannot parse.
+    if not answer.isdecimal():
+        return None
+    try:
+        index = int(answer)
+    except ValueError:  # Python also bounds integer-string conversion length.
+        return None
+    return options[index - 1] if 1 <= index <= len(options) else None
 
 
 def number(answer: str, low: float, high: float) -> float | None:
