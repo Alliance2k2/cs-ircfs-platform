@@ -1,5 +1,7 @@
 # Roadmap
 
+> Latest: [9 November validation](engineering-validation-2026-11-09.md). Malformed USSD choice handling and streamed delivery-receipt limits are COMPLETED locally; 339 backend, 61 frontend and 25 browser checks pass. PostGIS migration/schema/restore rehearsals pass. Docker is IMPLEMENTED / NOT VERIFIED; hosted CI/staging, credential rotation, telecom/native review and institutional data remain BLOCKED. Selectable/persisted field USSD language remains PENDING. Earlier counts below are historical.
+
 > Current workstream classifications and verified results: [6 November engineering validation](engineering-validation-2026-11-06.md). Earlier Ready/Complete entries below describe software milestones, not current field or production approval.
 
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.

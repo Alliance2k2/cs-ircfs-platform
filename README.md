@@ -1,5 +1,7 @@
 # CS-IRCFS
 
+> Current local verification: [9 November engineering validation](docs/engineering-validation-2026-11-09.md): 339 backend, 61 frontend and 25 browser checks passed; Docker and hosted release verification remain outstanding.
+
 > Latest verified fixes and remaining blockers: [6 November engineering validation](docs/engineering-validation-2026-11-06.md).
 
 > Current implementation and operator instructions: [November completion](docs/platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.

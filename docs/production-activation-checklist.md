@@ -1,5 +1,16 @@
 # Production activation checklist
 
+## 9 November local validation
+
+- [x] Reject non-convertible/oversized menu numbers without callback crashes or report writes.
+- [x] Bound SMS/airtime receipt streams before full-body buffering.
+- [x] Pass 339 backend, 61 frontend and 25 browser checks, plus three simulator repetitions.
+- [x] Rehearse disposable PostGIS migrations, schema comparison and schema backup/restore.
+- [ ] Build the new Docker image and verify hosted CI on the published revision.
+- [ ] Verify the actual staging URL and complete all external activation gates below.
+
+See [commands, evidence and limitations](engineering-validation-2026-11-09.md). Local validation does not authorize field or production activation.
+
 These items require owner decisions, provider-console access, or physical field validation and cannot be completed by repository code alone.
 
 ## Before external activation

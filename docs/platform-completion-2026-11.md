@@ -1,5 +1,7 @@
 # November completion: operations, privacy and consistent evidence
 
+> Latest verification: [9 November engineering validation](engineering-validation-2026-11-09.md). Added safe malformed-number USSD handling and bounded receipt streaming. Current local totals are 339 backend, 61 frontend and 25 browser checks; prior results below are historical. Docker and hosted verification remain outstanding; external activation requirements remain open.
+
 > Updated stabilization/security/evidence results and external blockers: [6 November engineering validation](engineering-validation-2026-11-06.md). No field activation or hosted green CI is inferred from local tests.
 
 This is the current status, superseding the remaining technical gaps in Batch 6. The existing landing page is `/`, dashboard `/app/`, and reference management `/app/management`. Local demonstration access is available at `http://localhost:8000`; development bypass must remain disabled on a hosted pilot.
