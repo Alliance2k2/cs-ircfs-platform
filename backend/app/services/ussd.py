@@ -1,4 +1,4 @@
-"""Kinyarwanda-first USSD menu for *801# (architecture Sections 4 and 8.4).
+"""Selectable Kinyarwanda/English USSD menu for *801#.
 
 Africa's Talking calls the callback once per keypress with the full answer path in
 ``text`` (for example ``"3*12"``), and expects a reply beginning with ``CON`` (show
@@ -59,6 +59,10 @@ MENU_PAGE_SIZE = 8
 # RW: needs field review
 MORE_OPTIONS = ("Reba indi", "Show more")
 INVALID = ("Igisubizo ntikemewe. Ongera ugerageze ukanda *801#.", "That answer is not valid. Please dial *801# again.")
+# New RW navigation wording is a draft requiring native-speaker approval.
+LANGUAGE_PROMPT = ("Hitamo ururimi / Choose language:\n1. Ikinyarwanda\n2. English",) * 2
+LANGUAGE_NAV = ("\n0. Ururimi / Language", "\n0. Language / Ururimi")
+LANGUAGES = {"1": "rw", "2": "en"}
 
 
 @dataclass
@@ -167,15 +171,41 @@ def end(screen: tuple[str, str], record_type: str | None = None, record_id: int 
     return UssdResult("END " + screen[0], screen[1], record_type, record_id)
 
 
-def handle(db: Session, user: FieldUser, text: str) -> UssdResult:
-    """Route one USSD request. The caller commits the transaction."""
+def handle(db: Session, user: FieldUser, text: str, *, language_selection: bool = False) -> UssdResult:
+    """Select/render language; replay language prefixes using the session's dial journal.
+
+    Only the selection callback changes preference. Replaying a longer answer path
+    must not overwrite a more recent choice made in another session.
+    """
     steps = [step.strip() for step in text.split("*")] if text else []
+    language = user.ussd_language
+    changing = bool(steps and steps[0] == "0")
+    if changing:
+        steps = steps[1:]
+    if changing or language_selection or language is None:
+        if not steps:
+            return con(LANGUAGE_PROMPT)
+        language = LANGUAGES.get(steps[0])
+        if language is None:
+            # Always intelligible when no language has been selected.
+            return end((INVALID[0] + "\n" + INVALID[1],) * 2)
+        if len(steps) == 1:
+            user.ussd_language = language
+        steps = steps[1:]
+    result = reporting_menu(db, user, steps)
+    if language == "en":
+        result.response = result.response[:4] + result.english
+    return result
+
+
+def reporting_menu(db: Session, user: FieldUser, steps: list[str]) -> UssdResult:
+    """Route one USSD request. The caller commits the transaction."""
     if user.cell_id is None:
         sectors = db.scalars(select(Sector).order_by(Sector.name)).all()
         if sectors:
             return set_location(db, user, sectors, steps)
     if not steps:
-        return con(MAIN)
+        return con(tuple(label + nav for label, nav in zip(MAIN, LANGUAGE_NAV)))
     flows = {"1": harvest, "2": pest, "3": rainfall, "4": infrastructure, "5": grievance, "6": nutrition}
     flow = flows.get(steps[0])
     return flow(db, user, steps[1:]) if flow else end(INVALID)

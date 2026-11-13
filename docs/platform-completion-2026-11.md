@@ -1,5 +1,7 @@
 # November completion: operations, privacy and consistent evidence
 
+> Field language update: [13 November validation](engineering-validation-2026-11-13.md). USSD now supports an explicit persisted EN/RW preference and `0` language settings. Existing six reporting choices and location onboarding are retained. Carrier/native acceptance remains outstanding.
+
 > Latest verification: [9 November engineering validation](engineering-validation-2026-11-09.md). Added safe malformed-number USSD handling and bounded receipt streaming. Current local totals are 339 backend, 61 frontend and 25 browser checks; prior results below are historical. Docker and hosted verification remain outstanding; external activation requirements remain open.
 
 > Updated stabilization/security/evidence results and external blockers: [6 November engineering validation](engineering-validation-2026-11-06.md). No field activation or hosted green CI is inferred from local tests.
@@ -21,7 +23,7 @@ This is the current status, superseding the remaining technical gaps in Batch 6.
 
 ## Database and release
 
-Run `alembic upgrade head` from `backend/` using the intended deployment environment before starting this version. Head is **20261102_28**: recipient-free delivery receipts and nullable encrypted routing fields. Back up the intended database before operational migrations. Downgrading revision 28 removes its receipt/routing data; do not downgrade while a worker is active.
+Run `alembic upgrade head` from `backend/` using the intended deployment environment before starting this version. Head is **20261113_29**: nullable, constrained participant USSD language. Existing profiles retain Kinyarwanda (`rw`); new profiles have no preference until selection. Revision 28 retains recipient-free receipts and encrypted routing fields. Back up the intended database before operational migrations. Downgrading revision 29 removes language preferences; downgrading revision 28 removes receipt/routing data. Do not downgrade while a worker is active.
 
 No live provider, production database or district retention policy was activated during implementation. The local demonstration database was upgraded without resetting its reports.
 

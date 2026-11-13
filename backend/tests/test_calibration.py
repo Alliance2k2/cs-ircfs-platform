@@ -47,7 +47,7 @@ def seed_report_world(db):
     scheme = IrrigationScheme(name="PADAB Test", sector_id=sector.id)
     db.add(scheme)
     db.flush()
-    user = FieldUser(phone_number="+250788000001", role=UserRole.citizen_science_monitor, cell_id=cell.id)
+    user = FieldUser(phone_number="+250788000001", role=UserRole.citizen_science_monitor, cell_id=cell.id, ussd_language="rw")
     db.add(user)
     db.commit()
     return sector, cell, scheme, user

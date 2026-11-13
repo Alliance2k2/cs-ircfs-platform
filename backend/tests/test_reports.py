@@ -32,6 +32,7 @@ def test_operational_infrastructure_creates_no_case(client, session_factory):
 
 
 def test_duplicate_ussd_session_is_idempotent(client):
+    client.post("/api/v1/simulator/ussd", json={"sessionId": "choose-rw", "phoneNumber": "+250788000001", "text": "1"})
     # Harvest now asks crop, variety, planting month, weeks to harvest, then tons.
     payload = {"sessionId": "dup-session", "phoneNumber": "+250788000001", "text": "1*2*1*1*8*8"}
     first = client.post("/api/v1/simulator/ussd", json=payload).json()

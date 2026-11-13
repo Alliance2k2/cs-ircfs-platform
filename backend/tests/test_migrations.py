@@ -92,6 +92,33 @@ def test_every_name_fits_postgresql(database):
     assert [name for name in names if len(name) > 63] == []
 
 
+def test_language_upgrade_preserves_profiles_and_scientific_data(database):
+    config, url = database
+    command.upgrade(config, "20261102_28")
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("INSERT INTO field_users (id, phone_number, full_name, role, data_origin, is_active, consent_at, opted_out_at, is_data_champion) "
+            "VALUES (91, '+250788111222', 'Legacy fixture', 'farmer', 'field', 0, '2026-01-01', '2026-02-01', 0)"))
+        connection.execute(text("INSERT INTO irrigation_climate_logs (id, reporter_id, rainfall_mm, data_origin) VALUES (91, 91, 12, 'field')"))
+        before = dict(connection.execute(text("SELECT * FROM field_users WHERE id=91")).mappings().one())
+    command.upgrade(config, "head")
+    with engine.begin() as connection:
+        after = dict(connection.execute(text("SELECT * FROM field_users WHERE id=91")).mappings().one())
+        assert after.pop("ussd_language") == "rw"
+        assert after == before
+        assert connection.scalar(text("SELECT rainfall_mm FROM irrigation_climate_logs WHERE id=91")) == 12
+        connection.execute(text("INSERT INTO field_users (id, phone_number, role, data_origin, is_active, is_data_champion) "
+            "VALUES (92, '+250788111223', 'farmer', 'field', 1, 0)"))
+        assert connection.scalar(text("SELECT ussd_language FROM field_users WHERE id=92")) is None
+    assert differences(url) == []
+    command.downgrade(config, "-1")
+    command.upgrade(config, "head")
+    assert differences(url) == []
+    with engine.connect() as connection:
+        assert connection.scalar(text("SELECT rainfall_mm FROM irrigation_climate_logs WHERE id=91")) == 12
+    engine.dispose()
+
+
 def test_scientific_upgrade_preserves_legacy_area_without_inventing_harvested_area(database):
     config, url = database
     command.upgrade(config, "20261029_21")

@@ -87,7 +87,7 @@ def scheme_by_prefix(db: Session, prefix: str) -> int | None:
     return db.scalar(select(IrrigationScheme.id).where(IrrigationScheme.name.ilike(f"{prefix}%")).order_by(IrrigationScheme.id).limit(1))
 
 
-def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
+def find_or_register_user(db: Session, phone_number: str, *, record_consent: bool = True) -> FieldUser:
     """A first-time caller is registered as a farmer, keyed by phone number.
 
     Two first messages can arrive at the same moment; the unique phone index decides and
@@ -98,7 +98,7 @@ def find_or_register_user(db: Session, phone_number: str) -> FieldUser:
     phone_number = simulation_phone(phone_number)
     user = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone_number).with_for_update())
     if user is not None:
-        if user.consent_at is None:
+        if record_consent and user.consent_at is None:
             user.consent_at = datetime.now(timezone.utc)
         return user
     training = phone_number.startswith("sim-")

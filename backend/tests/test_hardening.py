@@ -69,6 +69,7 @@ def test_sms_retry_records_one_report_and_sends_one_reply(client, session_factor
 
 
 def test_ussd_retry_replays_the_stored_reply(client, session_factory):
+    client.post("/api/v1/simulator/ussd", json={"sessionId": "choose-rw", "phoneNumber": "+250788000001", "text": "1"})
     payload = {"sessionId": "retry-hardening", "phoneNumber": "+250788000001", "text": "1*2*1*1*8*8"}
     first = client.post("/api/v1/simulator/ussd", json=payload).json()
     retry = client.post("/api/v1/simulator/ussd", json=payload).json()
@@ -76,7 +77,7 @@ def test_ussd_retry_replays_the_stored_reply(client, session_factory):
     assert retry["reply_status"] == "duplicate"
     assert retry["response"] == first["response"] and retry["record_id"] == first["record_id"]
     with session_factory() as session:
-        assert len(session.scalars(select(InboundMessage)).all()) == 1
+        assert len(session.scalars(select(InboundMessage).where(InboundMessage.session_id != "choose-rw", InboundMessage.text == payload["text"])).all()) == 1
     assert len(client.get("/api/v1/citizen-reports").json()) == 1
 
 

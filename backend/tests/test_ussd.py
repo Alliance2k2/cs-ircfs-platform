@@ -13,6 +13,8 @@ def dial(client, text, phone="+250788000001", session="s1"):
 
 def test_unknown_caller_is_asked_for_a_location(client, district):
     response = dial(client, "", phone="0788 999 111")
+    assert "Choose language" in response.text
+    response = dial(client, "1", phone="0788 999 111")
     assert response.text.startswith("CON") and "Hitamo umurenge" in response.text
 
 
@@ -29,7 +31,9 @@ def test_invalid_numeric_menu_answers_end_safely_without_reports(client, distric
 
 @pytest.mark.parametrize("answer", ["\u00b2", "\u2460", "9" * 5000], ids=["superscript", "circled", "oversized"])
 def test_new_caller_invalid_sector_answer_ends_safely(client, district, answer):
-    response = dial(client, answer, phone="+250788999111", session="invalid-sector")
+    dial(client, "", phone="+250788999111", session="invalid-sector")
+    dial(client, "1", phone="+250788999111", session="invalid-sector")
+    response = dial(client, "1*" + answer, phone="+250788999111", session="invalid-sector")
     assert response.status_code == 200
     assert response.text.startswith("END")
 
@@ -37,9 +41,10 @@ def test_new_caller_invalid_sector_answer_ends_safely(client, district, answer):
 def test_full_new_caller_registration_then_harvest(client, district, session_factory):
     phone = "0788 999 111"
     # Each keypress belongs to its own session, as the gateway sends them.
-    assert "Hitamo umurenge" in dial(client, "", phone=phone, session="r1").text
-    assert "Gihembe" in dial(client, "1", phone=phone, session="r1").text
-    assert dial(client, "1*1", phone=phone, session="r1").text.startswith("END Murakoze! Aho utuye habitswe: Gihembe, Ngeruka")
+    assert "Choose language" in dial(client, "", phone=phone, session="r1").text
+    assert "Hitamo umurenge" in dial(client, "1", phone=phone, session="r1").text
+    assert "Gihembe" in dial(client, "1*1", phone=phone, session="r1").text
+    assert dial(client, "1*1*1", phone=phone, session="r1").text.startswith("END Murakoze! Aho utuye habitswe: Gihembe, Ngeruka")
     # A later session goes straight to the main menu, and the report uses the stored location.
     assert "CS-IRCFS" in dial(client, "", phone=phone, session="r2").text
     # 1=harvest, 2=Maize, 1=improved seed, 1=planted this month, 8 weeks to harvest, 8 tons.
@@ -54,12 +59,14 @@ def test_full_new_caller_registration_then_harvest(client, district, session_fac
 
 
 def test_option2_severity5_creates_a_critical_case(client):
+    dial(client, "1", session="choose-rw")
     dial(client, "2*2*1*5")
     queue = client.get("/api/v1/analytics/act-now").json()
     assert any(item["priority"] == "critical" and "Fall armyworm" in item["title"] for item in queue)
 
 
 def test_harvest_walks_every_step_in_order(client, session_factory):
+    dial(client, "1", session="choose-rw")
     assert "Hitamo igihingwa" in dial(client, "1").text
     assert "Ibyiciro" in dial(client, "1*2").text          # variety screen after the crop
     assert "Wagutse igihe ki" in dial(client, "1*2*2").text  # planting month after the variety
@@ -80,6 +87,7 @@ def test_harvest_walks_every_step_in_order(client, session_factory):
 
 
 def test_harvest_rejects_every_invalid_answer(client):
+    dial(client, "1", session="choose-rw")
     assert dial(client, "1*9").text.startswith("END")            # no such crop
     assert dial(client, "1*2*9").text.startswith("END")         # no such variety
     assert dial(client, "1*2*2*9").text.startswith("END")       # no such planting month
@@ -91,6 +99,7 @@ def test_harvest_rejects_every_invalid_answer(client):
 
 
 def test_grievance_reporter_is_never_stored(client, session_factory):
+    dial(client, "1", session="choose-rw")
     dial(client, "5*2*The water fee doubled this season")
     with session_factory() as session:
         feedback = session.scalar(select(CommunityFeedback))
@@ -98,6 +107,7 @@ def test_grievance_reporter_is_never_stored(client, session_factory):
 
 
 def test_retry_with_same_session_records_once(client):
+    client.post("/api/v1/simulator/ussd", json={"sessionId": "choose-rw", "phoneNumber": "+250788000001", "text": "1"})
     payload = {"sessionId": "retry-1", "phoneNumber": "+250788000001", "text": "3*12"}
     first = client.post("/api/v1/simulator/ussd", json=payload).json()
     retry = client.post("/api/v1/simulator/ussd", json=payload).json()

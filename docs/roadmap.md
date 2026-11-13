@@ -1,5 +1,7 @@
 # Roadmap
 
+> Current language milestone: [13 November USSD language validation](engineering-validation-2026-11-13.md). First-call selection, persisted EN/RW preference and returning-caller language settings are COMPLETED locally: 368 backend, 61 frontend and 28 browser checks passed, plus PostGIS migration/schema checks. Native wording, carrier/device acceptance and hosted release verification remain external gates. Dependency advisory findings remain open. The 9 November PENDING language entry below is historical.
+
 > Latest: [9 November validation](engineering-validation-2026-11-09.md). Malformed USSD choice handling and streamed delivery-receipt limits are COMPLETED locally; 339 backend, 61 frontend and 25 browser checks pass. PostGIS migration/schema/restore rehearsals pass. Docker is IMPLEMENTED / NOT VERIFIED; hosted CI/staging, credential rotation, telecom/native review and institutional data remain BLOCKED. Selectable/persisted field USSD language remains PENDING. Earlier counts below are historical.
 
 > Current workstream classifications and verified results: [6 November engineering validation](engineering-validation-2026-11-06.md). Earlier Ready/Complete entries below describe software milestones, not current field or production approval.

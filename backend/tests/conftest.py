@@ -83,8 +83,8 @@ def district(session_factory):
         session.flush()
         session.add(IrrigationScheme(name="APEFA Solar", sector_id=sector.id, baseline_yield_target_tons=10.0, baseline_source="test"))
         session.add(IrrigationScheme(name="PADAB"))
-        session.add(FieldUser(phone_number="+250788000001", full_name="Monitor", cell_id=cell.id))
-        session.add(FieldUser(phone_number="+250788000002", full_name="Neighbour", cell_id=cell.id))
+        session.add(FieldUser(phone_number="+250788000001", full_name="Monitor", cell_id=cell.id, ussd_language="rw"))
+        session.add(FieldUser(phone_number="+250788000002", full_name="Neighbour", cell_id=cell.id, ussd_language="rw"))
         session.commit()
         return {"sector_id": sector.id, "cell_id": cell.id}
 
