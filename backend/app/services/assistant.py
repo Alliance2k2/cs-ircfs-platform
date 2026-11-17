@@ -37,13 +37,22 @@ def retrieve(question):
     return [dict(doc, revision=hashlib.sha256(doc["text"].encode()).hexdigest()[:12]) for _, doc in ranked[:3]]
 
 
-async def respond(question):
+def local_response(question):
+    """Network-free baseline shared with the offline benchmark."""
     if PERSONAL.search(question) or SECRET.search(question):
         return {"answer": "Please remove personal information and credentials. Ask about platform procedures without private data.", "mode": "privacy_refusal", "sources": []}
     sources = retrieve(question)
     if not sources:
         return {"answer": "I could not find supporting platform documentation. Please ask a district administrator or provide a reviewed source.", "mode": "no_evidence", "sources": []}
     result = {"answer": "Relevant document excerpts:\n\n" + "\n\n".join(f"[{row['id']}] {row['text']}" for row in sources), "mode": "documents", "sources": sources}
+    return result
+
+
+async def respond(question):
+    result = local_response(question)
+    if result["mode"] != "documents":
+        return result
+    sources = result["sources"]
     settings = get_settings()
     if not settings.assistant_generation_enabled:
         return result

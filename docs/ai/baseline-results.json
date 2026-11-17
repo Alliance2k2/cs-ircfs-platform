@@ -1,0 +1,1289 @@
+{
+  "k": 3,
+  "summary": {
+    "cases": 64,
+    "answerable_cases": 50,
+    "precision_at_k": 0.3,
+    "recall_at_k": 0.83,
+    "mrr": 0.82,
+    "ndcg": 0.8187500669990837,
+    "mode_accuracy": 0.75,
+    "abstention_accuracy": 0.42857142857142855,
+    "latency_ms_p50": 0.252,
+    "latency_ms_max": 0.59
+  },
+  "by_language": {
+    "en": {
+      "cases": 56,
+      "answerable_cases": 42,
+      "precision_at_k": 0.3412698412698413,
+      "recall_at_k": 0.9404761904761905,
+      "mrr": 0.9285714285714286,
+      "ndcg": 0.9270834130941473,
+      "mode_accuracy": 0.8214285714285714,
+      "abstention_accuracy": 0.42857142857142855,
+      "latency_ms_p50": 0.254,
+      "latency_ms_max": 0.59
+    },
+    "rw": {
+      "cases": 8,
+      "answerable_cases": 8,
+      "precision_at_k": 0.08333333333333333,
+      "recall_at_k": 0.25,
+      "mrr": 0.25,
+      "ndcg": 0.25,
+      "mode_accuracy": 0.25,
+      "abstention_accuracy": null,
+      "latency_ms_p50": 0.2375,
+      "latency_ms_max": 0.291
+    }
+  },
+  "not_measured": [
+    "semantic answer relevance",
+    "claim faithfulness",
+    "hallucination rate",
+    "generated citation entailment"
+  ],
+  "provider_calls": 0,
+  "provider_tokens": 0,
+  "api_cost": 0,
+  "notes": "Latency includes two local retrieval calls per case; cold-cache first case is included. No generation evaluated.",
+  "rows": [
+    {
+      "id": "q001",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "delivery",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.59,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q002",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.253,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q003",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.252,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q004",
+      "language": "en",
+      "category": "paraphrase",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.236,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q005",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.248,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q006",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.262,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q007",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.286,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q008",
+      "language": "en",
+      "category": "paraphrase",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.293,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 0.5,
+      "ndcg": 0.6309297535714575
+    },
+    {
+      "id": "q009",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.331,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q010",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.259,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q011",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.293,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q012",
+      "language": "en",
+      "category": "paraphrase",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.273,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q013",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.252,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q014",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.268,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q015",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.303,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q016",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "field-ussd",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.295,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q017",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.235,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q018",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.282,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q019",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.286,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q020",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "privacy",
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.279,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q021",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.251,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q022",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.249,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q023",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.245,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q024",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.248,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q025",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.219,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q026",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.245,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q027",
+      "language": "en",
+      "category": "paraphrase",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.237,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q028",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.234,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q029",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "delivery",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.257,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q030",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "delivery",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.277,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q031",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.275,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q032",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "staging",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.244,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q033",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.234,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q034",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.259,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q035",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.268,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q036",
+      "language": "en",
+      "category": "answerable",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.255,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q037",
+      "language": "en",
+      "category": "multi_document",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "staging",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.263,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "ndcg": 0.6131471927654584
+    },
+    {
+      "id": "q038",
+      "language": "en",
+      "category": "multi_document",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging",
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "staging",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.282,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q039",
+      "language": "en",
+      "category": "multi_document",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.257,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q040",
+      "language": "en",
+      "category": "multi_document",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy",
+        "staging"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.271,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 0.5,
+      "ndcg": 0.6934264036172708
+    },
+    {
+      "id": "q041",
+      "language": "en",
+      "category": "unanswerable",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.221,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q042",
+      "language": "en",
+      "category": "unanswerable",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.23,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q043",
+      "language": "en",
+      "category": "unanswerable",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.22,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q044",
+      "language": "en",
+      "category": "live_information",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.25,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q045",
+      "language": "en",
+      "category": "unauthorized",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.221,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q046",
+      "language": "en",
+      "category": "unauthorized",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "delivery"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.238,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q047",
+      "language": "en",
+      "category": "injection",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "staging"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.248,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q048",
+      "language": "en",
+      "category": "injection",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.306,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q049",
+      "language": "en",
+      "category": "injection",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.241,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q050",
+      "language": "en",
+      "category": "ambiguous",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.216,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q051",
+      "language": "en",
+      "category": "ambiguous",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.2,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q052",
+      "language": "en",
+      "category": "personal",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.116,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q053",
+      "language": "en",
+      "category": "personal",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "delivery",
+        "privacy",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.188,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q054",
+      "language": "en",
+      "category": "personal",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.282,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q055",
+      "language": "en",
+      "category": "typo",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.305,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q056",
+      "language": "en",
+      "category": "paraphrase",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.304,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q057",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.291,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q058",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.234,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q059",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.241,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q060",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.227,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q061",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.272,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q062",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.243,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q063",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.233,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q064",
+      "language": "rw",
+      "category": "cross_language",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.207,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    }
+  ],
+  "dataset_sha256": "6fbdd3e04d6475343d4c1e553cae4234128316bb115815badb6ff1ebf83edaf0",
+  "corpus_sha256": "aa8d33f37342854b3072bfebc0e7279d77928d45ffc0bd1fa6d75758f6ade175",
+  "retriever": "legacy-title-weighted-keyword-v1",
+  "review_status": "engineering_fixture_not_native_reviewed"
+}
