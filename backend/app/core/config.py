@@ -1,7 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import AliasChoices, Field, field_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     """Settings loaded from environment variables or a local .env file."""
 
     app_name: str = "CS-IRCFS Platform API"
+    assistant_generation_enabled: bool = False
+    assistant_openai_api_key: SecretStr = SecretStr("")
+    assistant_model: str = ""
     environment: str = "development"
     database_url: str = "sqlite:///./cs_ircfs.db"
     cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:8080"

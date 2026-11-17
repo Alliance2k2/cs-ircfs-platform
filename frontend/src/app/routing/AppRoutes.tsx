@@ -28,8 +28,10 @@ const TrendsPage = page(() => import("@/features/trends/TrendsPage"), "TrendsPag
 const MonthlyReportPage = page(() => import("@/features/monthly/MonthlyReportPage"), "MonthlyReportPage");
 const ManagementPage = page(() => import("@/features/management/ManagementPage"), "ManagementPage");
 const AdminPage = page(() => import("@/features/admin/AdminPage"), "AdminPage");
+const AssistantPage = page(() => import("@/features/assistant/AssistantPage"), "AssistantPage");
 
 const WORKSPACES: { path: string; element: ReactNode }[] = [
+  { path: "assistant", element: <AssistantPage /> },
   { path: "actions", element: <ActionsPage /> },
   { path: "field-reports", element: <FieldReportsPage /> },
   { path: "crops", element: <CropsPage /> },

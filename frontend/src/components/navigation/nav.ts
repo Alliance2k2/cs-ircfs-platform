@@ -52,6 +52,7 @@ export const NAV: NavGroup[] = [
     items: [
       { label: "nav.overview", icon: LayoutDashboard, to: "/", access: "analyst" },
       { label: "nav.actions", icon: AlertTriangle, to: "/actions", access: "staff" },
+      { label: "nav.assistant", icon: MessageSquareText, to: "/assistant", access: "staff" },
     ],
   },
   {

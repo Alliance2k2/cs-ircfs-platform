@@ -1,5 +1,7 @@
 # CS-IRCFS
 
+> New staff pilot: [Document assistant](docs/document-assistant.md) at `/app/assistant`. Local cited procedure lookup works without a provider; external AI generation is separately configured and disabled by default. No participant records are indexed.
+
 > Field USSD language selection: [13 November implementation and validation](docs/engineering-validation-2026-11-13.md). New callers choose `1. Ikinyarwanda` or `2. English` before sector/cell onboarding. Returning callers use `0` to change language; reporting options 1–6 retain their meanings. Run migration `20261113_29` before starting this version. Kinyarwanda wording still requires native approval.
 
 > Previous local verification: [9 November engineering validation](docs/engineering-validation-2026-11-09.md). Current field-language results are in the 13 November report above; Docker and hosted release verification remain outstanding.

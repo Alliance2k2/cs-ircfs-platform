@@ -16,6 +16,7 @@ os.environ["SMS_PROVIDER"] = "dry_run"
 os.environ["AIRTIME_PROVIDER"] = "dry_run"
 os.environ["ANONYMOUS_REPLY_QUEUE_ENABLED"] = "false"
 os.environ["ALLOW_LIVE_MESSAGES"] = "false"
+os.environ["ASSISTANT_GENERATION_ENABLED"] = "false"
 
 import pytest
 from fastapi.testclient import TestClient

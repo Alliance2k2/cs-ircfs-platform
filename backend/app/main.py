@@ -15,6 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.routes import (
     admin,
+    assistant,
     advisory,
     analytics,
     auth,
@@ -186,6 +187,7 @@ async def database_error_handler(_: Request, error: SQLAlchemyError):
 
 
 for api_router in (
+    assistant.router,
     system.router,
     auth.router,
     baselines.router,

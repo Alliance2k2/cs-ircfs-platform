@@ -45,6 +45,7 @@ try {
         $env:SMS_PROVIDER = "dry_run"
         $env:AIRTIME_PROVIDER = "dry_run"
         $env:ALLOW_LIVE_MESSAGES = "false"
+        $env:ASSISTANT_GENERATION_ENABLED = "false"
         $env:ANONYMOUS_REPLY_QUEUE_ENABLED = "false"
         $env:WEATHER_FORECAST_ENABLED = "false"
         $env:ADVICE_SCHEDULE_ENABLED = "false"
