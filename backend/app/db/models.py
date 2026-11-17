@@ -29,6 +29,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.db import knowledge  # noqa: F401 - register knowledge-only tables for migrations/tests
 
 
 class UTCDateTime(TypeDecorator):
