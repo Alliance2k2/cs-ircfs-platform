@@ -1,4 +1,41 @@
-# Staff document assistant — 17 November 2026
+# Staff document assistant
+
+## Current extension — 18 November 2026
+
+The assistant now supports BM25 retrieval, optional local semantic/hybrid adapters,
+and approved knowledge versions alongside the six packaged engineering summaries.
+Administrator management handles bounded PDF/DOCX/TXT/Markdown/CSV/JSON extraction,
+pending review, explicit approval, new versions and removal. Roles and required
+sector sets are checked before chunk text is selected. Source classifications and
+PDF page references remain visible. Uploads are disabled by default pending an
+approved extraction environment. No participant, grievance or personal-file crawling
+is introduced.
+
+The UI supports up to three recent user questions for simple follow-ups, an explicit
+English/Kinyarwanda choice, copying, categorical feedback and clearing. Kinyarwanda
+retrieval remains experimental; excerpts retain their source language and native
+review is pending. Conversations remain browser-memory only.
+
+Migration `20261117_30` adds dedicated knowledge tables. Default retrieval needs no
+model or provider. Optional local embeddings require separately provisioned weights
+and runtime; actual model quality has not been evaluated. PostgreSQL/PostGIS schema
+and portable lifecycle validation passed; pgvector is absent locally, so its adapter
+remains unverified. The JSON vector adapter is a pilot fallback, without HNSW.
+
+External generation remains disabled. Its provider interface preserves OpenAI
+Responses and adds optional loopback Ollama. Generated output must quote complete
+verbatim sentences from cited excerpts; unsupported paraphrases fall back to source
+excerpts. Managed sources and RW requests cannot be sent to either generator.
+Citation provenance does not prove source truth or complete contextual coverage.
+
+See [architecture and audit](ai/RAG_ARCHITECTURE.md), [beginner guide](ai/AI_ENGINEERING_GUIDE.md),
+[configuration and deployment](ai/DEPLOYMENT.md), [evaluation](ai/RAG_EVALUATION.md)
+and [current validation](ai/VALIDATION_2026-11-18.md). These supersede behavioral and
+configuration descriptions in the historical baseline below.
+
+## Historical 17 November baseline (`8105ca6`)
+
+The following records the original pilot and its original validation counts.
 
 The dashboard's **Document assistant** at `/app/assistant` answers questions about platform procedures. Access is limited to district officers, planners and administrators in both the UI and `POST /api/v1/assistant/ask`. Monitor/cooperative/public access is refused. Questions are limited to 1,200 characters and requests are rate-limited to 10/minute per client address by the existing limiter.
 

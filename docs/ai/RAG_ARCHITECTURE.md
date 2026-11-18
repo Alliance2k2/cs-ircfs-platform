@@ -49,6 +49,7 @@ flowchart LR
 | P2 | Repeated tokenization, linear corpus scan, no retrieval metrics | BM25 index, bounded candidates, measured latency; optimize against actual scale |
 | P2 | Provider integration coupled to orchestration; no usage/failure metrics | Provider interface, versioned prompts, bounded retries and content-free metrics |
 | P2 | No context, feedback or document management | Bounded stateless user-supplied history; admin-only knowledge management |
+| P1 before release | Existing dependency advisories; suggested frontend/pytest fixes include major versions | Separate compatibility-reviewed remediation; current audit scope/results in validation report |
 | P3 | Optional cross encoder and HNSW unproven for six sources | Enable only after measured quality/scale benefits |
 
 Existing defenses: authentication/roles, 1,200-character request bound,
@@ -76,3 +77,21 @@ budget nor a distributed quota. No security claim depends on prompt obedience.
 Tests can validate implementation; production deployment, native review, source
 approval, actual embedding quality and provider data policy require distinct evidence.
 Live operational data services remain out of scope until independently approved.
+
+## Implemented extension and explicit boundaries
+
+The audit above describes `8105ca6`, not the new behavior. The extension adds
+`services/rag/{ingestion,chunking,store,retrieval,embeddings,vectors,prompts,providers,citations,evaluation,safety,observability}.py`
+and dedicated knowledge ORM tables/migration `20261117_30`. The API/UI now support
+admin review, source permissions, version replacement/deletion and bounded context.
+Default BM25 and optional local dense/RRF paths share the authorized corpus.
+Generation is constrained to complete verbatim source quotations and remains off.
+The protected metrics endpoint exposes counts/timing without content or identities.
+
+The SQLite and PostgreSQL portable schema/lifecycle are validated. Actual embedding
+quality, native pgvector/HNSW storage, cross-encoder reranking, native-reviewed RW,
+institutional agriculture sources, isolated parsing workers and hosted release are
+not completed. Persistent vectors have a tested adapter, but HTTP dense retrieval
+currently uses the model's bounded in-memory cache. Job/evaluation tables are provided;
+there is no durable ingestion queue or automatic benchmark write-back. These limits
+remain visible in the [phase report](VALIDATION_2026-11-18.md).

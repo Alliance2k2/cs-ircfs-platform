@@ -41,3 +41,28 @@ approved external processing. A future judge should be calibrated against humans
 Baseline weaknesses include keyword-triggered answers to unsupported live totals,
 injection instructions sharing corpus vocabulary, typos and cross-language misses.
 Do not force those failures into passing by changing labels after observing results.
+
+## Measured extension
+
+`--method bm25` writes `bm25-results.json`: Precision@3 0.300, Recall@3 0.830,
+MRR 0.830, nDCG 0.826, mode accuracy 0.84375 and negative-mode accuracy 0.85714.
+BM25 ranking and request guards are separate contributions; the mode improvement
+must not be attributed to ranking alone. English Recall@3 is 0.94048 over 42
+answerable cases; draft RW Recall@3 is 0.25 over eight cases. RW is not ready for
+production acceptance. Split and language breakdowns are included in the new report.
+The legacy result remains frozen as its original measurement.
+
+Use `--split development` for tuning and `--split holdout` for release checks.
+Both splits have been reported here, so they are no longer an unseen research test
+set. Obtain independently authored/native-reviewed cases for unbiased later work.
+
+Semantic/hybrid commands require `--embedding-path` and `--embedding-revision`,
+and fail rather than silently calling lexical fallback a semantic result. No model
+weights/runtime are installed, so those real-model comparisons remain unexecuted.
+
+The additional `citation_evaluation.json` contains eight engineering-labeled claims
+and exact source evidence. `python scripts/evaluate_citation_support.py` shows that
+ID-only validation accepts all six unsupported claims, while complete-sentence
+extractive validation rejects all six and accepts both supported quotations. This
+measures a deterministic validator on a tiny challenge set. It is not an actual
+model hallucination rate, a source-truth test or semantic verification of paraphrases.

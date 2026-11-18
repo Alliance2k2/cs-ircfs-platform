@@ -1,6 +1,6 @@
 # CS-IRCFS
 
-> New staff pilot: [Document assistant](docs/document-assistant.md) at `/app/assistant`. Local cited procedure lookup works without a provider; external AI generation is separately configured and disabled by default. No participant records are indexed.
+> Staff [Document assistant](docs/document-assistant.md) at `/app/assistant`: BM25 procedure lookup, reviewed source versions and permissions, bounded follow-ups, citations and feedback. Uploads and external generation are disabled by default. See the [RAG engineering guide](docs/ai/AI_ENGINEERING_GUIDE.md) and [validation report](docs/ai/VALIDATION_2026-11-18.md). Semantic-model quality, pgvector and native Kinyarwanda review remain release gates. Migration head: `20261117_30`.
 
 > Field USSD language selection: [13 November implementation and validation](docs/engineering-validation-2026-11-13.md). New callers choose `1. Ikinyarwanda` or `2. English` before sector/cell onboarding. Returning callers use `0` to change language; reporting options 1–6 retain their meanings. Run migration `20261113_29` before starting this version. Kinyarwanda wording still requires native approval.
 
