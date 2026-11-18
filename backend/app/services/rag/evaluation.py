@@ -43,6 +43,7 @@ def evaluate(cases, retrieve, local_response, k=3):
         latency = (time.perf_counter() - start) * 1000
         ids = [source["id"] for source in sources]
         rows.append({"id": case["id"], "language": case["language"], "category": case["category"],
+                     "split": case.get("split", "development"),
                      "expected_mode": case["expected_mode"], "actual_mode": result["mode"],
                      "relevant_ids": case["relevant_ids"], "retrieved_ids": ids,
                      "mode_correct": case["expected_mode"] == result["mode"], "latency_ms": round(latency, 3),
@@ -60,6 +61,7 @@ def evaluate(cases, retrieve, local_response, k=3):
     return {"k": k, "summary": aggregate(rows),
             "by_language": {language: aggregate([r for r in rows if r["language"] == language])
                             for language in sorted({row["language"] for row in rows})},
+            "by_split": {split: aggregate([r for r in rows if r["split"] == split]) for split in sorted({row["split"] for row in rows})},
             "not_measured": ["semantic answer relevance", "claim faithfulness", "hallucination rate", "generated citation entailment"],
             "provider_calls": 0, "provider_tokens": 0, "api_cost": 0,
             "notes": "Latency includes two local retrieval calls per case; cold-cache first case is included. No generation evaluated.",

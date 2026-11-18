@@ -1,0 +1,10 @@
+[
+  {"id":"claim-1","source_id":"field-ussd","claim":"Returning callers retain their location and language. [field-ussd]","supported":true,"evidence":"Returning callers retain their location and language."},
+  {"id":"claim-2","source_id":"rainfall","claim":"Missing rainfall remains missing, not zero. [rainfall]","supported":true,"evidence":"Missing rainfall remains missing, not zero."},
+  {"id":"claim-3","source_id":"field-ussd","claim":"Kinyarwanda wording has certified native-speaker approval. [field-ussd]","supported":false,"evidence":"Kinyarwanda wording requires native-speaker approval; automated tests do not establish carrier acceptance."},
+  {"id":"claim-4","source_id":"delivery","claim":"Provider acceptance always proves confirmed SMS delivery. [delivery]","supported":false,"evidence":"Provider acceptance is distinct from confirmed delivery."},
+  {"id":"claim-5","source_id":"rainfall","claim":"Missing rainfall must be counted as zero. [rainfall]","supported":false,"evidence":"Missing rainfall remains missing, not zero."},
+  {"id":"claim-6","source_id":"privacy","claim":"Retention guarantees all linkages are irrecoverable. [privacy]","supported":false,"evidence":"Retention is minimization/pseudonymization, not a promise that every linkage is irrecoverable."},
+  {"id":"claim-7","source_id":"verification","claim":"The official PADAB yield baseline is ten tonnes per hectare. [verification]","supported":false,"evidence":"Do not invent PADAB or APEFA baseline values."},
+  {"id":"claim-8","source_id":"staging","claim":"Passing automated tests authorizes institutional activation. [staging]","supported":false,"evidence":"Automated tests do not authorize pilot or institutional activation."}
+]

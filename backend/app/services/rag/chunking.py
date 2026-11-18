@@ -21,6 +21,8 @@ def chunk_pages(pages, size=512, overlap=64, strategy="recursive"):
         pending = []
         def emit(words):
             if words:
+                if len(chunks) >= 5000:
+                    raise ValueError("Too many chunks")
                 chunks.append(Chunk(" ".join(words), page, heading, len(chunks)))
         for block in blocks:
             if strategy == "heading" and re.match(r"^#{1,6}\s", block):

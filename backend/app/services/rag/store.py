@@ -1,7 +1,7 @@
 """Transactional source lifecycle. Authorization precedes chunk selection."""
 from uuid import uuid4
 
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import delete, func, select, update, text
 
 from app.db.knowledge import KnowledgeChunk, KnowledgeDocument, KnowledgeEmbedding, KnowledgeJob, KnowledgeVersion
 from app.services.rag.chunking import chunk_pages
@@ -15,15 +15,20 @@ def identifier():
 
 
 def ingest(db, *, filename, data, title, language="en", classification="engineering", roles=None, sector_ids=None, document_id=None, size=512, overlap=64, strategy="recursive"):
-    roles = sorted(set(roles or STAFF_ROLES))
+    roles = sorted(set(STAFF_ROLES if roles is None else roles))
     sector_ids = sorted(set(sector_ids or []))
     if not title.strip() or len(title) > 200 or language not in {"en", "rw", "fr"} or classification not in {"engineering", "institutional", "demonstration"}:
         raise ValueError("Invalid document metadata")
     if not set(roles) <= STAFF_ROLES or not roles or any(not isinstance(i, int) or i <= 0 for i in sector_ids):
         raise ValueError("Invalid document permissions")
     extracted = extract(filename, data)
+    if db.bind.dialect.name == "postgresql":
+        # Serialize same-content uploads across API processes before checking for
+        # duplicates. Lock order is content, document, then version throughout.
+        lock_key = int.from_bytes(bytes.fromhex(extracted.digest[:16]), "big", signed=True)
+        db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": lock_key})
     chunks = chunk_pages(extracted.pages, size, overlap, strategy)
-    document = db.get(KnowledgeDocument, document_id) if document_id else None
+    document = db.scalar(select(KnowledgeDocument).where(KnowledgeDocument.id == document_id).with_for_update()) if document_id else None
     if document_id and (document is None or document.deleted):
         raise ValueError("Document unavailable")
     if document:
