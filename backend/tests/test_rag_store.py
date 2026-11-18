@@ -23,6 +23,8 @@ def test_approval_duplicate_version_update_and_delete(db):
     assert authorized_sources(db, ADMIN)[0]["page"] == 1
     retry, duplicate = upload(db, document_id=version.document_id)
     assert retry.id == version.id and duplicate
+    retry_without_id, duplicate = upload(db)
+    assert retry_without_id.id == version.id and duplicate
     newer, _ = upload(db, b"Revised approved procedure", document_id=version.document_id)
     assert authorized_sources(db, ADMIN)[0]["version_id"] == version.id
     approve(db, newer.id, ADMIN, "synthetic review B")
@@ -49,7 +51,7 @@ def test_permission_filters_run_before_text_selection(db):
 def test_invalid_approval_and_duplicates_are_refused(db):
     version, _ = upload(db)
     with pytest.raises(ValueError, match="Duplicate"):
-        upload(db)
+        ingest(db, filename="x.txt", data=b"Approved procedure for synthetic pump inspections", title="Different title")
     with pytest.raises(ValueError, match="signed-in"):
         approve(db, version.id, SimpleNamespace(role=UserRole.administrator, account_id=None), "fixture")
     with pytest.raises(ValueError, match="reference"):

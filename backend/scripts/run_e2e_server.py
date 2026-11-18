@@ -42,6 +42,7 @@ def sandbox_environment(database: Path, port: int) -> None:
         "ANONYMOUS_REPLY_QUEUE_ENABLED": "false",
         "ALLOW_LIVE_MESSAGES": "false",
         "ASSISTANT_GENERATION_ENABLED": "false",
+        "ASSISTANT_INGESTION_ENABLED": "true",  # synthetic files, disposable SQLite only
         "AFRICAS_TALKING_USERNAME": "",
         "AFRICAS_TALKING_API_KEY": "",
         "GOOGLE_CLIENT_ID": "",

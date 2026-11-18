@@ -43,6 +43,9 @@ def ingest(db, *, filename, data, title, language="en", classification="engineer
         duplicate = db.scalar(select(KnowledgeVersion).join(KnowledgeDocument).where(
             KnowledgeVersion.digest == extracted.digest, KnowledgeDocument.deleted.is_(False)))
         if duplicate:
+            existing = db.get(KnowledgeDocument, duplicate.document_id)
+            if (existing.title, existing.language, existing.classification, existing.roles, existing.sector_ids) == (title, language, classification, roles, sector_ids):
+                return duplicate, True
             raise ValueError("Duplicate content; update the existing document")
         document = KnowledgeDocument(id=identifier(), title=title, language=language, classification=classification, roles=roles, sector_ids=sector_ids)
         db.add(document)
