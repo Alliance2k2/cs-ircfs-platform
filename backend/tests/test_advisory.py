@@ -88,6 +88,7 @@ def test_nutrition_reward_shows_in_ussd_reply(client, session_factory):
     from app.db.models import IncentiveReward, FieldUser
 
     phone = "+250788000123"
+    client.post("/api/v1/ussd", data={"sessionId": "choose-rw", "phoneNumber": phone, "text": "1"})
     for index in range(3):
         response = client.post("/api/v1/ussd", data={"sessionId": f"nut-{index}", "phoneNumber": phone, "text": "6*2*1*1"})
     assert "Wahawe" in response.text

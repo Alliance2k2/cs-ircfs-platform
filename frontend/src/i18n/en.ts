@@ -12,6 +12,7 @@ export const en = {
   "nav.group.field": "Field intelligence",
   "nav.group.platform": "Platform",
   "nav.overview": "Executive overview",
+  "nav.assistant": "Document assistant",
   "nav.actnow": "Act now",
   "nav.channels": "Field channels",
   "nav.schemes": "Scheme performance",

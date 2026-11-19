@@ -16,6 +16,7 @@ os.environ["SMS_PROVIDER"] = "dry_run"
 os.environ["AIRTIME_PROVIDER"] = "dry_run"
 os.environ["ANONYMOUS_REPLY_QUEUE_ENABLED"] = "false"
 os.environ["ALLOW_LIVE_MESSAGES"] = "false"
+os.environ["ASSISTANT_GENERATION_ENABLED"] = "false"
 
 import pytest
 from fastapi.testclient import TestClient
@@ -83,8 +84,8 @@ def district(session_factory):
         session.flush()
         session.add(IrrigationScheme(name="APEFA Solar", sector_id=sector.id, baseline_yield_target_tons=10.0, baseline_source="test"))
         session.add(IrrigationScheme(name="PADAB"))
-        session.add(FieldUser(phone_number="+250788000001", full_name="Monitor", cell_id=cell.id))
-        session.add(FieldUser(phone_number="+250788000002", full_name="Neighbour", cell_id=cell.id))
+        session.add(FieldUser(phone_number="+250788000001", full_name="Monitor", cell_id=cell.id, ussd_language="rw"))
+        session.add(FieldUser(phone_number="+250788000002", full_name="Neighbour", cell_id=cell.id, ussd_language="rw"))
         session.commit()
         return {"sector_id": sector.id, "cell_id": cell.id}
 

@@ -9,7 +9,7 @@ Status: procedure prepared; hosted execution requires the actual URL and owner a
 - Use a separate PostgreSQL/PostGIS database, HTTPS hostname, secrets and callback token. Disable development bypass; require authentication; restrict CORS to exact origins or empty same-origin configuration. Production must use Secure cookies.
 - Verify the previously exposed provider key was revoked in its owner console; do not paste it into logs/issues. Keep SMS/airtime dry-run, ALLOW_LIVE_MESSAGES=false and scheduled advice/private reply routing off until independently approved.
 - Back up the intended database and rehearse restore to a different explicitly named disposable database. Encrypt off-site copies and approve retention. Do not test recovery by overwriting production.
-- Build the complete frontend/container before serving it. Run migrations before app startup. The current schema head remains 20261102_28; no new revision is needed by this patch.
+- Build the complete frontend/container before serving it. Run migrations before app startup. The current schema head is 20261113_29 (participant USSD language). Back up preferences before considering downgrade; revision 29 downgrade removes them.
 
 ## Read-only smoke checks
 
@@ -31,7 +31,7 @@ Record commit, URL, date, operator and all results. It checks liveness/readiness
 
 ## Separately approved sandbox/device rehearsal
 
-Use provider sandbox credentials, dedicated test participants and explicit authorization. Confirm provider callback formats, secret/IP checks, repeated delivery receipts, unknown-outcome handling, carrier timeout/restart behavior and real feature-phone usability. Do not resend uncertain deliveries or enable paid providers merely because automated mocks passed. Live USSD is currently Kinyarwanda-first; English on the simulator is a staff aid, not a field language selector.
+Use provider sandbox credentials, dedicated test participants and explicit authorization. Confirm provider callback formats, secret/IP checks, repeated delivery receipts, unknown-outcome handling, carrier timeout/restart behavior and real feature-phone usability. Do not resend uncertain deliveries or enable paid providers merely because automated mocks passed. Test both field USSD languages with the simulator English aid disabled, including first-call choice, persisted preference, sector/cell onboarding and returning-caller `0` settings. The aid is separate from the selected field language.
 
 ## Rollback
 

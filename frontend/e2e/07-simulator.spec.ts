@@ -12,6 +12,9 @@ test("USSD and SMS in the simulator are recorded as test data only", async ({ pa
   const screen = page.locator('[aria-live="polite"]').filter({ hasText: /./ }).first();
 
   await page.getByRole("button", { name: "Dial *801#" }).click();
+  await expect(screen).toContainText("Choose language");
+  await page.getByLabel("Your answer").fill("2");
+  await page.getByRole("button", { name: "Send", exact: true }).first().click();
   await expect(screen).toContainText("Choose the sector where you live");
   await page.getByLabel("Your answer").fill("1");
   await page.getByRole("button", { name: "Send", exact: true }).first().click();

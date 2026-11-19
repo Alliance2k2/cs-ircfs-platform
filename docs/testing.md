@@ -1,5 +1,7 @@
 # Testing
 
+> Current field-language tests and executed results: [13 November validation](engineering-validation-2026-11-13.md). `test_ussd_language.py` covers preference/replay/isolation, migration tests preserve existing profiles, and `14-ussd-language.spec.ts` checks both languages with the English aid disabled.
+
 > Current commands, failures, fixes and actual local counts: [6 November engineering validation](engineering-validation-2026-11-06.md).
 
 Current public-page and authentication verification is summarized in [current interface changes](current-interface-changes.md). The earlier public redesign tests and captures describe a superseded proposal; that test file was removed when the original layout was restored.

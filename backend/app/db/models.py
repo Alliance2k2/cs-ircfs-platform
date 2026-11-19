@@ -241,8 +241,11 @@ class FieldUser(Base):
     """A USSD/SMS caller. Never an account: field users do not sign in to the web."""
 
     __tablename__ = "field_users"
+    __table_args__ = (CheckConstraint("ussd_language IS NULL OR ussd_language IN ('rw', 'en')", name="ck_field_users_ussd_language"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(20), unique=True, index=True)
+    # NULL means no explicit choice yet. Migration preserves legacy callers as RW.
+    ussd_language: Mapped[str | None] = mapped_column(String(2))
     data_origin: Mapped[str] = data_origin_column()
     full_name: Mapped[str | None] = mapped_column(String(120))
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.farmer)

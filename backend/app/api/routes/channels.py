@@ -164,6 +164,8 @@ def run_ussd(db: Session, fields: dict[str, str], origin: str) -> tuple[ussd.Uss
     phone = caller(fields, "phoneNumber")
     text = fields.get("text", "")
     session_id = fields.get("sessionId")
+    if not session_id or not session_id.strip():
+        raise HTTPException(status_code=422, detail="A USSD sessionId is required")
     if origin == ORIGIN_SIMULATOR and session_id:
         session_id = simulation_phone(f"session:{phone}:{session_id}")
     throttle(db, phone, origin)
@@ -171,8 +173,16 @@ def run_ussd(db: Session, fields: dict[str, str], origin: str) -> tuple[ussd.Uss
                                    text=text or "(dial)", origin=origin)
     if earlier is not None:
         return None, earlier
-    user = find_or_register_user(db, phone)
-    result = ussd.handle(db, user, text)
+    # The first dial response fixes the meaning of the session's first answer.
+    # Preference is already persisted by the next callback, so profile state alone
+    # cannot tell a language prefix from a report option on replayed answer paths.
+    dial = db.scalar(select(InboundMessage).where(
+        InboundMessage.channel == "ussd", InboundMessage.session_id == session_id,
+        InboundMessage.data_origin == origin, InboundMessage.text == "(dial)",
+    ).limit(1)) if session_id else None
+    selecting = dial is not None and dial.reply == "CON " + ussd.LANGUAGE_PROMPT[0]
+    user = find_or_register_user(db, phone, record_consent=not (selecting or text.split("*", 1)[0].strip() == "0"))
+    result = ussd.handle(db, user, text, language_selection=selecting)
     tag_origin(db, result.record_type, result.record_id, origin)
     if result.record_type == GRIEVANCE:
         # Grievances are anonymous: drop the phone from every step of this session, so the

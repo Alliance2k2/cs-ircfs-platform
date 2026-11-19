@@ -41,6 +41,7 @@ def sandbox_environment(database: Path, port: int) -> None:
         "AIRTIME_PROVIDER": "dry_run",
         "ANONYMOUS_REPLY_QUEUE_ENABLED": "false",
         "ALLOW_LIVE_MESSAGES": "false",
+        "ASSISTANT_GENERATION_ENABLED": "false",
         "AFRICAS_TALKING_USERNAME": "",
         "AFRICAS_TALKING_API_KEY": "",
         "GOOGLE_CLIENT_ID": "",

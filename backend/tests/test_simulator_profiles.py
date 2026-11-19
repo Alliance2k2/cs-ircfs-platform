@@ -29,6 +29,7 @@ def test_training_cannot_opt_out_register_or_count_real_callers(client, district
 
 def test_training_registration_does_not_locate_a_real_profile(client, district, db):
     phone = "+250788998877"
+    client.post("/api/v1/simulator/ussd", json={"phoneNumber": phone, "sessionId": "choose-rw", "text": "1"})
     response = client.post("/api/v1/simulator/ussd", json={"phoneNumber": phone, "sessionId": "register", "text": "1*1"})
     assert response.status_code == 200
     assert response.json()["record_type"] == "location"
@@ -36,7 +37,8 @@ def test_training_registration_does_not_locate_a_real_profile(client, district, 
     training = db.scalar(select(FieldUser).where(FieldUser.data_origin == "simulator"))
     assert training.cell_id == district["cell_id"]
     live = client.post("/api/v1/ussd", data={"phoneNumber": phone, "sessionId": "live", "text": ""})
-    assert "Hitamo umurenge" in live.text
+    assert "Choose language" in live.text
+    assert "Hitamo umurenge" in client.post("/api/v1/ussd", data={"phoneNumber": phone, "sessionId": "live", "text": "1"}).text
     real = db.scalar(select(FieldUser).where(FieldUser.phone_number == phone))
     assert real.cell_id is None
 

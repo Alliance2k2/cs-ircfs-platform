@@ -1,6 +1,10 @@
 # CS-IRCFS
 
-> Current local verification: [9 November engineering validation](docs/engineering-validation-2026-11-09.md): 339 backend, 61 frontend and 25 browser checks passed; Docker and hosted release verification remain outstanding.
+> New staff pilot: [Document assistant](docs/document-assistant.md) at `/app/assistant`. Local cited procedure lookup works without a provider; external AI generation is separately configured and disabled by default. No participant records are indexed.
+
+> Field USSD language selection: [13 November implementation and validation](docs/engineering-validation-2026-11-13.md). New callers choose `1. Ikinyarwanda` or `2. English` before sector/cell onboarding. Returning callers use `0` to change language; reporting options 1–6 retain their meanings. Run migration `20261113_29` before starting this version. Kinyarwanda wording still requires native approval.
+
+> Previous local verification: [9 November engineering validation](docs/engineering-validation-2026-11-09.md). Current field-language results are in the 13 November report above; Docker and hosted release verification remain outstanding.
 
 > Latest verified fixes and remaining blockers: [6 November engineering validation](docs/engineering-validation-2026-11-06.md).
 
@@ -30,7 +34,7 @@ District dashboard: outcome verification · Act Now cases · trends · monthly r
 ## Features
 
 **Field reporting**
-- Kinyarwanda USSD menu (six options, numeric choices, at most three levels) and SMS keywords (`IMVURA`, `NZANA`, `UMUSARURO`, `IKIBAZO`).
+- Kinyarwanda/English USSD selection with six reporting options and `0` language settings; existing SMS keywords (`IMVURA`, `NZANA`, `UMUSARURO`, `IKIBAZO`).
 - First-time callers choose their sector and cell once, so every later report is mapped and linked to its irrigation scheme.
 - Retried gateway deliveries are recognised and never recorded twice.
 
