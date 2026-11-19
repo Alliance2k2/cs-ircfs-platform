@@ -101,12 +101,14 @@ document.querySelectorAll("[data-toggle-password]").forEach((button) => button.a
   button.querySelector("i").className = show ? "bi bi-eye-slash" : "bi bi-eye";
 }));
 
-const account = CS.session.account();
-if (account) {
+// Cached account details are display data, not proof of an active session.
+CS.apiJson("auth/me").then((account) => {
   const box = document.querySelector("#signed-in");
   box.hidden = false;
   box.innerHTML = `<i class="bi bi-person-check" aria-hidden="true"></i><span>You are signed in as <b>${CS.escapeHtml(account.email)}</b>. <a class="alert-link" href="/app/">Continue to the dashboard →</a></span>`;
-}
+}).catch((error) => {
+  if (error.status === 401 || error.status === 403) CS.session.clear();
+});
 
 CS.apiJson("auth/config").then(({ google_client_id, development_bypass }) => {
   if (development_bypass) { goNext(); return; }

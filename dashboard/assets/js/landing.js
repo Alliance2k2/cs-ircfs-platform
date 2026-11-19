@@ -1,6 +1,6 @@
 // Public landing page: template behaviour (menu, reveal, FAQ, EN/RW menu) plus live platform data in the hero.
 (() => {
-  const { API, escapeHtml, session } = window.CS;
+  const { API, escapeHtml } = window.CS;
   const $ = (selector) => document.querySelector(selector);
   const fmt = (n) => Number(n || 0).toLocaleString();
 
@@ -112,15 +112,6 @@
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
     navLinks.forEach((a) => { const target = document.querySelector(a.getAttribute("href")); if (target) spy.observe(target); });
-  }
-
-  // ---------- Signed-in people go straight to the dashboard ----------
-  if (session.account()) {
-    const dashboardLabel = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
-    $("#nav-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
-    $("#hero-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
-    ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "/app/"; });
-    const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
   }
 
   $("#year").textContent = new Date().getFullYear();
