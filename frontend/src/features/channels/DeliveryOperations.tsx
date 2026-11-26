@@ -13,7 +13,7 @@ import { useApi } from "@/services/api/hooks";
 
 const deliveryRow = z.object({kind:z.enum(["sms","airtime"]),id:z.number(),status:z.string(),phone_number:z.string(),
   provider_id:z.string().nullable(),delivery_attempts:z.number(),last_attempt_at:z.string().nullable(),created_at:z.string()});
-const queueSchema = z.object({rows:z.array(deliveryRow),totals:z.record(z.record(z.number())),unmatched_receipts:z.number()});
+const queueSchema = z.object({rows:z.array(deliveryRow),totals:z.record(z.string(), z.record(z.string(), z.number())),unmatched_receipts:z.number()});
 type Delivery = z.infer<typeof deliveryRow>;
 
 function ReconcileForm({ item, onClose }: { item:Delivery; onClose:()=>void }) {

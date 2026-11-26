@@ -3,7 +3,6 @@ import { render } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { SessionContext, type Session } from "@/app/providers/SessionProvider";
-import { ROUTER_FUTURE } from "@/app/routing/future";
 import { ToastProvider } from "@/components/ui/Toast";
 import { I18nProvider, type Language } from "@/i18n";
 
@@ -19,7 +18,7 @@ export function renderWithProviders(
     <QueryClientProvider client={client}>
       <I18nProvider initial={lang}>
         <SessionContext.Provider value={session}>
-          <MemoryRouter initialEntries={[route]} future={ROUTER_FUTURE}>
+          <MemoryRouter initialEntries={[route]}>
             <ToastProvider>{ui}</ToastProvider>
           </MemoryRouter>
         </SessionContext.Provider>

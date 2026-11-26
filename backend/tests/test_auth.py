@@ -1,9 +1,32 @@
 """Sign-in, session cookies, roles, and account administration."""
 from datetime import datetime, timedelta, timezone
 
+import pytest
 from sqlalchemy import select
 
 from app.db.models import AuthSession, PlatformAccount, UserRole
+
+
+@pytest.mark.parametrize("network_failure, expected_status", [(True, 503), (False, 401)])
+def test_google_verification_distinguishes_network_failure_from_invalid_token(client, monkeypatch, network_failure, expected_status):
+    import app.api.routes.auth as auth_routes
+    from app.core.config import Settings
+    from google.auth.exceptions import TransportError
+    from google.oauth2 import id_token
+
+    monkeypatch.setattr(auth_routes, "get_settings", lambda: Settings(_env_file=None, google_client_id="test-client"))
+
+    def refuse(*args, **kwargs):
+        raise TransportError("unreachable") if network_failure else ValueError("invalid token")
+
+    monkeypatch.setattr(id_token, "verify_oauth2_token", refuse)
+    response = client.post("/api/v1/auth/google", json={"credential": "synthetic-invalid-credential"})
+    assert response.status_code == expected_status
+    assert "set-cookie" not in response.headers
+    if network_failure:
+        assert "cannot reach Google" in response.json()["detail"]
+    else:
+        assert response.json()["detail"] == "Invalid Google sign-in"
 
 
 def register(client, email="x@example.org", password="Str0ng!pass"):

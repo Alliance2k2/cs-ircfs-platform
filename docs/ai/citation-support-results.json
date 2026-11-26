@@ -1,0 +1,86 @@
+{
+  "dataset_sha256": "34945262a88ead07f3867fe84d2b8ba4f8e9b4eae9bc177c492119d4d2dd94d0",
+  "corpus_sha256": "aa8d33f37342854b3072bfebc0e7279d77928d45ffc0bd1fa6d75758f6ade175",
+  "annotation_status": "engineering_labels_from_packaged_summaries",
+  "cases": 8,
+  "unsupported_cases": 6,
+  "unsupported_claim_structural_acceptance_rate": 1.0,
+  "unsupported_claim_extractive_acceptance_rate": 0.0,
+  "supported_claim_extractive_acceptance_rate": 1.0,
+  "limitation": "Citation-ID checks alone accept unsupported claims; extractive checks enforce sentence provenance. This is a synthetic validator challenge set, not model hallucination rate, source truth or semantic paraphrase verification.",
+  "provider_calls": 0,
+  "rows": [
+    {
+      "id": "claim-1",
+      "source_id": "field-ussd",
+      "claim": "Returning callers retain their location and language. [field-ussd]",
+      "supported": true,
+      "evidence": "Returning callers retain their location and language.",
+      "structurally_accepted": true,
+      "extractively_accepted": true
+    },
+    {
+      "id": "claim-2",
+      "source_id": "rainfall",
+      "claim": "Missing rainfall remains missing, not zero. [rainfall]",
+      "supported": true,
+      "evidence": "Missing rainfall remains missing, not zero.",
+      "structurally_accepted": true,
+      "extractively_accepted": true
+    },
+    {
+      "id": "claim-3",
+      "source_id": "field-ussd",
+      "claim": "Kinyarwanda wording has certified native-speaker approval. [field-ussd]",
+      "supported": false,
+      "evidence": "Kinyarwanda wording requires native-speaker approval; automated tests do not establish carrier acceptance.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    },
+    {
+      "id": "claim-4",
+      "source_id": "delivery",
+      "claim": "Provider acceptance always proves confirmed SMS delivery. [delivery]",
+      "supported": false,
+      "evidence": "Provider acceptance is distinct from confirmed delivery.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    },
+    {
+      "id": "claim-5",
+      "source_id": "rainfall",
+      "claim": "Missing rainfall must be counted as zero. [rainfall]",
+      "supported": false,
+      "evidence": "Missing rainfall remains missing, not zero.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    },
+    {
+      "id": "claim-6",
+      "source_id": "privacy",
+      "claim": "Retention guarantees all linkages are irrecoverable. [privacy]",
+      "supported": false,
+      "evidence": "Retention is minimization/pseudonymization, not a promise that every linkage is irrecoverable.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    },
+    {
+      "id": "claim-7",
+      "source_id": "verification",
+      "claim": "The official PADAB yield baseline is ten tonnes per hectare. [verification]",
+      "supported": false,
+      "evidence": "Do not invent PADAB or APEFA baseline values.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    },
+    {
+      "id": "claim-8",
+      "source_id": "staging",
+      "claim": "Passing automated tests authorizes institutional activation. [staging]",
+      "supported": false,
+      "evidence": "Automated tests do not authorize pilot or institutional activation.",
+      "structurally_accepted": true,
+      "extractively_accepted": false
+    }
+  ]
+}

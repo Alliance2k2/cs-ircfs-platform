@@ -6,9 +6,12 @@ alembic>=1.13,<2.0
 psycopg[binary]>=3.2,<4.0
 GeoAlchemy2>=0.15,<1.0
 slowapi>=0.1.9,<0.2
-pytest>=8.0,<9.0
+pytest>=9.0.3,<10.0
 httpx>=0.27,<1.0
 google-auth>=2.35,<3.0
 requests>=2.32,<3.0
 
 cryptography>=46,<51
+# Security floors for TLS roots and Google-auth's ASN.1 dependency.
+certifi>=2026.10.18
+pyasn1>=0.6.5,<0.7

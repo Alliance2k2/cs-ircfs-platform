@@ -14,6 +14,13 @@ def messages(path):
 def package():
     english={**messages(ROOT/'frontend/src/i18n/en.ts'),**messages(ROOT/'frontend/src/i18n/en.workspaces.ts'),**messages(ROOT/'frontend/src/i18n/en.operations.ts')}
     rw=messages(ROOT/'frontend/src/i18n/rw.ts')
+    # The assistant module holds two explicit objects; do not let its RW object
+    # overwrite the English reference text when exporting review entries.
+    assistant=(ROOT/'frontend/src/i18n/assistant.ts').read_text(encoding='utf-8-sig')
+    source,target=assistant.split('export const assistantRw',1)
+    english.update({key:json.loads(value) for key,value in PATTERN.findall(source)})
+    drafts={key:json.loads(value) for key,value in PATTERN.findall(target)}
+    rw={**drafts,**rw}
     return {"language":"rw","review_status":"pending_native_review","reviewer":"","evidence_reference":"",
         "note":"Review terminology and placeholders with field staff. This export does not claim translation or field acceptance.",
         "entries":[{"key":key,"english":value,"kinyarwanda":rw.get(key,""),"approved":False} for key,value in sorted(english.items())]}

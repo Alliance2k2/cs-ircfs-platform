@@ -11,6 +11,7 @@ import { OverviewHero } from "./OverviewHero";
 import { PriorityActions } from "./PriorityActions";
 import { RainfallPanel } from "./RainfallPanel";
 import { RecentReports } from "./RecentReports";
+import { ReportingActivity } from "./ReportingActivity";
 import { SchemeComparison } from "./SchemeComparison";
 import { useOverview, useOverviewFilters } from "./useOverview";
 
@@ -86,6 +87,8 @@ export function OverviewPage() {
               ))}
             </div>
           </section>
+
+          <ReportingActivity filters={filters} />
 
           <section className="grid gap-6 lg:grid-cols-12">
             <header className="lg:col-span-12">

@@ -50,7 +50,7 @@ export function RainfallPanel({ rows }: { rows: RainfallRow[] }) {
           </li>
         ))}
       </ul>
-      <ul className="max-h-64 divide-y divide-line overflow-y-auto border-t border-line">
+      <ul tabIndex={0} aria-label={t("section.map")} className="max-h-64 divide-y divide-line overflow-y-auto border-t border-line">
         {sorted.map((row) => (
           <li key={row.sector_id} className="flex items-center gap-3 px-5 py-2.5">
             <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: tokenColor(LEVEL_TOKEN[row.level]) }} />

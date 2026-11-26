@@ -1,6 +1,6 @@
 // Public landing page: template behaviour (menu, reveal, FAQ, EN/RW menu) plus live platform data in the hero.
 (() => {
-  const { API, escapeHtml, session } = window.CS;
+  const { API, escapeHtml } = window.CS;
   const $ = (selector) => document.querySelector(selector);
   const fmt = (n) => Number(n || 0).toLocaleString();
 
@@ -21,6 +21,7 @@
     rw: { label: "RW", items: ["Ibyo ikora", "Uko ikora", "Abagenewe", "Imishinga y'igerageza", "Ibibazo"] },
   };
   const RW_COPY = {
+    "Public report summaries": "Incamake za raporo rusange",
     "Illustrative photographs; not CS-IRCFS participants or verified pilot sites.":"Amafoto atanga urugero; si ay'abitabiriye CS-IRCFS cyangwa ahantu hemejwe hakorerwa igerageza.",
     "Photo credits & locations":"Abafashe amafoto n'aho yafatiwe",
     "Photography credits":"Abafashe amafoto",
@@ -60,7 +61,7 @@
     "Turning community knowledge into better decisions for irrigation resilience and food security.":"Guhindura ubumenyi bw'abaturage mu mfatiro zo gufata ibyemezo byiza byo kurwanya ubukene bw'amazi no guhimiriza umutekano w'ibiribwa.", "Bugesera District, Rwanda":"Akarere ka Bugesera, u Rwanda", "English & Kinyarwanda":"Icyongereza n'Ikinyarwanda", "Public counts and sector summaries only.":"Imibare rusange n'incamake y'imirenge gusa.", "Checking the platform…":"Reba uko urubuga rukora…",
     "Read the privacy notice":"Soma itangazo ry'ibanga", "Explore":"Shakisha", "Questions":"Ibibazo", "Platform":"Urubuga", "Phone simulator":"Imyigishirizo kuri telefoni", "Resources":"Ibikoresho", "How reporting works":"Uko gutanga raporo bikora", "API reference":"Amabwiriza ya API", "Privacy notice":"Itangazo ry'ibanga",
     "Refreshed automatically":"Byongerwa mu buryo bwikora", "Back to top":"Subira hejuru", "Pilot starting":"Igerageza ritangiye", "Community voices matter":"Ijwi ry'abaturage riragira agaciro", "Be the first: dial *801#":"Ba uwa mbere: kanda *801#", "Waiting for the latest reports…":"Tegereza raporo ziheruka…", "Bugesera":"Bugesera", "sectors reporting":"imirenge itanga amakuru", "last 30 days":"iminsi 30 ishize",
-    "Platform online ·":"Urubuga ruri ku murongo ·", "reports from the field":"raporo zavuye mu murima", "Platform offline · live figures paused":"Urubuga ntiruri ku murongo · imibare y'igihe nyacyo yahagaritswe", "Live reports appear here when the platform is running.":"Raporo z'igihe nyacyo zigaragara hano iyo urubuga rukora.",
+    "Platform online ·":"Urubuga ruri ku murongo ·", "reports from the field":"raporo zavuye mu murima", "Platform offline · live figures paused":"Urubuga ntiruri ku murongo · imibare y'igihe nyacyo yahagaritswe", "Public summaries are unavailable. Please try again later.":"Raporo z'igihe nyacyo zigaragara hano iyo urubuga rukora.",
     "Dial *801#":"Kanda *801#", "Main menu · press 2 for pests & disease":"Ibijyanye n'ingenzi · kanda 2 ku tunyangingo n'indwara", "Which crop? 2 = maize":"Igihingwa kihe? 2 = ibigori", "Which problem? 1 = fall armyworm":"Ni ikibazo kihe? 1 = nzana", "How severe? 5 = everything damaged":"Nkanshi? 5 = byangiritse byose", "Saved. Planners see a critical case straight away.":"Byabitswe. Abategura ingamba bahita babona ikibazo gikomeye."
   };
 
@@ -114,15 +115,6 @@
     navLinks.forEach((a) => { const target = document.querySelector(a.getAttribute("href")); if (target) spy.observe(target); });
   }
 
-  // ---------- Signed-in people go straight to the dashboard ----------
-  if (session.account()) {
-    const dashboardLabel = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
-    $("#nav-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
-    $("#hero-cta").innerHTML = `${dashboardLabel} <i class="bi bi-arrow-up-right" aria-hidden="true"></i>`;
-    ["#nav-cta", "#hero-cta", "#mobile-cta"].forEach((id) => { const link = $(id); if (link) link.href = "/app/"; });
-    const mobile = $("#mobile-cta"); if (mobile) mobile.textContent = lang === "rw" ? "Fungura dashboard" : "Open dashboard";
-  }
-
   $("#year").textContent = new Date().getFullYear();
 
   // ---------- Scroll: progress bar, compact header, back-to-top ----------
@@ -165,18 +157,18 @@
   }
 
   const KIND_ICON = { pest: "bug", fault: "tools", rain: "cloud-rain", harvest: "basket", water: "droplet", feedback: "chat-left-text", nutrition: "heart-pulse" };
-  function setLive(online) {
+  function setLive(online, demo = false) {
     $("#hf-dot").classList.toggle("off", !online);
-    document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = online ? (lang === "rw" ? "AMAKURU" : "LIVE") : (lang === "rw" ? "NTIRURIHO" : "OFFLINE"); badge.classList.toggle("off", !online); });
+    document.querySelectorAll("[data-live-badge]").forEach((badge) => { badge.textContent = online ? (demo ? (lang === "rw" ? "IGERAGEZA" : "DEMO") : (lang === "rw" ? "AVUGURUWE" : "UPDATED")) : (lang === "rw" ? "NTABONEKA" : "UNAVAILABLE"); badge.classList.toggle("off", !online); });
   }
 
   function renderHero(data) {
     // Before the first report, invite one instead of showing "0 farmer reports".
-    $("#hero-reports").textContent = data.reports ? `${fmt(data.reports)} farmer report${data.reports === 1 ? "" : "s"}` : "Pilot starting";
-    $("#hero-reports-note").textContent = data.demo_mode ? "Demonstration figures" : data.reports ? "Community voices matter" : "Be the first: dial *801#";
+    $("#hero-reports").textContent = data.reports ? `${fmt(data.reports)} ${lang === "rw" ? "raporo zakiriwe" : "received reports"}` : (lang === "rw" ? "Hategerejwe raporo" : "Awaiting reports");
+    $("#hero-reports-note").textContent = data.demo_mode ? "Demonstration figures" : data.reports ? "Community voices matter" : (lang === "rw" ? "Banza wemeze ko igerageza rikora" : "Confirm pilot access first");
     $("#hero-feed").innerHTML = data.recent.length
       ? data.recent.slice(0, 3).map((item) => `<li class="${escapeHtml(item.kind)}"><i class="bi bi-${KIND_ICON[item.kind] || "clipboard-data"}" aria-hidden="true"></i><div><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.sector || "Bugesera")} · ${ago(item.created_at)}</small></div></li>`).join("")
-      : `<li class="hf-empty">${lang === "rw" ? "Igerageza ritangiye. Raporo zigaragara hano abahinzi bamaze gukanda *801# cyangwa kohereza ubutumwa kuri 8448." : "The pilot is starting. Reports appear here as soon as farmers dial *801# or text 8448."}</li>`;
+      : `<li class="hf-empty">${lang === "rw" ? "Nta raporo rusange zemewe ziraboneka. Kohereza raporo biterwa no gutangiza igerageza." : "No eligible public reports yet. Reporting availability depends on pilot activation."}</li>`;
     const share = data.sectors_total ? (data.sectors_reporting / data.sectors_total) * 100 : 0;
     $("#sector-progress").style.width = `${Math.max(data.sectors_reporting ? 4 : 0, share)}%`;
   }
@@ -188,14 +180,13 @@
       const data = await response.json();
       document.querySelectorAll('[data-stat="sectors"]').forEach((el) => { el.textContent = `${data.sectors_reporting}${data.sectors_total ? ` / ${data.sectors_total}` : ""}`; });
       renderHero(data);
-      tickerItems = data.recent.slice(0, 8).map((item) => `${item.label}${item.sector ? ` · ${item.sector}` : ""} · ${ago(item.created_at)}`);
-      setFooterStatus(true, `Platform online · ${fmt(data.reports)} reports from the field`);
-      setLive(true);
+      setFooterStatus(true, `${data.demo_mode ? (lang === "rw" ? "Igerageza" : "Demonstration") : (lang === "rw" ? "Porogaramu iraboneka" : "Platform available")} · ${fmt(data.reports)} ${lang === "rw" ? "raporo zakiriwe" : "received reports"}`);
+      setLive(true, data.demo_mode);
       $("#hf-time").textContent = `updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
     } catch (_) {
       setLive(false);
       $("#hf-time").textContent = "offline";
-      $("#hero-feed").innerHTML = `<li class="hf-empty">Live reports appear here when the platform is running.</li>`;
+      $("#hero-feed").innerHTML = `<li class="hf-empty">Public summaries are unavailable. Please try again later.</li>`;
       setFooterStatus(false, "Platform offline · live figures paused");
     }
     applyLanguage(lang);
@@ -209,18 +200,6 @@
     status.querySelector("span").textContent = text;
   }
 
-  // ---------- Top-strip ticker: cycles the latest public report summaries ----------
-  let tickerItems = [], tickerIndex = 0;
-  const tickerText = $("#ticker-text");
-  window.setInterval(() => {
-    if (document.hidden || !tickerItems.length) return;
-    tickerText.classList.add("swap");
-    window.setTimeout(() => {
-      tickerText.textContent = tickerItems[tickerIndex % tickerItems.length];
-      tickerIndex += 1;
-      tickerText.classList.remove("swap");
-    }, 350);
-  }, 4500);
 
   // ---------- Phone demo: the real *801# screens for a pest report ----------
   const SCREENS = [

@@ -20,7 +20,7 @@ const LAYER_IDS: Record<LayerId, string[]> = {
   heat: ["heat"],
   food: ["food"],
   rain: ["rain"],
-  crops: ["crops"],
+  crops: ["crops", "crop-clusters", "crop-cluster-count"],
   infrastructure: ["infrastructure"],
 };
 
@@ -30,6 +30,7 @@ interface DistrictMapProps {
   layers: MapLayers;
   visible: Set<LayerId>;
   label: string;
+  showCells?: boolean;
 }
 
 /**
@@ -37,10 +38,12 @@ interface DistrictMapProps {
  * recorded with reports (the API never generates positions); household and grievance
  * locations are never sent to the browser.
  */
-export default function DistrictMap({ token, style, layers, visible, label }: DistrictMapProps) {
+export default function DistrictMap({ token, style, layers, visible, label, showCells = false }: DistrictMapProps) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const latest = useRef({ layers, visible });
+  const cellsVisible = useRef(showCells);
+  cellsVisible.current = showCells;
   latest.current = { layers, visible };
 
   useEffect(() => {
@@ -48,6 +51,8 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
     mapboxgl.accessToken = token;
     let view: MapView = loadMapView();
     let boundary: FeatureCollection<Geometry> | null = null;
+    let cellBoundaries: FeatureCollection<Geometry> | null = null;
+    let sectorBoundaries: FeatureCollection<Geometry> | null = null;
     const styleFor = (base: BaseMap) => BASE_STYLES[base] ?? style;
     const instance = new mapboxgl.Map({
       container: container.current,
@@ -96,9 +101,21 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
         instance.addSource("boundary", { type: "geojson", data: boundary });
         instance.addLayer({ id: "boundary-line", type: "line", source: "boundary", paint: { "line-color": satellite ? "#ffffff" : tokenColor("forest"), "line-width": 2 } });
       }
+      if (cellBoundaries && !instance.getSource("cell-boundaries")) {
+        instance.addSource("cell-boundaries", { type: "geojson", data: cellBoundaries });
+        instance.addLayer({ id: "cell-boundaries", type: "line", source: "cell-boundaries", layout: { visibility: cellsVisible.current ? "visible" : "none" }, paint: { "line-color": satellite ? "#ffffff" : tokenColor("water"), "line-width": 1, "line-dasharray": [2, 2] } });
+      }
+      if (sectorBoundaries && !instance.getSource("sector-boundaries")) {
+        instance.addSource("sector-boundaries", { type: "geojson", data: sectorBoundaries });
+        instance.addLayer({ id: "sector-boundaries", type: "line", source: "sector-boundaries", paint: { "line-color": satellite ? "#ffffff" : tokenColor("forest"), "line-width": 1.5 } });
+      }
       (Object.keys(LAYER_IDS) as LayerId[]).forEach((id) => {
-        if (!instance.getSource(id)) instance.addSource(id, { type: "geojson", data: data[id] ?? empty() });
+        if (!instance.getSource(id)) instance.addSource(id, { type: "geojson", data: data[id] ?? empty(), ...(id === "crops" ? { cluster: true, clusterRadius: 45, clusterMaxZoom: 13 } : {}) });
       });
+      if (!instance.getLayer("crop-clusters")) {
+        instance.addLayer({ id: "crop-clusters", type: "circle", source: "crops", filter: ["has", "point_count"], paint: { "circle-color": tokenColor("primary"), "circle-radius": ["step", ["get", "point_count"], 17, 20, 23, 100, 29], "circle-stroke-color": "#ffffff", "circle-stroke-width": 2 } });
+        instance.addLayer({ id: "crop-cluster-count", type: "symbol", source: "crops", filter: ["has", "point_count"], layout: { "text-field": ["get", "point_count_abbreviated"], "text-size": 12 }, paint: { "text-color": "#ffffff" } });
+      }
       if (!instance.getLayer("heat")) {
         instance.addLayer({
           id: "heat", type: "heatmap", source: "heat",
@@ -114,9 +131,10 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
         if (instance.getLayer(id)) return;
         instance.addLayer({ id, type: "circle", source: id, paint: { "circle-color": color, "circle-radius": radius, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5, "circle-opacity": 0.9 } });
       };
-      circle("food", ["interpolate", ["linear"], ["get", "risk"], 1, tokenColor("fresh"), 3, tokenColor("amber"), 5, tokenColor("critical")], ["+", 7, ["min", ["get", "households"], 15]]);
-      circle("rain", tokenColor("water"), ["+", 4, ["*", ["min", ["get", "mm"], 40], 0.25]]);
+      circle("food", ["case", ["==", ["get", "risk"], null], tokenColor("muted"), ["interpolate", ["linear"], ["get", "risk"], 1, tokenColor("fresh"), 3, tokenColor("amber"), 5, tokenColor("critical")]], ["+", 7, ["min", ["get", "households"], 15]]);
+      circle("rain", ["case", ["==", ["get", "mm"], null], tokenColor("muted"), tokenColor("water")], ["+", 4, ["*", ["min", ["coalesce", ["get", "mm"], 0], 40], 0.25]]);
       circle("crops", ["case", ["==", ["get", "status"], "pest alert"], tokenColor("critical"), tokenColor("primary")], 5);
+      instance.setFilter("crops", ["!", ["has", "point_count"]]);
       circle("infrastructure", ["match", ["get", "status"], "faulty", tokenColor("amber"), "offline", tokenColor("critical"), tokenColor("forest")], 8);
       syncVisibility();
       applyThreeD(false);
@@ -126,10 +144,37 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
         LAYER_IDS[id].forEach((layer) => instance.getLayer(layer) && instance.setLayoutProperty(layer, "visibility", latest.current.visible.has(id) ? "visible" : "none")));
     };
     instance.on("style.load", draw);
+    fetch("/api/v1/geography/sectors", { credentials: "same-origin" })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const rows = await response.json() as { geometry: Geometry; id: number; name: string }[];
+        if (map.current !== instance || !Array.isArray(rows)) return;
+        sectorBoundaries = { type: "FeatureCollection", features: rows.map((row) => ({ type: "Feature", geometry: row.geometry, properties: { name: row.name, id: row.id } })) };
+        if (instance.isStyleLoaded()) draw();
+      }).catch(() => undefined);
+    fetch("/api/v1/geography/cells", { credentials: "same-origin" })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const rows = await response.json() as { geometry: Geometry; id: number; name: string }[];
+        if (map.current !== instance || !Array.isArray(rows)) return;
+        cellBoundaries = { type: "FeatureCollection", features: rows.map((row) => ({ type: "Feature", geometry: row.geometry, properties: { name: row.name, id: row.id } })) };
+        if (instance.isStyleLoaded()) draw();
+      }).catch(() => undefined);
 
-    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+    const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true, offset: 10 });
+    instance.on("click", "crop-clusters", (event) => {
+      const feature = event.features?.[0];
+      if (!feature || feature.geometry.type !== "Point") return;
+      const centre = feature.geometry.coordinates as [number, number];
+      const source = instance.getSource("crops") as mapboxgl.GeoJSONSource;
+      source.getClusterExpansionZoom(Number(feature.properties?.cluster_id), (error, zoom) => {
+        if (error || zoom === null || zoom === undefined || map.current !== instance) return;
+        if (reduceMotion()) instance.jumpTo({ center: centre, zoom });
+        else instance.easeTo({ center: centre, zoom });
+      });
+    });
     (["infrastructure", "crops", "rain", "food"] as const).forEach((id) => {
-      instance.on("mouseenter", id, (event) => {
+      const showObservation = (event: mapboxgl.MapLayerMouseEvent) => {
         const feature = event.features?.[0];
         if (!feature || feature.geometry.type !== "Point") return;
         instance.getCanvas().style.cursor = "pointer";
@@ -140,7 +185,9 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
         content.append(name);
         if (detail) content.append(document.createElement("br"), detail);
         popup.setLngLat(feature.geometry.coordinates as [number, number]).setDOMContent(content).addTo(instance);
-      });
+      };
+      instance.on("mouseenter", id, showObservation);
+      instance.on("click", id, showObservation);
       instance.on("mouseleave", id, () => {
         instance.getCanvas().style.cursor = "";
         popup.remove();
@@ -153,7 +200,7 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
         boundary = geo;
         const fit = () => {
           draw();
-          (["heat", "food", "rain", "crops", "infrastructure"] as const).forEach((id) => instance.getLayer(id) && instance.moveLayer(id));
+          (["heat", "food", "rain", "crops", "infrastructure"] as const).flatMap((id) => LAYER_IDS[id]).forEach((id) => instance.getLayer(id) && instance.moveLayer(id));
           const box = bounds(geo);
           if (box) instance.fitBounds(box, { padding: 16, ...(view.threeD ? TILT : FLAT), animate: !reduceMotion() });
         };
@@ -179,6 +226,11 @@ export default function DistrictMap({ token, style, layers, visible, label }: Di
   useEffect(() => {
     (map.current as (mapboxgl.Map & { syncVisibility?: () => void }) | null)?.syncVisibility?.();
   }, [visible]);
+
+  useEffect(() => {
+    const instance = map.current;
+    if (instance?.getLayer("cell-boundaries")) instance.setLayoutProperty("cell-boundaries", "visibility", showCells ? "visible" : "none");
+  }, [showCells]);
 
   return <div ref={container} role="img" aria-label={label} className="h-full w-full overflow-hidden rounded-control" />;
 }

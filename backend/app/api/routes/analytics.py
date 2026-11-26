@@ -1,19 +1,48 @@
 """Analytics endpoints. Every handler is a thin delegator to :mod:`app.services.analytics`."""
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.security import Principal, require_roles
-from app.db.models import IrrigationScheme, Sector, UserRole
+from app.db.models import Cell, Cooperative, IrrigationScheme, Sector, UserRole
 from app.db.session import get_db
 from app.schemas import ActNowItem, DashboardSummary
 from app.services import analytics as analytics_service
 from app.services import executive
+from app.services.reporting_activity import activity
 from app.services.reporting import build_monthly_report, build_trends
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 planner = Depends(require_roles(UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
 # Citizen Science Monitors read the same live figures as planners; acting on cases stays with planners.
 viewer = Depends(require_roles(UserRole.citizen_science_monitor, UserRole.district_officer, UserRole.district_planner, UserRole.administrator))
+
+
+@router.get("/reporting-activity")
+def reporting_activity(
+    start: date, end: date,
+    sector_id: int | None = Query(default=None, gt=0),
+    cell_id: int | None = Query(default=None, gt=0),
+    scheme_id: int | None = Query(default=None, gt=0),
+    cooperative_id: int | None = Query(default=None, gt=0),
+    db: Session = Depends(get_db), principal: Principal = viewer,
+) -> dict:
+    """Equal-length receipt windows; no participant identities or impact claims."""
+    if end < start or (end - start).days >= 366:
+        raise HTTPException(status_code=422, detail="Choose an ordered date range of at most 366 days")
+    if cooperative_id is not None:
+        # Match the existing staff-only cooperative directory and its area rules.
+        if principal.role not in (UserRole.district_officer, UserRole.district_planner, UserRole.administrator):
+            raise HTTPException(status_code=403, detail="Cooperative filtering is available to district staff")
+        cooperative = db.get(Cooperative, cooperative_id)
+        if cooperative is None or (principal.sector_ids is not None and cooperative.sector_id not in principal.sector_ids):
+            raise HTTPException(status_code=404, detail="Cooperative not found")
+    for model, identifier in ((Sector, sector_id), (Cell, cell_id), (IrrigationScheme, scheme_id)):
+        if identifier is not None and db.get(model, identifier) is None:
+            raise HTTPException(status_code=422, detail="Unknown reporting filter")
+    return activity(db, principal, start, end, sector_id=sector_id, cell_id=cell_id,
+                    scheme_id=scheme_id, cooperative_id=cooperative_id)
 
 
 @router.get("/dashboard-summary", response_model=DashboardSummary)

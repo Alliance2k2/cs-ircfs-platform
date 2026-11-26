@@ -20,7 +20,9 @@ backend/test-temp-local/
 backend/pytest-cache-files-*/
 .pytest_cache/
 backend/.pytest-tmp/
+backend/.rag-validation/
 .openai/
+backend/.local-ai/
 infrastructure/stack.env
 
 # macOS

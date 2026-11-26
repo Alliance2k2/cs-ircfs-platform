@@ -23,10 +23,12 @@ def record_http_request(method: str, path: str, status: int, duration_ms: float)
 
 
 def snapshot() -> dict:
+    from app.services.rag.observability import snapshot as assistant_snapshot
     with _lock:
         return {
             "http_requests_total": _http_requests_total,
             "http_status_total": dict(_http_statuses),
             "http_route_requests_total": dict(_http_paths),
             "http_route_latency_total_ms": dict(_http_latency_total_ms),
+            "assistant": assistant_snapshot(),
         }

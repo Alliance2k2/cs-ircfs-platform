@@ -1,0 +1,3 @@
+# Optional trusted/admin-only PDF extraction. No OCR or public-upload sandbox.
+-r requirements.txt
+pypdf>=6.21.4,<7.0

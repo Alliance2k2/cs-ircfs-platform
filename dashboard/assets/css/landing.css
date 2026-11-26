@@ -2533,3 +2533,18 @@ summary:focus-visible {
  .footer-brand { padding: 24px; }
  .footer-bottom { padding: 20px; gap: 14px; }
 }
+
+/* Modernization audit: readable supporting copy; preserve layout and imagery. */
+.brand small,
+.section-header p,
+.fv-chip small,
+.role-card .fine,
+.project-body > p,
+.project-tags span,
+.faq-layout > .reveal > p,
+.faq-layout details p { color: #52685b; }
+.role-card .who,
+.project-body .project-label,
+.pillar-crops .pillar-tag { color: #087044; }
+.pillar-water .pillar-tag { color: #176187; }
+.pillar-voice .pillar-tag { color: #995600; }

@@ -1,0 +1,362 @@
+{
+  "phase": "before",
+  "source": "isolated synthetic preview; external services blocked",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "CS-IRCFS | Every Voice. Every Harvest. A Stronger Future.",
+      "heading": "Connecting Farmers' Knowledge\nwith Better Irrigation Decisions.",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/act-now.html",
+      "status": 200,
+      "title": "CS-IRCFS | Act Now",
+      "heading": "Act now",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/advice.html",
+      "status": 200,
+      "title": "CS-IRCFS | Irrigation advice",
+      "heading": "Irrigation advice by sector",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/backend-console.html",
+      "status": 200,
+      "title": "CS-IRCFS | Technical Operations Console",
+      "heading": "How the backend supports the platform.",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/channels.html",
+      "status": 200,
+      "title": "CS-IRCFS | Field channels",
+      "heading": "Field channels, live",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/cooperatives.html",
+      "status": 200,
+      "title": "CS-IRCFS | Cooperatives",
+      "heading": "Cooperatives",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/feedback.html",
+      "status": 200,
+      "title": "CS-IRCFS | Community feedback",
+      "heading": "Community feedback",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/login.html",
+      "status": 200,
+      "title": "CS-IRCFS | Sign in",
+      "heading": "Welcome back",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/management.html",
+      "status": 200,
+      "title": "CS-IRCFS | Platform Management",
+      "heading": "Users",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/map.html",
+      "status": 200,
+      "title": "CS-IRCFS | Map & observations",
+      "heading": "Map & live observations",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/nutrition.html",
+      "status": 200,
+      "title": "CS-IRCFS | Household nutrition",
+      "heading": "Food security & stunting risk",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/photography.html",
+      "status": 200,
+      "title": "Photography & credits | CS-IRCFS",
+      "heading": "Real contexts. Clear attribution.",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/planner.html",
+      "status": 200,
+      "title": "CS-IRCFS | Overview",
+      "heading": "Good morning, Planner",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/privacy.html",
+      "status": 200,
+      "title": "Privacy notice | CS-IRCFS",
+      "heading": "Privacy notice",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/register.html",
+      "status": 200,
+      "title": "CS-IRCFS | Create account",
+      "heading": "Create your account",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/report.html",
+      "status": 200,
+      "title": "CS-IRCFS monthly report – November 2026",
+      "heading": "Monthly field report",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/schemes.html",
+      "status": 200,
+      "title": "CS-IRCFS | Scheme performance",
+      "heading": "Scheme performance",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/simulator.html",
+      "status": 200,
+      "title": "CS-IRCFS | Field Phone Simulator",
+      "heading": "Field phone simulator",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/trends.html",
+      "status": 200,
+      "title": "CS-IRCFS | Trends",
+      "heading": "Trends",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Good morning, E2E",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/actions",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Priority actions",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/field-reports",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Field reports",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/crops",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Crops & pests",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/nutrition",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Food & nutrition",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/irrigation",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Irrigation command centre",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/climate",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Climate & irrigation advice",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/map",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "District map",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/evaluation",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "PADAB & APEFA evaluation",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/grievances",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Grievances",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/cooperatives",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Cooperatives & field teams",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/channels",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "USSD & SMS operations",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/simulator",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Phone simulator",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/trends",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Twelve-month trends",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/monthly-report",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Monthly district report · November 2026",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/management",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Platform management",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/admin",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Administration",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/app/assistant",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "CS Assistant",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "path": "/login.html",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "path": "/register.html",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "path": "/app/",
+      "width": 360,
+      "scrollWidth": 376
+    },
+    {
+      "path": "/app/map",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "path": "/app/assistant",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "path": "/",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "path": "/login.html",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "path": "/register.html",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "path": "/app/",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "path": "/app/map",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "path": "/app/assistant",
+      "width": 768,
+      "scrollWidth": 768
+    }
+  ]
+}

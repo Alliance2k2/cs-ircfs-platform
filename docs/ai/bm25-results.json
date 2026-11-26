@@ -1,0 +1,1381 @@
+{
+  "k": 3,
+  "summary": {
+    "cases": 64,
+    "answerable_cases": 50,
+    "precision_at_k": 0.3,
+    "recall_at_k": 0.83,
+    "mrr": 0.83,
+    "ndcg": 0.8261314719276546,
+    "mode_accuracy": 0.84375,
+    "abstention_accuracy": 0.8571428571428571,
+    "latency_ms_p50": 1.6065,
+    "latency_ms_max": 4.579
+  },
+  "by_language": {
+    "en": {
+      "cases": 56,
+      "answerable_cases": 42,
+      "precision_at_k": 0.3412698412698413,
+      "recall_at_k": 0.9404761904761905,
+      "mrr": 0.9404761904761905,
+      "ndcg": 0.9358707999138745,
+      "mode_accuracy": 0.9285714285714286,
+      "abstention_accuracy": 0.8571428571428571,
+      "latency_ms_p50": 1.717,
+      "latency_ms_max": 4.579
+    },
+    "rw": {
+      "cases": 8,
+      "answerable_cases": 8,
+      "precision_at_k": 0.08333333333333333,
+      "recall_at_k": 0.25,
+      "mrr": 0.25,
+      "ndcg": 0.25,
+      "mode_accuracy": 0.25,
+      "abstention_accuracy": null,
+      "latency_ms_p50": 1.2655,
+      "latency_ms_max": 1.679
+    }
+  },
+  "by_split": {
+    "development": {
+      "cases": 48,
+      "answerable_cases": 37,
+      "precision_at_k": 0.3063063063063063,
+      "recall_at_k": 0.8513513513513513,
+      "mrr": 0.8648648648648649,
+      "ndcg": 0.8544093835882556,
+      "mode_accuracy": 0.8541666666666666,
+      "abstention_accuracy": 0.8181818181818182,
+      "latency_ms_p50": 1.6355,
+      "latency_ms_max": 4.579
+    },
+    "holdout": {
+      "cases": 16,
+      "answerable_cases": 13,
+      "precision_at_k": 0.28205128205128205,
+      "recall_at_k": 0.7692307692307693,
+      "mrr": 0.7307692307692307,
+      "ndcg": 0.7456481848936363,
+      "mode_accuracy": 0.8125,
+      "abstention_accuracy": 1,
+      "latency_ms_p50": 1.506,
+      "latency_ms_max": 2.834
+    }
+  },
+  "not_measured": [
+    "semantic answer relevance",
+    "claim faithfulness",
+    "hallucination rate",
+    "generated citation entailment"
+  ],
+  "provider_calls": 0,
+  "provider_tokens": 0,
+  "api_cost": 0,
+  "notes": "Latency includes two local retrieval calls per case; cold-cache first case is included. No generation evaluated.",
+  "rows": [
+    {
+      "id": "q001",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 4.504,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q002",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.527,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q003",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.732,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q004",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.568,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q005",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.261,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q006",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.503,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q007",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "verification",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.304,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q008",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.405,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q009",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.922,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q010",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 3.561,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q011",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.083,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q012",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.438,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q013",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.35,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q014",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.492,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q015",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.587,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q016",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "field-ussd",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.923,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q017",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.276,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q018",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.852,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q019",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.645,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q020",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.112,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q021",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.11,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q022",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 3.679,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q023",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.798,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q024",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.587,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q025",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.339,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q026",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.456,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q027",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.193,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q028",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.241,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q029",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.331,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q030",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "field-ussd",
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.874,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q031",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.626,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q032",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "staging",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.709,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q033",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.52,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q034",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "delivery",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.113,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q035",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 4.038,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q036",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.767,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q037",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "staging",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.308,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "ndcg": 0.6131471927654584
+    },
+    {
+      "id": "q038",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging",
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "delivery",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.732,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q039",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 4.579,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q040",
+      "language": "en",
+      "category": "multi_document",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy",
+        "staging"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.834,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 0.5,
+      "ndcg": 0.6934264036172708
+    },
+    {
+      "id": "q041",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 1.867,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q042",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 1.53,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q043",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.618,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q044",
+      "language": "en",
+      "category": "live_information",
+      "split": "holdout",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.682,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q045",
+      "language": "en",
+      "category": "unauthorized",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.614,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q046",
+      "language": "en",
+      "category": "unauthorized",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.599,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q047",
+      "language": "en",
+      "category": "injection",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.635,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q048",
+      "language": "en",
+      "category": "injection",
+      "split": "holdout",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.637,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q049",
+      "language": "en",
+      "category": "injection",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.541,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q050",
+      "language": "en",
+      "category": "ambiguous",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "delivery"
+      ],
+      "mode_correct": false,
+      "latency_ms": 1.354,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q051",
+      "language": "en",
+      "category": "ambiguous",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 1.457,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q052",
+      "language": "en",
+      "category": "personal",
+      "split": "holdout",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "privacy",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.411,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q053",
+      "language": "en",
+      "category": "personal",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.634,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q054",
+      "language": "en",
+      "category": "personal",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.531,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q055",
+      "language": "en",
+      "category": "typo",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.083,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q056",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.725,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q057",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.392,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q058",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.209,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q059",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.782,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q060",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.91,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q061",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.025,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q062",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.322,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q063",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.679,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q064",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 1.444,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    }
+  ],
+  "dataset_sha256": "6fbdd3e04d6475343d4c1e553cae4234128316bb115815badb6ff1ebf83edaf0",
+  "corpus_sha256": "aa8d33f37342854b3072bfebc0e7279d77928d45ffc0bd1fa6d75758f6ade175",
+  "retriever": "bm25-guarded-v1",
+  "embedding_revision": null,
+  "split": "all",
+  "review_status": "engineering_fixture_not_native_reviewed"
+}

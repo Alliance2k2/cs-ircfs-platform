@@ -1,0 +1,1688 @@
+{
+  "review_status": "pending_native_review",
+  "reviewer": "",
+  "evidence_reference": "",
+  "note": "Source-located candidates beyond the keyed translation pack. Some are brand names; review in context. Does not claim complete extraction of dynamic strings or authorize automatic replacement.",
+  "entries": [
+    {
+      "file": "components/navigation/AppFooter.tsx",
+      "line": 4,
+      "english": "footer.public",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "components/navigation/AppFooter.tsx",
+      "line": 5,
+      "english": "nav.report",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "components/navigation/AppFooter.tsx",
+      "line": 6,
+      "english": "nav.simulator",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "components/navigation/AppFooter.tsx",
+      "line": 7,
+      "english": "footer.api",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "components/navigation/TopBar.tsx",
+      "line": 118,
+      "english": "Ctrl K",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "components/ui/Toast.tsx",
+      "line": 49,
+      "english": "Dismiss",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/actions/WorkItemDrawer.tsx",
+      "line": 212,
+      "english": "(Kigali)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/AdminPage.tsx",
+      "line": 213,
+      "english": "Scheme coverage sectors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/AdminPage.tsx",
+      "line": 214,
+      "english": "Select only confirmed service areas. Overlapping schemes require explicit report assignment.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/AdminPage.tsx",
+      "line": 286,
+      "english": "admin.accounts",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/AdminPage.tsx",
+      "line": 287,
+      "english": "admin.schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/AdminPage.tsx",
+      "line": 288,
+      "english": "admin.audit",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/BaselineManager.tsx",
+      "line": 52,
+      "english": "t/ha",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/admin/BaselineManager.tsx",
+      "line": 52,
+      "english": "kg/ha",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 89,
+      "english": "Assistant workspace",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 90,
+      "english": "Workspace",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 97,
+      "english": "Assistant chat",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 101,
+      "english": "CS Assistant",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 104,
+      "english": "Conversation history",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 104,
+      "english": "Conversation history",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 105,
+      "english": "Recent chats on this page",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 105,
+      "english": "Start a new chat to save this conversation here.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 105,
+      "english": "Up to 5 chats. Cleared when you leave this page.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 107,
+      "english": "New chat",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 107,
+      "english": "New conversation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 107,
+      "english": "New chat",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 110,
+      "english": "Chat messages",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 123,
+      "english": "Conversation",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 124,
+      "english": "You:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 128,
+      "english": "CS Assistant",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 139,
+      "english": "Reference:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 139,
+      "english": "· Revision:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 152,
+      "english": "AI mode sends your question and retrieved excerpts to the configured AI provider. Check its source quotations.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 153,
+      "english": "document",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 153,
+      "english": "selected · Change",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 154,
+      "english": "Could not load assistant settings.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 154,
+      "english": "Retry settings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 159,
+      "english": "Attach or choose documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 159,
+      "english": "Documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 162,
+      "english": "Send message",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 169,
+      "english": "English",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 169,
+      "english": "Kinyarwanda · pending native review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/AssistantPage.tsx",
+      "line": 178,
+      "english": "Document workspace",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 23,
+      "english": "Documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 24,
+      "english": "Your source library",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 24,
+      "english": "Chat with documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 24,
+      "english": "Choose reviewed sources to focus your next question.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 24,
+      "english": "Close documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 25,
+      "english": "Use all available sources",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 25,
+      "english": "Refresh document library",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 25,
+      "english": "Upload &amp; review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 26,
+      "english": "Find a document",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 26,
+      "english": "Search by title…",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 27,
+      "english": "Loading reviewed sources…",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 28,
+      "english": "Could not load documents. Use Refresh to try again.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 29,
+      "english": "No reviewed documents match this search.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 31,
+      "english": ". Pending uploads are excluded.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 31,
+      "english": "Summarize selection",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 31,
+      "english": "Use documents",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 32,
+      "english": "Uploads await approval of the local extraction environment. Existing reviewed sources remain available.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/DocumentWorkspace.tsx",
+      "line": 33,
+      "english": "An administrator can upload and approve additional documents.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 63,
+      "english": "Knowledge management",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 64,
+      "english": "Manage knowledge sources",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 65,
+      "english": "Administrator only. Upload approved-for-review institutional procedures, engineering summaries or demonstration material. Never upload participant records, grievances, personal documents or credentials. Uploads remain disabled until the extraction environment is approved.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 66,
+      "english": "Load knowledge sources",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 67,
+      "english": "Search knowledge sources",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 68,
+      "english": "Search source titles",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 69,
+      "english": "Review status",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 70,
+      "english": "Search sources",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 72,
+      "english": "No source versions match this search.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 73,
+      "english": "Showing up to 200 versions. Narrow your search to find others.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 75,
+      "english": "· revision",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 76,
+      "english": "Parsing:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 76,
+      "english": "chunks · Index:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 76,
+      "english": "stored embeddings",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 77,
+      "english": ". Stored embeddings do not mean vector retrieval is active.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 79,
+      "english": "Review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 79,
+      "english": "revision",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 80,
+      "english": "Prepare new version",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 84,
+      "english": "Recheck / reindex",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 84,
+      "english": "revision",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 85,
+      "english": "Remove",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 85,
+      "english": "from retrieval",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 89,
+      "english": "Review:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 89,
+      "english": ", revision",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 90,
+      "english": "Preview shows at most 100 chunks. Page numbers for non-PDF formats are logical sections, not printed pages. Approval requires independent content, privacy, permission and provenance review.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 91,
+      "english": "Page/section",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 92,
+      "english": "Review/approval reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 93,
+      "english": "Approve reviewed version",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 95,
+      "english": "Knowledge source upload",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 97,
+      "english": "Source title",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 98,
+      "english": "Source language",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 98,
+      "english": "English",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 98,
+      "english": "Kinyarwanda — requires native review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 98,
+      "english": "French — retrieval only",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 99,
+      "english": "Source classification",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 99,
+      "english": "Engineering summary",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 99,
+      "english": "Institutional document — approval required",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 99,
+      "english": "Demonstration material",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 100,
+      "english": "Allowed staff roles (comma separated)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 101,
+      "english": "Required sector IDs (comma separated; empty for general procedures)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 102,
+      "english": "Document file",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 103,
+      "english": "Upload and index for review",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/assistant/KnowledgePanel.tsx",
+      "line": 104,
+      "english": "Cancel version update",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/channels/ChannelsPage.tsx",
+      "line": 93,
+      "english": "Queued messages await dispatch. Sent means accepted by the provider; handset delivery is unconfirmed. Unknown outcomes require provider review before any resend. Dry-run records do not send SMS or airtime.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/ClimatePage.tsx",
+      "line": 65,
+      "english": "mm",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/ClimatePage.tsx",
+      "line": 66,
+      "english": "(agronomist approval not recorded)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/ClimatePage.tsx",
+      "line": 142,
+      "english": "This activity trend uses receipt dates. Use dated rainfall evidence below for historical comparisons.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 54,
+      "english": "Daily and seasonal rainfall evidence",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 55,
+      "english": "Recorded zero is distinct from missing rain. Partial totals are not complete seasonal rainfall. Historical comparisons require approved sources and complete verified gauge records.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 57,
+      "english": "Rainfall period start",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 58,
+      "english": "Rainfall period end",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 59,
+      "english": "Rainfall location",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 60,
+      "english": "Accessible reporting area",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 62,
+      "english": "Historical rainfall reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 63,
+      "english": "No reference selected",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 65,
+      "english": "Refresh rainfall",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 70,
+      "english": "Partial period total (daily means)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 71,
+      "english": "Seven-day partial total ending",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 71,
+      "english": "missing days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 72,
+      "english": "Complete verified gauge total",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 72,
+      "english": "gauges",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 73,
+      "english": "Missing days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 74,
+      "english": "Coverage among observed gauges",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 75,
+      "english": "Legacy receipt dates / unidentified reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 77,
+      "english": "Rainfall anomaly:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 82,
+      "english": "Generated:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 82,
+      "english": "(Kigali)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 84,
+      "english": "Daily rainfall observations",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 84,
+      "english": "No rainfall observations",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 85,
+      "english": "Date",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 85,
+      "english": "Mean rainfall",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 86,
+      "english": "Reporting gauges",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 86,
+      "english": "Verified and sourced",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 89,
+      "english": "missing days",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 93,
+      "english": "Historical reference documents and approval",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 94,
+      "english": "Uses the selected location and comparison dates above. Enter a documented historical mean for exactly this period. No historical value is inferred.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 96,
+      "english": "Reference first year",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 97,
+      "english": "Reference last year",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 98,
+      "english": "Historical mean total (mm)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 99,
+      "english": "Rainfall reference source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 100,
+      "english": "Rainfall source document",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 101,
+      "english": "Save rainfall reference",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 103,
+      "english": "Rainfall reference approval date",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/climate/RainfallRecords.tsx",
+      "line": 105,
+      "english": "Approve rainfall reference #",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 63,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 94,
+      "english": "t/ha |",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 95,
+      "english": "Sample range:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 95,
+      "english": ". Descriptive range; no population confidence interval or causal impact established.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 96,
+      "english": "t /",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 96,
+      "english": "ha",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 120,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/evaluation/EvaluationPage.tsx",
+      "line": 121,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 51,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 51,
+      "english": "kg",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 59,
+      "english": "Rainfall observation date",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 60,
+      "english": "Gauge code (if assigned)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 61,
+      "english": "Observation source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 65,
+      "english": "operational",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 65,
+      "english": "faulty",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/field-reports/CorrectionForm.tsx",
+      "line": 65,
+      "english": "offline",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/grievances/GrievancesPage.tsx",
+      "line": 41,
+      "english": "FB-",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 46,
+      "english": "Recorded downtime and maintenance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 47,
+      "english": "Durations use recorded outage starts and repairs. Condition reports alone do not establish downtime. No records means unknown, not uninterrupted service.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 49,
+      "english": "Maintenance period start",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 50,
+      "english": "Maintenance period end",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 51,
+      "english": "Refresh maintenance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 54,
+      "english": "Open durations calculated through",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 54,
+      "english": "(Kigali).",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 55,
+      "english": "Recorded asset downtime",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 55,
+      "english": "No inventory assets in your reporting area",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 56,
+      "english": "Inventory asset",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 57,
+      "english": "Recorded downtime",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 58,
+      "english": "Recorded / open outages",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 59,
+      "english": "Recurring categories (3+)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 61,
+      "english": "Maintenance inventory asset",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 62,
+      "english": "Choose inventory asset",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 65,
+      "english": ": outage history",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 68,
+      "english": "Source:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 70,
+      "english": "Maintenance history",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 71,
+      "english": "No maintenance records in this period.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 73,
+      "english": "Source:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 78,
+      "english": "Record an outage",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 79,
+      "english": "Outage start (Kigali time)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 80,
+      "english": "Outage bottleneck category",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 81,
+      "english": "Outage description",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 82,
+      "english": "Outage source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 83,
+      "english": "Save outage",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 86,
+      "english": "Record maintenance or repair",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 87,
+      "english": "Related open outage",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 88,
+      "english": "Independent maintenance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 90,
+      "english": "Maintenance type",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 91,
+      "english": "Maintenance performed (Kigali time)",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 92,
+      "english": "Maintenance action",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 93,
+      "english": "Maintenance source",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 94,
+      "english": "Service restored by this repair",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/irrigation/MaintenancePanel.tsx",
+      "line": 95,
+      "english": "Save maintenance",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/management/ManagementPage.tsx",
+      "line": 103,
+      "english": "remain available for field users and historical records.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/monthly/MonthlyReportPage.tsx",
+      "line": 123,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/monthly/MonthlyReportPage.tsx",
+      "line": 124,
+      "english": "t",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 38,
+      "english": "nav.actnow",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 38,
+      "english": "module.actnow",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 39,
+      "english": "module.count.openItems",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 42,
+      "english": "nav.channels",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 42,
+      "english": "module.channels",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 45,
+      "english": "module.count.reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 49,
+      "english": "nav.schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 49,
+      "english": "module.schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 50,
+      "english": "module.count.schemes",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 52,
+      "english": "nav.trends",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 52,
+      "english": "module.trends",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 52,
+      "english": "module.count.months",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 54,
+      "english": "nav.advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 54,
+      "english": "module.advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 55,
+      "english": "module.count.rainSectors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 57,
+      "english": "nav.food",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 57,
+      "english": "module.food",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 59,
+      "english": "nav.map",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 59,
+      "english": "module.map",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 60,
+      "english": "module.count.sectors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 63,
+      "english": "nav.feedback",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 63,
+      "english": "module.feedback",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/ModuleGrid.tsx",
+      "line": 64,
+      "english": "module.count.grievances",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewHero.tsx",
+      "line": 18,
+      "english": "hero.stat.reports",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewHero.tsx",
+      "line": 19,
+      "english": "hero.stat.actions",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewHero.tsx",
+      "line": 20,
+      "english": "hero.stat.critical",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewHero.tsx",
+      "line": 21,
+      "english": "hero.stat.reporters",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 65,
+      "english": "Demonstration data exists in this database and is excluded from official figures.",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 81,
+      "english": "Key figures",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 82,
+      "english": "District-wide coverage over the selected period",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 95,
+      "english": "Decisions & infrastructure",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 96,
+      "english": "Actions that need a decision and assets that need follow-up",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 108,
+      "english": "Schemes & water",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 109,
+      "english": "PADAB and APEFA Solar performance with rainfall and advice",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 121,
+      "english": "Field activity",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/OverviewPage.tsx",
+      "line": 122,
+      "english": "Latest reports from farmers and monitors",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/overview/RainfallPanel.tsx",
+      "line": 67,
+      "english": "mm",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/simulator/SimulatorPage.tsx",
+      "line": 109,
+      "english": "EN:",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/simulator/SimulatorPage.tsx",
+      "line": 149,
+      "english": "IMVURA 12",
+      "kinyarwanda": "",
+      "approved": false
+    },
+    {
+      "file": "features/simulator/SimulatorPage.tsx",
+      "line": 168,
+      "english": "EN:",
+      "kinyarwanda": "",
+      "approved": false
+    }
+  ]
+}

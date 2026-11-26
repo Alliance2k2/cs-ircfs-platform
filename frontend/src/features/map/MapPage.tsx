@@ -18,6 +18,8 @@ import { apiGet } from "@/services/api/client";
 import { useApi } from "@/services/api/hooks";
 import { mapConfigSchema } from "@/services/api/schemas";
 import { nutritionSchema } from "@/services/api/workspaces";
+import { rainfallMillimetres } from "./observations";
+import { DataTable } from "@/components/data/DataTable";
 
 const DistrictMap = lazy(() => import("@/components/maps/DistrictMap"));
 
@@ -53,20 +55,23 @@ export function MapPage() {
   const food = useApi(analyst ? "analytics/nutrition-summary" : null, nutritionSchema);
   const available = LAYERS.filter((layer) => analyst || !layer.analyst);
   const [visible, setVisible] = useState<Set<LayerId>>(new Set(["infrastructure", "crops", "rain"]));
+  const [search, setSearch] = useState("");
+  const [showCells, setShowCells] = useState(false);
 
   const layers = useMemo<MapLayers>(() => {
-    const features = data.data?.features ?? [];
+    const term = search.trim().toLocaleLowerCase();
+    const features = (data.data?.features ?? []).filter((item) => !term || `${item.name} ${item.status ?? ""}`.toLocaleLowerCase().includes(term));
     const of = (type: string) => features.filter((item) => item.feature_type === type);
     return {
       infrastructure: collection(of("irrigation").map((item) => point(item.longitude, item.latitude, { title: item.name, status: item.status, detail: [item.status, item.details].filter(Boolean).join(" · ") }))),
       crops: collection(of("crop").map((item) => point(item.longitude, item.latitude, { title: item.name, status: item.status, detail: item.details ?? item.status }))),
-      rain: collection(of("rainfall").map((item) => point(item.longitude, item.latitude, { title: item.name, mm: Number.parseFloat(item.status ?? "0") || 0, detail: item.status }))),
+      rain: collection(of("rainfall").map((item) => point(item.longitude, item.latitude, { title: item.name, mm: rainfallMillimetres(item.status), detail: item.status }))),
       heat: collection((heat.data ?? []).map((item) => point(item.longitude, item.latitude, { weight: item.weight }))),
       // Only cells with enough households to show a score; never single households.
       food: collection((food.data?.by_cell ?? []).filter((cell) => !cell.suppressed && cell.latitude !== null && cell.longitude !== null)
-        .map((cell) => point(cell.longitude!, cell.latitude!, { title: cell.cell, risk: cell.average_risk ?? 0, households: cell.households, detail: `${cell.households} · ${cell.average_risk ?? "—"} / 5` }))),
+        .map((cell) => point(cell.longitude!, cell.latitude!, { title: cell.cell, risk: cell.average_risk, households: cell.households, detail: `${cell.households} · ${cell.average_risk ?? "—"} / 5` }))),
     };
-  }, [data.data, heat.data, food.data]);
+  }, [data.data, heat.data, food.data, search]);
 
   const count = (id: LayerId) => layers[id].features.length;
   const toggle = (id: LayerId) => setVisible((current) => {
@@ -76,6 +81,9 @@ export function MapPage() {
     return next;
   });
   const token = config.data?.mapbox_token;
+  const observations = (["infrastructure", "crops", "rain"] as const).filter((id) => visible.has(id)).flatMap((id) => layers[id].features.map((feature, index) => ({
+    id: `${id}-${index}`, name: String(feature.properties?.title ?? ""), layer: t(`map.layer.${id}`), detail: String(feature.properties?.detail || t("metric.noValue")),
+  })));
 
   return (
     <div className="space-y-6">
@@ -88,12 +96,15 @@ export function MapPage() {
       />
       <div className="grid gap-4 lg:grid-cols-[16rem_1fr]">
         <Card className="h-fit p-4">
+          <label className="mb-4 block text-xs font-semibold text-muted">{t("map.search")}
+            <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} className="mt-2 min-h-11 w-full rounded-control border border-line bg-surface px-3 text-sm text-ink" />
+          </label>
           <fieldset>
             <legend className="text-2xs font-bold uppercase tracking-wider text-muted">{t("map.layers")}</legend>
             <ul className="mt-2 space-y-1">
               {available.map((layer) => (
                 <li key={layer.id}>
-                  <label className={cx("flex cursor-pointer items-center gap-3 rounded-control px-2 py-2 text-sm hover:bg-canvas", visible.has(layer.id) ? "text-ink" : "text-muted")}>
+                  <label className={cx("flex min-h-11 cursor-pointer items-center gap-3 rounded-control px-2 py-2 text-sm hover:bg-canvas", visible.has(layer.id) ? "text-ink" : "text-muted")}>
                     <input type="checkbox" checked={visible.has(layer.id)} onChange={() => toggle(layer.id)} className="h-4 w-4" />
                     <span aria-hidden className="h-3 w-3 shrink-0 rounded-full" style={{ background: tokenColor(layer.color) }} />
                     <span className="flex-1">{t(`map.layer.${layer.id}`)}</span>
@@ -104,6 +115,7 @@ export function MapPage() {
             </ul>
           </fieldset>
           <p className="mt-3 text-xs text-muted">{t("map.privacy")}</p>
+          <label className="mt-3 flex min-h-11 items-center gap-2 text-xs text-muted"><input type="checkbox" checked={showCells} onChange={(event) => setShowCells(event.target.checked)} />{t("map.cellBoundaries")}</label>
           {data.data && data.data.unlocated_reports > 0 && (
             <p className="mt-2 text-xs font-semibold text-ink">{t("map.unlocated", { n: data.data.unlocated_reports })}</p>
           )}
@@ -116,7 +128,7 @@ export function MapPage() {
             <DataState kind="error" message={data.error.message} onRetry={() => void data.refetch()} />
           ) : token ? (
             <Suspense fallback={<Skeleton className="h-full w-full" />}>
-              <DistrictMap token={token} style={config.data?.style ?? "mapbox://styles/mapbox/light-v11"} layers={layers} visible={visible} label={t("map.title")} />
+              <DistrictMap token={token} style={config.data?.style ?? "mapbox://styles/mapbox/light-v11"} layers={layers} visible={visible} label={t("map.title")} showCells={showCells} />
             </Suspense>
           ) : (
             <div role="status" className="flex h-full flex-col items-center justify-center gap-2 rounded-control border border-dashed border-line bg-canvas px-6 text-center">
@@ -126,6 +138,15 @@ export function MapPage() {
           )}
         </Card>
       </div>
+      <Card className="p-4 sm:p-5">
+        <h2 className="font-bold">{t("map.observations")}</h2>
+        <p className="mt-1 text-xs text-muted">{t("map.searchBasis")}</p>
+        <div className="mt-4"><DataTable rows={observations} rowKey={(row) => row.id} caption={t("map.observations")} pageSize={10} emptyMessage={t("map.noMatches")} columns={[
+          { key: "name", header: t("map.observations"), primary: true, render: (row) => <span className="font-semibold">{row.name}</span>, sortValue: (row) => row.name },
+          { key: "layer", header: t("map.layers"), render: (row) => row.layer, sortValue: (row) => row.layer },
+          { key: "detail", header: t("label.status"), render: (row) => <span className="break-words text-muted">{row.detail}</span> },
+        ]} /></div>
+      </Card>
     </div>
   );
 }

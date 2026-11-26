@@ -7,7 +7,7 @@ import { formatNumber } from "@/lib/format";
 import type { ExecutiveOverview } from "@/services/api/schemas";
 
 // Same field photograph as the classic dashboard; the gradient alone remains if it cannot load.
-const PHOTO = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=70";
+const PHOTO = "/assets/img/public/landscape-1200.webp";
 
 function greetingKey(now = new Date()): MessageKey {
   const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Africa/Kigali" }).format(now));

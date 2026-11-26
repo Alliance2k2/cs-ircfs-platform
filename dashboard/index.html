@@ -27,10 +27,6 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-<div class="topline">
-  <span class="ticker" aria-live="polite"><span class="live-dot"></span><b>LIVE</b><span id="ticker-text">Citizen-powered resilience in Bugesera, Rwanda</span></span>
-  <span>Citizen Science for Irrigation Resilience and Climate-smart Food Security</span>
-</div>
 
 <header class="site-header" id="header">
   <a class="brand" href="#home" aria-label="CS-IRCFS home">
@@ -55,10 +51,9 @@
 <main id="main-content">
   <section class="hero" id="home">
     <div class="hero-art" aria-hidden="true">
-      <video class="hero-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1920&q=80">
-        <source src="https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4" type="video/mp4">
-        <source src="https://videos.pexels.com/video-files/2934919/2934919-hd_1920_1080_25fps.mp4" type="video/mp4">
-      </video>
+      <img class="hero-video" src="assets/img/public/landscape-1200.webp"
+        srcset="assets/img/public/landscape-640.webp 640w, assets/img/public/landscape-1200.webp 1200w"
+        sizes="100vw" width="1200" height="800" alt="" fetchpriority="high" decoding="async">
       <span class="hero-shade"></span>
       <span class="hero-dots"></span>
       <span class="hero-glow glow-sun"></span>
@@ -81,7 +76,7 @@
         </h1>
         <p data-i18n="hero.copy">CS-IRCFS connects farmers, climate observations and district teams to support irrigation resilience and climate-smart food security in Bugesera, Rwanda.</p>
         <div class="hero-actions">
-          <a class="button button-dark" href="/app/">Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+          <a class="button button-dark" href="login.html?next=%2Fapp%2F">Open dashboard <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
           <a class="button button-lime" id="hero-cta" href="simulator.html">Try phone reporting <i class="bi bi-phone" aria-hidden="true"></i></a>
           <a class="video-link" href="#how"><span class="play"><i class="bi bi-play-fill" aria-hidden="true"></i></span><span>See How It Works</span></a>
         </div>
@@ -108,7 +103,7 @@
           </div>
         </div>
         <aside class="hero-feed" aria-live="polite" aria-label="Latest public reports">
-          <div class="hf-head"><span class="hf-title"><span class="hf-dot off" id="hf-dot"></span>Live from the field</span><small id="hf-time">connecting…</small></div>
+          <div class="hf-head"><span class="hf-title"><span class="hf-dot off" id="hf-dot"></span>Public report summaries</span><small id="hf-time">connecting…</small></div>
           <ul class="hf-list" id="hero-feed"><li class="hf-empty">Waiting for the latest reports…</li></ul>
           <div class="hf-foot">
             <div class="hf-sectors"><span><b data-stat="sectors">–</b> sectors reporting</span><small>last 30 days</small></div>
@@ -198,9 +193,9 @@
 
   <section class="feature-section section" id="how">
     <div class="wrap feature-layout">
-      <div class="feature-visual reveal" aria-hidden="true">
-        <div class="fv-rings"></div>
-        <div class="phone">
+      <div class="feature-visual reveal">
+        <div class="fv-rings" aria-hidden="true"></div>
+        <div class="phone" aria-hidden="true">
           <div class="phone-top"><span></span></div>
           <div class="phone-screen">
             <div class="phone-status"><span><i class="bi bi-reception-4"></i> MTN RW</span><span><i class="bi bi-battery-half"></i></span></div>
@@ -385,6 +380,6 @@
 
 <script src="assets/vendor/bootstrap-5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/shared.js?v=20261010"></script>
-<script src="assets/js/landing.js?v=20261104-photos-footer"></script>
+<script src="assets/js/landing.js?v=20261109-signin"></script>
 </body>
 </html>

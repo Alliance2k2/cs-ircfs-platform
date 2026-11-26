@@ -225,13 +225,13 @@ export const evaluationSchema = z.object({
       harvest_reports: z.number(), reported_tons: z.number(), expected_tons: z.number(), pest_alerts: z.number(), severe_pest_alerts: z.number(),
       crops: z.array(z.object({ crop: z.string(), reports: z.number(), with_reported_tons: z.number(), reported_tons: z.number(), expected_tons: z.number() })),
       yield_achievement: z.object({ value: z.number().nullable(), computable: z.boolean(), formula: z.string(), requirements: z.array(requirement),
-        comparisons: z.array(yieldComparisonSchema).default([]), excluded: z.record(z.number()).default({}) }),
+        comparisons: z.array(yieldComparisonSchema).default([]), excluded: z.record(z.string(), z.number()).default({}) }),
     }),
     bottlenecks: z.object({
-      window_days: z.number().nullable(), by_category: z.record(z.number()), flagged: z.array(z.string()), above_baseline: z.array(z.string()),
+      window_days: z.number().nullable(), by_category: z.record(z.string(), z.number()), flagged: z.array(z.string()), above_baseline: z.array(z.string()),
       assets_reported: z.number(), assets_down: z.number(), fault_reports: z.number(),
     }),
-    feedback: z.object({ grievances: z.number(), open: z.number(), resolved: z.number(), by_category: z.record(z.number()) }),
+    feedback: z.object({ grievances: z.number(), open: z.number(), resolved: z.number(), by_category: z.record(z.string(), z.number()) }),
     downstream: z.object({ grievances: z.number(), open: z.number() }),
     evidence: z.object({
       reports: z.number(), located_percent: z.number().nullable(), verified_percent: z.number().nullable(), rejected: z.number(),
@@ -262,7 +262,7 @@ export const activitySchema = z.object({
 
 export const monthlySchema = z.object({
   month: z.string(), label: z.string(), previous_month: z.string(), generated_at: ts,
-  figures: z.record(z.object({ value: z.number(), previous: z.number(), change_percent: z.number().nullable() })),
+  figures: z.record(z.string(), z.object({ value: z.number(), previous: z.number(), change_percent: z.number().nullable() })),
   sectors_reporting: z.number(), sectors_total: z.number(),
   sector_activity: z.array(z.object({ sector: z.string(), reports: z.number() })),
   schemes: z.array(z.object({ name: z.string(), crop_reports: z.number(), expected_tons: z.number(), reported_tons: z.number(),
@@ -276,7 +276,7 @@ export const accountRowSchema = z.object({
 export type AccountRow = z.infer<typeof accountRowSchema>;
 export const auditSchema = z.object({
   id: z.number(), actor: z.string(), action: z.string(), entity: z.string(), entity_id: z.number().nullable(),
-  detail: z.record(z.unknown()), created_at: ts,
+  detail: z.record(z.string(), z.unknown()), created_at: ts,
 });
 export type AuditRow = z.infer<typeof auditSchema>;
 export const schemeFullSchema = z.object({

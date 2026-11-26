@@ -1,0 +1,1160 @@
+{
+  "branch": "feature/platform-modernization-20261124",
+  "preserved_files": 51,
+  "unchanged_preserved_files": 46,
+  "extended_preserved_files": [
+    "README.md",
+    "docs/document-assistant.md",
+    "frontend/src/features/assistant/AssistantPage.test.tsx",
+    "frontend/src/features/assistant/AssistantPage.tsx",
+    "frontend/src/i18n/en.ts"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "status": "M",
+      "scope": "extends_preserved_user_change",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/app/api/routes/analytics.py",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/app/main.py",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/requirements.txt",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/scripts/translation_review.py",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/tests/test_translation_review.py",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "dashboard/assets/css/landing.css",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "dashboard/assets/css/tokens.css",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "dashboard/assets/js/landing.js",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "dashboard/index.html",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/design-system.md",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/document-assistant.md",
+      "status": "M",
+      "scope": "extends_preserved_user_change",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/roadmap.md",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/workspaces.md",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/package.json",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/app/routing/future.ts",
+      "status": "D",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/components/charts/SchemeChart.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/components/maps/DistrictMap.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/components/ui/Badge.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/components/ui/Button.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/components/ui/Card.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/actions/WorkItemDrawer.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/assistant/AssistantPage.test.tsx",
+      "status": "M",
+      "scope": "extends_preserved_user_change",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/assistant/AssistantPage.tsx",
+      "status": "M",
+      "scope": "extends_preserved_user_change",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/channels/DeliveryOperations.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/climate/ClimatePage.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/climate/RainfallChart.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/map/MapPage.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/monthly/MonthlyReportPage.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/overview/OverviewHero.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/overview/OverviewPage.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/overview/RainfallPanel.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/trends/TrendChartView.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/i18n/en.ts",
+      "status": "M",
+      "scope": "extends_preserved_user_change",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/i18n/rw.ts",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/services/api/client.ts",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/services/api/hooks.ts",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/services/api/workspaces.ts",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/styles/index.css",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/styles/tokens.css",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/test/render.tsx",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "status": "M",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/app/services/reporting_activity.py",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/scripts/run_modernization_preview.py",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "backend/tests/test_reporting_activity.py",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/ai/modernization-bm25-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/ai/modernization-bm25-after-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/ai/modernization-legacy-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app--dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app-actions-dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app-assistant-dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app-climate-dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app-management-dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/-app-map-dark.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/act-now.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/advice.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app--360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app--768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-actions-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-actions.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-admin-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-admin.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-assistant-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-assistant-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-assistant.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-channels-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-channels.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-climate-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-climate.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-cooperatives-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-cooperatives.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-crops-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-crops.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-evaluation-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-evaluation.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-field-reports-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-field-reports.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-grievances-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-grievances.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-irrigation-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-irrigation.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-management-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-management.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-map-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-map-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-map.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-monthly-report-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-monthly-report.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-nutrition-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-nutrition.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-simulator-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-simulator.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-trends-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/app-trends.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/assistant-rw-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/audit.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/backend-console.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/channels.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/cooperatives.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/feedback.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/login-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/login-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/login.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/management.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/map.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/nutrition.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/photography.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/planner.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/privacy.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/public-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/public-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/public.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/quality.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/register-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/register-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/register.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/report.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/schemes.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/simulator.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/after/trends.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/act-now.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/advice.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app--360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app--768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-actions.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-admin.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-assistant-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-assistant-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-assistant.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-channels.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-climate.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-cooperatives.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-crops.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-evaluation.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-field-reports.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-grievances.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-irrigation.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-management.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-map-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-map-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-map.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-monthly-report.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-nutrition.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-simulator.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/app-trends.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/audit.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/backend-console.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/channels.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/cooperatives.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/feedback.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/login-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/login-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/login.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/management.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/map.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/nutrition.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/photography.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/planner.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/privacy.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/public-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/public-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/public.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/register-360.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/register-768.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/register.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/report.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/schemes.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/simulator.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/before/trends.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/desktop-review.jpg",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/images/modernization-20261124/index.html",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "review_artifact"
+    },
+    {
+      "path": "docs/modernization-2026-11-24.md",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/modernization-modified-files-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/modernization-native-review-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/modernization-pr-summary-20261124.md",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/modernization-ui-review-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "docs/modernization-verification-20261124.json",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/scripts/capture-modernization.mjs",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/scripts/check-modernization.mjs",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/scripts/create-review-gallery.mjs",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/scripts/export-ui-review.mjs",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/map/MapPage.test.tsx",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/map/observations.test.ts",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/map/observations.ts",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/overview/ReportingActivity.test.tsx",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/features/overview/ReportingActivity.tsx",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    },
+    {
+      "path": "frontend/src/i18n/assistant.ts",
+      "status": "??",
+      "scope": "modernization",
+      "kind": "source_or_documentation"
+    }
+  ]
+}

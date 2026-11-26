@@ -4,7 +4,10 @@ param(
     # Run on a separate, pre-filled demonstration database (backend/demo.db). Your real database is not touched.
     [switch]$Demo,
     # With -Demo: delete demo.db first and create a fresh demonstration dataset.
-    [switch]$ResetDemo
+    [switch]$ResetDemo,
+    [switch]$LocalAI,
+    [switch]$AssistantUploads,
+    [string]$ExtractionApprovalReference = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,6 +49,7 @@ try {
         $env:AIRTIME_PROVIDER = "dry_run"
         $env:ALLOW_LIVE_MESSAGES = "false"
         $env:ASSISTANT_GENERATION_ENABLED = "false"
+        $env:ASSISTANT_INGESTION_ENABLED = "false"
         $env:ANONYMOUS_REPLY_QUEUE_ENABLED = "false"
         $env:WEATHER_FORECAST_ENABLED = "false"
         $env:ADVICE_SCHEDULE_ENABLED = "false"
@@ -65,6 +69,25 @@ try {
             if ($LASTEXITCODE -ne 0) { throw "Database migration failed. Check that PostgreSQL is running, then try again." }
             & $Python scripts/seed_reference_schemes.py
         }
+    }
+
+    if ($LocalAI) {
+        & (Join-Path $ProjectRoot "start-local-ai.ps1")
+        $env:ASSISTANT_GENERATION_ENABLED = "true"
+        $env:ASSISTANT_PROVIDER = "llamacpp"
+        $env:ASSISTANT_MODEL = "cs-assistant-local"
+        $env:ASSISTANT_LOCAL_API_KEY = (Get-Content -LiteralPath (Join-Path $BackendRoot ".local-ai\access.key") -Raw).Trim()
+        $LocalExtractionApproval = Join-Path $BackendRoot ".local-ai\upload-approval.txt"
+        if ($Demo -and -not $PSBoundParameters.ContainsKey("AssistantUploads") -and (Test-Path -LiteralPath $LocalExtractionApproval)) {
+            $AssistantUploads = $true
+            $ExtractionApprovalReference = (Get-Content -LiteralPath $LocalExtractionApproval -Raw).Trim()
+        }
+    }
+    if ($AssistantUploads) {
+        if (-not $Demo) { throw "This upload approval switch is for the isolated local demo only." }
+        if (-not $ExtractionApprovalReference.Trim()) { throw "Provide an explicit local extraction-environment approval reference before enabling uploads." }
+        $env:ASSISTANT_INGESTION_ENABLED = "true"
+        Write-Host "Local document uploads enabled by explicit extraction approval. Every source still requires content review." -ForegroundColor Yellow
     }
 
     # The React dashboard (/app/) is built once; rebuild after changing frontend/ (or use `npm run dev` there).

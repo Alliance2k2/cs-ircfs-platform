@@ -19,7 +19,7 @@ export default function TrendChartView({ months, series, caption, monthLabel }: 
       <figcaption className="sr-only">{caption}</figcaption>
       <div className="h-64" aria-hidden>
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={months} margin={{ top: 4, right: twoAxes ? -10 : 4, bottom: 0, left: -18 }}>
+          <ComposedChart accessibilityLayer={false} data={months} margin={{ top: 4, right: twoAxes ? -10 : 4, bottom: 0, left: -18 }}>
             <CartesianGrid vertical={false} stroke={tokenColor("line")} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: tokenColor("muted"), fontSize: 11 }} tickFormatter={(value: string) => value.slice(0, 3)} />
             <YAxis yAxisId="left" allowDecimals={false} tickLine={false} axisLine={false} tick={{ fill: tokenColor("muted"), fontSize: 11 }} />

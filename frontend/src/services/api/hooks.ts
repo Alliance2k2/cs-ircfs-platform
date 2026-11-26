@@ -5,7 +5,7 @@ import { schemeSchema, sectorSchema } from "./schemas";
 import { cellSchema } from "./workspaces";
 
 /** GET a path with a schema, cached under the path itself. */
-export function useApi<T>(path: string | null, schema: z.ZodType<T, z.ZodTypeDef, unknown>, options: Partial<Omit<UseQueryOptions<unknown, Error, T>, "queryKey" | "queryFn" | "select">> = {}) {
+export function useApi<T>(path: string | null, schema: z.ZodType<T>, options: Partial<Omit<UseQueryOptions<unknown, Error, T>, "queryKey" | "queryFn" | "select">> = {}) {
   return useQuery<unknown, Error, T>({
     queryKey: ["api", path],
     // Cache the full response. Each observer validates its own view, so a compact

@@ -1,0 +1,602 @@
+{
+  "phase": "after",
+  "source": "isolated synthetic preview; external services blocked",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "CS-IRCFS | Every Voice. Every Harvest. A Stronger Future.",
+      "heading": "Connecting Farmers' Knowledge\nwith Better Irrigation Decisions.",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/act-now.html",
+      "status": 200,
+      "title": "CS-IRCFS | Act Now",
+      "heading": "Act now",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/advice.html",
+      "status": 200,
+      "title": "CS-IRCFS | Irrigation advice",
+      "heading": "Irrigation advice by sector",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/backend-console.html",
+      "status": 200,
+      "title": "CS-IRCFS | Technical Operations Console",
+      "heading": "How the backend supports the platform.",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/channels.html",
+      "status": 200,
+      "title": "CS-IRCFS | Field channels",
+      "heading": "Field channels, live",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/cooperatives.html",
+      "status": 200,
+      "title": "CS-IRCFS | Cooperatives",
+      "heading": "Cooperatives",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/feedback.html",
+      "status": 200,
+      "title": "CS-IRCFS | Community feedback",
+      "heading": "Community feedback",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/login.html",
+      "status": 200,
+      "title": "CS-IRCFS | Sign in",
+      "heading": "Welcome back",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/management.html",
+      "status": 200,
+      "title": "CS-IRCFS | Platform Management",
+      "heading": "Users",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/map.html",
+      "status": 200,
+      "title": "CS-IRCFS | Map & observations",
+      "heading": "Map & live observations",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/nutrition.html",
+      "status": 200,
+      "title": "CS-IRCFS | Household nutrition",
+      "heading": "Food security & stunting risk",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/photography.html",
+      "status": 200,
+      "title": "Photography & credits | CS-IRCFS",
+      "heading": "Real contexts. Clear attribution.",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/planner.html",
+      "status": 200,
+      "title": "CS-IRCFS | Overview",
+      "heading": "Good afternoon, Planner",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/privacy.html",
+      "status": 200,
+      "title": "Privacy notice | CS-IRCFS",
+      "heading": "Privacy notice",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/register.html",
+      "status": 200,
+      "title": "CS-IRCFS | Create account",
+      "heading": "Create your account",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/report.html",
+      "status": 200,
+      "title": "CS-IRCFS monthly report – November 2026",
+      "heading": "Monthly field report",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/schemes.html",
+      "status": 200,
+      "title": "CS-IRCFS | Scheme performance",
+      "heading": "Scheme performance",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/simulator.html",
+      "status": 200,
+      "title": "CS-IRCFS | Field Phone Simulator",
+      "heading": "Field phone simulator",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/trends.html",
+      "status": 200,
+      "title": "CS-IRCFS | Trends",
+      "heading": "Trends",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Good afternoon, E2E",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/actions",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Priority actions",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/field-reports",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Field reports",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/crops",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Crops & pests",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/nutrition",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Food & nutrition",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/irrigation",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Irrigation command centre",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/climate",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Climate & irrigation advice",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/map",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "District map",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/evaluation",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "PADAB & APEFA evaluation",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/grievances",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Grievances",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/cooperatives",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Cooperatives & field teams",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/channels",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "USSD & SMS operations",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/simulator",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Phone simulator",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/trends",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Twelve-month trends",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/monthly-report",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Monthly district report · November 2026",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/management",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Platform management",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/admin",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "Administration",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/app/assistant",
+      "status": 200,
+      "title": "CS-IRCFS · District dashboard",
+      "heading": "CS Assistant",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "pageErrors": [],
+      "alerts": [],
+      "mapSdkLoaded": false
+    },
+    {
+      "path": "/",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/login.html",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/register.html",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/actions",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/field-reports",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/crops",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/nutrition",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/irrigation",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/climate",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/map",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/evaluation",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/grievances",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/cooperatives",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/channels",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/simulator",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/trends",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/monthly-report",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/management",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/admin",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/assistant",
+      "width": 360,
+      "scrollWidth": 360,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/login.html",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/register.html",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/map",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    },
+    {
+      "path": "/app/assistant",
+      "width": 768,
+      "scrollWidth": 768,
+      "pageErrors": [],
+      "alerts": []
+    }
+  ]
+}
