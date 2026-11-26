@@ -3,6 +3,7 @@ import hashlib
 import math
 import statistics
 import time
+from app.services.rag.citations import validate_extractive
 
 
 def validate_cases(cases, document_ids):
@@ -40,22 +41,33 @@ def evaluate(cases, retrieve, local_response, k=3):
         start = time.perf_counter()
         sources = retrieve(case["question"])[:k]
         result = local_response(case["question"])
+        citation_valid = None
+        if result["mode"] == "documents":
+            try:
+                citation_valid = validate_extractive(result["answer"], result["sources"])
+            except ValueError:
+                citation_valid = False
         latency = (time.perf_counter() - start) * 1000
         ids = [source["id"] for source in sources]
         rows.append({"id": case["id"], "language": case["language"], "category": case["category"],
                      "split": case.get("split", "development"),
                      "expected_mode": case["expected_mode"], "actual_mode": result["mode"],
+                     "extractive_citation_valid": citation_valid, "answer_words": len(result["answer"].split()),
                      "relevant_ids": case["relevant_ids"], "retrieved_ids": ids,
                      "mode_correct": case["expected_mode"] == result["mode"], "latency_ms": round(latency, 3),
                      **ranking_metrics(case["relevant_ids"], ids, k)})
     def aggregate(subset):
         answerable = [row for row in subset if row["relevant_ids"]]
         negative = [row for row in subset if row["expected_mode"] != "documents"]
+        quoted = [row for row in subset if row["extractive_citation_valid"] is not None]
         return {"cases": len(subset), "answerable_cases": len(answerable),
                 **{metric: statistics.mean(row[metric] for row in answerable) if answerable else None
                    for metric in ("precision_at_k", "recall_at_k", "mrr", "ndcg")},
                 "mode_accuracy": statistics.mean(row["mode_correct"] for row in subset),
                 "abstention_accuracy": statistics.mean(row["mode_correct"] for row in negative) if negative else None,
+                "extractive_citation_accuracy": statistics.mean(row["extractive_citation_valid"] for row in quoted) if quoted else None,
+                "answer_words_p50": statistics.median(row["answer_words"] for row in subset),
+                "answer_words_max": max(row["answer_words"] for row in subset),
                 "latency_ms_p50": statistics.median(row["latency_ms"] for row in subset),
                 "latency_ms_max": max(row["latency_ms"] for row in subset)}
     return {"k": k, "summary": aggregate(rows),

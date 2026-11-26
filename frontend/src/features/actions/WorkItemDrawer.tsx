@@ -197,17 +197,19 @@ export function WorkItemDrawer({ item, onClose }: { item: WorkItem | null; onClo
             <h3 id="work-history" className="text-sm font-bold">{t("label.history")}</h3>
             {history.isPending ? (
               <DataState kind="loading" compact />
+            ) : history.isError ? (
+              <DataState kind="error" compact message={history.error.message} onRetry={() => void history.refetch()} />
             ) : !history.data?.length ? (
               <p className="mt-2 text-sm text-muted">{t("actions.noHistory")}</p>
             ) : (
-              <ol className="mt-2 space-y-3 border-l-2 border-line pl-4">
-                {history.data.map((event) => (
-                  <li key={event.id} className="text-sm">
+              <ol className="mt-3 space-y-4 border-l-2 border-line pl-5" aria-label={t("label.history")}>
+                {[...history.data].sort((a, b) => parseTimestamp(a.created_at).getTime() - parseTimestamp(b.created_at).getTime()).map((event) => (
+                  <li key={event.id} className="relative rounded-control border border-line bg-canvas p-3 text-sm before:absolute before:-left-[1.65rem] before:top-4 before:h-2.5 before:w-2.5 before:rounded-full before:bg-primary">
                     <p className="flex flex-wrap items-center gap-1.5">
                       {event.previous_status && <><StatusBadge status={event.previous_status} />→</>}
                       <StatusBadge status={event.new_status} />
                       <span className="text-xs text-muted">
-                        {formatDate(event.created_at, lang)} · {event.changed_by_account_id ? staffName.get(event.changed_by_account_id) ?? `#${event.changed_by_account_id}` : t("actions.system")}
+                        <time dateTime={event.created_at}>{new Intl.DateTimeFormat(lang === "rw" ? "rw-RW" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Kigali" }).format(parseTimestamp(event.created_at))} (Kigali)</time> · {event.changed_by_account_id ? staffName.get(event.changed_by_account_id) ?? `#${event.changed_by_account_id}` : t("actions.system")}
                       </span>
                     </p>
                     {event.action_taken && <p className="mt-1 text-ink">{event.action_taken}</p>}

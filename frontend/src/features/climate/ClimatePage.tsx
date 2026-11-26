@@ -99,6 +99,13 @@ export function ClimatePage() {
         {t("climate.provenance")}
       </p>
 
+      {schedule.data && <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          [t("climate.observedCoverage"), schedule.data.filter((row) => row.readings > 0 && row.rainfall_mm_7d !== null).length],
+          [t("climate.forecastCoverage"), schedule.data.filter((row) => row.forecast_mm_7d !== null).length],
+          [t("climate.unrecordedCoverage"), schedule.data.filter((row) => !row.readings || row.rainfall_mm_7d === null).length],
+        ].map(([label, value]) => <Card key={String(label)} className="p-4"><p className="text-xs font-semibold text-muted">{label}</p><p className="mt-2 font-heading text-2xl font-extrabold tabular-nums text-forest">{formatNumber(Number(value), lang)} <span className="text-xs font-normal text-muted">/ {schedule.data.length}</span></p></Card>)}
+      </div>}
       <DataTable
           rows={schedule.data}
           columns={columns}

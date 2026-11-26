@@ -1,4 +1,5 @@
 import type { MessageKey } from "./en";
+import { assistantRw } from "./assistant";
 
 /**
  * Kinyarwanda interface text. Keys that are missing fall back to English.
@@ -7,6 +8,7 @@ import type { MessageKey } from "./en";
  * marked "existing"; the rest are first drafts.
  */
 export const rw: Partial<Record<MessageKey, string>> = {
+  ...assistantRw,
   "language.partial": "Amagambo amwe ari mu Cyongereza.", // draft: native review required
   "app.skip": "Jya ku bikubiyemo",
   "nav.group.dashboard": "Imbonerahamwe",
@@ -46,4 +48,29 @@ export const rw: Partial<Record<MessageKey, string>> = {
   "map.reset": "Garura Bugesera yose", // existing
   "state.loading": "Biratangira…",
   "state.retry": "Ongera ugerageze",
+  // Draft modernization strings: native-speaker approval required before pilot use.
+  "climate.observedCoverage": "Imirenge ifite ibipimo by'imvura by'abaturage",
+  "climate.forecastCoverage": "Imirenge ifite iteganyagihe",
+  "climate.unrecordedCoverage": "Imirenge idafite ibipimo by'imvura",
+  "map.cellBoundaries": "Imbibi z'utugari (iyo zanditswe)",
+  "map.search": "Shakisha izina cyangwa uko raporo imeze",
+  "map.observations": "Ibyanditswe ku ikarita",
+  "map.searchBasis": "Ishakisha rigabanya ahari ibikorwaremezo, ibihingwa n'imvura. Ibindi byiciro ni incamake z'akarere. Imvura itazwi ni ikijuju; zeru yapimwe ni ubururu. Urutonde rukora n'iyo ikarita itabonetse.",
+  "map.noMatches": "Nta byanditswe bihuye n'ibyo washakishije.",
+  "activity.title": "Raporo n'ibimenyetso",
+  "activity.note": "Umurenge, gahunda yo kuhira n'igihe biri hejuru birakoreshwa hano. Akagari, koperative n'amatariki bihindura iki gice gusa.",
+  "activity.cell": "Akagari",
+  "activity.allCells": "Utugari twose",
+  "activity.cooperative": "Koperative",
+  "activity.allCooperatives": "Koperative zose",
+  "activity.start": "Zakiriwe kuva",
+  "activity.end": "Zakiriwe kugeza",
+  "activity.invalid": "Hitamo amatariki akurikirana atarenza iminsi 366.",
+  "activity.optionsError": "Bimwe mu byo guhitamo ntibyabonetse; ibihari biracyakora.",
+  "activity.reports": "Raporo zakiriwe",
+  "activity.previous": "Igihe kibanziriza iki kingana na cyo",
+  "activity.verified": "Raporo zagenzuwe",
+  "activity.located": "Raporo zifite aho zandikiwe ku ikarita",
+  "activity.change": "Impinduka mu mubare wa raporo zakiriwe: {n}",
+  "activity.basis": "Amatariki yo mu Rwanda, hakurikijwe igihe raporo yakiriwe. Raporo z'igerageza ntizibarwa. Koperative ikoresha abanyamuryango bayo b'ubu. Umubare wa raporo si igipimo cy'ingaruka ku buhinzi; aho zandikiwe ntihamya ko aho hantu ari ho neza.",
 };

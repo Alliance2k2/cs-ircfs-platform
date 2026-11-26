@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { SessionProvider } from "@/app/providers/SessionProvider";
 import { AppRoutes } from "@/app/routing/AppRoutes";
-import { ROUTER_FUTURE } from "@/app/routing/future";
 import { ToastProvider } from "@/components/ui/Toast";
 import { I18nProvider } from "@/i18n";
 import { ApiError } from "@/services/api/client";
@@ -28,7 +27,7 @@ createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <BrowserRouter basename="/app" future={ROUTER_FUTURE}>
+        <BrowserRouter basename="/app">
           <SessionProvider>
             <ToastProvider>
               <AppRoutes />

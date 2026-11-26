@@ -43,7 +43,7 @@ def main():
     report = evaluate(cases, retrieval, response)
     report.update(dataset_sha256=fingerprint(dataset.read_bytes()),
                   corpus_sha256=fingerprint((root / "app/knowledge/platform.json").read_bytes()),
-                  retriever={"legacy": "legacy-title-weighted-keyword-v1", "bm25": "bm25-guarded-v1"}.get(args.method, args.method),
+                  retriever={"legacy": "legacy-title-weighted-keyword-v1", "bm25": "bm25-guarded-v2-question-stopwords"}.get(args.method, args.method),
                   embedding_revision=args.embedding_revision or None, split=args.split, review_status="engineering_fixture_not_native_reviewed")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

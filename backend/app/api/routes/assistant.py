@@ -12,14 +12,15 @@ from app.db.session import get_db
 from app.services.rag.store import authorized_sources
 from app.services.rag.store import ingest, approve, remove
 from app.services.rag.ingestion import MAX_BYTES
-from app.db.knowledge import KnowledgeDocument, KnowledgeVersion, KnowledgeChunk
+from app.db.knowledge import KnowledgeDocument, KnowledgeVersion, KnowledgeChunk, KnowledgeJob, KnowledgeEmbedding
 from app.core.config import get_settings
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from starlette.concurrency import run_in_threadpool
 import logging
-from app.services.assistant import respond
+from app.services.assistant import respond, documents
 from app.services.rag.observability import record
+from app.services.audit import record as audit
 
 class AssistantRoute(APIRoute):
     def get_route_handler(self):
@@ -58,6 +59,14 @@ class Question(BaseModel):
     question: str = Field(min_length=3, max_length=1200)
     language: Literal["auto", "en", "rw"] = "auto"
     history: list[str] = Field(default_factory=list, max_length=3)
+    selected_references: list[str] = Field(default_factory=list, max_length=20)
+
+    @field_validator("selected_references")
+    @classmethod
+    def bounded_references(cls, values):
+        if any(not value or len(value) > 200 for value in values):
+            raise ValueError("Invalid document selection")
+        return list(dict.fromkeys(values))
 
     @field_validator("history")
     @classmethod
@@ -81,16 +90,80 @@ async def ask(payload: Question, request: Request, principal: Principal = staff,
         sources = await run_in_threadpool(authorized_sources, db, principal)
     except ValueError as exc:
         raise HTTPException(503, "Knowledge corpus exceeds local retrieval capacity") from exc
-    return await respond(payload.question, additional_sources=sources, language=payload.language, history=payload.history)
+    allowed = {row["reference"] for row in sources} | {f"packaged:{row['id']}" for row in documents()}
+    if not set(payload.selected_references) <= allowed:
+        raise HTTPException(403, "A selected source is not available to this account")
+    return await respond(payload.question, additional_sources=sources, language=payload.language, history=payload.history,
+                         selected_references=payload.selected_references)
+
+
+@router.get("/sources")
+def source_library(principal: Principal = staff, db: Session = Depends(get_db)):
+    try:
+        permitted = authorized_sources(db, principal)
+    except ValueError as exc:
+        raise HTTPException(503, "Knowledge corpus exceeds local retrieval capacity") from exc
+    library = {f"packaged:{row['id']}": {"reference": f"packaged:{row['id']}", "title": row["title"], "status": "packaged", "language": "en"} for row in documents()}
+    for row in permitted:
+        library[row["reference"]] = {"reference": row["reference"], "title": row["title"], "status": "approved", "language": row["language"]}
+    return list(library.values())
 
 
 @router.get("/documents")
-def list_documents(_: Principal = admin, db: Session = Depends(get_db)):
-    rows = db.execute(select(KnowledgeDocument, KnowledgeVersion).join(KnowledgeVersion).where(KnowledgeDocument.deleted.is_(False)).order_by(KnowledgeVersion.created_at.desc()).limit(200))
+def list_documents(q: str = Query(default="", max_length=200), status: Literal["all", "pending", "approved", "superseded", "rejected"] = "all",
+                   _: Principal = admin, db: Session = Depends(get_db)):
+    statement = select(KnowledgeDocument, KnowledgeVersion).join(KnowledgeVersion).where(KnowledgeDocument.deleted.is_(False))
+    if q.strip():
+        statement = statement.where(KnowledgeDocument.title.icontains(q.strip(), autoescape=True))
+    if status != "all":
+        statement = statement.where(KnowledgeVersion.status == status)
+    rows = db.execute(statement.order_by(KnowledgeVersion.created_at.desc(), KnowledgeVersion.id).limit(200)).all()
+    version_ids = [version.id for _, version in rows]
+    counts = dict(db.execute(select(KnowledgeChunk.version_id, func.count()).where(
+        KnowledgeChunk.version_id.in_(version_ids)).group_by(KnowledgeChunk.version_id)).all())
+    vectors = dict(db.execute(select(KnowledgeChunk.version_id, func.count()).join(
+        KnowledgeEmbedding, KnowledgeEmbedding.chunk_id == KnowledgeChunk.id).where(
+        KnowledgeChunk.version_id.in_(version_ids)).group_by(KnowledgeChunk.version_id)).all())
+    jobs = {job.version_id: job for job in db.scalars(select(KnowledgeJob).where(KnowledgeJob.version_id.in_(version_ids)))}
     return [{"document_id": doc.id, "version_id": version.id, "title": doc.title, "language": doc.language,
              "classification": doc.classification, "roles": doc.roles, "sector_ids": doc.sector_ids,
              "status": version.status, "revision": version.revision, "digest": version.digest,
-             "approval_reference": version.approval_reference} for doc, version in rows]
+             "approval_reference": version.approval_reference, "chunk_count": counts.get(version.id, 0),
+             "embedding_count": vectors.get(version.id, 0),
+             "processing_status": jobs[version.id].status if version.id in jobs else "unknown",
+             "processing_detail": jobs[version.id].detail if version.id in jobs else "No processing record"} for doc, version in rows]
+
+
+@router.get("/config")
+async def assistant_config(principal: Principal = staff):
+    settings = get_settings()
+    import httpx
+    ready = False
+    state = "disabled"
+    provider = settings.assistant_provider
+    if settings.assistant_generation_enabled:
+        state = "not_configured"
+        if settings.assistant_model.strip():
+            if provider == "openai":
+                ready = bool(settings.assistant_openai_api_key.get_secret_value())
+                state = "configured" if ready else "not_configured"
+            else:
+                try:
+                    url = "http://127.0.0.1:11435/v1/models" if provider == "llamacpp" else "http://127.0.0.1:11434/api/tags"
+                    async with httpx.AsyncClient(timeout=2, trust_env=False, follow_redirects=False) as client:
+                        headers = {"Authorization": f"Bearer {settings.assistant_local_api_key.get_secret_value()}"} if provider == "llamacpp" else {}
+                        response = await client.get(url, headers=headers)
+                        response.raise_for_status()
+                        data = response.json()
+                    ready = any(row.get("id") == settings.assistant_model for row in data.get("data", [])) if provider == "llamacpp" else any(row.get("name") == settings.assistant_model for row in data.get("models", []))
+                    state = "ready" if ready else "offline"
+                except (httpx.HTTPError, ValueError, TypeError):
+                    state = "offline"
+    return {"generation_enabled": settings.assistant_generation_enabled,
+            "generation_ready": ready, "generation_status": state, "local_provider": provider in {"ollama", "llamacpp"},
+            "retrieval_mode": settings.assistant_retrieval_mode,
+            "uploads_enabled": principal.role == UserRole.administrator and settings.assistant_ingestion_enabled,
+            "embedding_configured": bool(settings.assistant_embedding_path and settings.assistant_embedding_revision)}
 
 
 @router.get("/documents/{version_id}/preview")
@@ -106,7 +179,7 @@ async def upload_document(request: Request, filename: str = Query(max_length=200
                           language: Literal["en", "rw", "fr"] = "en", classification: Literal["engineering", "institutional", "demonstration"] = "engineering",
                           roles: str = Query(default="administrator,district_officer,district_planner", max_length=100),
                           sectors: str = Query(default="", max_length=500), document_id: str | None = Query(default=None, max_length=36),
-                          _: Principal = admin, db: Session = Depends(get_db)):
+                          principal: Principal = admin, db: Session = Depends(get_db)):
     same_origin(request)
     if not get_settings().assistant_ingestion_enabled:
         raise HTTPException(503, "Knowledge uploads are disabled until the extraction environment is approved")
@@ -117,7 +190,9 @@ async def upload_document(request: Request, filename: str = Query(max_length=200
             raise HTTPException(413, "Document exceeds 5 MiB")
     try:
         version, duplicate = await run_in_threadpool(ingest, db, filename=filename, data=bytes(data), title=title, language=language,
-            classification=classification, roles=roles.split(","), sector_ids=[int(value) for value in sectors.split(",") if value], document_id=document_id)
+            classification=classification, roles=roles.split(","), sector_ids=[int(value) for value in sectors.split(",") if value], document_id=document_id, isolated=True)
+        audit(db, principal, "knowledge.upload", "knowledge_document", document_id=version.document_id,
+              version_id=version.id, revision=version.revision, duplicate=duplicate)
         db.commit()
         record("ingestion_indexed")
         return {"document_id": version.document_id, "version_id": version.id, "status": version.status, "duplicate": duplicate}
@@ -135,6 +210,8 @@ def approve_document(version_id: str, payload: Approval, request: Request, princ
     same_origin(request)
     try:
         version = approve(db, version_id, principal, payload.reference)
+        audit(db, principal, "knowledge.approve", "knowledge_document", document_id=version.document_id,
+              version_id=version.id, revision=version.revision)
         db.commit()
         record("source_approved")
         return {"status": version.status}
@@ -144,16 +221,41 @@ def approve_document(version_id: str, payload: Approval, request: Request, princ
 
 
 @router.delete("/documents/{document_id}")
-def delete_document(document_id: str, request: Request, _: Principal = admin, db: Session = Depends(get_db)):
+def delete_document(document_id: str, request: Request, principal: Principal = admin, db: Session = Depends(get_db)):
     same_origin(request)
     try:
         remove(db, document_id)
+        audit(db, principal, "knowledge.remove", "knowledge_document", document_id=document_id)
         db.commit()
         record("source_deleted")
         return {"status": "deleted"}
     except ValueError as exc:
         db.rollback()
         raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/documents/{version_id}/reindex")
+@limiter.limit("5/minute")
+async def reindex_document(version_id: str, request: Request, principal: Principal = admin, db: Session = Depends(get_db)):
+    same_origin(request)
+    from app.services.rag.management import reindex
+    from app.services.rag.embeddings import local_provider
+    settings = get_settings()
+    provider_factory = None
+    if settings.assistant_embedding_path or settings.assistant_embedding_revision:
+        provider_factory = lambda: local_provider(settings.assistant_embedding_path, settings.assistant_embedding_revision)
+    try:
+        result = await run_in_threadpool(reindex, db, version_id, provider_factory=provider_factory)
+        audit(db, principal, "knowledge.reindex", "knowledge_version", version_id=version_id, status=result["status"])
+        db.commit()
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(422, str(exc)) from exc
+    if result["status"] == "failed":
+        record("index_failed")
+        raise HTTPException(503, result["detail"])
+    record("index_checked")
+    return result
 
 
 class Feedback(BaseModel):

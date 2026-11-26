@@ -8,9 +8,9 @@ _lock = Lock()
 _events = Counter()
 _latencies = Counter()
 _models = Counter()
-EVENTS = frozenset({"documents", "generated", "no_evidence", "privacy_refusal", "total", "retrieval", "retrieval_failure",
+EVENTS = frozenset({"documents", "generated", "conversation", "no_evidence", "privacy_refusal", "total", "retrieval", "retrieval_failure",
                     "generation", "provider_failure", "embedding_failure", "ingestion_indexed", "source_approved", "source_deleted",
-                    "feedback_helpful", "feedback_unhelpful", "input_tokens", "output_tokens"})
+                    "feedback_helpful", "feedback_unhelpful", "input_tokens", "output_tokens", "index_checked", "index_failed"})
 
 
 def record(event, *, duration_ms=None, count=1, model=None):

@@ -16,8 +16,8 @@ import { useApi, withParams } from "@/services/api/hooks";
 import { monthlySchema } from "@/services/api/workspaces";
 
 const reportSchema = monthlySchema.extend({
-  cases: monthlySchema.shape.cases.extend({ by_priority: z.record(z.number()).optional() }),
-  grievances: z.object({ received: z.number(), resolved: z.number(), close_loop_sms: z.number(), median_days_to_resolve: z.number().nullable(), by_category: z.record(z.number()) }),
+  cases: monthlySchema.shape.cases.extend({ by_priority: z.record(z.string(), z.number()).optional() }),
+  grievances: z.object({ received: z.number(), resolved: z.number(), close_loop_sms: z.number(), median_days_to_resolve: z.number().nullable(), by_category: z.record(z.string(), z.number()) }),
   pests: z.array(z.object({ pest: z.string(), reports: z.number(), severe: z.number(), sectors: z.array(z.string()) })),
   rainfall: z.array(z.object({ sector: z.string(), rainfall_mm: z.number().nullable(), gauges: z.number(), readings: z.number() })),
   nutrition: z.object({
@@ -25,7 +25,7 @@ const reportSchema = monthlySchema.extend({
     cells: z.array(z.object({ cell: z.string(), sector: z.string().nullable(), households: z.number(), average_risk: z.number() })),
     cells_hidden: z.number().optional(), min_households_per_group: z.number().optional(),
   }),
-  messages: z.object({ airtime_rewards: z.number(), airtime_rwf: z.number(), sms_sent_by_purpose: z.record(z.unknown()), delivery: z.record(z.number()) }),
+  messages: z.object({ airtime_rewards: z.number(), airtime_rwf: z.number(), sms_sent_by_purpose: z.record(z.string(), z.unknown()), delivery: z.record(z.string(), z.number()) }),
 });
 
 const FIGURES = ["reports", "harvest_reports", "pest_reports", "rain_readings", "asset_faults", "grievances", "nutrition_surveys", "ussd_sessions", "sms_received", "new_people", "cases_opened"] as const;

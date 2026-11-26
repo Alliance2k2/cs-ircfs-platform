@@ -12,12 +12,13 @@ class Settings(BaseSettings):
     app_name: str = "CS-IRCFS Platform API"
     assistant_generation_enabled: bool = False
     assistant_openai_api_key: SecretStr = SecretStr("")
+    assistant_local_api_key: SecretStr = SecretStr("")
     assistant_model: str = ""
     assistant_retrieval_mode: Literal["legacy", "bm25", "semantic", "hybrid"] = "bm25"
     assistant_top_k: int = Field(default=3, ge=1, le=10)
     assistant_minimum_score: float = Field(default=0.0, ge=0)
     assistant_ingestion_enabled: bool = False
-    assistant_provider: Literal["openai", "ollama"] = "openai"
+    assistant_provider: Literal["openai", "ollama", "llamacpp"] = "openai"
     assistant_embedding_path: str = ""
     assistant_embedding_revision: str = ""
     assistant_semantic_threshold: float = Field(default=.4, ge=-1, le=1)

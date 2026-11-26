@@ -33,7 +33,7 @@ function detailMessage(body: unknown, status: number): string {
  * GET a JSON resource and validate it against a Zod schema, so an unexpected API shape
  * fails loudly here instead of rendering wrong figures.
  */
-export async function apiGet<T>(path: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, signal?: AbortSignal): Promise<T> {
+export async function apiGet<T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}/${path}`, { credentials: "same-origin", headers: { Accept: "application/json" }, signal });
@@ -65,7 +65,7 @@ export function query(params: Record<string, string | number | null | undefined>
  * Send a change (POST, PATCH, DELETE) and validate the answer when a schema is given.
  * Errors carry the server's message, ready to show in a toast or next to a form.
  */
-export async function apiSend<T = unknown>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, schema?: z.ZodType<T, z.ZodTypeDef, unknown>): Promise<T> {
+export async function apiSend<T = unknown>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, schema?: z.ZodType<T>): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}/${path}`, {

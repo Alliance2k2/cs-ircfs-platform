@@ -151,11 +151,15 @@ def google_login(payload: GoogleLogin, response: Response, db: Session = Depends
         raise HTTPException(503, "Google sign-in is not configured")
     try:
         # Imported lazily so the platform still starts when google-auth is not installed.
+        from google.auth.exceptions import TransportError
         from google.auth.transport import requests as google_requests
         from google.oauth2 import id_token
-        claims = id_token.verify_oauth2_token(payload.credential, google_requests.Request(), client_id)
     except ImportError as exc:
         raise HTTPException(503, "Google sign-in library is not installed on the server") from exc
+    try:
+        claims = id_token.verify_oauth2_token(payload.credential, google_requests.Request(), client_id)
+    except TransportError as exc:
+        raise HTTPException(503, "The server cannot reach Google to verify your sign-in. Please try again shortly.") from exc
     except Exception as exc:
         raise HTTPException(401, "Invalid Google sign-in") from exc
     email = str(claims.get("email", "")).strip().lower()

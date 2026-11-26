@@ -27,6 +27,8 @@ export default defineConfig({
   // Set VITE_SOURCEMAP=true for an exception (for example a staging-only investigation).
   build: { outDir: "dist", sourcemap: process.env.VITE_SOURCEMAP === "true", chunkSizeWarningLimit: 900 },
   test: {
+    // Bound isolated workers on field laptops and CI; keep all test assertions/timeouts.
+    maxWorkers: 2,
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],

@@ -1,8 +1,10 @@
 /** English interface text: the source of every translation key. */
 import { operations } from "./en.operations";
 import { workspaces } from "./en.workspaces";
+import { assistantEn } from "./assistant";
 
 export const en = {
+  ...assistantEn,
   ...workspaces,
   ...operations,
   "app.name": "CS-IRCFS",
@@ -12,7 +14,7 @@ export const en = {
   "nav.group.field": "Field intelligence",
   "nav.group.platform": "Platform",
   "nav.overview": "Executive overview",
-  "nav.assistant": "Document assistant",
+  "nav.assistant": "CS Assistant",
   "nav.actnow": "Act now",
   "nav.channels": "Field channels",
   "nav.schemes": "Scheme performance",
@@ -154,6 +156,30 @@ export const en = {
   "notFound.title": "Page not found",
   "notFound.body": "This page does not exist in the new dashboard yet.",
   "notFound.back": "Back to the overview",
+  "climate.observedCoverage": "Sectors with citizen gauge readings",
+  "climate.forecastCoverage": "Sectors with forecast estimates",
+  "climate.unrecordedCoverage": "Sectors without gauge evidence",
+  "map.cellBoundaries": "Cell boundaries (where recorded)",
+  "map.search": "Search observation name or status",
+  "map.observations": "Mapped observations",
+  "map.searchBasis": "Search filters recorded infrastructure, crop and rain points. Heat and food layers remain area summaries. Missing rainfall is gray; measured zero remains a blue reading. This list also works without map tiles.",
+  "map.noMatches": "No recorded points match these layers and search.",
+  "activity.title": "Reporting activity and evidence",
+  "activity.note": "Uses the selected sector and scheme. Dates initially follow the selected period; calendar dates, cell and cooperative filter this panel only.",
+  "activity.cell": "Cell",
+  "activity.allCells": "All cells",
+  "activity.cooperative": "Cooperative",
+  "activity.allCooperatives": "All cooperatives",
+  "activity.start": "Received from",
+  "activity.end": "Received through",
+  "activity.invalid": "Choose an ordered date range of at most 366 days.",
+  "activity.optionsError": "Some filter options could not load; available selections still work.",
+  "activity.reports": "Reports received",
+  "activity.previous": "Previous equal-length period",
+  "activity.verified": "Verified reports",
+  "activity.located": "Reports with recorded coordinates",
+  "activity.change": "Change in reports received: {n}",
+  "activity.basis": "Rwanda calendar dates by receipt time. Simulator and demo reports excluded. Cooperative filter uses current membership. Reporting activity is not an agricultural impact estimate; coordinates are not proof of location accuracy.",
 } as const;
 
 export type MessageKey = keyof typeof en;

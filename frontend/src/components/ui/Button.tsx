@@ -11,7 +11,7 @@ const VARIANTS: Record<Variant, string> = {
   ghost: "text-forest hover:bg-canvas",
   danger: "bg-critical text-white hover:brightness-95",
 };
-const SIZES: Record<Size, string> = { sm: "h-8 px-3 text-xs gap-1.5", md: "h-10 px-4 text-sm gap-2" };
+const SIZES: Record<Size, string> = { sm: "min-h-11 px-3 text-xs gap-1.5 sm:min-h-8", md: "min-h-11 px-4 text-sm gap-2" };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;

@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-24",
+  "branch": "feature/platform-modernization-20261124",
+  "synthetic_data_only": true,
+  "screenshots_before": 49,
+  "screenshots_after": 64,
+  "overflow": [],
+  "capture_errors": [],
+  "axe_pages": 15,
+  "axe_violations": 0,
+  "public_links_checked": 13,
+  "broken_links": [],
+  "api_cache": {
+    "status": 200,
+    "cacheControl": "private, no-store"
+  },
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "python_audited_packages": 56,
+  "python_advisory_entries": 0,
+  "map_sdk_requested_without_token": false,
+  "preview_probe": {
+    "health": 200,
+    "ready": 200,
+    "admin_login": 200,
+    "generation_enabled": false,
+    "uploads_enabled": false,
+    "development_bypass": false,
+    "map_credentials_configured": false,
+    "api_cache": "private, no-store",
+    "monitor_login": 200,
+    "monitor_cooperative_filter": 403
+  },
+  "backend": {
+    "passed": 458,
+    "skipped": 2,
+    "warnings": 17,
+    "seconds": 270.79
+  },
+  "frontend": {
+    "passed": 76,
+    "files": 23,
+    "seconds": 68.54
+  },
+  "browser": {
+    "passed": 34,
+    "skipped": 1,
+    "minutes": 3.4
+  },
+  "postgres": {
+    "schema_model_tables": 36,
+    "knowledge_tests_passed": 1,
+    "pgvector_tests_skipped": 1
+  },
+  "public_hosting": {
+    "passed": 5
+  },
+  "lint": "passed",
+  "typecheck": "passed",
+  "build": "passed"
+}

@@ -1,11 +1,14 @@
 """Optional fixed-endpoint generators; configuration never enables generation."""
 import json
+from threading import Lock
 from dataclasses import dataclass
 from typing import Protocol
 
 import httpx
 
 from app.services.rag.prompts import SYSTEM
+
+_LOCAL_GENERATION_LOCK = Lock()
 
 
 @dataclass(frozen=True)
@@ -60,3 +63,31 @@ class Ollama:
         if not data.get("done"):
             raise ValueError("Incomplete generation")
         return Generated(data["message"]["content"], token_count(data.get("prompt_eval_count")), token_count(data.get("eval_count")))
+
+
+class LlamaCpp:
+    """Workspace-local CPU model only. No custom URL, redirects or environment proxy."""
+    def __init__(self, model, key=""):
+        self.model, self.key = model, key
+
+    async def generate(self, question, sources):
+        if not _LOCAL_GENERATION_LOCK.acquire(blocking=False):
+            raise ValueError("Local model busy; use document fallback")
+        try:
+            return await self._generate(question, sources)
+        finally:
+            _LOCAL_GENERATION_LOCK.release()
+
+    async def _generate(self, question, sources):
+        async with httpx.AsyncClient(timeout=90, follow_redirects=False, trust_env=False) as client:
+            response = await client.post("http://127.0.0.1:11435/v1/chat/completions", headers={"Authorization": f"Bearer {self.key}"} if self.key else {}, json={
+                "model": self.model, "stream": False, "temperature": 0,
+                "max_tokens": 256, "messages": [{"role": "system", "content": SYSTEM},
+                {"role": "user", "content": json.dumps({"question": question, "excerpts": sources})}],
+            })
+            response.raise_for_status()
+            data = response.json()
+        if data["choices"][0].get("finish_reason") != "stop":
+            raise ValueError("Incomplete generation")
+        usage = data.get("usage") or {}
+        return Generated(data["choices"][0]["message"]["content"], token_count(usage.get("prompt_tokens")), token_count(usage.get("completion_tokens")))

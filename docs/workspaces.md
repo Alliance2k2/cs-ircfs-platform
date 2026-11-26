@@ -1,5 +1,33 @@
 # Workspaces
 
+## November modernization
+
+The overview's **Reporting activity and evidence** panel uses the selected sector
+and scheme, and starts with the selected rolling period. Its cell, cooperative and
+calendar-date controls affect that panel only. Dates use Rwanda calendar days and
+receipt timestamps, including the final day. Comparisons use the immediately
+preceding equal-length window; they measure reporting volume, not agricultural
+impact. Demo, simulator and superseded reports are excluded. Cooperative selection
+uses current membership, not historical affiliation. Verified and coordinate-bearing
+report counts describe the same selected sample. Existing asset condition and action
+queues retain their explicitly labeled current-state periods.
+
+The map adds a paginated, searchable observation table that works without map tiles.
+Search affects infrastructure, crop and rain points; food and heat remain protected
+area summaries. Measured zero rain remains distinct from missing data. Nearby crop
+reports cluster on configured maps, with click-to-expand and touch-accessible point
+details. Recorded sector/cell boundaries come from the existing geography endpoints;
+cell boundaries are optional. No recorded geometry means no invented boundary.
+
+Incident history displays actual events in chronological order with Kigali timestamps
+and the recorded actor. Climate coverage distinguishes citizen gauge observations,
+forecasts and missing gauge evidence. No forecast is labeled a measurement, and
+threshold approval requirements remain unchanged.
+
+All API responses use `private, no-store`; static hashed assets remain cacheable.
+No service worker or private-record offline cache is introduced. On shared devices,
+sign out when finished. See [verification and screenshots](modernization-2026-11-24.md).
+
 > Current implementation and operator instructions: [November completion](platform-completion-2026-11.md). This supersedes earlier remaining-work lists; official data, native review, telecom acceptance and hosted verification still require external inputs.
 
 The district dashboard at `/app/` is a React application (`frontend/`). Every page here has the same frame: a page header that states the page's purpose and when its data was last loaded, loading skeletons, an empty state that says how data arrives, and an error state with a retry. Figures come only from the API; nothing is estimated in the browser.

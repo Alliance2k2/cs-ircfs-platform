@@ -17,7 +17,7 @@ export default function SchemeChart({ data, series, caption, schemeLabel }: Sche
       <figcaption className="sr-only">{caption}</figcaption>
       <div className="h-56" aria-hidden>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -18 }} barGap={3}>
+          <BarChart accessibilityLayer={false} data={data} margin={{ top: 4, right: 4, bottom: 0, left: -18 }} barGap={3}>
             <CartesianGrid vertical={false} stroke={tokenColor("line")} />
             <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: tokenColor("muted"), fontSize: 12 }} />
             <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fill: tokenColor("muted"), fontSize: 12 }} />

@@ -1,0 +1,28 @@
+{
+  "provider": "local llama.cpp",
+  "model": "Qwen2.5-1.5B-Instruct Q4_K_M",
+  "paid_api_calls": 0,
+  "rows": [
+    {
+      "question": "How do I change the USSD language?",
+      "mode": "generated",
+      "answer": "Use main-menu option 0 to change language. [field-ussd]",
+      "citation_valid": true,
+      "seconds": 2.85
+    },
+    {
+      "question": "How are rainfall observations verified?",
+      "mode": "documents",
+      "answer": "Rainfall summaries use dated observations and daily gauge aggregation. Rejected reports are excluded; the latest reading is used for repeated gauge/day observations. [rainfall]\n\nAuthorized staff review report quality, units, observation dates, provenance and verification status. Scientific yield comparison requires measured harvested area, comparable crop/season/year observations and sourced approved targets. [verification]",
+      "citation_valid": true,
+      "seconds": 8.15
+    },
+    {
+      "question": "What should I do with an unknown delivery?",
+      "mode": "generated",
+      "answer": "An operator must confirm that nothing was sent before requeueing an uncertain delivery; do not resend blindly. SMS and airtime stay in dry-run until credentials, callbacks and telecom acceptance are approved. [delivery]",
+      "citation_valid": true,
+      "seconds": 9.86
+    }
+  ]
+}

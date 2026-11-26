@@ -1,0 +1,139 @@
+{
+  "source": "isolated synthetic preview; external requests blocked",
+  "pages": [
+    {
+      "path": "/",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/login.html",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/register.html",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/map",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/assistant",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/climate",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/actions",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/management",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/app/",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/app/map",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/app/assistant",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/app/climate",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/app/actions",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/app/management",
+      "theme": "dark",
+      "violations": []
+    }
+  ],
+  "links": [
+    {
+      "href": "#main-content",
+      "found": true
+    },
+    {
+      "href": "#home",
+      "found": true
+    },
+    {
+      "href": "#what",
+      "found": true
+    },
+    {
+      "href": "#how",
+      "found": true
+    },
+    {
+      "href": "#roles",
+      "found": true
+    },
+    {
+      "href": "#projects",
+      "found": true
+    },
+    {
+      "href": "#faq",
+      "found": true
+    },
+    {
+      "href": "login.html",
+      "status": 200
+    },
+    {
+      "href": "login.html?next=%2Fapp%2F",
+      "status": 200
+    },
+    {
+      "href": "simulator.html",
+      "status": 200
+    },
+    {
+      "href": "photography.html",
+      "status": 200
+    },
+    {
+      "href": "register.html",
+      "status": 200
+    },
+    {
+      "href": "privacy.html",
+      "status": 200
+    }
+  ],
+  "cache": {
+    "status": 200,
+    "cacheControl": "private, no-store"
+  },
+  "language": "RW welcome rendered using the existing language preference"
+}

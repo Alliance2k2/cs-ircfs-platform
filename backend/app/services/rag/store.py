@@ -14,14 +14,18 @@ def identifier():
     return str(uuid4())
 
 
-def ingest(db, *, filename, data, title, language="en", classification="engineering", roles=None, sector_ids=None, document_id=None, size=512, overlap=64, strategy="recursive"):
+def ingest(db, *, filename, data, title, language="en", classification="engineering", roles=None, sector_ids=None, document_id=None, size=512, overlap=64, strategy="recursive", isolated=False):
     roles = sorted(set(STAFF_ROLES if roles is None else roles))
     sector_ids = sorted(set(sector_ids or []))
     if not title.strip() or len(title) > 200 or language not in {"en", "rw", "fr"} or classification not in {"engineering", "institutional", "demonstration"}:
         raise ValueError("Invalid document metadata")
     if not set(roles) <= STAFF_ROLES or not roles or any(not isinstance(i, int) or i <= 0 for i in sector_ids):
         raise ValueError("Invalid document permissions")
-    extracted = extract(filename, data)
+    if isolated:
+        from app.services.rag.extraction_worker import extract_isolated
+        extracted = extract_isolated(filename, data)
+    else:
+        extracted = extract(filename, data)
     if db.bind.dialect.name == "postgresql":
         # Serialize same-content uploads across API processes before checking for
         # duplicates. Lock order is content, document, then version throughout.
@@ -119,5 +123,5 @@ def authorized_sources(db, principal, limit=2000):
         raise ValueError("Local corpus exceeds candidate limit; use a scoped database index")
     return [dict(id=chunk.id, title=doc.title, text=chunk.text, reference=f"knowledge:{doc.id}",
                  revision=version.digest[:12], document_id=doc.id, version_id=version.id,
-                 page=chunk.page, heading=chunk.heading, language=doc.language,
+                 page=chunk.page, ordinal=chunk.ordinal, heading=chunk.heading, language=doc.language,
                  classification=doc.classification) for chunk, version, doc in rows]

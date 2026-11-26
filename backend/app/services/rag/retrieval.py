@@ -4,6 +4,9 @@ import re
 from collections import Counter
 
 STOP = set("how do does i the is a an can what for to and of in with my are on it use me please".split())
+# Common question scaffolding must not create evidence by itself (for example,
+# 'should receive' matching a privacy passage for a fertilizer-dose question).
+STOP.update("should which about that there they their would could will you your we our whom when where why receive provide get give".split())
 
 
 def tokenize(text):

@@ -13,10 +13,10 @@ Defined once in `frontend/src/styles/tokens.css` and mapped to Tailwind names in
 | Token | Value | Use |
 | --- | --- | --- |
 | `forest` | #064E3B | Navigation, headings |
-| `primary` / `primary-strong` | #087F5B / #065F46 | Actions, links, positive figures |
+| `primary` / `primary-strong` | #087453 / #065F46 | Actions, links, positive figures; darkened slightly for mint contrast |
 | `fresh` | #42B883 | Accents, focus ring |
 | `mint` | #DFF4E7 | Soft positive fills |
-| `canvas` | #F8FBF8 | Page background |
+| `canvas` | #F8FAFC | Page background |
 | `surface` | #FFFFFF | Cards |
 | `ink` / `muted` | #17352C / #5C7066 | Body and secondary text |
 | `line` | #DFE8E1 | Borders |
@@ -26,7 +26,9 @@ Defined once in `frontend/src/styles/tokens.css` and mapped to Tailwind names in
 
 The brief's amber (#D99828), red (#D9544D) and blue (#278AB8) are too light for text. The text tokens are darkened versions that meet WCAG AA (at least 4.5:1) on the canvas, on white and on their own soft fill; the original shades remain suitable for large chart marks.
 
-Type: **Manrope** for headings and figures, **DM Sans** for text, both stored locally (no internet needed). Radius: 16 px cards, 10 px controls.
+Type: **Manrope** for headings and figures, **DM Sans** for text, both stored locally (no internet needed). Radius: 18 px shared cards, 10 px controls. Shared buttons have 44 px mobile targets. Evidence badges wrap inside narrow cards. Base headings use `--heading-ink`, with a light mint value in dark mode; brand backgrounds retain forest green. Focus uses a solid, contrasting two-layer ring in each theme.
+
+The modernization adds agriculture (#16A34A) and climate (#0284C7) accent tokens for decorative use; small text retains the darker AA palette. Public supporting copy has darker text without changing its layout. The hero uses the existing licensed local landscape WebP instead of external autoplay videos. See the [24 November audit](modernization-2026-11-24.md) for actual browser results and remaining validation limits.
 
 ## Reading a figure honestly
 

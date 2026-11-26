@@ -37,3 +37,32 @@ def validate_extractive(answer, sources):
         if not supported:
             raise ValueError("Generated passage is not a verbatim supporting source quotation")
     return True
+
+
+def attribute_quotations(answer, sources):
+    """Attribute uncited local-model quotations only by exact verified provenance.
+
+    Explicit forged citations, paraphrases and new claims are never repaired.
+    """
+    paragraphs = []
+    for paragraph in answer.strip().split("\n\n"):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        if re.search(r"\[[^\]\n]+\]", paragraph):
+            validate_extractive(paragraph, sources)
+            paragraphs.append(paragraph)
+            continue
+        for source in sources:
+            candidate = paragraph + f" [{source['id']}]"
+            try:
+                validate_extractive(candidate, [source])
+            except ValueError:
+                continue
+            paragraphs.append(candidate)
+            break
+        else:
+            raise ValueError("Local model passage has no exact supporting quotation")
+    attributed = "\n\n".join(paragraphs)
+    validate_extractive(attributed, sources)
+    return attributed

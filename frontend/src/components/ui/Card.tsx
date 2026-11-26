@@ -3,7 +3,7 @@ import { cx } from "@/lib/cx";
 
 export function Card({ className, children, ...rest }: HTMLAttributes<HTMLElement> & { children: ReactNode }) {
   return (
-    <section className={cx("rounded-card border border-line bg-surface shadow-card", className)} {...rest}>
+    <section className={cx("min-w-0 rounded-card border border-line bg-surface shadow-card", className)} {...rest}>
       {children}
     </section>
   );

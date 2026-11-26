@@ -94,6 +94,14 @@ def main() -> None:
     args = parser.parse_args()
     database = Path(tempfile.mkdtemp(prefix="cs-ircfs-e2e-")) / "e2e.db"
     sandbox_environment(database, args.port)
+    if os.environ.get("E2E_LOCAL_AI") == "true":
+        # Explicit opt-in: only the workspace's loopback CPU model, never a paid API.
+        key_file = BACKEND / ".local-ai" / "access.key"
+        if not key_file.is_file():
+            raise SystemExit("Start the verified local model before E2E_LOCAL_AI tests")
+        os.environ.update({"ASSISTANT_GENERATION_ENABLED": "true", "ASSISTANT_PROVIDER": "llamacpp",
+                           "ASSISTANT_MODEL": "cs-assistant-local", "ASSISTANT_OPENAI_API_KEY": "",
+                           "ASSISTANT_LOCAL_API_KEY": key_file.read_text(encoding="utf-8").strip()})
     os.chdir(BACKEND)
     sys.path.insert(0, str(BACKEND))
     prepare(database)

@@ -1,5 +1,9 @@
 # CS-IRCFS
 
+> 24 November modernization: [audit, implementation and verification](docs/modernization-2026-11-24.md). The existing public layout and white-and-green dashboard are retained. New scoped reporting comparisons, GIS text alternatives, localized assistant controls and dependency security updates build on the preserved local assistant work. Frontend tooling now requires Node 22.12+ on the 22 LTS line, Node 24, or Node 26+. Historical test counts and dependency findings below are superseded by the dated report.
+
+> CS Assistant improvements: [19 November audit and implementation plan](docs/ai/ASSISTANT_AUDIT_2026-11-19.md), [operator/learning guide](docs/ai/ASSISTANT_OPERATIONS.md), and [validation results](docs/ai/VALIDATION_2026-11-19.md). Compact chat, page-only history, source search and index repair; uploads and external generation remain disabled by default.
+
 > Staff [Document assistant](docs/document-assistant.md) at `/app/assistant`: BM25 procedure lookup, reviewed source versions and permissions, bounded follow-ups, citations and feedback. Uploads and external generation are disabled by default. See the [RAG engineering guide](docs/ai/AI_ENGINEERING_GUIDE.md) and [validation report](docs/ai/VALIDATION_2026-11-18.md). Semantic-model quality, pgvector and native Kinyarwanda review remain release gates. Migration head: `20261117_30`.
 
 > Field USSD language selection: [13 November implementation and validation](docs/engineering-validation-2026-11-13.md). New callers choose `1. Ikinyarwanda` or `2. English` before sector/cell onboarding. Returning callers use `0` to change language; reporting options 1–6 retain their meanings. Run migration `20261113_29` before starting this version. Kinyarwanda wording still requires native approval.

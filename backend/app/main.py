@@ -111,7 +111,12 @@ async def request_logging(request: Request, call_next):
     # The React build's assets carry a content hash in their name: cache them for a year,
     # which matters on rural mobile data. Everything else (legacy pages, the React
     # index.html) must never be reused from an older version.
-    if request.url.path.startswith("/app/assets/"):
+    if request.url.path.startswith("/api/"):
+        # Shared devices must not retain authenticated records in browser/proxy caches.
+        # Hashed static assets remain cacheable; no service worker stores API responses.
+        response.headers["Cache-Control"] = "private, no-store"
+        response.headers["Pragma"] = "no-cache"
+    elif request.url.path.startswith("/app/assets/"):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     elif request.url.path.endswith((".html", ".js", ".css")):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"

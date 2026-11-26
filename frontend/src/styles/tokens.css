@@ -9,14 +9,17 @@
   --forest: 6 78 59;          /* #064E3B deep forest: navigation, headings on light */
   --forest-light: 6 70 47;    /* sidebar gradient, top */
   --forest-deep: 3 42 29;     /* sidebar gradient, bottom */
-  --primary: 8 127 91;        /* #087F5B primary actions */
+  --primary: 8 116 83;        /* #087453: AA text on white and mint */
   --primary-strong: 6 95 70;  /* hover / pressed */
   --fresh: 66 184 131;        /* #42B883 positive accents */
   --mint: 223 244 231;        /* #DFF4E7 soft fills */
   --lime: 215 245 110;        /* highlight on dark green only (matches the public website) */
 
   /* Surfaces and text */
-  --canvas: 248 251 248;      /* #F8FBF8 warm white page background */
+  --canvas: 248 250 252;      /* #F8FAFC neutral canvas */
+  --heading-ink: 6 78 59;
+  --agriculture-accent: 22 163 74; /* decorative accents; use primary for text */
+  --climate-accent: 2 132 199;
   --surface: 255 255 255;     /* cards */
   --ink: 23 53 44;            /* #17352C body text */
   --muted: 92 112 102;        /* secondary text, 5.1:1 on canvas */
@@ -39,11 +42,11 @@
   --teal-soft: 225 245 243;
 
   /* Shape and depth */
-  --radius-card: 16px;
+  --radius-card: 18px;
   --radius-control: 10px;
   --shadow-card: 0 1px 2px rgb(10 47 31 / 0.05), 0 1px 1px rgb(10 47 31 / 0.03);
   --shadow-raised: 0 12px 32px rgb(10 47 31 / 0.12);
-  --focus-ring: 0 0 0 3px rgb(66 184 131 / 0.45);
+  --focus-ring: 0 0 0 2px rgb(var(--surface)), 0 0 0 4px rgb(var(--primary));
 }
 
 /* Dashboard theme is screen-only; printed reports retain the original light palette. */
@@ -53,6 +56,7 @@
     --canvas: 15 24 22;
     --surface: 23 37 32;
     --ink: 232 244 236;
+    --heading-ink: 165 224 190;
     --muted: 170 191 179;
     --line: 96 122 108;
     --mint: 32 65 49;
@@ -63,9 +67,11 @@
     --teal-soft: 21 49 45;
     --shadow-card: 0 1px 4px rgb(0 0 0 / 0.3);
     --shadow-raised: 0 12px 32px rgb(0 0 0 / 0.45);
+    --focus-ring: 0 0 0 2px rgb(var(--surface)), 0 0 0 4px rgb(165 224 190);
   }
   [data-theme="dark"] [class*="text-forest"],
   [data-theme="dark"] [class*="text-primary"] { color: rgb(165 224 190); }
+  [data-theme="dark"] .bg-lime.text-forest { color: rgb(var(--forest)); }
   [data-theme="dark"] .text-amber { color: rgb(245 207 127); }
   [data-theme="dark"] .text-critical { color: rgb(255 159 154); }
   [data-theme="dark"] .text-water { color: rgb(133 210 244); }

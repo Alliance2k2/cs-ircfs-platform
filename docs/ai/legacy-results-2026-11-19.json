@@ -1,0 +1,1381 @@
+{
+  "k": 3,
+  "summary": {
+    "cases": 64,
+    "answerable_cases": 50,
+    "precision_at_k": 0.3,
+    "recall_at_k": 0.83,
+    "mrr": 0.82,
+    "ndcg": 0.8187500669990837,
+    "mode_accuracy": 0.75,
+    "abstention_accuracy": 0.42857142857142855,
+    "latency_ms_p50": 0.6785000000000001,
+    "latency_ms_max": 4.388
+  },
+  "by_language": {
+    "en": {
+      "cases": 56,
+      "answerable_cases": 42,
+      "precision_at_k": 0.3412698412698413,
+      "recall_at_k": 0.9404761904761905,
+      "mrr": 0.9285714285714286,
+      "ndcg": 0.9270834130941473,
+      "mode_accuracy": 0.8214285714285714,
+      "abstention_accuracy": 0.42857142857142855,
+      "latency_ms_p50": 0.6465000000000001,
+      "latency_ms_max": 4.388
+    },
+    "rw": {
+      "cases": 8,
+      "answerable_cases": 8,
+      "precision_at_k": 0.08333333333333333,
+      "recall_at_k": 0.25,
+      "mrr": 0.25,
+      "ndcg": 0.25,
+      "mode_accuracy": 0.25,
+      "abstention_accuracy": null,
+      "latency_ms_p50": 0.7084999999999999,
+      "latency_ms_max": 1.106
+    }
+  },
+  "by_split": {
+    "development": {
+      "cases": 48,
+      "answerable_cases": 37,
+      "precision_at_k": 0.3063063063063063,
+      "recall_at_k": 0.8513513513513513,
+      "mrr": 0.8648648648648649,
+      "ndcg": 0.8544093835882556,
+      "mode_accuracy": 0.7708333333333334,
+      "abstention_accuracy": 0.45454545454545453,
+      "latency_ms_p50": 0.6950000000000001,
+      "latency_ms_max": 4.121
+    },
+    "holdout": {
+      "cases": 16,
+      "answerable_cases": 13,
+      "precision_at_k": 0.28205128205128205,
+      "recall_at_k": 0.7692307692307693,
+      "mrr": 0.6923076923076923,
+      "ndcg": 0.7172581659375945,
+      "mode_accuracy": 0.6875,
+      "abstention_accuracy": 0.3333333333333333,
+      "latency_ms_p50": 0.627,
+      "latency_ms_max": 4.388
+    }
+  },
+  "not_measured": [
+    "semantic answer relevance",
+    "claim faithfulness",
+    "hallucination rate",
+    "generated citation entailment"
+  ],
+  "provider_calls": 0,
+  "provider_tokens": 0,
+  "api_cost": 0,
+  "notes": "Latency includes two local retrieval calls per case; cold-cache first case is included. No generation evaluated.",
+  "rows": [
+    {
+      "id": "q001",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "delivery",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 4.121,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q002",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.771,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q003",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.457,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q004",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.983,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q005",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.026,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q006",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "staging",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.855,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q007",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.82,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q008",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.883,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 0.5,
+      "ndcg": 0.6309297535714575
+    },
+    {
+      "id": "q009",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.025,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q010",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.743,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q011",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.736,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q012",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.84,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q013",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.086,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q014",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.854,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q015",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 2.284,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q016",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "field-ussd",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.922,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q017",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.362,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q018",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.72,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q019",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.644,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q020",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "privacy",
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.636,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q021",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.649,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q022",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [
+        "verification",
+        "rainfall",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.672,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q023",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.493,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q024",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.593,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q025",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.602,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q026",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.502,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q027",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.488,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q028",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.537,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q029",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "delivery",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.59,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q030",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "delivery",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.568,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q031",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.512,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q032",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [
+        "privacy",
+        "staging",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.602,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q033",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.598,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q034",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.869,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q035",
+      "language": "en",
+      "category": "answerable",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.862,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q036",
+      "language": "en",
+      "category": "answerable",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [
+        "staging",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 4.388,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q037",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "staging",
+        "verification"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.641,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "ndcg": 0.6131471927654584
+    },
+    {
+      "id": "q038",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "staging",
+        "delivery"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "staging",
+        "field-ussd"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.412,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q039",
+      "language": "en",
+      "category": "multi_document",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "verification",
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall",
+        "verification",
+        "delivery"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.024,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q040",
+      "language": "en",
+      "category": "multi_document",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "privacy",
+        "staging"
+      ],
+      "retrieved_ids": [
+        "delivery",
+        "staging",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.617,
+      "precision_at_k": 0.6666666666666666,
+      "recall_at_k": 1.0,
+      "mrr": 0.5,
+      "ndcg": 0.6934264036172708
+    },
+    {
+      "id": "q041",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.415,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q042",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.55,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q043",
+      "language": "en",
+      "category": "unanswerable",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.4,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q044",
+      "language": "en",
+      "category": "live_information",
+      "split": "holdout",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.487,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q045",
+      "language": "en",
+      "category": "unauthorized",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.444,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q046",
+      "language": "en",
+      "category": "unauthorized",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "delivery"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.549,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q047",
+      "language": "en",
+      "category": "injection",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "privacy",
+        "staging"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.557,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q048",
+      "language": "en",
+      "category": "injection",
+      "split": "holdout",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "staging",
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.618,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q049",
+      "language": "en",
+      "category": "injection",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.638,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q050",
+      "language": "en",
+      "category": "ambiguous",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "documents",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": false,
+      "latency_ms": 0.583,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q051",
+      "language": "en",
+      "category": "ambiguous",
+      "split": "development",
+      "expected_mode": "no_evidence",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [],
+      "retrieved_ids": [],
+      "mode_correct": true,
+      "latency_ms": 0.557,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q052",
+      "language": "en",
+      "category": "personal",
+      "split": "holdout",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "rainfall",
+        "delivery",
+        "privacy"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.307,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q053",
+      "language": "en",
+      "category": "personal",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "delivery",
+        "privacy",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.401,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q054",
+      "language": "en",
+      "category": "personal",
+      "split": "development",
+      "expected_mode": "privacy_refusal",
+      "actual_mode": "privacy_refusal",
+      "relevant_ids": [],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.447,
+      "precision_at_k": 0.0,
+      "recall_at_k": null,
+      "mrr": 0.0,
+      "ndcg": null
+    },
+    {
+      "id": "q055",
+      "language": "en",
+      "category": "typo",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.798,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q056",
+      "language": "en",
+      "category": "paraphrase",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.855,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q057",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [
+        "field-ussd",
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 1.106,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q058",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "documents",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [
+        "rainfall"
+      ],
+      "mode_correct": true,
+      "latency_ms": 0.939,
+      "precision_at_k": 0.3333333333333333,
+      "recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg": 1.0
+    },
+    {
+      "id": "q059",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "rainfall"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.712,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q060",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "verification"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.857,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q061",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "delivery"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.705,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q062",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "privacy"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.685,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q063",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "development",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "staging"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.472,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    },
+    {
+      "id": "q064",
+      "language": "rw",
+      "category": "cross_language",
+      "split": "holdout",
+      "expected_mode": "documents",
+      "actual_mode": "no_evidence",
+      "relevant_ids": [
+        "field-ussd"
+      ],
+      "retrieved_ids": [],
+      "mode_correct": false,
+      "latency_ms": 0.421,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "mrr": 0.0,
+      "ndcg": 0.0
+    }
+  ],
+  "dataset_sha256": "6fbdd3e04d6475343d4c1e553cae4234128316bb115815badb6ff1ebf83edaf0",
+  "corpus_sha256": "aa8d33f37342854b3072bfebc0e7279d77928d45ffc0bd1fa6d75758f6ade175",
+  "retriever": "legacy-title-weighted-keyword-v1",
+  "embedding_revision": null,
+  "split": "all",
+  "review_status": "engineering_fixture_not_native_reviewed"
+}

@@ -46,7 +46,8 @@
     @apply bg-canvas font-sans text-ink antialiased;
   }
   h1, h2, h3, h4 {
-    @apply font-heading tracking-tight text-forest;
+    @apply font-heading tracking-tight;
+    color: rgb(var(--heading-ink));
   }
   :focus-visible {
     outline: none;
@@ -70,8 +71,22 @@
 
 /* Mapbox popups in the platform's type and colours. */
 .mapboxgl-popup-content {
-  @apply rounded-control px-3 py-2 font-sans text-xs text-ink shadow-raised;
+  @apply rounded-control bg-surface px-3 py-2 font-sans text-xs text-ink shadow-raised;
 }
+
+/* SVG/tooltip presentation follows theme changes without recreating charts or maps. */
+.recharts-text { fill: rgb(var(--muted)); }
+.recharts-legend-item-text,
+.recharts-tooltip-label,
+.recharts-tooltip-item { color: rgb(var(--ink)) !important; }
+.recharts-default-tooltip {
+  background-color: rgb(var(--surface)) !important;
+  border-color: rgb(var(--line)) !important;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: rgb(var(--surface)); }
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: rgb(var(--surface)); }
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgb(var(--surface)); }
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgb(var(--surface)); }
 
 /* Outside @layer on purpose: these names are built at runtime (tile-${accent}), so Tailwind
    cannot see them in the source and would drop layered classes. */

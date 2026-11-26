@@ -1,14 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { apiGet, apiSend } from "@/services/api/client";
 
-const documentSchema = z.object({ document_id: z.string(), version_id: z.string(), title: z.string(), language: z.string(), classification: z.string(), status: z.string(), revision: z.number(), roles: z.array(z.string()), sector_ids: z.array(z.number()) });
+const documentSchema = z.object({ document_id: z.string(), version_id: z.string(), title: z.string(), language: z.string(), classification: z.string(), status: z.string(), revision: z.number(), roles: z.array(z.string()), sector_ids: z.array(z.number()), chunk_count: z.number().default(0), embedding_count: z.number().default(0), processing_status: z.string().default("unknown"), processing_detail: z.string().default("No processing record") });
 type Document = z.infer<typeof documentSchema>;
 const previewSchema = z.array(z.object({ page: z.number(), heading: z.string(), text: z.string() }));
 const uploadSchema = z.object({ status: z.string(), duplicate: z.boolean() });
 const button = "rounded-control border border-line px-3 py-2 text-sm disabled:opacity-50";
 
-export function KnowledgePanel() {
+export function KnowledgePanel({ onSourcesChanged }: { onSourcesChanged?: () => void } = {}) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selected, setSelected] = useState<Document | null>(null);
   const [preview, setPreview] = useState<z.infer<typeof previewSchema>>([]);
@@ -23,7 +23,22 @@ export function KnowledgePanel() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
-  async function refresh() { setDocuments(await apiGet("assistant/documents", z.array(documentSchema))); }
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [loaded, setLoaded] = useState(false);
+  const [uploadsEnabled, setUploadsEnabled] = useState(false);
+  useEffect(() => {
+    const controller = new AbortController();
+    void apiGet("assistant/config", z.object({ uploads_enabled: z.boolean() }), controller.signal)
+      .then((config) => setUploadsEnabled(config.uploads_enabled)).catch(() => { /* Fail closed; server enforces the gate too. */ });
+    return () => controller.abort();
+  }, []);
+  async function refresh() {
+    const params = new URLSearchParams({ q: query, status: filter });
+    setDocuments(await apiGet(`assistant/documents?${params}`, z.array(documentSchema)));
+    setLoaded(true);
+    onSourcesChanged?.();
+  }
   async function run(action: () => Promise<void>) {
     setBusy(true); setError(""); setStatus("");
     try { await action(); } catch (failure) { setError(failure instanceof Error ? failure.message : "Knowledge operation failed."); }
@@ -31,6 +46,7 @@ export function KnowledgePanel() {
   }
   async function upload(event: FormEvent) {
     event.preventDefault();
+    if (!uploadsEnabled) { setError("Knowledge uploads are disabled until the extraction environment is approved."); return; }
     if (!file || busy) return;
     await run(async () => {
       if (file.size > 5 * 1024 * 1024) throw new Error("Choose a document of at most 5 MiB.");
@@ -48,11 +64,24 @@ export function KnowledgePanel() {
     <h2 className="text-lg font-bold">Manage knowledge sources</h2>
     <p className="text-sm text-muted">Administrator only. Upload approved-for-review institutional procedures, engineering summaries or demonstration material. Never upload participant records, grievances, personal documents or credentials. Uploads remain disabled until the extraction environment is approved.</p>
     <button type="button" disabled={busy} className={button} onClick={() => void run(refresh)}>Load knowledge sources</button>
+    <form aria-label="Search knowledge sources" className="flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); void run(refresh); }}>
+      <label className="min-w-0 flex-1 text-xs">Search source titles<input value={query} maxLength={200} onChange={(event) => setQuery(event.target.value)} className="mt-1 block w-full rounded-control border border-line p-2 text-sm" /></label>
+      <label className="text-xs">Review status<select value={filter} onChange={(event) => setFilter(event.target.value)} className="mt-1 block rounded-control border border-line p-2 text-sm">{["all", "pending", "approved", "superseded", "rejected"].map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
+      <button type="submit" disabled={busy} className={button}>Search sources</button>
+    </form>
+    {loaded && !documents.length && <p role="status" className="text-sm text-muted">No source versions match this search.</p>}
+    {loaded && documents.length >= 200 && <p className="text-xs text-muted">Showing up to 200 versions. Narrow your search to find others.</p>}
     <ul className="space-y-3">{documents.map((doc) => <li key={doc.version_id} className="border-t border-line pt-3">
       <p>{doc.title} · revision {doc.revision} · {doc.classification} · {doc.status}</p>
+      <p className="mt-1 text-xs text-muted">Parsing: {doc.chunk_count ? "complete" : "no stored text"} · {doc.chunk_count} chunks · Index: {doc.processing_status} · {doc.embedding_count} stored embeddings</p>
+      <p className="mt-1 text-xs text-muted">{doc.processing_detail}. Stored embeddings do not mean vector retrieval is active.</p>
       <div className="mt-2 flex flex-wrap gap-2">
         <button className={button} disabled={busy} type="button" onClick={() => void run(async () => { const chunks = await apiGet(`assistant/documents/${doc.version_id}/preview`, previewSchema); setSelected(doc); setPreview(chunks); setReference(""); })}>Review {doc.title} revision {doc.revision}</button>
         <button className={button} disabled={busy} type="button" onClick={() => { setUpdating(doc.document_id); setTitle(doc.title); setLanguage(doc.language); setClassification(doc.classification); setRoles(doc.roles.join(",")); setSectors(doc.sector_ids.join(",")); }}>Prepare new version</button>
+        <button className={button} disabled={busy || !["pending", "approved"].includes(doc.status)} type="button" onClick={() => void run(async () => {
+          try { const result = await apiSend("POST", `assistant/documents/${doc.version_id}/reindex`, {}, z.object({ detail: z.string() })); setStatus(result.detail); }
+          finally { await refresh(); }
+        })}>Recheck / reindex {doc.title} revision {doc.revision}</button>
         <button className={button} disabled={busy} type="button" onClick={() => void run(async () => { await apiSend("DELETE", `assistant/documents/${doc.document_id}`); setSelected(null); setPreview([]); await refresh(); setStatus("Document removed from retrieval; chunks and vectors deleted."); })}>Remove {doc.title} from retrieval</button>
       </div>
     </li>)}</ul>
@@ -71,7 +100,7 @@ export function KnowledgePanel() {
       <label className="block">Allowed staff roles (comma separated)<input value={roles} disabled={!!updating} onChange={(event) => setRoles(event.target.value)} className="block w-full border border-line p-2" /></label>
       <label className="block">Required sector IDs (comma separated; empty for general procedures)<input value={sectors} disabled={!!updating} onChange={(event) => setSectors(event.target.value)} className="block w-full border border-line p-2" /></label>
       <label className="block">Document file<input type="file" required accept=".pdf,.docx,.txt,.md,.csv,.json" onChange={(event) => setFile(event.target.files?.[0] ?? null)} className="ml-2" /></label>
-      <button type="submit" disabled={busy || !file} className={button}>Upload and index for review</button>
+      <button type="submit" disabled={busy || !file || !uploadsEnabled} className={button}>Upload and index for review</button>
       {updating && <button type="button" className={button} onClick={() => { setUpdating(null); setTitle(""); }}>Cancel version update</button>}
     </form>
     {error && <p role="alert" className="text-critical">{error}</p>}
