@@ -1,5 +1,25 @@
 # Testing
 
+## Backend dependency profile
+
+For the full backend suite, install the RAG extraction profile first:
+
+```powershell
+cd backend
+python -m pip install -r requirements-rag.txt
+python -m pytest -q
+```
+
+`requirements-rag.txt` includes `requirements.txt` and the optional `pypdf`
+dependency. The full suite exercises bounded PDF extraction and must run those
+tests in CI. Installing only the core profile leaves PDF parsing unavailable;
+production images may continue using that profile when PDF ingestion is disabled.
+Installing parser dependencies does not enable uploads, generation or live telecom.
+
+The 26 November CI failure after PR #17 was a missing `pypdf` installation in the
+backend job. CI now installs and audits the full extraction profile and includes
+both requirement files in its dependency-cache key. Tests and assertions are retained.
+
 > Current field-language tests and executed results: [13 November validation](engineering-validation-2026-11-13.md). `test_ussd_language.py` covers preference/replay/isolation, migration tests preserve existing profiles, and `14-ussd-language.spec.ts` checks both languages with the English aid disabled.
 
 > Current commands, failures, fixes and actual local counts: [6 November engineering validation](engineering-validation-2026-11-06.md).

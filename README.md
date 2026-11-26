@@ -162,10 +162,15 @@ cs-ircfs-platform/
 
 ```powershell
 cd backend
+python -m pip install -r requirements-rag.txt
 python -m pytest -q -p no:cacheprovider
 ```
 
-Tests always run on an in-memory database and make no network calls.
+The full backend suite requires `requirements-rag.txt`, which includes the core
+requirements and the optional PDF parser used by extraction tests. Installing it
+does not enable ingestion or AI generation. Ordinary tests use disposable SQLite
+databases and synthetic inputs; dedicated PostgreSQL tests are opt-in. Telecom and
+external generation are disabled by the test fixtures.
 
 ```powershell
 cd frontend

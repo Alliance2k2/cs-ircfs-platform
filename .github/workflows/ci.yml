@@ -37,14 +37,17 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: backend/requirements.txt
-      # A clean install catches a missing dependency (slowapi was missing before October 2026).
-      - run: pip install -r requirements.txt
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-rag.txt
+      # The full suite exercises the optional bounded PDF parser as well as core APIs.
+      # This profile includes requirements.txt; production images keep their core profile.
+      - run: pip install -r requirements-rag.txt
       - name: Tests (in-memory SQLite, telecom forced to dry-run)
         run: python -m pytest -q
       - name: Dependency audit (advisory)
         continue-on-error: true
-        run: pip install pip-audit && pip-audit -r requirements.txt
+        run: pip install pip-audit && pip-audit -r requirements-rag.txt
 
   migrations:
     name: Migrations on PostGIS
